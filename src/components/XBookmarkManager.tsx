@@ -26,7 +26,8 @@ import {
   LuRotateCcw,
   LuMenu,
 } from 'react-icons/lu';
-import { mockBookmarks, type Bookmark } from '../data/mockBookmarks.ts';
+import { mockBookmarks, type Bookmark } from '../data/mockBookmarks';
+import { theme } from '../styles/theme';
 
 const XBookmarkManager = () => {
   const [selectedTags, setSelectedTags] = useState(['tech', 'AI']);
@@ -50,7 +51,7 @@ const XBookmarkManager = () => {
 
   const BookmarkCard = ({ bookmark }: { bookmark: Bookmark }) => (
     <Card.Root
-      bg="#1a1d23"
+      bg="#16181c"
       borderWidth="1px"
       borderColor="#2a2d35"
       borderRadius="16px"
@@ -166,7 +167,18 @@ const XBookmarkManager = () => {
               variant="ghost"
               aria-label="Star bookmark"
               color={bookmark.isStarred ? '#ffd700' : '#71767b'}
-              _hover={{ bg: '#2a2d35', color: bookmark.isStarred ? '#ffd700' : '#e1e5e9' }}
+              borderRadius="full"
+              w="32px"
+              h="32px"
+              minW="32px"
+              border="1px solid #2f3336"
+              _hover={{
+                bg: '#2a2d35',
+                color: bookmark.isStarred ? '#ffd700' : '#e1e5e9',
+                borderColor: '#3a3d45',
+                transform: 'scale(1.1)',
+                transition: 'all 0.2s'
+              }}
             >
               <LuStar fill={bookmark.isStarred ? 'currentColor' : 'none'} />
             </IconButton>
@@ -175,7 +187,18 @@ const XBookmarkManager = () => {
               variant="ghost"
               aria-label="Share bookmark"
               color="#71767b"
-              _hover={{ bg: '#2a2d35', color: '#e1e5e9' }}
+              borderRadius="full"
+              w="32px"
+              h="32px"
+              minW="32px"
+              border="1px solid #2f3336"
+              _hover={{
+                bg: '#2a2d35',
+                color: '#e1e5e9',
+                borderColor: '#3a3d45',
+                transform: 'scale(1.1)',
+                transition: 'all 0.2s'
+              }}
             >
               <LuExternalLink />
             </IconButton>
@@ -184,7 +207,18 @@ const XBookmarkManager = () => {
               variant="ghost"
               aria-label="Archive bookmark"
               color="#71767b"
-              _hover={{ bg: '#2a2d35', color: '#e1e5e9' }}
+              borderRadius="full"
+              w="32px"
+              h="32px"
+              minW="32px"
+              border="1px solid #2f3336"
+              _hover={{
+                bg: '#2a2d35',
+                color: '#e1e5e9',
+                borderColor: '#3a3d45',
+                transform: 'scale(1.1)',
+                transition: 'all 0.2s'
+              }}
             >
               <LuDownload />
             </IconButton>
@@ -214,10 +248,10 @@ const XBookmarkManager = () => {
   );
 
   return (
-    <Box bg="#0f1419" minH="100vh">
+    <Box {...theme.styles.container.background}>
       <Flex h="100vh">
         {/* Sidebar */}
-        <Box w="280px" bg="#16181c" borderRightWidth="1px" borderColor="gray.700" p={5}>
+        <Box {...theme.styles.container.sidebar}>
           <VStack alignItems="stretch" gap={6} h="full">
             {/* Logo */}
             <HStack gap={3} pb={4} borderBottomWidth="1px" borderColor="gray.700">
@@ -289,41 +323,21 @@ const XBookmarkManager = () => {
         {/* Main Content */}
         <Flex flex={1} direction="column">
           {/* Header */}
-          <Box bg="#0f1419" borderBottomWidth="1px" borderColor="#2a2d35" px={6} py={4}>
+          <Box {...theme.styles.container.header}>
             <HStack gap={6} alignItems="center">
               {/* Search Area */}
               <Box position="relative" maxW="400px" flex={1}>
-                <HStack
-                  bg="#1a1d23"
-                  border="1px solid #2a2d35"
-                  borderRadius="20px"
-                  px={3}
-                  py={2}
-                  _focusWithin={{
-                    borderColor: '#1d4ed8',
-                    boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.1)'
-                  }}
-                  gap={2}
-                  h="36px"
-                >
+                <HStack {...theme.styles.searchContainer} gap={2}>
                   <Box w="16px" h="16px" color="#71767b">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </Box>
                   <Input
+                    {...theme.styles.searchInput}
                     placeholder="Search bookmarks, content, authors..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    bg="transparent"
-                    border="none"
-                    outline="none"
-                    _focus={{ outline: 'none', boxShadow: 'none' }}
-                    color="#e1e5e9"
-                    fontSize="14px"
-                    fontWeight="400"
-                    _placeholder={{ color: '#71767b' }}
-                    flex={1}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                   />
                 </HStack>
               </Box>
@@ -332,62 +346,15 @@ const XBookmarkManager = () => {
 
               {/* Action Buttons */}
               <HStack gap={3}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  px={4}
-                  py={2}
-                  borderRadius="12px"
-                  bg="transparent"
-                  border="1px solid #2a2d35"
-                  color="#71767b"
-                  fontSize="14px"
-                  fontWeight="500"
-                  _hover={{
-                    bg: '#1a1d23',
-                    color: '#e1e5e9',
-                    borderColor: '#3a3d45'
-                  }}
-                  gap={2}
-                >
+                <Button {...theme.styles.secondaryButton}>
                   <LuMenu size={14} />
                   Filters
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  px={4}
-                  py={2}
-                  borderRadius="12px"
-                  bg="transparent"
-                  border="1px solid #2a2d35"
-                  color="#71767b"
-                  fontSize="14px"
-                  fontWeight="500"
-                  _hover={{
-                    bg: '#1a1d23',
-                    color: '#e1e5e9',
-                    borderColor: '#3a3d45'
-                  }}
-                  gap={2}
-                >
+                <Button {...theme.styles.secondaryButton}>
                   <LuPlus size={14} />
                   Import
                 </Button>
-                <Button
-                  size="sm"
-                  px={4}
-                  py={2}
-                  borderRadius="12px"
-                  bg="#1d4ed8"
-                  color="white"
-                  fontSize="14px"
-                  fontWeight="600"
-                  _hover={{
-                    bg: '#1e40af'
-                  }}
-                  gap={2}
-                >
+                <Button {...theme.styles.primaryButton}>
                   <LuPlus size={14} />
                   Add Bookmark
                 </Button>
