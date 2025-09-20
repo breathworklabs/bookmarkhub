@@ -1,5 +1,4 @@
 import { Box, VStack, Text, Button, For, HStack } from '@chakra-ui/react'
-import { theme } from '../styles/theme'
 
 const AIInsights = () => {
   return (
