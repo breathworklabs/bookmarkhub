@@ -6,6 +6,8 @@ import { useBookmarkStore } from '../store/bookmarkStore'
 const SearchHeader = () => {
   const searchQuery = useBookmarkStore((state) => state.searchQuery)
   const setSearchQuery = useBookmarkStore((state) => state.setSearchQuery)
+  const isFiltersPanelOpen = useBookmarkStore((state) => state.isFiltersPanelOpen)
+  const toggleFiltersPanel = useBookmarkStore((state) => state.toggleFiltersPanel)
   return (
     <Box {...theme.styles.container.header}>
       <HStack gap={6} alignItems="center">
@@ -30,7 +32,18 @@ const SearchHeader = () => {
 
         {/* Action Buttons */}
         <HStack gap={3}>
-          <Button {...theme.styles.secondaryButton}>
+          <Button
+            {...theme.styles.secondaryButton}
+            bg={isFiltersPanelOpen ? '#1d4ed8' : 'transparent'}
+            color={isFiltersPanelOpen ? 'white' : '#71767b'}
+            borderColor={isFiltersPanelOpen ? '#1d4ed8' : '#2a2d35'}
+            _hover={{
+              bg: isFiltersPanelOpen ? '#1e40af' : '#1a1d23',
+              color: isFiltersPanelOpen ? 'white' : '#e1e5e9',
+              borderColor: isFiltersPanelOpen ? '#1e40af' : '#3a3d45'
+            }}
+            onClick={toggleFiltersPanel}
+          >
             <LuMenu size={14} />
             Filters
           </Button>

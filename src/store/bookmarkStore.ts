@@ -11,6 +11,7 @@ interface BookmarkState {
   viewMode: 'grid' | 'list'
   isLoading: boolean
   isAIPanelOpen: boolean
+  isFiltersPanelOpen: boolean
   activeSidebarItem: string
 
   // Actions
@@ -30,6 +31,8 @@ interface BookmarkState {
   setIsLoading: (loading: boolean) => void
   setAIPanelOpen: (isOpen: boolean) => void
   toggleAIPanel: () => void
+  setFiltersPanelOpen: (isOpen: boolean) => void
+  toggleFiltersPanel: () => void
   setActiveSidebarItem: (item: string) => void
 }
 
@@ -44,6 +47,7 @@ export const useBookmarkStore = create<BookmarkState>()(
       viewMode: 'grid',
       isLoading: false,
       isAIPanelOpen: false,
+      isFiltersPanelOpen: false,
       activeSidebarItem: 'All Bookmarks',
 
       // Actions
@@ -97,6 +101,12 @@ export const useBookmarkStore = create<BookmarkState>()(
         (state) => ({ isAIPanelOpen: !state.isAIPanelOpen }),
         false,
         'toggleAIPanel'
+      ),
+      setFiltersPanelOpen: (isOpen) => set({ isFiltersPanelOpen: isOpen }, false, 'setFiltersPanelOpen'),
+      toggleFiltersPanel: () => set(
+        (state) => ({ isFiltersPanelOpen: !state.isFiltersPanelOpen }),
+        false,
+        'toggleFiltersPanel'
       ),
       setActiveSidebarItem: (item) => set({ activeSidebarItem: item }, false, 'setActiveSidebarItem')
     }),

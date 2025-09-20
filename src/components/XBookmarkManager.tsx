@@ -4,6 +4,7 @@ import { useFilteredBookmarks } from '../hooks/useFilteredBookmarks';
 import AIInsights from './AIInsights';
 import SidebarMenu from './SidebarMenu';
 import SearchHeader from './SearchHeader';
+import AdvancedFilters from './AdvancedFilters';
 import FilterBar from './FilterBar';
 import BookmarkCard from './BookmarkCard';
 
@@ -20,6 +21,9 @@ const XBookmarkManager = () => {
         <Flex flex={1} direction="column">
           {/* Header */}
           <SearchHeader />
+
+          {/* Advanced Filters Panel */}
+          <AdvancedFilters />
 
           {/* Filter Bar */}
           <FilterBar />
