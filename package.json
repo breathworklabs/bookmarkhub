@@ -16,6 +16,7 @@
     "trailingComma": "es5"
   },
   "dependencies": {
+    "@chakra-ui/modal": "^2.3.1",
     "@chakra-ui/react": "^3.27.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
