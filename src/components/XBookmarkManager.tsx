@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import { Box, Flex, VStack, SimpleGrid, For } from '@chakra-ui/react';
-import { mockBookmarks } from '../data/mockBookmarks';
 import { theme } from '../styles/theme';
+import { useFilteredBookmarks } from '../hooks/useFilteredBookmarks';
 import AIInsights from './AIInsights';
 import SidebarMenu from './SidebarMenu';
 import SearchHeader from './SearchHeader';
@@ -9,14 +8,7 @@ import FilterBar from './FilterBar';
 import BookmarkCard from './BookmarkCard';
 
 const XBookmarkManager = () => {
-  const [selectedTags, setSelectedTags] = useState(['tech', 'AI']);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState('grid');
-  const [activeTab, setActiveTab] = useState(0);
-
-  const removeTag = (tagToRemove: string) => {
-    setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
-  };
+  const filteredBookmarks = useFilteredBookmarks()
 
   return (
     <Box {...theme.styles.container.background}>
@@ -27,18 +19,10 @@ const XBookmarkManager = () => {
         {/* Main Content */}
         <Flex flex={1} direction="column">
           {/* Header */}
-          <SearchHeader
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-          />
+          <SearchHeader />
 
           {/* Filter Bar */}
-          <FilterBar
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            selectedTags={selectedTags}
-            removeTag={removeTag}
-          />
+          <FilterBar />
 
           {/* Bookmarks Grid */}
           <Box flex={1} p={6} overflowY="auto">
@@ -48,7 +32,7 @@ const XBookmarkManager = () => {
                 gap={6}
                 w="full"
               >
-                <For each={mockBookmarks}>
+                <For each={filteredBookmarks}>
                   {(bookmark) => (
                     <BookmarkCard key={bookmark.id} bookmark={bookmark} />
                   )}

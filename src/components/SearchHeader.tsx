@@ -1,13 +1,11 @@
 import { Box, HStack, Input, Button, Spacer } from '@chakra-ui/react'
 import { LuMenu, LuPlus } from 'react-icons/lu'
 import { theme } from '../styles/theme'
+import { useBookmarkStore } from '../store/bookmarkStore'
 
-interface SearchHeaderProps {
-  searchQuery: string
-  setSearchQuery: (query: string) => void
-}
-
-const SearchHeader = ({ searchQuery, setSearchQuery }: SearchHeaderProps) => {
+const SearchHeader = () => {
+  const searchQuery = useBookmarkStore((state) => state.searchQuery)
+  const setSearchQuery = useBookmarkStore((state) => state.setSearchQuery)
   return (
     <Box {...theme.styles.container.header}>
       <HStack gap={6} alignItems="center">

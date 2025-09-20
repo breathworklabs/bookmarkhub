@@ -1,13 +1,11 @@
 import { Box, HStack, Text, Button, For } from '@chakra-ui/react'
+import { useBookmarkStore } from '../store/bookmarkStore'
 
-interface FilterBarProps {
-  activeTab: number
-  setActiveTab: (index: number) => void
-  selectedTags: string[]
-  removeTag: (tag: string) => void
-}
-
-const FilterBar = ({ activeTab, setActiveTab, selectedTags, removeTag }: FilterBarProps) => {
+const FilterBar = () => {
+  const activeTab = useBookmarkStore((state) => state.activeTab)
+  const setActiveTab = useBookmarkStore((state) => state.setActiveTab)
+  const selectedTags = useBookmarkStore((state) => state.selectedTags)
+  const removeTag = useBookmarkStore((state) => state.removeTag)
   const filterTabs = ['All', 'Today', 'This Week', 'Threads', 'Media']
 
   return (

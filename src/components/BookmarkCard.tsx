@@ -1,12 +1,14 @@
 import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuExternalLink, LuDownload } from 'react-icons/lu'
 import { type Bookmark } from '../data/mockBookmarks'
+import { useBookmarkStore } from '../store/bookmarkStore'
 
 interface BookmarkCardProps {
   bookmark: Bookmark
 }
 
 const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
+  const toggleStarBookmark = useBookmarkStore((state) => state.toggleStarBookmark)
   return (
     <Card.Root
       bg="#16181c"
@@ -137,6 +139,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                 transform: 'scale(1.1)',
                 transition: 'all 0.2s'
               }}
+              onClick={() => toggleStarBookmark(bookmark.id)}
             >
               <LuStar fill={bookmark.isStarred ? 'currentColor' : 'none'} />
             </IconButton>
