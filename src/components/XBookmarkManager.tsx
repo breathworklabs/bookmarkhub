@@ -254,7 +254,7 @@ const XBookmarkManager = () => {
         <Box {...theme.styles.container.sidebar}>
           <VStack alignItems="stretch" gap={6} h="full">
             {/* Logo */}
-            <HStack gap={3} pb={4} borderBottomWidth="1px" borderColor="gray.700">
+            <HStack gap={3} pb={4} borderBottomWidth="1px" borderColor="#2a2d35">
               <Box
                 w={8}
                 h={8}
@@ -268,33 +268,55 @@ const XBookmarkManager = () => {
               >
                 X
               </Box>
-              <Text fontSize="lg" fontWeight="bold" color="white">
+              <Text fontSize="lg" fontWeight="bold" color="#e1e5e9">
                 BookmarkX
               </Text>
             </HStack>
 
             {/* Navigation */}
-            <VStack alignItems="stretch" gap={1} flex={1}>
+            <VStack alignItems="stretch" gap={2} flex={1}>
               <For each={sidebarItems}>
                 {(item, index) => (
                   <HStack
                     key={index}
                     p={3}
-                    borderRadius="lg"
+                    borderRadius="12px"
                     cursor="pointer"
-                    bg={item.active ? 'blue.500' : 'transparent'}
-                    color={item.active ? 'white' : 'gray.300'}
-                    _hover={{ bg: item.active ? 'blue.600' : 'gray.700' }}
+                    bg={item.active ? '#1d4ed8' : 'transparent'}
+                    color={item.active ? 'white' : '#71767b'}
+                    fontSize="14px"
+                    fontWeight={item.active ? '600' : '500'}
+                    _hover={{
+                      bg: item.active ? '#1e40af' : '#2a2d35',
+                      color: item.active ? 'white' : '#e1e5e9'
+                    }}
+                    transition="all 0.2s"
                   >
-                    <item.icon />
+                    <Box w="18px" h="18px">
+                      <item.icon size={18} />
+                    </Box>
                     <Text flex={1}>{item.label}</Text>
                     {item.count && (
-                      <Badge colorPalette={item.active ? 'blue' : 'purple'}>
+                      <Badge
+                        bg={item.active ? 'rgba(255,255,255,0.2)' : '#2a2d35'}
+                        color={item.active ? 'white' : '#9ca3af'}
+                        fontSize="11px"
+                        px={2}
+                        py={1}
+                        borderRadius="6px"
+                      >
                         {item.count}
                       </Badge>
                     )}
                     {item.badge && (
-                      <Badge colorPalette="red">
+                      <Badge
+                        bg="#dc2626"
+                        color="white"
+                        fontSize="10px"
+                        px={2}
+                        py={1}
+                        borderRadius="6px"
+                      >
                         {item.badge}
                       </Badge>
                     )}
@@ -306,15 +328,23 @@ const XBookmarkManager = () => {
             {/* Settings */}
             <HStack
               p={3}
-              borderRadius="lg"
+              borderRadius="12px"
               cursor="pointer"
               borderTopWidth="1px"
-              borderColor="gray.700"
+              borderColor="#2a2d35"
               mt="auto"
-              color="gray.300"
-              _hover={{ bg: 'gray.700' }}
+              color="#71767b"
+              fontSize="14px"
+              fontWeight="500"
+              _hover={{
+                bg: '#2a2d35',
+                color: '#e1e5e9'
+              }}
+              transition="all 0.2s"
             >
-              <LuSettings />
+              <Box w="18px" h="18px">
+                <LuSettings size={18} />
+              </Box>
               <Text>Settings</Text>
             </HStack>
           </VStack>
@@ -485,43 +515,95 @@ const XBookmarkManager = () => {
         {/* AI Insights Panel */}
         <Box w="320px" bg="#16181c" borderLeftWidth="1px" borderColor="#2a2d35" p={5}>
           <VStack alignItems="stretch" gap={6}>
-            <Heading size="md" color="white">AI Insights</Heading>
+            <Heading size="md" color="#e1e5e9" fontWeight="600" fontSize="18px">AI Insights</Heading>
 
-            <VStack alignItems="stretch" gap={3}>
-              <Text fontWeight="semibold" color="white">Trending Topics</Text>
-              <For each={['AI & Machine Learning', 'Web Development', 'Tesla & EVs', 'Crypto & Blockchain']}>
-                {(topic, index) => (
-                  <HStack key={index} justify="space-between" p={2} bg="gray.700" borderRadius="md">
-                    <Text fontSize="sm" color="gray.200">{topic}</Text>
-                    <Text fontSize="xs" color="gray.400">{Math.floor(Math.random() * 50 + 10)}</Text>
-                  </HStack>
-                )}
-              </For>
+            <VStack alignItems="stretch" gap={4}>
+              <Text fontWeight="600" color="#e1e5e9" fontSize="14px">Trending Topics</Text>
+              <VStack alignItems="stretch" gap={2} w="full">
+                <For each={['AI & Machine Learning', 'Web Development', 'Tesla & EVs', 'Crypto & Blockchain']}>
+                  {(topic, index) => (
+                    <HStack
+                      key={index}
+                      justify="space-between"
+                      p={3}
+                      w="full"
+                      bg="#1a1d23"
+                      border="1px solid #2a2d35"
+                      borderRadius="12px"
+                      cursor="pointer"
+                      _hover={{
+                        bg: '#252932',
+                        borderColor: '#3a3d45'
+                      }}
+                      transition="all 0.2s"
+                    >
+                      <Text fontSize="13px" color="#e1e5e9" fontWeight="500" flex={1}>{topic}</Text>
+                      <Text fontSize="11px" color="#71767b">{Math.floor(Math.random() * 50 + 10)}</Text>
+                    </HStack>
+                  )}
+                </For>
+              </VStack>
+            </VStack>
+
+            <VStack alignItems="stretch" gap={4}>
+              <Text fontWeight="600" color="#e1e5e9" fontSize="14px">Smart Suggestions</Text>
+              <VStack alignItems="stretch" gap={3} w="full">
+                <Box
+                  w="full"
+                  p={4}
+                  bg="#1a1d23"
+                  border="1px solid #1d4ed8"
+                  borderRadius="12px"
+                  borderLeftWidth="4px"
+                  borderLeftColor="#1d4ed8"
+                >
+                  <Text fontSize="13px" color="#a5b4fc" lineHeight="1.4" mb={3}>
+                    You have 12 bookmarks about AI that could be organized into a collection.
+                  </Text>
+                  <Button
+                    size="xs"
+                    bg="#1d4ed8"
+                    color="white"
+                    fontSize="11px"
+                    px={3}
+                    py={1}
+                    borderRadius="8px"
+                    _hover={{ bg: '#1e40af' }}
+                  >
+                    Create Collection
+                  </Button>
+                </Box>
+
+                <Box
+                  w="full"
+                  p={4}
+                  bg="#1a1d23"
+                  border="1px solid #059669"
+                  borderRadius="12px"
+                  borderLeftWidth="4px"
+                  borderLeftColor="#059669"
+                >
+                  <Text fontSize="13px" color="#86efac" lineHeight="1.4" mb={3}>
+                    3 of your bookmarked links are no longer available.
+                  </Text>
+                  <Button
+                    size="xs"
+                    bg="#059669"
+                    color="white"
+                    fontSize="11px"
+                    px={3}
+                    py={1}
+                    borderRadius="8px"
+                    _hover={{ bg: '#047857' }}
+                  >
+                    Review Links
+                  </Button>
+                </Box>
+              </VStack>
             </VStack>
 
             <VStack alignItems="stretch" gap={3}>
-              <Text fontWeight="semibold" color="white">Smart Suggestions</Text>
-              <Box p={3} bg="blue.900" borderRadius="md" borderLeftWidth="3px" borderColor="blue.500">
-                <Text fontSize="sm" color="blue.200">
-                  You have 12 bookmarks about AI that could be organized into a collection.
-                </Text>
-                <Button size="xs" mt={2} colorPalette="blue">
-                  Create Collection
-                </Button>
-              </Box>
-
-              <Box p={3} bg="green.900" borderRadius="md" borderLeftWidth="3px" borderColor="green.500">
-                <Text fontSize="sm" color="green.200">
-                  3 of your bookmarked links are no longer available.
-                </Text>
-                <Button size="xs" mt={2} colorPalette="green">
-                  Review Links
-                </Button>
-              </Box>
-            </VStack>
-
-            <VStack alignItems="stretch" gap={3}>
-              <Text fontWeight="semibold" color="white">Recent Activity</Text>
+              <Text fontWeight="600" color="#e1e5e9" fontSize="14px">Recent Activity</Text>
               <VStack alignItems="stretch" gap={2}>
                 <For each={[
                   { action: 'Added 5 new bookmarks', time: '2 hours ago' },
@@ -529,13 +611,14 @@ const XBookmarkManager = () => {
                   { action: 'Starred 3 bookmarks', time: '2 days ago' }
                 ]}>
                   {(activity, index) => (
-                    <HStack key={index} gap={3}>
-                      <Box w={2} h={2} bg="blue.500" borderRadius="full" />
-                      <VStack alignItems="start" gap={0} flex={1}>
-                        <Text fontSize="sm" color="gray.200">{activity.action}</Text>
-                        <Text fontSize="xs" color="gray.400">{activity.time}</Text>
-                      </VStack>
-                    </HStack>
+                    <VStack key={index} alignItems="start" gap={1} py={2}>
+                      <Text fontSize="13px" color="#e1e5e9" fontWeight="400">
+                        {activity.action}
+                      </Text>
+                      <Text fontSize="12px" color="#71767b">
+                        {activity.time}
+                      </Text>
+                    </VStack>
                   )}
                 </For>
               </VStack>
