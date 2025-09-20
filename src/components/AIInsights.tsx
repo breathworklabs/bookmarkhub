@@ -1,16 +1,58 @@
 import { Box, VStack, Text, Button, For, HStack } from '@chakra-ui/react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useBookmarkStore } from '../store/bookmarkStore'
+
+const MotionBox = motion.create(Box)
 
 const AIInsights = () => {
+  const isAIPanelOpen = useBookmarkStore((state) => state.isAIPanelOpen)
+  const setAIPanelOpen = useBookmarkStore((state) => state.setAIPanelOpen)
+
   return (
-    <Box
-      w="320px"
-      bg="#16181c"
-      borderLeftWidth="1px"
-      borderColor="#2a2d35"
-      p={5}
-      overflowY="auto"
-      h="100vh"
-    >
+    <AnimatePresence mode="wait">
+      {isAIPanelOpen && (
+        <>
+          {/* Backdrop */}
+          <MotionBox
+            position="fixed"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            bg="rgba(0, 0, 0, 0.2)"
+            zIndex={999}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={() => setAIPanelOpen(false)}
+            cursor="pointer"
+          />
+
+          {/* Panel */}
+          <MotionBox
+          position="fixed"
+          top={0}
+          right={0}
+          w="320px"
+          bg="#16181c"
+          borderLeftWidth="1px"
+          borderColor="#2a2d35"
+          p={5}
+          overflowY="auto"
+          h="100vh"
+          zIndex={1000}
+          boxShadow="0 0 20px rgba(0, 0, 0, 0.5)"
+          initial={{ x: 320 }}
+          animate={{ x: 0 }}
+          exit={{ x: 320 }}
+          transition={{
+            type: "spring",
+            stiffness: 400,
+            damping: 40,
+            duration: 0.4
+          }}
+        >
       <VStack alignItems="stretch" gap={6}>
         <Text fontWeight="600" color="#e1e5e9" fontSize="18px">
           AI Insights
@@ -121,9 +163,12 @@ const AIInsights = () => {
               )}
             </For>
           </VStack>
+          </VStack>
         </VStack>
-      </VStack>
-    </Box>
+          </MotionBox>
+        </>
+      )}
+    </AnimatePresence>
   )
 }
 

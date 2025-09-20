@@ -10,6 +10,8 @@ interface BookmarkState {
   activeTab: number
   viewMode: 'grid' | 'list'
   isLoading: boolean
+  isAIPanelOpen: boolean
+  activeSidebarItem: string
 
   // Actions
   setBookmarks: (bookmarks: Bookmark[]) => void
@@ -26,6 +28,9 @@ interface BookmarkState {
   setActiveTab: (tab: number) => void
   setViewMode: (mode: 'grid' | 'list') => void
   setIsLoading: (loading: boolean) => void
+  setAIPanelOpen: (isOpen: boolean) => void
+  toggleAIPanel: () => void
+  setActiveSidebarItem: (item: string) => void
 }
 
 export const useBookmarkStore = create<BookmarkState>()(
@@ -38,6 +43,8 @@ export const useBookmarkStore = create<BookmarkState>()(
       activeTab: 0,
       viewMode: 'grid',
       isLoading: false,
+      isAIPanelOpen: false,
+      activeSidebarItem: 'All Bookmarks',
 
       // Actions
       setBookmarks: (bookmarks) => set({ bookmarks }, false, 'setBookmarks'),
@@ -83,7 +90,15 @@ export const useBookmarkStore = create<BookmarkState>()(
       setSearchQuery: (query) => set({ searchQuery: query }, false, 'setSearchQuery'),
       setActiveTab: (tab) => set({ activeTab: tab }, false, 'setActiveTab'),
       setViewMode: (mode) => set({ viewMode: mode }, false, 'setViewMode'),
-      setIsLoading: (loading) => set({ isLoading: loading }, false, 'setIsLoading')
+      setIsLoading: (loading) => set({ isLoading: loading }, false, 'setIsLoading'),
+
+      setAIPanelOpen: (isOpen) => set({ isAIPanelOpen: isOpen }, false, 'setAIPanelOpen'),
+      toggleAIPanel: () => set(
+        (state) => ({ isAIPanelOpen: !state.isAIPanelOpen }),
+        false,
+        'toggleAIPanel'
+      ),
+      setActiveSidebarItem: (item) => set({ activeSidebarItem: item }, false, 'setActiveSidebarItem')
     }),
     {
       name: 'bookmark-store', // Store name for devtools
