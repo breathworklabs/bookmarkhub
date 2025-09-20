@@ -12,7 +12,6 @@ import {
   Heading,
   Spacer,
   Separator,
-  Group,
   Badge,
   Card,
   For,
@@ -54,7 +53,7 @@ const XBookmarkManager = () => {
       bg="#1a1d23"
       borderWidth="1px"
       borderColor="#2a2d35"
-      borderRadius="lg"
+      borderRadius="16px"
       p={4}
       _hover={{
         borderColor: '#4a9eff',
@@ -99,102 +98,118 @@ const XBookmarkManager = () => {
       </HStack>
 
       {/* Content */}
-      <Text
-        fontSize="sm"
-        lineHeight="1.4"
-        color="#e1e5e9"
-        mb={bookmark.hasMedia ? 3 : 4}
-        whiteSpace="pre-line"
-      >
-        {bookmark.content}
-      </Text>
-
-      {/* Media placeholder */}
-      {bookmark.hasMedia && (
-        <Box
-          h="180px"
-          bg="#0f1419"
-          borderRadius="lg"
-          border="1px solid #2a2d35"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          color="#71767b"
-          mb={4}
+      <Box flex={1}>
+        <Text
+          fontSize="sm"
+          lineHeight="1.4"
+          color="#e1e5e9"
+          mb={bookmark.hasMedia ? 3 : 0}
+          whiteSpace="pre-line"
         >
-          📷 Media Content
-        </Box>
-      )}
+          {bookmark.content}
+        </Text>
 
-      {/* Metrics */}
-      <HStack gap={8} color="#71767b" fontSize="sm" mb={3}>
-        <HStack gap={2} cursor="pointer" _hover={{ color: '#e91e63' }}>
-          <Text>❤️</Text>
-          <Text>{bookmark.metrics.likes}</Text>
-        </HStack>
-        <HStack gap={2} cursor="pointer" _hover={{ color: '#00ba7c' }}>
-          <Text>🔄</Text>
-          <Text>{bookmark.metrics.retweets}</Text>
-        </HStack>
-        <HStack gap={2} cursor="pointer" _hover={{ color: '#1d9bf0' }}>
-          <Text>💬</Text>
-          <Text>{bookmark.metrics.replies}</Text>
-        </HStack>
-      </HStack>
-
-      <Separator borderColor="#2a2d35" mb={3} />
-
-      {/* Actions and Tags */}
-      <HStack justify="space-between" alignItems="center">
-        <HStack gap={1}>
-          <IconButton
-            size="sm"
-            variant="ghost"
-            aria-label="Star bookmark"
-            color={bookmark.isStarred ? '#ffd700' : '#71767b'}
-            _hover={{ bg: '#2a2d35', color: bookmark.isStarred ? '#ffd700' : '#e1e5e9' }}
-          >
-            <LuStar fill={bookmark.isStarred ? 'currentColor' : 'none'} />
-          </IconButton>
-          <IconButton
-            size="sm"
-            variant="ghost"
-            aria-label="Share bookmark"
+        {/* Media placeholder */}
+        {bookmark.hasMedia && (
+          <Box
+            h="180px"
+            bg="#0f1419"
+            borderRadius="lg"
+            border="1px solid #2a2d35"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
             color="#71767b"
-            _hover={{ bg: '#2a2d35', color: '#e1e5e9' }}
           >
-            <LuExternalLink />
-          </IconButton>
-          <IconButton
-            size="sm"
-            variant="ghost"
-            aria-label="Archive bookmark"
-            color="#71767b"
-            _hover={{ bg: '#2a2d35', color: '#e1e5e9' }}
-          >
-            <LuDownload />
-          </IconButton>
+            📷 Media Content
+          </Box>
+        )}
+      </Box>
+
+      {/* Card Footer */}
+      <Box mt={4}>
+        {/* Metrics */}
+        <HStack gap="24px" color="#71767b" fontSize="sm" mb={3}>
+          <HStack gap={2} cursor="pointer" _hover={{ color: '#9ca3af' }}>
+            <Box w="16px" h="16px" display="flex" alignItems="center" justifyContent="center">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+              </svg>
+            </Box>
+            <Text>{bookmark.metrics.likes}</Text>
+          </HStack>
+          <HStack gap={2} cursor="pointer" _hover={{ color: '#9ca3af' }}>
+            <Box w="16px" h="16px" display="flex" alignItems="center" justifyContent="center">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path>
+              </svg>
+            </Box>
+            <Text>{bookmark.metrics.retweets}</Text>
+          </HStack>
+          <HStack gap={2} cursor="pointer" _hover={{ color: '#9ca3af' }}>
+            <Box w="16px" h="16px" display="flex" alignItems="center" justifyContent="center">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path>
+              </svg>
+            </Box>
+            <Text>{bookmark.metrics.replies}</Text>
+          </HStack>
         </HStack>
-        <HStack gap={2}>
-          <For each={bookmark.tags}>
-            {(tag) => (
-              <Badge
-                key={tag}
-                bg="#2a2d35"
-                color="#71767b"
-                fontSize="xs"
-                px={2}
-                py={1}
-                borderRadius="full"
-                _hover={{ bg: '#3a3d45', color: '#e1e5e9' }}
-                cursor="pointer"
-              >
-                #{tag}
-              </Badge>
-            )}
-          </For>
+
+        <Separator borderColor="#2a2d35" mb={3} />
+
+        {/* Actions and Tags */}
+        <HStack justify="space-between" alignItems="center">
+          <HStack gap={1}>
+            <IconButton
+              size="sm"
+              variant="ghost"
+              aria-label="Star bookmark"
+              color={bookmark.isStarred ? '#ffd700' : '#71767b'}
+              _hover={{ bg: '#2a2d35', color: bookmark.isStarred ? '#ffd700' : '#e1e5e9' }}
+            >
+              <LuStar fill={bookmark.isStarred ? 'currentColor' : 'none'} />
+            </IconButton>
+            <IconButton
+              size="sm"
+              variant="ghost"
+              aria-label="Share bookmark"
+              color="#71767b"
+              _hover={{ bg: '#2a2d35', color: '#e1e5e9' }}
+            >
+              <LuExternalLink />
+            </IconButton>
+            <IconButton
+              size="sm"
+              variant="ghost"
+              aria-label="Archive bookmark"
+              color="#71767b"
+              _hover={{ bg: '#2a2d35', color: '#e1e5e9' }}
+            >
+              <LuDownload />
+            </IconButton>
+          </HStack>
+          <HStack gap={2}>
+            <For each={bookmark.tags}>
+              {(tag) => (
+                <Badge
+                  key={tag}
+                  bg="#2a2d35"
+                  color="#71767b"
+                  fontSize="xs"
+                  px={2}
+                  py={1}
+                  borderRadius="full"
+                  _hover={{ bg: '#3a3d45', color: '#e1e5e9' }}
+                  cursor="pointer"
+                >
+                  #{tag}
+                </Badge>
+              )}
+            </For>
+          </HStack>
         </HStack>
-      </HStack>
+      </Box>
     </Card.Root>
   );
 
@@ -274,81 +289,179 @@ const XBookmarkManager = () => {
         {/* Main Content */}
         <Flex flex={1} direction="column">
           {/* Header */}
-          <Box bg="#0f1419" borderBottomWidth="1px" borderColor="gray.700" p={4}>
-            <HStack gap={4}>
-              <Group maxW="500px" flex={1}>
-                <Input
-                  placeholder="Search tweets, content, authors..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </Group>
+          <Box bg="#0f1419" borderBottomWidth="1px" borderColor="#2a2d35" px={6} py={4}>
+            <HStack gap={6} alignItems="center">
+              {/* Search Area */}
+              <Box position="relative" maxW="400px" flex={1}>
+                <HStack
+                  bg="#1a1d23"
+                  border="1px solid #2a2d35"
+                  borderRadius="20px"
+                  px={3}
+                  py={2}
+                  _focusWithin={{
+                    borderColor: '#1d4ed8',
+                    boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.1)'
+                  }}
+                  gap={2}
+                  h="36px"
+                >
+                  <Box w="16px" h="16px" color="#71767b">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </Box>
+                  <Input
+                    placeholder="Search bookmarks, content, authors..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    bg="transparent"
+                    border="none"
+                    outline="none"
+                    _focus={{ outline: 'none', boxShadow: 'none' }}
+                    color="#e1e5e9"
+                    fontSize="14px"
+                    fontWeight="400"
+                    _placeholder={{ color: '#71767b' }}
+                    flex={1}
+                  />
+                </HStack>
+              </Box>
 
               <Spacer />
 
-              <HStack gap={2}>
-                <Button variant="outline" color="gray.300" borderColor="gray.600" _hover={{ bg: 'gray.700' }}>
-                  <LuMenu /> Filters
+              {/* Action Buttons */}
+              <HStack gap={3}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  px={4}
+                  py={2}
+                  borderRadius="12px"
+                  bg="transparent"
+                  border="1px solid #2a2d35"
+                  color="#71767b"
+                  fontSize="14px"
+                  fontWeight="500"
+                  _hover={{
+                    bg: '#1a1d23',
+                    color: '#e1e5e9',
+                    borderColor: '#3a3d45'
+                  }}
+                  gap={2}
+                >
+                  <LuMenu size={14} />
+                  Filters
                 </Button>
-                <Button variant="outline" color="gray.300" borderColor="gray.600" _hover={{ bg: 'gray.700' }}>
-                  <LuPlus /> Import
+                <Button
+                  variant="outline"
+                  size="sm"
+                  px={4}
+                  py={2}
+                  borderRadius="12px"
+                  bg="transparent"
+                  border="1px solid #2a2d35"
+                  color="#71767b"
+                  fontSize="14px"
+                  fontWeight="500"
+                  _hover={{
+                    bg: '#1a1d23',
+                    color: '#e1e5e9',
+                    borderColor: '#3a3d45'
+                  }}
+                  gap={2}
+                >
+                  <LuPlus size={14} />
+                  Import
                 </Button>
-                <Button colorPalette="blue">
-                  <LuPlus /> Add Bookmark
+                <Button
+                  size="sm"
+                  px={4}
+                  py={2}
+                  borderRadius="12px"
+                  bg="#1d4ed8"
+                  color="white"
+                  fontSize="14px"
+                  fontWeight="600"
+                  _hover={{
+                    bg: '#1e40af'
+                  }}
+                  gap={2}
+                >
+                  <LuPlus size={14} />
+                  Add Bookmark
                 </Button>
               </HStack>
             </HStack>
           </Box>
 
           {/* Filter Bar */}
-          <Box bg="#0f1419" borderBottomWidth="1px" borderColor="gray.700" p={4}>
-            <HStack gap={4}>
-              <HStack gap={2}>
-                <Button
-                  variant={activeTab === 0 ? 'solid' : 'ghost'}
-                  colorPalette={activeTab === 0 ? 'blue' : undefined}
-                  color={activeTab === 0 ? 'white' : 'gray.300'}
-                  _hover={{ bg: activeTab === 0 ? 'blue.600' : 'gray.700' }}
-                  onClick={() => setActiveTab(0)}
-                >All</Button>
-                <Button
-                  variant={activeTab === 1 ? 'solid' : 'ghost'}
-                  colorPalette={activeTab === 1 ? 'blue' : undefined}
-                  color={activeTab === 1 ? 'white' : 'gray.300'}
-                  _hover={{ bg: activeTab === 1 ? 'blue.600' : 'gray.700' }}
-                  onClick={() => setActiveTab(1)}
-                >Today</Button>
-                <Button
-                  variant={activeTab === 2 ? 'solid' : 'ghost'}
-                  colorPalette={activeTab === 2 ? 'blue' : undefined}
-                  color={activeTab === 2 ? 'white' : 'gray.300'}
-                  _hover={{ bg: activeTab === 2 ? 'blue.600' : 'gray.700' }}
-                  onClick={() => setActiveTab(2)}
-                >This Week</Button>
-                <Button
-                  variant={activeTab === 3 ? 'solid' : 'ghost'}
-                  colorPalette={activeTab === 3 ? 'blue' : undefined}
-                  color={activeTab === 3 ? 'white' : 'gray.300'}
-                  _hover={{ bg: activeTab === 3 ? 'blue.600' : 'gray.700' }}
-                  onClick={() => setActiveTab(3)}
-                >Threads</Button>
-                <Button
-                  variant={activeTab === 4 ? 'solid' : 'ghost'}
-                  colorPalette={activeTab === 4 ? 'blue' : undefined}
-                  color={activeTab === 4 ? 'white' : 'gray.300'}
-                  _hover={{ bg: activeTab === 4 ? 'blue.600' : 'gray.700' }}
-                  onClick={() => setActiveTab(4)}
-                >Media</Button>
+          <Box bg="#0f1419" borderBottomWidth="1px" borderColor="gray.700" px={6} py={4}>
+            <HStack justify="space-between" alignItems="center">
+              {/* Filter Tabs */}
+              <HStack gap={3}>
+                {['All', 'Today', 'This Week', 'Threads', 'Media'].map((label, index) => (
+                  <Button
+                    key={label}
+                    variant="ghost"
+                    size="sm"
+                    px={4}
+                    py={2}
+                    borderRadius="20px"
+                    bg={activeTab === index ? '#1d4ed8' : 'transparent'}
+                    color={activeTab === index ? 'white' : '#71767b'}
+                    fontWeight={activeTab === index ? '600' : '400'}
+                    fontSize="14px"
+                    _hover={{
+                      bg: activeTab === index ? '#1e40af' : '#2a2d35',
+                      color: activeTab === index ? 'white' : '#e1e5e9'
+                    }}
+                    onClick={() => setActiveTab(index)}
+                  >
+                    {label}
+                  </Button>
+                ))}
               </HStack>
 
-              <Spacer />
-
-              <HStack gap={2}>
+              {/* Tags */}
+              <HStack gap={3}>
                 <For each={selectedTags}>
                   {(tag) => (
-                    <Badge key={tag} colorPalette="purple" cursor="pointer" onClick={() => removeTag(tag)} color="white">
-                      {tag} ×
-                    </Badge>
+                    <HStack
+                      key={tag}
+                      bg="#1a1d23"
+                      border="1px solid #2a2d35"
+                      color="#9ca3af"
+                      px={3}
+                      py={2}
+                      borderRadius="16px"
+                      fontSize="13px"
+                      fontWeight="500"
+                      cursor="pointer"
+                      _hover={{
+                        bg: '#252932',
+                        color: '#e1e5e9',
+                        borderColor: '#3a3d45'
+                      }}
+                      onClick={() => removeTag(tag)}
+                      gap={2}
+                      alignItems="center"
+                    >
+                      <Text>#{tag}</Text>
+                      <Box
+                        w="14px"
+                        h="14px"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        borderRadius="full"
+                        _hover={{ bg: '#4a4d55' }}
+                      >
+                        <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+                        </svg>
+                      </Box>
+                    </HStack>
                   )}
                 </For>
               </HStack>
