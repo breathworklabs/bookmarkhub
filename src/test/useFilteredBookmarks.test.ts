@@ -41,19 +41,6 @@ describe('useFilteredBookmarks', () => {
     expect(hookResult.current.map(b => b.id)).toEqual([1, 2, 3, 4])
   })
 
-  it('should filter to only archived bookmarks when activeSidebarItem is "Archives"', () => {
-    const { result } = renderHook(() => useBookmarkStore())
-    const { result: hookResult } = renderHook(() => useFilteredBookmarks())
-
-    act(() => {
-      result.current.setBookmarks(mockBookmarks)
-      result.current.setActiveSidebarItem('Archives')
-    })
-
-    expect(hookResult.current).toHaveLength(1)
-    expect(hookResult.current[0].id).toBe(3)
-    expect(hookResult.current[0].is_archived).toBe(true)
-  })
 
   it('should combine sidebar filtering with tag filtering', () => {
     const { result } = renderHook(() => useBookmarkStore())
@@ -128,11 +115,11 @@ describe('useFilteredBookmarks', () => {
     })
     expect(hookResult.current).toHaveLength(4)
 
-    // Switch to Archives
+    // Switch to Collections (without active collection)
     act(() => {
-      result.current.setActiveSidebarItem('Archives')
+      result.current.setActiveSidebarItem('Collections')
     })
-    expect(hookResult.current).toHaveLength(1)
+    expect(hookResult.current).toHaveLength(4) // Should show all bookmarks when no collection is active
 
     // Switch back to All Bookmarks
     act(() => {

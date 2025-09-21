@@ -25,9 +25,6 @@ export const useFilteredBookmarks = (): Bookmark[] => {
 
     // Filter by sidebar selection first
     switch (activeSidebarItem) {
-      case 'Archives':
-        filtered = filtered.filter(bookmark => bookmark.is_archived)
-        break
       case 'Collections':
         if (activeCollectionId) {
           const bookmarkIdsInCollection = collectionBookmarks[activeCollectionId] || []

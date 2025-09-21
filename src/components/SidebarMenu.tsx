@@ -19,21 +19,22 @@ const SidebarMenu = () => {
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const { showCreateCollection } = useModal()
   const createCollection = useCollectionsStore((state) => state.createCollection)
+  const setActiveCollection = useCollectionsStore((state) => state.setActiveCollection)
 
   // Calculate actual counts
   const totalBookmarks = bookmarks.length
-  const archivedBookmarks = bookmarks.filter(bookmark => bookmark.is_archived).length
 
   const sidebarItems: SidebarItem[] = [
     { icon: LuMenu, label: 'All Bookmarks', count: totalBookmarks.toLocaleString() },
     { icon: LuMenu, label: 'Collections', count: null },
     { icon: LuStar, label: 'AI Insights', badge: 'New' },
-    { icon: LuDownload, label: 'Archives', count: archivedBookmarks.toString() },
     { icon: LuExternalLink, label: 'Shared', count: null },
   ]
 
   const handleItemClick = (item: SidebarItem) => {
     setActiveSidebarItem(item.label)
+    // Clear active collection when clicking sidebar navigation items
+    setActiveCollection(null)
 
     if (item.label === 'AI Insights') {
       toggleAIPanel()

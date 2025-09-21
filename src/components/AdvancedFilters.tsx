@@ -2,6 +2,7 @@ import { Box, VStack, HStack, Text, Button, Input, For } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LuTag } from 'react-icons/lu'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { useCollectionsStore } from '../store/collectionsStore'
 
 const MotionBox = motion.create(Box)
 
@@ -18,6 +19,8 @@ const AdvancedFilters = () => {
   const setDateRangeFilter = useBookmarkStore((state) => state.setDateRangeFilter)
   const toggleQuickFilter = useBookmarkStore((state) => state.toggleQuickFilter)
   const clearAdvancedFilters = useBookmarkStore((state) => state.clearAdvancedFilters)
+  const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
+  const setActiveCollection = useCollectionsStore((state) => state.setActiveCollection)
 
   return (
     <AnimatePresence>
@@ -116,7 +119,12 @@ const AdvancedFilters = () => {
                   size="sm"
                   placeholder="Date range (today, week, month)..."
                   value={dateRangeFilter}
-                  onChange={(e) => setDateRangeFilter(e.target.value)}
+                  onChange={(e) => {
+                    setDateRangeFilter(e.target.value)
+                    // Reset sidebar to All Bookmarks and clear active collection when applying filters
+                    setActiveSidebarItem('All Bookmarks')
+                    setActiveCollection(null)
+                  }}
                   bg="#1a1d23"
                   borderColor="#2a2d35"
                   color="#e1e5e9"
@@ -140,7 +148,12 @@ const AdvancedFilters = () => {
                   size="sm"
                   placeholder="Search by author..."
                   value={authorFilter}
-                  onChange={(e) => setAuthorFilter(e.target.value)}
+                  onChange={(e) => {
+                    setAuthorFilter(e.target.value)
+                    // Reset sidebar to All Bookmarks and clear active collection when applying filters
+                    setActiveSidebarItem('All Bookmarks')
+                    setActiveCollection(null)
+                  }}
                   bg="#1a1d23"
                   borderColor="#2a2d35"
                   color="#e1e5e9"
@@ -164,7 +177,12 @@ const AdvancedFilters = () => {
                   size="sm"
                   placeholder="Filter by domain..."
                   value={domainFilter}
-                  onChange={(e) => setDomainFilter(e.target.value)}
+                  onChange={(e) => {
+                    setDomainFilter(e.target.value)
+                    // Reset sidebar to All Bookmarks and clear active collection when applying filters
+                    setActiveSidebarItem('All Bookmarks')
+                    setActiveCollection(null)
+                  }}
                   bg="#1a1d23"
                   borderColor="#2a2d35"
                   color="#e1e5e9"
@@ -188,7 +206,12 @@ const AdvancedFilters = () => {
                   size="sm"
                   placeholder="Filter by content type..."
                   value={contentTypeFilter}
-                  onChange={(e) => setContentTypeFilter(e.target.value)}
+                  onChange={(e) => {
+                    setContentTypeFilter(e.target.value)
+                    // Reset sidebar to All Bookmarks and clear active collection when applying filters
+                    setActiveSidebarItem('All Bookmarks')
+                    setActiveCollection(null)
+                  }}
                   bg="#1a1d23"
                   borderColor="#2a2d35"
                   color="#e1e5e9"
@@ -233,7 +256,12 @@ const AdvancedFilters = () => {
                         color: quickFilters.includes(filter.value) ? 'white' : '#e1e5e9',
                         borderColor: '#3a3d45'
                       }}
-                      onClick={() => toggleQuickFilter(filter.value)}
+                      onClick={() => {
+                        toggleQuickFilter(filter.value)
+                        // Reset sidebar to All Bookmarks and clear active collection when applying filters
+                        setActiveSidebarItem('All Bookmarks')
+                        setActiveCollection(null)
+                      }}
                     >
                       {filter.label}
                     </Button>
@@ -254,7 +282,12 @@ const AdvancedFilters = () => {
                 h="32px"
                 px={4}
                 _hover={{ borderColor: '#3a3d45', color: '#e1e5e9', bg: '#1a1d23' }}
-                onClick={clearAdvancedFilters}
+                onClick={() => {
+                  clearAdvancedFilters()
+                  // Reset sidebar to All Bookmarks and clear active collection when clearing filters
+                  setActiveSidebarItem('All Bookmarks')
+                  setActiveCollection(null)
+                }}
               >
                 Clear All Filters
               </Button>

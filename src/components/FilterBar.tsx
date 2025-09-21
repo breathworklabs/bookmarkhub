@@ -1,5 +1,6 @@
 import { Box, HStack, Text, Button, For } from '@chakra-ui/react'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { useCollectionsStore } from '../store/collectionsStore'
 import { useModal } from './modals/ModalProvider'
 
 const FilterBar = () => {
@@ -8,6 +9,8 @@ const FilterBar = () => {
   const selectedTags = useBookmarkStore((state) => state.selectedTags)
   const removeTag = useBookmarkStore((state) => state.removeTag)
   const addTag = useBookmarkStore((state) => state.addTag)
+  const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
+  const setActiveCollection = useCollectionsStore((state) => state.setActiveCollection)
   const filterTabs = ['All', 'Today', 'This Week', 'Threads', 'Media']
   const { showAddTag } = useModal()
 
@@ -15,7 +18,12 @@ const FilterBar = () => {
     showAddTag({
       placeholder: "Enter tag name...",
       existingTags: selectedTags,
-      onAdd: (tagName: string) => addTag(tagName)
+      onAdd: (tagName: string) => {
+        addTag(tagName)
+        // Reset sidebar to All Bookmarks and clear active collection when adding tags
+        setActiveSidebarItem('All Bookmarks')
+        setActiveCollection(null)
+      }
     })
   }
 
@@ -69,7 +77,12 @@ const FilterBar = () => {
                   color: '#e1e5e9',
                   borderColor: '#3a3d45'
                 }}
-                onClick={() => removeTag(tag)}
+                onClick={() => {
+                  removeTag(tag)
+                  // Reset sidebar to All Bookmarks and clear active collection when removing tags
+                  setActiveSidebarItem('All Bookmarks')
+                  setActiveCollection(null)
+                }}
                 gap={2}
                 alignItems="center"
               >

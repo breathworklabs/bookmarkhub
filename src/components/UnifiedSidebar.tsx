@@ -13,13 +13,15 @@ const UnifiedSidebar = () => {
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const { showCreateCollection } = useModal()
   const createCollection = useCollectionsStore((state) => state.createCollection)
+  const setActiveCollection = useCollectionsStore((state) => state.setActiveCollection)
 
   // Calculate actual counts
   const totalBookmarks = bookmarks.length
-  const archivedBookmarks = bookmarks.filter(bookmark => bookmark.is_archived).length
 
   const handleNavItemClick = (label: string) => {
     setActiveSidebarItem(label)
+    // Clear active collection when clicking sidebar navigation items
+    setActiveCollection(null)
 
     if (label === 'AI Insights') {
       toggleAIPanel()
@@ -151,36 +153,6 @@ const UnifiedSidebar = () => {
             </Badge>
           </HStack>
 
-          <HStack
-            p={3}
-            borderRadius="12px"
-            cursor="pointer"
-            bg={isActive('Archives') ? '#1d4ed8' : 'transparent'}
-            color={isActive('Archives') ? 'white' : '#71767b'}
-            fontSize="14px"
-            fontWeight={isActive('Archives') ? '600' : '500'}
-            _hover={{
-              bg: isActive('Archives') ? '#1e40af' : '#2a2d35',
-              color: isActive('Archives') ? 'white' : '#e1e5e9'
-            }}
-            transition="all 0.2s"
-            onClick={() => handleNavItemClick('Archives')}
-          >
-            <Box w="18px" h="18px">
-              <LuDownload size={18} />
-            </Box>
-            <Text flex={1}>Archives</Text>
-            <Badge
-              bg={isActive('Archives') ? 'rgba(255,255,255,0.2)' : '#2a2d35'}
-              color={isActive('Archives') ? 'white' : '#9ca3af'}
-              fontSize="11px"
-              px={2}
-              py={1}
-              borderRadius="6px"
-            >
-              {archivedBookmarks}
-            </Badge>
-          </HStack>
 
           <HStack
             p={3}

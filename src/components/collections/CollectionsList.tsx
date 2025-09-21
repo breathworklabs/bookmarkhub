@@ -16,6 +16,7 @@ const CollectionsList = () => {
   } = useCollectionsStore()
 
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
+  const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
   const { showCreateCollection } = useModal()
 
   const getCollectionIcon = (collection: any) => {
@@ -51,7 +52,7 @@ const CollectionsList = () => {
   }
 
   const isActive = (collectionId: string) => {
-    return activeCollectionId === collectionId
+    return activeSidebarItem === 'Collections' && activeCollectionId === collectionId
   }
 
   const handleCollectionClick = (collectionId: string) => {
