@@ -1,8 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { localStorageService, type StoredCollection, type CollectionInsert as LocalStorageCollectionInsert, type StoredBookmarkCollection } from '../lib/localStorage'
+import { localStorageService, type StoredCollection, type CollectionInsert } from '../lib/localStorage'
 import type {
-  CollectionInsert,
   CollectionsState
 } from '../types/collections'
 
@@ -52,9 +51,36 @@ export const useCollectionsStore = create<CollectionsStore>()(
 
       // Initialize collections
       initialize: async () => {
+        const state = get()
+
+        // Prevent multiple simultaneous calls
+        if (state.isLoading) {
+          return
+        }
+
         try {
           set({ isLoading: true, error: null }, false, 'collections:initialize:start')
-          await get().loadCollections()
+
+          // Load collections directly without calling loadCollections to avoid the isLoading guard
+          const collections = await localStorageService.getCollections()
+
+          // Build collection bookmarks map
+          const collectionBookmarks: Record<string, number[]> = {}
+          for (const collection of collections) {
+            try {
+              const bookmarks = await localStorageService.getBookmarksByCollection(collection.id)
+              collectionBookmarks[collection.id] = bookmarks.map(b => b.id)
+            } catch (error) {
+              console.warn(`Failed to load bookmarks for collection ${collection.id}:`, error)
+              collectionBookmarks[collection.id] = []
+            }
+          }
+
+          set({
+            collections,
+            collectionBookmarks,
+            error: null
+          }, false, 'collections:initialize:success')
         } catch (error) {
           console.error('Failed to initialize collections:', error)
           set({
@@ -94,7 +120,8 @@ export const useCollectionsStore = create<CollectionsStore>()(
           set({
             collections,
             collectionBookmarks,
-            isLoading: false
+            isLoading: false,
+            error: null
           }, false, 'collections:load:success')
         } catch (error) {
           console.error('Error loading collections:', error)
@@ -110,16 +137,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
         try {
           set({ isLoading: true, error: null }, false, 'collections:create:start')
 
-          // Convert to localStorage format
-          const localStorageCollection: LocalStorageCollectionInsert = {
-            ...collection,
-            isDefault: collection.isDefault || false,
-            isPrivate: collection.isPrivate || false,
-            isSmartCollection: collection.isSmartCollection || false,
-            userId: collection.userId || 'local-user'
-          }
-
-          const newCollection = await localStorageService.createCollection(localStorageCollection)
+          const newCollection = await localStorageService.createCollection(collection)
 
           set(
             (state) => ({

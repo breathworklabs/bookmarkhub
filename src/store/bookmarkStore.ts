@@ -116,7 +116,6 @@ export const useBookmarkStore = create<BookmarkState>()(
           const bookmarks = await localStorageService.getBookmarks()
 
           if (bookmarks.length > 0) {
-            console.log('📂 Loaded bookmarks from localStorage:', bookmarks.length)
             set({
               bookmarks,
               selectedTags: [], // Clear filters on startup
@@ -124,13 +123,11 @@ export const useBookmarkStore = create<BookmarkState>()(
               activeTab: 0 // Reset to "All" tab
             }, false, 'initialize:loadedFromStorage')
           } else {
-            console.log('📋 No stored bookmarks found, using mock data')
             set({ bookmarks: mockBookmarks }, false, 'initialize:useMockData')
           }
 
         } catch (error) {
           console.error('Failed to initialize app:', error)
-          console.log('📋 Falling back to mock data')
           set({
             error: error instanceof Error ? error.message : 'Failed to initialize',
             bookmarks: mockBookmarks // Fallback to mock data
@@ -333,7 +330,6 @@ export const useBookmarkStore = create<BookmarkState>()(
           document.body.removeChild(link)
           URL.revokeObjectURL(url)
 
-          console.log('📁 Bookmarks exported successfully')
         } catch (error) {
           console.error('Error exporting bookmarks:', error)
           set({ error: error instanceof Error ? error.message : 'Failed to export bookmarks' }, false, 'exportBookmarks:error')
@@ -357,7 +353,6 @@ export const useBookmarkStore = create<BookmarkState>()(
           await get().loadBookmarks()
           await get().loadSettings()
 
-          console.log('📁 Bookmarks imported successfully')
         } catch (error) {
           console.error('Error importing bookmarks:', error)
           set({ error: error instanceof Error ? error.message : 'Failed to import bookmarks' }, false, 'importBookmarks:error')
@@ -391,7 +386,6 @@ export const useBookmarkStore = create<BookmarkState>()(
             }
           }, false, 'clearAllData:success')
 
-          console.log('🗑️ All data cleared successfully')
         } catch (error) {
           console.error('Error clearing data:', error)
           set({ error: error instanceof Error ? error.message : 'Failed to clear data' }, false, 'clearAllData:error')

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react'
 import { Dialog, Button, HStack, Text, Box, Input, VStack, Textarea, Badge } from '@chakra-ui/react'
 import type { BookmarkInsert, Bookmark } from '../../types/bookmark'
-import type { CollectionInsert } from '../../types/collections'
+import type { CollectionInsert } from '../../lib/localStorage'
 import { sanitizeBookmark } from '../../lib/dataValidation'
 
 interface ModalContextType {

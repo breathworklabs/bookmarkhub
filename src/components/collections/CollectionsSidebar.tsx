@@ -1,6 +1,7 @@
 import { Box, VStack, HStack, Text, Button, IconButton, Badge, Separator, For } from '@chakra-ui/react'
 import { LuFolderPlus, LuFolder, LuStar, LuClock, LuArchive, LuEllipsis } from 'react-icons/lu'
 import { useCollectionsStore } from '../../store/collectionsStore'
+import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useEffect } from 'react'
 
 const CollectionsSidebar = () => {
@@ -8,14 +9,15 @@ const CollectionsSidebar = () => {
     collections,
     activeCollectionId,
     collectionBookmarks,
-    expandedCollections,
     isLoading,
     error,
     loadCollections,
     setActiveCollection,
-    toggleCollectionExpansion,
     setCreatingCollection
   } = useCollectionsStore()
+
+  const { bookmarks } = useBookmarkStore()
+
 
   useEffect(() => {
     loadCollections()
@@ -57,20 +59,28 @@ const CollectionsSidebar = () => {
     return activeCollectionId === collectionId
   }
 
-  const isExpanded = (collectionId: string) => {
-    return expandedCollections.includes(collectionId)
-  }
-
   const handleCollectionClick = (collectionId: string) => {
     setActiveCollection(isActive(collectionId) ? null : collectionId)
   }
 
-  const handleToggleExpansion = (collectionId: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    toggleCollectionExpansion(collectionId)
-  }
-
   const getBookmarkCount = (collectionId: string) => {
+    // Handle smart collections with dynamic counts
+    if (collectionId === 'starred') {
+      return bookmarks.filter(bookmark => bookmark.is_starred).length
+    }
+    if (collectionId === 'archived') {
+      return bookmarks.filter(bookmark => bookmark.is_archived).length
+    }
+    if (collectionId === 'recent') {
+      // Recent: bookmarks from last 7 days
+      const sevenDaysAgo = new Date()
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+      return bookmarks.filter(bookmark =>
+        new Date(bookmark.created_at) > sevenDaysAgo
+      ).length
+    }
+
+    // For regular collections, use the collection bookmarks mapping
     return collectionBookmarks[collectionId]?.length || 0
   }
 
@@ -144,7 +154,7 @@ const CollectionsSidebar = () => {
                   py={1}
                   borderRadius="full"
                 >
-                  {collections.reduce((total, collection) => total + getBookmarkCount(collection.id), 0)}
+                  {bookmarks.length}
                 </Badge>
               </HStack>
             </Box>

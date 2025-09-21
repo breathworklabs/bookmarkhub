@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { LocalStorageService } from '../lib/localStorage'
+import { LocalStorageService, type StoredBookmarkCollection } from '../lib/localStorage'
 import type { BookmarkInsert } from '../types/bookmark'
 
 // Mock localStorage
@@ -30,7 +30,8 @@ describe('LocalStorageService', () => {
       is_starred: false,
       is_read: false,
       is_archived: false,
-      tags: ['test', 'bookmark']
+      tags: ['test', 'bookmark'],
+      collections: ['uncategorized']
     }
 
   beforeEach(() => {
@@ -232,6 +233,147 @@ describe('LocalStorageService', () => {
       expect(result).toHaveLength(1)
       expect(result[0].title).toBe('Starred Bookmark')
     })
+
+    describe('Collection Operations', () => {
+      it('should create a new collection', async () => {
+        localStorageMock.getItem.mockReturnValue('[]')
+        localStorageMock.setItem.mockReturnValue(undefined)
+
+        const collectionData = {
+          name: 'Test Collection',
+          description: 'A test collection',
+          color: '#1d4ed8',
+          icon: 'folder',
+          isPrivate: false,
+          isDefault: false,
+          isSmartCollection: false,
+          userId: 'local-user'
+        }
+
+        const result = await service.createCollection(collectionData)
+
+        expect(result).toMatchObject({
+          ...collectionData,
+          id: expect.any(String),
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+          bookmarkCount: 0
+        })
+        expect(localStorageMock.setItem).toHaveBeenCalledWith(
+          'x-bookmark-manager-collections',
+          expect.any(String)
+        )
+      })
+
+      it('should load collections from localStorage', async () => {
+        const existingCollections = [
+          {
+            id: 'test-collection',
+            name: 'Test Collection',
+            description: 'A test collection',
+            isPrivate: false,
+            isDefault: false,
+            isSmartCollection: false,
+            createdAt: '2024-01-01T00:00:00Z',
+            updatedAt: '2024-01-01T00:00:00Z',
+            bookmarkCount: 0,
+            userId: 'local-user'
+          }
+        ]
+
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(existingCollections))
+
+        const result = await service.getCollections()
+
+        expect(result).toHaveLength(1)
+        expect(result[0]).toMatchObject(existingCollections[0])
+        expect(localStorageMock.getItem).toHaveBeenCalledWith('x-bookmark-manager-collections')
+      })
+
+      it('should initialize default collections when none exist', async () => {
+        localStorageMock.getItem.mockReturnValue(null)
+        localStorageMock.setItem.mockReturnValue(undefined)
+
+        const result = await service.getCollections()
+
+        expect(result).toHaveLength(4) // uncategorized, starred, recent, archived
+        expect(result.find(c => c.id === 'uncategorized')).toBeDefined()
+        expect(result.find(c => c.id === 'starred')).toBeDefined()
+        expect(result.find(c => c.id === 'recent')).toBeDefined()
+        expect(result.find(c => c.id === 'archived')).toBeDefined()
+      })
+
+      it('should update a collection', async () => {
+        const existingCollections = [
+          {
+            id: 'test-collection',
+            name: 'Test Collection',
+            description: 'A test collection',
+            isPrivate: false,
+            isDefault: false,
+            isSmartCollection: false,
+            createdAt: '2024-01-01T00:00:00Z',
+            updatedAt: '2024-01-01T00:00:00Z',
+            bookmarkCount: 0,
+            userId: 'local-user'
+          }
+        ]
+
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(existingCollections))
+        localStorageMock.setItem.mockReturnValue(undefined)
+
+        const updates = { name: 'Updated Collection', description: 'Updated description' }
+        const result = await service.updateCollection('test-collection', updates)
+
+        expect(result.name).toBe('Updated Collection')
+        expect(result.description).toBe('Updated description')
+        expect(result.updatedAt).not.toBe('2024-01-01T00:00:00Z')
+      })
+
+      it('should delete a collection', async () => {
+        const existingCollections = [
+          {
+            id: 'test-collection',
+            name: 'Test Collection',
+            description: 'A test collection',
+            isPrivate: false,
+            isDefault: false,
+            isSmartCollection: false,
+            createdAt: '2024-01-01T00:00:00Z',
+            updatedAt: '2024-01-01T00:00:00Z',
+            bookmarkCount: 0,
+            userId: 'local-user'
+          },
+          {
+            id: 'another-collection',
+            name: 'Another Collection',
+            description: 'Another test collection',
+            isPrivate: false,
+            isDefault: false,
+            isSmartCollection: false,
+            createdAt: '2024-01-02T00:00:00Z',
+            updatedAt: '2024-01-02T00:00:00Z',
+            bookmarkCount: 0,
+            userId: 'local-user'
+          }
+        ]
+
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(existingCollections))
+        localStorageMock.setItem.mockReturnValue(undefined)
+
+        await service.deleteCollection('test-collection')
+
+        // Verify setItem was called with the filtered collections
+        const setItemCall = localStorageMock.setItem.mock.calls.find(
+          call => call[0] === 'x-bookmark-manager-collections'
+        )
+        expect(setItemCall).toBeDefined()
+
+        const savedCollections = JSON.parse(setItemCall![1])
+        expect(savedCollections).toHaveLength(1)
+        expect(savedCollections[0].id).toBe('another-collection')
+      })
+    })
   })
 
   describe('Settings Operations', () => {
@@ -277,17 +419,34 @@ describe('LocalStorageService', () => {
   describe('Export/Import Operations', () => {
     it('should export all data', async () => {
       const bookmarks = [{ id: 1, ...sampleBookmark, created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' }]
+      const collections = [{
+        id: 'test-collection',
+        name: 'Test Collection',
+        description: 'Test collection',
+        isPrivate: false,
+        isDefault: false,
+        isSmartCollection: false,
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+        bookmarkCount: 0,
+        userId: 'local-user'
+      }]
+      const bookmarkCollections: StoredBookmarkCollection[] = []
       const settings = { theme: 'dark', viewMode: 'grid', defaultSort: 'newest', showMetrics: true, compactMode: false, autoBackup: true, exportFormat: 'json' }
       const metadata = { version: '1.0.0', totalBookmarks: 1, createdAt: '2024-01-01T00:00:00Z', lastUpdate: '2024-01-01T00:00:00Z' }
 
       localStorageMock.getItem
-        .mockReturnValueOnce(JSON.stringify(bookmarks))
-        .mockReturnValueOnce(JSON.stringify(settings))
-        .mockReturnValueOnce(JSON.stringify(metadata))
+        .mockReturnValueOnce(JSON.stringify(bookmarks)) // bookmarks
+        .mockReturnValueOnce(JSON.stringify(collections)) // collections
+        .mockReturnValueOnce(JSON.stringify(bookmarkCollections)) // bookmarkCollections
+        .mockReturnValueOnce(JSON.stringify(settings)) // settings
+        .mockReturnValueOnce(JSON.stringify(metadata)) // metadata
 
       const result = await service.exportData()
 
       expect(result.bookmarks).toHaveLength(1)
+      expect(result.collections).toHaveLength(1)
+      expect(result.bookmarkCollections).toEqual([])
       expect(result.settings).toMatchObject(settings)
       expect(result.metadata).toMatchObject(metadata)
       expect(result.exportedAt).toBeDefined()

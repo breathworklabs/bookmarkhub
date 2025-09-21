@@ -54,7 +54,7 @@ export interface StoredCollection {
   isDefault: boolean
   isSmartCollection: boolean
   smartCriteria?: {
-    type: 'starred' | 'recent' | 'tag' | 'domain' | 'date_range'
+    type: 'starred' | 'recent' | 'archived' | 'tag' | 'domain' | 'date_range'
     value?: string
     days?: number
   }
@@ -142,18 +142,38 @@ class LocalStorageService {
   async getBookmarks(): Promise<StoredBookmark[]> {
     const bookmarks = this.safeGet<StoredBookmark[]>(STORAGE_KEYS.BOOKMARKS, [])
 
-    // Migration: Ensure all bookmarks have collections array
+    // Migration: Ensure all bookmarks have collections array and normalize boolean values
     let needsUpdate = false
     const migratedBookmarks = bookmarks.map(bookmark => {
+      let updated = { ...bookmark }
+
+      // Ensure collections array exists
       if (!bookmark.collections) {
         needsUpdate = true
-        return {
-          ...bookmark,
+        updated = {
+          ...updated,
           collections: ['uncategorized'],
           primaryCollection: 'uncategorized'
         }
       }
-      return bookmark
+
+      // Normalize boolean values (in case they were imported as strings)
+      const needsBooleanNormalization =
+        typeof bookmark.is_starred === 'string' ||
+        typeof bookmark.is_read === 'string' ||
+        typeof bookmark.is_archived === 'string'
+
+      if (needsBooleanNormalization) {
+        needsUpdate = true
+        updated = {
+          ...updated,
+          is_starred: bookmark.is_starred === true || (bookmark.is_starred as any) === 'true',
+          is_read: bookmark.is_read === true || (bookmark.is_read as any) === 'true',
+          is_archived: bookmark.is_archived === true || (bookmark.is_archived as any) === 'true'
+        }
+      }
+
+      return updated
     })
 
     // Save migrated bookmarks if needed
@@ -331,7 +351,7 @@ class LocalStorageService {
         isPrivate: false,
         isDefault: true,
         isSmartCollection: true,
-        smartCriteria: { type: 'recent' },
+        smartCriteria: { type: 'archived' },
         createdAt: now,
         updatedAt: now,
         bookmarkCount: 0,
@@ -344,7 +364,7 @@ class LocalStorageService {
   }
 
   async createCollection(collection: CollectionInsert): Promise<StoredCollection> {
-    const collections = await this.getCollections()
+      const collections = await this.getCollections()
     const id = collection.id || `collection-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
     const now = new Date().toISOString()
 
@@ -359,9 +379,15 @@ class LocalStorageService {
 
     const updatedCollections = [newCollection, ...collections]
 
-    if (this.safeSet(STORAGE_KEYS.COLLECTIONS, updatedCollections)) {
+
+    const saved = this.safeSet(STORAGE_KEYS.COLLECTIONS, updatedCollections)
+
+
+    if (saved) {
       return newCollection
     }
+
+
 
     throw new Error('Failed to create collection in localStorage')
   }
@@ -521,6 +547,8 @@ class LocalStorageService {
           const cutoffDate = new Date()
           cutoffDate.setDate(cutoffDate.getDate() - daysAgo)
           return bookmarks.filter(b => new Date(b.created_at) >= cutoffDate)
+        case 'archived':
+          return bookmarks.filter(b => b.is_archived)
         case 'tag':
           if (collection.smartCriteria.value) {
             return bookmarks.filter(b => b.tags.includes(collection.smartCriteria!.value!))
