@@ -16,7 +16,6 @@ const UnifiedSidebar = () => {
 
   // Calculate actual counts
   const totalBookmarks = bookmarks.length
-  const starredBookmarks = bookmarks.filter(bookmark => bookmark.is_starred).length
   const archivedBookmarks = bookmarks.filter(bookmark => bookmark.is_archived).length
 
   const handleNavItemClick = (label: string) => {
@@ -82,37 +81,6 @@ const UnifiedSidebar = () => {
               borderRadius="6px"
             >
               {totalBookmarks.toLocaleString()}
-            </Badge>
-          </HStack>
-
-          <HStack
-            p={3}
-            borderRadius="12px"
-            cursor="pointer"
-            bg={isActive('Starred') ? '#1d4ed8' : 'transparent'}
-            color={isActive('Starred') ? 'white' : '#71767b'}
-            fontSize="14px"
-            fontWeight={isActive('Starred') ? '600' : '500'}
-            _hover={{
-              bg: isActive('Starred') ? '#1e40af' : '#2a2d35',
-              color: isActive('Starred') ? 'white' : '#e1e5e9'
-            }}
-            transition="all 0.2s"
-            onClick={() => handleNavItemClick('Starred')}
-          >
-            <Box w="18px" h="18px">
-              <LuStar size={18} />
-            </Box>
-            <Text flex={1}>Starred</Text>
-            <Badge
-              bg={isActive('Starred') ? 'rgba(255,255,255,0.2)' : '#2a2d35'}
-              color={isActive('Starred') ? 'white' : '#9ca3af'}
-              fontSize="11px"
-              px={2}
-              py={1}
-              borderRadius="6px"
-            >
-              {starredBookmarks}
             </Badge>
           </HStack>
         </VStack>

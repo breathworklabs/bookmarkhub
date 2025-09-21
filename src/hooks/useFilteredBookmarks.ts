@@ -21,9 +21,6 @@ export const useFilteredBookmarks = (): Bookmark[] => {
 
     // Filter by sidebar selection first
     switch (activeSidebarItem) {
-      case 'Starred':
-        filtered = filtered.filter(bookmark => bookmark.is_starred)
-        break
       case 'Archives':
         filtered = filtered.filter(bookmark => bookmark.is_archived)
         break

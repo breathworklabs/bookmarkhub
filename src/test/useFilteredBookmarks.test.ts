@@ -38,20 +38,6 @@ describe('useFilteredBookmarks', () => {
     expect(hookResult.current.map(b => b.id)).toEqual([1, 2, 3, 4])
   })
 
-  it('should filter to only starred bookmarks when activeSidebarItem is "Starred"', () => {
-    const { result } = renderHook(() => useBookmarkStore())
-    const { result: hookResult } = renderHook(() => useFilteredBookmarks())
-
-    act(() => {
-      result.current.setBookmarks(mockBookmarks)
-      result.current.setActiveSidebarItem('Starred')
-    })
-
-    expect(hookResult.current).toHaveLength(2)
-    expect(hookResult.current.map(b => b.id)).toEqual([2, 4])
-    expect(hookResult.current.every(b => b.is_starred)).toBe(true)
-  })
-
   it('should filter to only archived bookmarks when activeSidebarItem is "Archives"', () => {
     const { result } = renderHook(() => useBookmarkStore())
     const { result: hookResult } = renderHook(() => useFilteredBookmarks())
@@ -72,13 +58,12 @@ describe('useFilteredBookmarks', () => {
 
     act(() => {
       result.current.setBookmarks(mockBookmarks)
-      result.current.setActiveSidebarItem('Starred')
+      result.current.setActiveSidebarItem('All Bookmarks')
       result.current.setSelectedTags(['tag2'])
     })
 
-    expect(hookResult.current).toHaveLength(2) // Both bookmark 2 and 4 are starred and have tag2
+    expect(hookResult.current).toHaveLength(2) // Both bookmark 2 and 4 have tag2
     expect(hookResult.current.map(b => b.id).sort()).toEqual([2, 4])
-    expect(hookResult.current.every(b => b.is_starred)).toBe(true)
     expect(hookResult.current.every(b => b.tags.includes('tag2'))).toBe(true)
   })
 
@@ -88,12 +73,12 @@ describe('useFilteredBookmarks', () => {
 
     act(() => {
       result.current.setBookmarks(mockBookmarks)
-      result.current.setActiveSidebarItem('Starred')
+      result.current.setActiveSidebarItem('Archives')
       result.current.setActiveTab(1) // Today tab - should filter by today's date
     })
 
     // Since all mock bookmarks are from 2024, and we're testing in a different time,
-    // the date filter should result in no bookmarks when combined with starred filter
+    // the date filter should result in no bookmarks when combined with archives filter
     expect(hookResult.current).toHaveLength(0)
   })
 
@@ -122,12 +107,6 @@ describe('useFilteredBookmarks', () => {
       result.current.setActiveSidebarItem('All Bookmarks')
     })
     expect(hookResult.current).toHaveLength(4)
-
-    // Switch to Starred
-    act(() => {
-      result.current.setActiveSidebarItem('Starred')
-    })
-    expect(hookResult.current).toHaveLength(2)
 
     // Switch to Archives
     act(() => {
