@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react'
+import { useMemo, useEffect, useRef } from 'react'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { type Bookmark } from '../lib/database'
 
@@ -7,17 +7,22 @@ export const useFilteredBookmarks = (): Bookmark[] => {
   const selectedTags = useBookmarkStore((state) => state.selectedTags)
   const searchQuery = useBookmarkStore((state) => state.searchQuery)
   const activeTab = useBookmarkStore((state) => state.activeTab)
-  const searchBookmarks = useBookmarkStore((state) => state.searchBookmarks)
-  const loadBookmarks = useBookmarkStore((state) => state.loadBookmarks)
 
-  // Handle search when searchQuery changes
+  // Store reference to searchBookmarks function
+  const searchBookmarksRef = useRef(useBookmarkStore.getState().searchBookmarks)
+
+  // Update ref when store changes
+  useEffect(() => {
+    searchBookmarksRef.current = useBookmarkStore.getState().searchBookmarks
+  })
+
+  // Handle search when searchQuery changes - ONLY trigger search, never loadBookmarks
   useEffect(() => {
     if (searchQuery.trim()) {
-      searchBookmarks(searchQuery)
-    } else {
-      loadBookmarks()
+      searchBookmarksRef.current(searchQuery)
     }
-  }, [searchQuery, searchBookmarks, loadBookmarks])
+    // NOTE: Don't call loadBookmarks here! It should only be called during initialization
+  }, [searchQuery])
 
   return useMemo(() => {
     let filtered = bookmarks

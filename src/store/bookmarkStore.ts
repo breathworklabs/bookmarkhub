@@ -51,8 +51,8 @@ export const useBookmarkStore = create<BookmarkState>()(
   devtools(
     (set, get) => ({
       // Initial state
-      bookmarks: mockBookmarks,
-      selectedTags: ['tech', 'AI'],
+      bookmarks: [],
+      selectedTags: [],
       searchQuery: '',
       activeTab: 0,
       viewMode: 'grid',
@@ -86,8 +86,15 @@ export const useBookmarkStore = create<BookmarkState>()(
           }
 
           if (user) {
-            console.info('👤 User authenticated, loading bookmarks...')
-            set({ currentUserId: user.id }, false, 'initialize:setUser')
+            // Set user ID, clear filters, and ensure isLoading is false, then load bookmarks
+            set({
+              currentUserId: user.id,
+              bookmarks: [],
+              selectedTags: [], // Clear tag filters on login
+              searchQuery: '', // Clear search on login
+              activeTab: 0, // Reset to "All" tab
+              isLoading: false
+            }, false, 'initialize:setUser')
             await get().loadBookmarks()
           } else {
             // Use mock data if no user is logged in
@@ -109,18 +116,40 @@ export const useBookmarkStore = create<BookmarkState>()(
 
       // Async Actions
       loadBookmarks: async () => {
-        const userId = get().currentUserId
-        if (!userId) return
+        const state = get()
+        const userId = state.currentUserId
+
+        if (!userId) {
+          return
+        }
+
+        // Prevent multiple simultaneous calls
+        if (state.isLoading) {
+          return
+        }
 
         try {
           set({ isLoading: true, error: null }, false, 'loadBookmarks:start')
-          const bookmarks = await db.getBookmarks(userId)
-          set({ bookmarks }, false, 'loadBookmarks:success')
+
+          // Use direct Supabase call instead of database service
+          if (!supabase) {
+            throw new Error('Supabase not configured')
+          }
+
+          const { data: bookmarks, error } = await supabase
+            .from('bookmarks')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+
+          if (error) {
+            throw error
+          }
+
+          set({ bookmarks, isLoading: false }, false, 'loadBookmarks:success')
         } catch (error) {
           console.error('Error loading bookmarks:', error)
-          set({ error: error instanceof Error ? error.message : 'Failed to load bookmarks' }, false, 'loadBookmarks:error')
-        } finally {
-          set({ isLoading: false }, false, 'loadBookmarks:complete')
+          set({ error: error instanceof Error ? error.message : 'Failed to load bookmarks', isLoading: false }, false, 'loadBookmarks:error')
         }
       },
 

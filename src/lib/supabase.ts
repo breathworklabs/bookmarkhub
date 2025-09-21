@@ -18,33 +18,25 @@ if (!hasValidCredentials) {
   console.info('✅ Supabase connected successfully')
 }
 
-// Create client only once
+// Create client only once using lazy initialization
 let _supabase: ReturnType<typeof createClient<Database>> | null = null
-let _supabaseAdmin: ReturnType<typeof createClient<Database>> | null = null
 
-export const supabase = hasValidCredentials
-  ? (_supabase ??= createClient<Database>(supabaseUrl, supabaseAnonKey, {
+const createSupabaseClient = () => {
+  if (!_supabase && hasValidCredentials) {
+    _supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true
+        detectSessionInUrl: true,
+        storageKey: 'x-bookmark-manager-auth', // Unique storage key
+        flowType: 'pkce'
       }
-    }))
-  : null
+    })
+  }
+  return _supabase
+}
 
-// Admin client for server-side operations (if needed)
-const supabaseServiceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY
+export const supabase = hasValidCredentials ? createSupabaseClient() : null
 
-const hasValidAdminCredentials =
-  hasValidCredentials &&
-  supabaseServiceKey &&
-  supabaseServiceKey !== 'your_service_role_key_here'
-
-export const supabaseAdmin = hasValidAdminCredentials
-  ? (_supabaseAdmin ??= createClient<Database>(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    }))
-  : null
+// Admin client for server-side operations (if needed) - removed for now to prevent multiple instances
+// Only use the main client for this application

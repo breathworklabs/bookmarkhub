@@ -27,7 +27,7 @@ async function setupDatabase() {
       }
     })
 
-    if (userError && !userError.message.includes('already registered')) {
+    if (userError && userError.code !== 'email_exists') {
       console.error('❌ User creation error:', userError)
       return
     }

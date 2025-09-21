@@ -8,6 +8,7 @@ import {
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { useBookmarkStore } from '../../store/bookmarkStore'
 
 interface SignInModalProps {
   open: boolean
@@ -19,6 +20,9 @@ export const SignInModal = ({ open, onOpenChange }: SignInModalProps) => {
   const [password, setPassword] = useState('testpass123')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Get store actions
+  const initialize = useBookmarkStore((state) => state.initialize)
 
   const onClose = () => {
     onOpenChange(false)
@@ -35,15 +39,18 @@ export const SignInModal = ({ open, onOpenChange }: SignInModalProps) => {
     setError(null)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       })
 
       if (error) {
         setError(error.message)
-      } else {
+      } else if (data.user) {
         console.log('✅ Signed in successfully!')
+        // Let the auth state be detected automatically by checking current session
+        // Force a refresh by calling initialize to re-check auth state
+        await initialize()
         onClose()
       }
     } catch (err) {
@@ -60,6 +67,8 @@ export const SignInModal = ({ open, onOpenChange }: SignInModalProps) => {
     try {
       await supabase.auth.signOut()
       console.log('ℹ️ Signed out successfully!')
+      // Force a refresh by calling initialize to re-check auth state
+      await initialize()
       onClose()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')

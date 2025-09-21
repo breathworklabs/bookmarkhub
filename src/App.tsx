@@ -1,6 +1,7 @@
 import { ChakraProvider, defaultSystem, Box, Spinner, Text, VStack } from '@chakra-ui/react'
 import XBookmarkManager from './components/XBookmarkManager'
 import { useInitializeApp } from './hooks/useInitializeApp'
+// import { AuthDebug } from './components/debug/AuthDebug'
 
 function App() {
   return (
@@ -56,7 +57,12 @@ function AppContent() {
     )
   }
 
-  return <XBookmarkManager />
+  return (
+    <>
+      <XBookmarkManager />
+      {/* <AuthDebug /> */}
+    </>
+  )
 }
 
 export default App
