@@ -150,15 +150,12 @@ describe('Archived Count Logic Bug Test', () => {
 
     // Manual count for verification
     const manualArchivedCount = bookmarks.filter(b => b.is_archived === true).length
-    console.log('📊 Manual archived count:', manualArchivedCount)
-    console.log('📄 Archived bookmarks:', bookmarks.filter(b => b.is_archived === true).map(b => b.title))
 
     // Should have exactly 1 archived bookmark
     expect(manualArchivedCount).toBe(1)
 
     // Test the actual function
     const archivedCount = getBookmarkCount('archived', bookmarks)
-    console.log('🗄️ Function returned archived count:', archivedCount)
 
     // This is the critical test - should be 1, not 6
     expect(archivedCount).toBe(1)
@@ -170,13 +167,11 @@ describe('Archived Count Logic Bug Test', () => {
 
     // Manual count for verification
     const manualStarredCount = bookmarks.filter(b => b.is_starred === true).length
-    console.log('⭐ Manual starred count:', manualStarredCount)
 
     expect(manualStarredCount).toBe(3) // React 19, Next.js, Zustand vs Redux
 
     // Test the actual function
     const starredCount = getBookmarkCount('starred', bookmarks)
-    console.log('⭐ Function returned starred count:', starredCount)
 
     expect(starredCount).toBe(3)
   })
@@ -186,7 +181,6 @@ describe('Archived Count Logic Bug Test', () => {
 
     // All test bookmarks are from 2025-09-21, which should be recent
     const recentCount = getBookmarkCount('recent', bookmarks)
-    console.log('🕒 Recent count:', recentCount)
 
     // All 6 bookmarks should be recent (created today in test data)
     expect(recentCount).toBe(6)
@@ -216,9 +210,9 @@ describe('Archived Count Logic Bug Test', () => {
     const bookmarks = createRealImportData()
 
     // Debug each bookmark's archived status
-    console.log('\n🔍 Debug each bookmark:')
-    bookmarks.forEach((bookmark, index) => {
-      console.log(`${index + 1}. "${bookmark.title}" - is_archived: ${bookmark.is_archived} (${typeof bookmark.is_archived})`)
+    bookmarks.forEach((bookmark) => {
+      // Verify bookmark archived status types
+      expect(typeof bookmark.is_archived).toBe('boolean')
     })
 
     // Test different filter approaches to identify the bug
@@ -229,10 +223,7 @@ describe('Archived Count Logic Bug Test', () => {
       string: bookmarks.filter(b => (b.is_archived as any) === 'true').length
     }
 
-    console.log('\n📊 Filter comparison:')
-    Object.entries(filterResults).forEach(([method, count]) => {
-      console.log(`   ${method}: ${count}`)
-    })
+    // Verify all filter approaches work correctly
 
     // All should return 1 for correct data
     expect(filterResults.strict).toBe(1)
@@ -242,9 +233,7 @@ describe('Archived Count Logic Bug Test', () => {
 
     // If any return 6, that indicates the bug
     const buggyResults = Object.values(filterResults).filter(count => count === 6)
-    if (buggyResults.length > 0) {
-      console.error('🐛 BUG DETECTED: Filter returning all bookmarks instead of just archived ones!')
-    }
+    // Ensure no filter approach returns incorrect count
     expect(buggyResults).toHaveLength(0)
   })
 
@@ -261,23 +250,16 @@ describe('Archived Count Logic Bug Test', () => {
       }
     })
 
-    console.log('\n🐛 Testing with potentially buggy data:')
-    buggyBookmarks.forEach((bookmark, index) => {
-      console.log(`${index + 1}. "${bookmark.title}" - is_archived: ${bookmark.is_archived} (${typeof bookmark.is_archived})`)
-    })
+    // Testing with potentially buggy data (mixed types)
 
     // Test the exact filter logic from CollectionsSidebar
     const componentFilterResult = buggyBookmarks.filter(bookmark => bookmark.is_archived).length
-    console.log('🔍 Component filter result (truthy):', componentFilterResult)
-
     const strictFilterResult = buggyBookmarks.filter(bookmark => bookmark.is_archived === true).length
-    console.log('🔍 Strict filter result (=== true):', strictFilterResult)
 
     // This should reveal if string 'true' values are being counted as archived
     if (componentFilterResult > strictFilterResult) {
-      console.error('🐛 BUG FOUND: Truthy filter counting more items than strict boolean filter!')
-      console.error(`   Truthy filter: ${componentFilterResult}`)
-      console.error(`   Strict filter: ${strictFilterResult}`)
+      // Different results indicate potential type handling issue
+      expect(componentFilterResult).toBe(strictFilterResult)
     }
 
     // In proper data, both should be equal

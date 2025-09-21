@@ -1,5 +1,5 @@
-import { Box, VStack, HStack, Text, Button, IconButton, Badge, Separator, For } from '@chakra-ui/react'
-import { LuFolderPlus, LuFolder, LuStar, LuClock, LuArchive, LuEllipsis } from 'react-icons/lu'
+import { Box, VStack, HStack, Text, Button, IconButton, Badge, Separator, For, Flex } from '@chakra-ui/react'
+import { LuFolderPlus, LuFolder, LuStar, LuClock, LuArchive, LuEllipsis, LuFolderOpen } from 'react-icons/lu'
 import { useCollectionsStore } from '../../store/collectionsStore'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useEffect } from 'react'
@@ -275,26 +275,45 @@ const CollectionsSidebar = () => {
 
             {/* Empty State for User Collections */}
             {userCollections.length === 0 && (
-              <Box
-                p={4}
+              <Flex
+                direction="column"
+                align="center"
+                justify="center"
+                p={6}
                 textAlign="center"
                 color="#71767b"
-                fontSize="sm"
-                border="1px dashed #2a2d35"
                 borderRadius="md"
-                mt={2}
+                mt={3}
+                gap={3}
               >
-                <Text mb={2}>No custom collections yet</Text>
+                <Box color="#3b82f6" fontSize="2xl">
+                  <LuFolderOpen />
+                </Box>
+                <VStack gap={1}>
+                  <Text fontSize="sm" fontWeight="500" color="#e1e5e9">
+                    No custom collections
+                  </Text>
+                  <Text fontSize="xs" color="#71767b" lineHeight="1.4">
+                    Organize your bookmarks by creating custom collections
+                  </Text>
+                </VStack>
                 <Button
                   size="sm"
-                  variant="ghost"
-                  color="#1d4ed8"
-                  _hover={{ bg: '#2a2d35' }}
+                  bg="#1d4ed8"
+                  color="white"
+                  _hover={{ bg: '#1e40af' }}
                   onClick={() => setCreatingCollection(true)}
+                  fontSize="xs"
+                  px={3}
+                  py={2}
+                  h="auto"
                 >
-                  Create your first collection
+                  <HStack gap={1}>
+                    <LuFolderPlus size={12} />
+                    <Text>Create Collection</Text>
+                  </HStack>
                 </Button>
-              </Box>
+              </Flex>
             )}
           </VStack>
         </Box>

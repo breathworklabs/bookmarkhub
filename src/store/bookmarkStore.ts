@@ -11,6 +11,7 @@ interface BookmarkState {
   searchQuery: string
   activeTab: number
   viewMode: 'grid' | 'list'
+  selectedBookmarks: number[]
   isLoading: boolean
   isAIPanelOpen: boolean
   isFiltersPanelOpen: boolean
@@ -43,6 +44,11 @@ interface BookmarkState {
   setSearchQuery: (query: string) => void
   setActiveTab: (tab: number) => void
   setViewMode: (mode: 'grid' | 'list') => void
+  setSelectedBookmarks: (bookmarks: number[]) => void
+  selectBookmark: (id: number) => void
+  deselectBookmark: (id: number) => void
+  toggleBookmarkSelection: (id: number) => void
+  clearBookmarkSelection: () => void
   setIsLoading: (loading: boolean) => void
   setAIPanelOpen: (isOpen: boolean) => void
   toggleAIPanel: () => void
@@ -81,6 +87,7 @@ export const useBookmarkStore = create<BookmarkState>()(
       searchQuery: '',
       activeTab: 0,
       viewMode: 'grid',
+      selectedBookmarks: [],
       isLoading: false,
       isAIPanelOpen: false,
       isFiltersPanelOpen: false,
@@ -118,7 +125,8 @@ export const useBookmarkStore = create<BookmarkState>()(
             bookmarks,
             selectedTags: [], // Clear filters on startup
             searchQuery: '', // Clear search on startup
-            activeTab: 0 // Reset to "All" tab
+            activeTab: 0, // Reset to "All" tab
+            selectedBookmarks: [] // Clear selection on startup
           }, false, 'initialize:loadedFromStorage')
 
         } catch (error) {
@@ -369,6 +377,7 @@ export const useBookmarkStore = create<BookmarkState>()(
             searchQuery: '',
             activeTab: 0,
             viewMode: 'grid',
+            selectedBookmarks: [],
             activeSidebarItem: 'All Bookmarks',
             settings: {
               theme: 'dark',
@@ -406,6 +415,27 @@ export const useBookmarkStore = create<BookmarkState>()(
       setSearchQuery: (query) => set({ searchQuery: query }, false, 'setSearchQuery'),
       setActiveTab: (tab) => set({ activeTab: tab }, false, 'setActiveTab'),
       setViewMode: (mode) => set({ viewMode: mode }, false, 'setViewMode'),
+      setSelectedBookmarks: (bookmarks) => set({ selectedBookmarks: bookmarks }, false, 'setSelectedBookmarks'),
+      selectBookmark: (id) => set(
+        (state) => ({ selectedBookmarks: [...new Set([...state.selectedBookmarks, id])] }),
+        false,
+        'selectBookmark'
+      ),
+      deselectBookmark: (id) => set(
+        (state) => ({ selectedBookmarks: state.selectedBookmarks.filter(bid => bid !== id) }),
+        false,
+        'deselectBookmark'
+      ),
+      toggleBookmarkSelection: (id) => set(
+        (state) => ({
+          selectedBookmarks: state.selectedBookmarks.includes(id)
+            ? state.selectedBookmarks.filter(bid => bid !== id)
+            : [...state.selectedBookmarks, id]
+        }),
+        false,
+        'toggleBookmarkSelection'
+      ),
+      clearBookmarkSelection: () => set({ selectedBookmarks: [] }, false, 'clearBookmarkSelection'),
       setIsLoading: (loading) => set({ isLoading: loading }, false, 'setIsLoading'),
       setAIPanelOpen: (isOpen) => set({ isAIPanelOpen: isOpen }, false, 'setAIPanelOpen'),
       toggleAIPanel: () => set(

@@ -17,6 +17,7 @@ const CollectionsList = () => {
 
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
   const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
+  const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const { showCreateCollection } = useModal()
 
   const getCollectionIcon = (collection: any) => {
@@ -68,6 +69,23 @@ const CollectionsList = () => {
   }
 
   const getBookmarkCount = (collectionId: string) => {
+    // Handle smart collections with dynamic counts
+    if (collectionId === 'starred') {
+      return bookmarks.filter(bookmark => bookmark.is_starred).length
+    }
+    if (collectionId === 'archived') {
+      return bookmarks.filter(bookmark => bookmark.is_archived).length
+    }
+    if (collectionId === 'recent') {
+      // Recent: bookmarks from last 7 days
+      const sevenDaysAgo = new Date()
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+      return bookmarks.filter(bookmark =>
+        new Date(bookmark.created_at) > sevenDaysAgo
+      ).length
+    }
+
+    // For regular collections, use the collection bookmarks mapping
     return collectionBookmarks[collectionId]?.length || 0
   }
 

@@ -407,7 +407,7 @@ describe('LocalStorageService', () => {
       localStorageMock.getItem.mockReturnValue(JSON.stringify(existingSettings))
       localStorageMock.setItem.mockReturnValue(undefined)
 
-      const updates = { theme: 'light' as const, viewMode: 'list' as const }
+      const updates = { theme: 'light' as const, viewMode: 'table' as const }
       const result = await service.updateSettings(updates)
 
       expect(result.theme).toBe('light')
@@ -454,6 +454,7 @@ describe('LocalStorageService', () => {
 
     it('should import data', async () => {
       localStorageMock.setItem.mockReturnValue(undefined)
+      localStorageMock.getItem.mockReturnValue(null) // No existing metadata
 
       const importData = {
         bookmarks: [{ id: 1, ...sampleBookmark, created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' }],
@@ -462,6 +463,7 @@ describe('LocalStorageService', () => {
 
       await service.importData(importData)
 
+      // Verify bookmarks and settings are saved
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'x-bookmark-manager-bookmarks',
         JSON.stringify(importData.bookmarks)
@@ -469,6 +471,18 @@ describe('LocalStorageService', () => {
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'x-bookmark-manager-settings',
         JSON.stringify(importData.settings)
+      )
+
+      // Verify default collections are initialized (since no collections in import data)
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'x-bookmark-manager-collections',
+        expect.any(String)
+      )
+
+      // Verify metadata is updated
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'x-bookmark-manager-metadata',
+        expect.any(String)
       )
     })
   })
