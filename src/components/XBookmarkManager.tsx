@@ -2,7 +2,7 @@ import { Box, Flex, VStack, SimpleGrid, For } from '@chakra-ui/react';
 import { theme } from '../styles/theme';
 import { useFilteredBookmarks } from '../hooks/useFilteredBookmarks';
 import AIInsights from './AIInsights';
-import SidebarMenu from './SidebarMenu';
+import UnifiedSidebar from './UnifiedSidebar';
 import SearchHeader from './SearchHeader';
 import AdvancedFilters from './AdvancedFilters';
 import FilterBar from './FilterBar';
@@ -15,7 +15,7 @@ const XBookmarkManager = () => {
     <Box {...theme.styles.container.background}>
       <Flex h="100vh">
         {/* Sidebar */}
-        <SidebarMenu />
+        <UnifiedSidebar />
 
         {/* Main Content */}
         <Flex flex={1} direction="column">
@@ -49,6 +49,7 @@ const XBookmarkManager = () => {
         {/* AI Insights Panel */}
         <AIInsights />
       </Flex>
+
     </Box>
   );
 };

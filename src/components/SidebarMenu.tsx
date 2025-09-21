@@ -2,6 +2,8 @@ import { Box, VStack, HStack, Text, Badge, For } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuDownload, LuExternalLink } from 'react-icons/lu'
 import { theme } from '../styles/theme'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { useModal } from './modals/ModalProvider'
+import { useCollectionsStore } from '../store/collectionsStore'
 
 interface SidebarItem {
   icon: React.ComponentType<{ size: number }>
@@ -15,6 +17,8 @@ const SidebarMenu = () => {
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
   const toggleAIPanel = useBookmarkStore((state) => state.toggleAIPanel)
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
+  const { showCreateCollection } = useModal()
+  const createCollection = useCollectionsStore((state) => state.createCollection)
 
   // Calculate actual counts
   const totalBookmarks = bookmarks.length
@@ -35,6 +39,16 @@ const SidebarMenu = () => {
 
     if (item.label === 'AI Insights') {
       toggleAIPanel()
+    } else if (item.label === 'Collections') {
+      showCreateCollection({
+        onCreate: async (collectionData) => {
+          try {
+            await createCollection(collectionData)
+          } catch (error) {
+            console.error('Failed to create collection:', error)
+          }
+        }
+      })
     }
   }
 

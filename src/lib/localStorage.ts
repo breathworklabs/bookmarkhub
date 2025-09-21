@@ -6,6 +6,8 @@
 // Storage keys
 const STORAGE_KEYS = {
   BOOKMARKS: 'x-bookmark-manager-bookmarks',
+  COLLECTIONS: 'x-bookmark-manager-collections',
+  BOOKMARK_COLLECTIONS: 'x-bookmark-manager-bookmark-collections',
   SETTINGS: 'x-bookmark-manager-settings',
   METADATA: 'x-bookmark-manager-metadata'
 } as const
@@ -29,6 +31,8 @@ export interface StoredBookmark {
   is_read: boolean
   is_archived: boolean
   tags: string[]
+  collections: string[]  // Array of collection IDs
+  primaryCollection?: string  // Main collection
   metadata?: any
   created_at: string
   updated_at: string
@@ -36,6 +40,39 @@ export interface StoredBookmark {
 
 export interface BookmarkInsert extends Omit<StoredBookmark, 'id' | 'created_at' | 'updated_at'> {
   id?: number
+}
+
+// Collection storage types
+export interface StoredCollection {
+  id: string
+  name: string
+  description?: string
+  parentId?: string | null
+  color?: string
+  icon?: string
+  isPrivate: boolean
+  isDefault: boolean
+  isSmartCollection: boolean
+  smartCriteria?: {
+    type: 'starred' | 'recent' | 'tag' | 'domain' | 'date_range'
+    value?: string
+    days?: number
+  }
+  createdAt: string
+  updatedAt: string
+  bookmarkCount: number
+  userId: string
+}
+
+export interface CollectionInsert extends Omit<StoredCollection, 'id' | 'createdAt' | 'updatedAt' | 'bookmarkCount'> {
+  id?: string
+}
+
+export interface StoredBookmarkCollection {
+  bookmarkId: number
+  collectionId: string
+  addedAt: string
+  order?: number
 }
 
 export interface AppSettings {
@@ -104,7 +141,27 @@ class LocalStorageService {
   // Bookmark operations
   async getBookmarks(): Promise<StoredBookmark[]> {
     const bookmarks = this.safeGet<StoredBookmark[]>(STORAGE_KEYS.BOOKMARKS, [])
-    return bookmarks.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+
+    // Migration: Ensure all bookmarks have collections array
+    let needsUpdate = false
+    const migratedBookmarks = bookmarks.map(bookmark => {
+      if (!bookmark.collections) {
+        needsUpdate = true
+        return {
+          ...bookmark,
+          collections: ['uncategorized'],
+          primaryCollection: 'uncategorized'
+        }
+      }
+      return bookmark
+    })
+
+    // Save migrated bookmarks if needed
+    if (needsUpdate) {
+      this.safeSet(STORAGE_KEYS.BOOKMARKS, migratedBookmarks)
+    }
+
+    return migratedBookmarks.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
   }
 
   async createBookmark(bookmark: BookmarkInsert): Promise<StoredBookmark> {
@@ -114,6 +171,8 @@ class LocalStorageService {
     const newBookmark: StoredBookmark = {
       ...bookmark,
       id: bookmark.id || newId,
+      collections: bookmark.collections || ['uncategorized'],
+      primaryCollection: bookmark.primaryCollection || 'uncategorized',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }
@@ -210,6 +269,275 @@ class LocalStorageService {
     return bookmarks.filter(bookmark => bookmark.is_starred)
   }
 
+  // Collection operations
+  async getCollections(): Promise<StoredCollection[]> {
+    const collections = this.safeGet<StoredCollection[]>(STORAGE_KEYS.COLLECTIONS, [])
+
+    // Initialize default collections if empty
+    if (collections.length === 0) {
+      return this.initializeDefaultCollections()
+    }
+
+    return collections.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+  }
+
+  private async initializeDefaultCollections(): Promise<StoredCollection[]> {
+    const userId = 'local-user'
+    const now = new Date().toISOString()
+
+    const defaultCollections: StoredCollection[] = [
+      {
+        id: 'uncategorized',
+        name: 'Uncategorized',
+        description: 'Bookmarks that haven\'t been organized into collections',
+        isPrivate: false,
+        isDefault: true,
+        isSmartCollection: false,
+        createdAt: now,
+        updatedAt: now,
+        bookmarkCount: 0,
+        userId
+      },
+      {
+        id: 'starred',
+        name: 'Starred',
+        description: 'Your starred bookmarks',
+        isPrivate: false,
+        isDefault: true,
+        isSmartCollection: true,
+        smartCriteria: { type: 'starred' },
+        createdAt: now,
+        updatedAt: now,
+        bookmarkCount: 0,
+        userId
+      },
+      {
+        id: 'recent',
+        name: 'Recent',
+        description: 'Recently added bookmarks',
+        isPrivate: false,
+        isDefault: true,
+        isSmartCollection: true,
+        smartCriteria: { type: 'recent', days: 7 },
+        createdAt: now,
+        updatedAt: now,
+        bookmarkCount: 0,
+        userId
+      },
+      {
+        id: 'archived',
+        name: 'Archived',
+        description: 'Archived bookmarks',
+        isPrivate: false,
+        isDefault: true,
+        isSmartCollection: true,
+        smartCriteria: { type: 'recent' },
+        createdAt: now,
+        updatedAt: now,
+        bookmarkCount: 0,
+        userId
+      }
+    ]
+
+    this.safeSet(STORAGE_KEYS.COLLECTIONS, defaultCollections)
+    return defaultCollections
+  }
+
+  async createCollection(collection: CollectionInsert): Promise<StoredCollection> {
+    const collections = await this.getCollections()
+    const id = collection.id || `collection-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
+    const now = new Date().toISOString()
+
+    const newCollection: StoredCollection = {
+      ...collection,
+      id,
+      createdAt: now,
+      updatedAt: now,
+      bookmarkCount: 0,
+      userId: collection.userId || 'local-user'
+    }
+
+    const updatedCollections = [newCollection, ...collections]
+
+    if (this.safeSet(STORAGE_KEYS.COLLECTIONS, updatedCollections)) {
+      return newCollection
+    }
+
+    throw new Error('Failed to create collection in localStorage')
+  }
+
+  async updateCollection(id: string, updates: Partial<StoredCollection>): Promise<StoredCollection> {
+    const collections = await this.getCollections()
+    const collectionIndex = collections.findIndex(c => c.id === id)
+
+    if (collectionIndex === -1) {
+      throw new Error(`Collection with id ${id} not found`)
+    }
+
+    const updatedCollection = {
+      ...collections[collectionIndex],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    }
+
+    collections[collectionIndex] = updatedCollection
+
+    if (this.safeSet(STORAGE_KEYS.COLLECTIONS, collections)) {
+      return updatedCollection
+    }
+
+    throw new Error('Failed to update collection in localStorage')
+  }
+
+  async deleteCollection(id: string): Promise<void> {
+    const collections = await this.getCollections()
+    const collection = collections.find(c => c.id === id)
+
+    if (!collection) {
+      throw new Error(`Collection with id ${id} not found`)
+    }
+
+    if (collection.isDefault) {
+      throw new Error('Cannot delete default collections')
+    }
+
+    const filteredCollections = collections.filter(c => c.id !== id)
+
+    // Also remove all bookmark-collection relationships
+    const bookmarkCollections = this.safeGet<StoredBookmarkCollection[]>(STORAGE_KEYS.BOOKMARK_COLLECTIONS, [])
+    const filteredBookmarkCollections = bookmarkCollections.filter(bc => bc.collectionId !== id)
+
+    // Update bookmarks to remove this collection from their collections array
+    const bookmarks = await this.getBookmarks()
+    const updatedBookmarks = bookmarks.map(bookmark => ({
+      ...bookmark,
+      collections: bookmark.collections.filter(cId => cId !== id),
+      primaryCollection: bookmark.primaryCollection === id ? 'uncategorized' : bookmark.primaryCollection
+    }))
+
+    if (this.safeSet(STORAGE_KEYS.COLLECTIONS, filteredCollections) &&
+        this.safeSet(STORAGE_KEYS.BOOKMARK_COLLECTIONS, filteredBookmarkCollections) &&
+        this.safeSet(STORAGE_KEYS.BOOKMARKS, updatedBookmarks)) {
+      return
+    }
+
+    throw new Error('Failed to delete collection from localStorage')
+  }
+
+  // Bookmark-Collection relationship operations
+  async getBookmarkCollections(): Promise<StoredBookmarkCollection[]> {
+    return this.safeGet<StoredBookmarkCollection[]>(STORAGE_KEYS.BOOKMARK_COLLECTIONS, [])
+  }
+
+  async addBookmarkToCollection(bookmarkId: number, collectionId: string): Promise<void> {
+    const bookmarkCollections = await this.getBookmarkCollections()
+    const existingRelation = bookmarkCollections.find(
+      bc => bc.bookmarkId === bookmarkId && bc.collectionId === collectionId
+    )
+
+    if (existingRelation) {
+      return // Already exists
+    }
+
+    const newRelation: StoredBookmarkCollection = {
+      bookmarkId,
+      collectionId,
+      addedAt: new Date().toISOString()
+    }
+
+    const updatedRelations = [...bookmarkCollections, newRelation]
+
+    // Also update the bookmark's collections array
+    const bookmarks = await this.getBookmarks()
+    const bookmarkIndex = bookmarks.findIndex(b => b.id === bookmarkId)
+
+    if (bookmarkIndex !== -1) {
+      const bookmark = bookmarks[bookmarkIndex]
+      const updatedBookmark = {
+        ...bookmark,
+        collections: [...new Set([...bookmark.collections, collectionId])], // Ensure uniqueness
+        primaryCollection: bookmark.primaryCollection || collectionId
+      }
+
+      bookmarks[bookmarkIndex] = updatedBookmark
+
+      if (this.safeSet(STORAGE_KEYS.BOOKMARK_COLLECTIONS, updatedRelations) &&
+          this.safeSet(STORAGE_KEYS.BOOKMARKS, bookmarks)) {
+        return
+      }
+    }
+
+    throw new Error('Failed to add bookmark to collection')
+  }
+
+  async removeBookmarkFromCollection(bookmarkId: number, collectionId: string): Promise<void> {
+    const bookmarkCollections = await this.getBookmarkCollections()
+    const filteredRelations = bookmarkCollections.filter(
+      bc => !(bc.bookmarkId === bookmarkId && bc.collectionId === collectionId)
+    )
+
+    // Also update the bookmark's collections array
+    const bookmarks = await this.getBookmarks()
+    const bookmarkIndex = bookmarks.findIndex(b => b.id === bookmarkId)
+
+    if (bookmarkIndex !== -1) {
+      const bookmark = bookmarks[bookmarkIndex]
+      const updatedBookmark = {
+        ...bookmark,
+        collections: bookmark.collections.filter(cId => cId !== collectionId),
+        primaryCollection: bookmark.primaryCollection === collectionId ?
+          (bookmark.collections.length > 1 ? bookmark.collections.find(cId => cId !== collectionId) : 'uncategorized') :
+          bookmark.primaryCollection
+      }
+
+      bookmarks[bookmarkIndex] = updatedBookmark
+
+      if (this.safeSet(STORAGE_KEYS.BOOKMARK_COLLECTIONS, filteredRelations) &&
+          this.safeSet(STORAGE_KEYS.BOOKMARKS, bookmarks)) {
+        return
+      }
+    }
+
+    throw new Error('Failed to remove bookmark from collection')
+  }
+
+  async getBookmarksByCollection(collectionId: string): Promise<StoredBookmark[]> {
+    const collections = await this.getCollections()
+    const collection = collections.find(c => c.id === collectionId)
+
+    if (!collection) {
+      throw new Error(`Collection with id ${collectionId} not found`)
+    }
+
+    const bookmarks = await this.getBookmarks()
+
+    // Handle smart collections
+    if (collection.isSmartCollection && collection.smartCriteria) {
+      switch (collection.smartCriteria.type) {
+        case 'starred':
+          return bookmarks.filter(b => b.is_starred)
+        case 'recent':
+          const daysAgo = collection.smartCriteria.days || 7
+          const cutoffDate = new Date()
+          cutoffDate.setDate(cutoffDate.getDate() - daysAgo)
+          return bookmarks.filter(b => new Date(b.created_at) >= cutoffDate)
+        case 'tag':
+          if (collection.smartCriteria.value) {
+            return bookmarks.filter(b => b.tags.includes(collection.smartCriteria!.value!))
+          }
+          break
+        case 'domain':
+          if (collection.smartCriteria.value) {
+            return bookmarks.filter(b => b.domain === collection.smartCriteria!.value)
+          }
+          break
+      }
+    }
+
+    // Regular collections
+    return bookmarks.filter(bookmark => bookmark.collections.includes(collectionId))
+  }
+
   // Settings operations
   async getSettings(): Promise<AppSettings> {
     return this.safeGet<AppSettings>(STORAGE_KEYS.SETTINGS, {
@@ -265,32 +593,63 @@ class LocalStorageService {
   // Data export/import operations
   async exportData(): Promise<{
     bookmarks: StoredBookmark[]
+    collections: StoredCollection[]
+    bookmarkCollections: StoredBookmarkCollection[]
     settings: AppSettings
     metadata: AppMetadata
     exportedAt: string
+    version: string
   }> {
-    const [bookmarks, settings, metadata] = await Promise.all([
+    const [bookmarks, collections, bookmarkCollections, settings, metadata] = await Promise.all([
       this.getBookmarks(),
+      this.getCollections(),
+      this.getBookmarkCollections(),
       this.getSettings(),
       this.getMetadata()
     ])
 
     return {
       bookmarks,
+      collections,
+      bookmarkCollections,
       settings,
       metadata,
-      exportedAt: new Date().toISOString()
+      exportedAt: new Date().toISOString(),
+      version: '2.0.0' // Updated version to include collections
     }
   }
 
   async importData(data: {
     bookmarks?: StoredBookmark[]
+    collections?: StoredCollection[]
+    bookmarkCollections?: StoredBookmarkCollection[]
     settings?: AppSettings
     metadata?: AppMetadata
+    version?: string
   }): Promise<void> {
     try {
+      // Handle bookmarks
       if (data.bookmarks) {
-        this.safeSet(STORAGE_KEYS.BOOKMARKS, data.bookmarks)
+        // Ensure bookmarks have collections array if importing from older version
+        const updatedBookmarks = data.bookmarks.map(bookmark => ({
+          ...bookmark,
+          collections: bookmark.collections || ['uncategorized'],
+          primaryCollection: bookmark.primaryCollection || 'uncategorized'
+        }))
+        this.safeSet(STORAGE_KEYS.BOOKMARKS, updatedBookmarks)
+      }
+
+      // Handle collections
+      if (data.collections) {
+        this.safeSet(STORAGE_KEYS.COLLECTIONS, data.collections)
+      } else {
+        // If no collections in import, initialize default ones
+        await this.initializeDefaultCollections()
+      }
+
+      // Handle bookmark-collection relationships
+      if (data.bookmarkCollections) {
+        this.safeSet(STORAGE_KEYS.BOOKMARK_COLLECTIONS, data.bookmarkCollections)
       }
 
       if (data.settings) {
@@ -314,6 +673,8 @@ class LocalStorageService {
 
     try {
       localStorage.removeItem(STORAGE_KEYS.BOOKMARKS)
+      localStorage.removeItem(STORAGE_KEYS.COLLECTIONS)
+      localStorage.removeItem(STORAGE_KEYS.BOOKMARK_COLLECTIONS)
       localStorage.removeItem(STORAGE_KEYS.SETTINGS)
       localStorage.removeItem(STORAGE_KEYS.METADATA)
     } catch (error) {

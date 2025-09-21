@@ -22,6 +22,8 @@ export interface Bookmark {
   is_read: boolean
   is_archived: boolean
   tags: string[]
+  collections: string[]  // Array of collection IDs
+  primaryCollection?: string  // Main collection
   metadata?: any
   created_at: string
   updated_at: string
@@ -91,6 +93,7 @@ export interface AppMetadata {
 // Export/Import data structure
 export interface ExportData {
   bookmarks: Bookmark[]
+  collections?: any[]  // Will be properly typed when collections are implemented
   settings: AppSettings
   metadata: AppMetadata
   exportedAt: string

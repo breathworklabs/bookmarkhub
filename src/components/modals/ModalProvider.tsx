@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react'
 import { Dialog, Button, HStack, Text, Box, Input, VStack, Textarea, Badge } from '@chakra-ui/react'
 import type { BookmarkInsert, Bookmark } from '../../types/bookmark'
+import type { CollectionInsert } from '../../types/collections'
 import { sanitizeBookmark } from '../../lib/dataValidation'
 
 interface ModalContextType {
@@ -8,6 +9,8 @@ interface ModalContextType {
   showAddTag: (options: AddTagOptions) => void
   showAddBookmark: (options: AddBookmarkOptions) => void
   showEditBookmark: (options: EditBookmarkOptions) => void
+  showCreateCollection: (options: CreateCollectionOptions) => void
+  showEditCollection: (options: EditCollectionOptions) => void
   closeModal: () => void
 }
 
@@ -38,6 +41,17 @@ interface EditBookmarkOptions {
   onCancel?: () => void
 }
 
+interface CreateCollectionOptions {
+  onCreate: (collection: CollectionInsert) => void
+  onCancel?: () => void
+}
+
+interface EditCollectionOptions {
+  collection: any  // Will use the full Collection type later
+  onEdit: (id: string, updates: Partial<any>) => void
+  onCancel?: () => void
+}
+
 const ModalContext = createContext<ModalContextType | null>(null)
 
 export const useModal = () => {
@@ -49,7 +63,7 @@ export const useModal = () => {
 }
 
 interface ModalState {
-  type: 'delete' | 'addTag' | 'addBookmark' | 'editBookmark' | null
+  type: 'delete' | 'addTag' | 'addBookmark' | 'editBookmark' | 'createCollection' | 'editCollection' | null
   options: any
 }
 
@@ -69,10 +83,21 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     is_starred: false,
     is_read: false,
     is_archived: false,
-    tags: []
+    tags: [],
+    collections: []
   })
   const [isAddingTag, setIsAddingTag] = useState(false)
   const [newTagInput, setNewTagInput] = useState('')
+  const [collectionFormData, setCollectionFormData] = useState<CollectionInsert>({
+    name: '',
+    description: '',
+    color: '#1d4ed8',
+    icon: 'folder',
+    isPrivate: false,
+    isDefault: false,
+    isSmartCollection: false,
+    userId: 'local-user'
+  })
 
   const showDeleteConfirmation = (options: DeleteConfirmationOptions) => {
     setModalState({ type: 'delete', options })
@@ -98,7 +123,9 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       is_starred: false,
       is_read: false,
       is_archived: false,
-      tags: []
+      tags: [],
+      collections: ['uncategorized'],
+      primaryCollection: 'uncategorized'
     })
     setIsAddingTag(false)
     setNewTagInput('')
@@ -119,7 +146,8 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       is_starred: options.bookmark.is_starred || false,
       is_read: options.bookmark.is_read || false,
       is_archived: options.bookmark.is_archived || false,
-      tags: options.bookmark.tags || []
+      tags: options.bookmark.tags || [],
+      collections: options.bookmark.collections || []
     })
     setIsAddingTag(false)
     setNewTagInput('')
@@ -141,7 +169,9 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       is_starred: false,
       is_read: false,
       is_archived: false,
-      tags: []
+      tags: [],
+      collections: ['uncategorized'],
+      primaryCollection: 'uncategorized'
     })
     setIsAddingTag(false)
     setNewTagInput('')
@@ -242,11 +272,60 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  // Collection handlers
+  const showCreateCollection = (options: CreateCollectionOptions) => {
+    setModalState({ type: 'createCollection', options })
+    setCollectionFormData({
+      name: '',
+      description: '',
+      color: '#1d4ed8',
+      icon: 'folder',
+      isPrivate: false,
+      isDefault: false,
+      isSmartCollection: false,
+      userId: 'local-user'
+    })
+  }
+
+  const showEditCollection = (options: EditCollectionOptions) => {
+    setModalState({ type: 'editCollection', options })
+    setCollectionFormData({
+      name: options.collection.name || '',
+      description: options.collection.description || '',
+      color: options.collection.color || '#1d4ed8',
+      icon: options.collection.icon || 'folder',
+      isPrivate: options.collection.isPrivate || false,
+      isDefault: options.collection.isDefault || false,
+      isSmartCollection: options.collection.isSmartCollection || false,
+      userId: options.collection.userId || 'local-user'
+    })
+  }
+
+  const handleCollectionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!collectionFormData.name.trim()) {
+      return
+    }
+
+    if (modalState.type === 'editCollection') {
+      modalState.options?.onEdit?.(modalState.options.collection.id, collectionFormData)
+    } else {
+      modalState.options?.onCreate?.(collectionFormData)
+    }
+    closeModal()
+  }
+
+  const handleCollectionFormChange = (field: keyof CollectionInsert, value: any) => {
+    setCollectionFormData(prev => ({ ...prev, [field]: value }))
+  }
+
   const contextValue: ModalContextType = {
     showDeleteConfirmation,
     showAddTag,
     showAddBookmark,
     showEditBookmark,
+    showCreateCollection,
+    showEditCollection,
     closeModal
   }
 
@@ -633,6 +712,112 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                       disabled={!bookmarkFormData.title.trim() || !bookmarkFormData.url.trim()}
                     >
                       {modalState.type === 'editBookmark' ? 'Edit Bookmark' : 'Add Bookmark'}
+                    </Button>
+                  </HStack>
+                </Dialog.Footer>
+              </form>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Dialog.Root>
+      )}
+
+      {/* Create/Edit Collection Modal */}
+      {(modalState.type === 'createCollection' || modalState.type === 'editCollection') && (
+        <Dialog.Root
+          open={true}
+          onOpenChange={(e) => !e.open && closeModal()}
+          placement="center"
+        >
+          <Dialog.Backdrop bg="rgba(0, 0, 0, 0.7)" backdropFilter="blur(4px)" />
+          <Dialog.Positioner>
+            <Dialog.Content
+              bg="#1a1d23"
+              border="1px solid #2a2d35"
+              borderRadius="16px"
+              boxShadow="0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2)"
+              maxW="400px"
+              w="400px"
+              color="white"
+            >
+              <form onSubmit={handleCollectionSubmit}>
+                <Dialog.Header
+                  color="#e1e5e9"
+                  fontSize="18px"
+                  fontWeight="600"
+                  pb={3}
+                  pt={6}
+                  px={6}
+                >
+                  <Dialog.Title>{modalState.type === 'editCollection' ? 'Edit Collection' : 'Create Collection'}</Dialog.Title>
+                </Dialog.Header>
+
+                <Dialog.Body px={6} pb={4}>
+                  <VStack gap={4} align="stretch">
+                    <VStack gap={2} align="stretch">
+                      <Text fontSize="sm" color="#9ca3af">Name *</Text>
+                      <Input
+                        value={collectionFormData.name}
+                        onChange={(e) => handleCollectionFormChange('name', e.target.value)}
+                        placeholder="Collection name"
+                        required
+                        bg="#2a2d35"
+                        border="1px solid #3a3d45"
+                        _hover={{ borderColor: '#4a4d55' }}
+                        _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
+                      />
+                    </VStack>
+
+                    <VStack gap={2} align="stretch">
+                      <Text fontSize="sm" color="#9ca3af">Description</Text>
+                      <Textarea
+                        value={collectionFormData.description}
+                        onChange={(e) => handleCollectionFormChange('description', e.target.value)}
+                        placeholder="Collection description (optional)"
+                        rows={2}
+                        bg="#2a2d35"
+                        border="1px solid #3a3d45"
+                        _hover={{ borderColor: '#4a4d55' }}
+                        _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
+                      />
+                    </VStack>
+                  </VStack>
+                </Dialog.Body>
+
+                <Dialog.Footer px={6} pb={6} pt={2}>
+                  <HStack gap={3} w="full" justify="flex-end">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      borderColor="#2a2d35"
+                      color="#71767b"
+                      bg="transparent"
+                      h="36px"
+                      px={4}
+                      _hover={{
+                        borderColor: '#3a3d45',
+                        color: '#e1e5e9',
+                        bg: '#252932'
+                      }}
+                      onClick={closeModal}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      bg="#1d4ed8"
+                      color="white"
+                      h="36px"
+                      px={4}
+                      _hover={{ bg: '#1e40af' }}
+                      _disabled={{
+                        bg: '#374151',
+                        color: '#6b7280',
+                        cursor: 'not-allowed'
+                      }}
+                      type="submit"
+                      disabled={!collectionFormData.name.trim()}
+                    >
+                      {modalState.type === 'editCollection' ? 'Update Collection' : 'Create Collection'}
                     </Button>
                   </HStack>
                 </Dialog.Footer>
