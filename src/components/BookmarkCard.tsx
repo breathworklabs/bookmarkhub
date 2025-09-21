@@ -12,6 +12,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
   const toggleStarBookmark = useBookmarkStore((state) => state.toggleStarBookmark)
   const removeBookmark = useBookmarkStore((state) => state.removeBookmark)
   const updateBookmark = useBookmarkStore((state) => state.updateBookmark)
+  const toggleArchiveBookmark = useBookmarkStore((state) => state.toggleArchiveBookmark)
   const { showDeleteConfirmation, showEditBookmark } = useModal()
 
   // Helper functions to handle both mock and database bookmark formats
@@ -107,7 +108,19 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
           <IconButton
             size="xs"
             variant="ghost"
+            aria-label="Archive bookmark"
+            title={bookmark.is_archived ? 'Unarchive bookmark' : 'Archive bookmark'}
+            color={bookmark.is_archived ? '#f59e0b' : '#71767b'}
+            _hover={{ bg: '#2a2d35' }}
+            onClick={() => toggleArchiveBookmark(bookmark.id)}
+          >
+            <LuDownload />
+          </IconButton>
+          <IconButton
+            size="xs"
+            variant="ghost"
             aria-label="Edit bookmark"
+            title="Edit bookmark"
             color="#71767b"
             _hover={{ bg: '#2a2d35' }}
             onClick={() => showEditBookmark({
@@ -121,6 +134,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
             size="xs"
             variant="ghost"
             aria-label="Delete bookmark"
+            title="Delete bookmark"
             color="#71767b"
             border="1px solid #2f3336"
             _hover={{
@@ -232,6 +246,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
               size="sm"
               variant="ghost"
               aria-label="Star bookmark"
+              title={isStarred() ? 'Unstar bookmark' : 'Star bookmark'}
               color={isStarred() ? '#ffd700' : '#71767b'}
               borderRadius="full"
               w="32px"
@@ -253,6 +268,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
               size="sm"
               variant="ghost"
               aria-label="Share bookmark"
+              title="Share bookmark"
               color="#71767b"
               borderRadius="full"
               w="32px"
@@ -268,26 +284,6 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
               }}
             >
               <LuExternalLink />
-            </IconButton>
-            <IconButton
-              size="sm"
-              variant="ghost"
-              aria-label="Archive bookmark"
-              color="#71767b"
-              borderRadius="full"
-              w="32px"
-              h="32px"
-              minW="32px"
-              border="1px solid #2f3336"
-              _hover={{
-                bg: '#2a2d35',
-                color: '#e1e5e9',
-                borderColor: '#3a3d45',
-                transform: 'scale(1.1)',
-                transition: 'all 0.2s'
-              }}
-            >
-              <LuDownload />
             </IconButton>
           </HStack>
         </VStack>

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { mockBookmarks } from '../data/mockBookmarks'
-import { localStorageService } from '../lib/localStorage'
+import { localStorageService, type StoredBookmark } from '../lib/localStorage'
 import { sanitizeBookmark, validateImportData } from '../lib/dataValidation'
 import type { Bookmark, BookmarkInsert, AppSettings } from '../types/bookmark'
 
@@ -26,6 +26,7 @@ interface BookmarkState {
   updateBookmark: (id: number, bookmark: BookmarkInsert) => Promise<void>
   removeBookmark: (id: number) => Promise<void>
   toggleStarBookmark: (id: number) => Promise<void>
+  toggleArchiveBookmark: (id: number) => Promise<void>
   searchBookmarks: (query: string) => Promise<void>
 
   setSelectedTags: (tags: string[]) => void
@@ -222,6 +223,31 @@ export const useBookmarkStore = create<BookmarkState>()(
         } catch (error) {
           console.error('Error toggling bookmark star:', error)
           set({ error: error instanceof Error ? error.message : 'Failed to toggle star' }, false, 'toggleStarBookmark:error')
+        }
+      },
+
+      toggleArchiveBookmark: async (id) => {
+        try {
+          const bookmarks = await localStorageService.getBookmarks()
+          const bookmark = bookmarks.find((b: StoredBookmark) => b.id === id)
+
+          if (!bookmark) {
+            throw new Error(`Bookmark with id ${id} not found`)
+          }
+
+          const updatedBookmark = await localStorageService.updateBookmark(id, { is_archived: !bookmark.is_archived })
+          set(
+            (state) => ({
+              bookmarks: state.bookmarks.map(bookmark =>
+                bookmark.id === id ? updatedBookmark : bookmark
+              )
+            }),
+            false,
+            'toggleArchiveBookmark:success'
+          )
+        } catch (error) {
+          console.error('Error toggling bookmark archive:', error)
+          set({ error: error instanceof Error ? error.message : 'Failed to toggle archive' }, false, 'toggleArchiveBookmark:error')
         }
       },
 

@@ -19,13 +19,14 @@ const SidebarMenu = () => {
   // Calculate actual counts
   const totalBookmarks = bookmarks.length
   const starredBookmarks = bookmarks.filter(bookmark => bookmark.is_starred).length
+  const archivedBookmarks = bookmarks.filter(bookmark => bookmark.is_archived).length
 
   const sidebarItems: SidebarItem[] = [
     { icon: LuMenu, label: 'All Bookmarks', count: totalBookmarks.toLocaleString() },
     { icon: LuStar, label: 'Starred', count: starredBookmarks.toString() },
     { icon: LuMenu, label: 'Collections', count: null },
     { icon: LuStar, label: 'AI Insights', badge: 'New' },
-    { icon: LuDownload, label: 'Archives', count: null },
+    { icon: LuDownload, label: 'Archives', count: archivedBookmarks.toString() },
     { icon: LuExternalLink, label: 'Shared', count: null },
   ]
 

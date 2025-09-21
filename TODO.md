@@ -33,7 +33,7 @@
 - [ ] Bulk operations (select multiple, delete, tag, etc.)
 - [ ] Duplicate bookmark detection
 - [ ] Bookmark validation (check if URLs still work)
-- [ ] Archive/unarchive bookmarks
+- [x] Archive/unarchive bookmarks
 - [ ] Recently deleted/trash functionality
 
 ### 3. **Collections & Organization System**
