@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { mockBookmarks } from '../data/mockBookmarks'
 import { localStorageService } from '../lib/localStorage'
+import { sanitizeBookmark, isValidBookmark, isValidSettings, isValidMetadata, validateImportData } from '../lib/dataValidation'
 import type { Bookmark, BookmarkInsert, AppSettings } from '../types/bookmark'
 
 interface BookmarkState {
@@ -141,7 +142,14 @@ export const useBookmarkStore = create<BookmarkState>()(
       addBookmark: async (bookmark) => {
         try {
           set({ isLoading: true, error: null }, false, 'addBookmark:start')
-          const newBookmark = await localStorageService.createBookmark(bookmark)
+
+          // Validate and sanitize bookmark data
+          const sanitizedBookmark = sanitizeBookmark(bookmark)
+          if (!sanitizedBookmark) {
+            throw new Error('Invalid bookmark data')
+          }
+
+          const newBookmark = await localStorageService.createBookmark(sanitizedBookmark)
           set(
             (state) => ({ bookmarks: [newBookmark, ...state.bookmarks] }),
             false,
@@ -263,6 +271,12 @@ export const useBookmarkStore = create<BookmarkState>()(
 
           const text = await file.text()
           const data = JSON.parse(text)
+
+          // Validate import data
+          const validation = validateImportData(data)
+          if (!validation.valid) {
+            throw new Error(`Invalid import data: ${validation.errors.join(', ')}`)
+          }
 
           await localStorageService.importData(data)
           await get().loadBookmarks()

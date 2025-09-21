@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button, Input, Textarea, VStack, HStack, Text, Badge, Dialog } from '@chakra-ui/react'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { sanitizeBookmark } from '../lib/dataValidation'
 import type { BookmarkInsert } from '../types/bookmark'
 
 interface AddBookmarkModalProps {
@@ -59,7 +60,13 @@ const AddBookmarkModal = ({ isOpen, onClose }: AddBookmarkModalProps) => {
         author: formData.author || 'Unknown'
       }
 
-      await addBookmark(bookmarkData)
+      // Validate the bookmark data
+      const validatedBookmark = sanitizeBookmark(bookmarkData)
+      if (!validatedBookmark) {
+        throw new Error('Invalid bookmark data. Please check your inputs.')
+      }
+
+      await addBookmark(validatedBookmark)
 
       // Reset form
       setFormData({

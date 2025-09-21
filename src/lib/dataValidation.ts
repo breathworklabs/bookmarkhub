@@ -1,93 +1,97 @@
 /**
- * Data validation and migration utilities for localStorage
+ * Data validation and migration utilities for localStorage using Zod
  */
 
+import { z } from 'zod'
 import type { Bookmark, BookmarkInsert, ExportData, AppSettings, AppMetadata } from '../types/bookmark'
 
-// Validation schemas
+// Zod schemas
+export const urlSchema = z.string().url()
+
+export const bookmarkSchema = z.object({
+  id: z.number(),
+  user_id: z.string(),
+  title: z.string().min(1),
+  url: urlSchema,
+  description: z.string(),
+  content: z.string(),
+  thumbnail_url: z.string().optional(),
+  favicon_url: z.string().optional(),
+  author: z.string(),
+  domain: z.string(),
+  source_platform: z.string(),
+  source_id: z.string().optional(),
+  engagement_score: z.number(),
+  is_starred: z.boolean(),
+  is_read: z.boolean(),
+  is_archived: z.boolean(),
+  tags: z.array(z.string()),
+  metadata: z.any().optional(),
+  created_at: z.string(),
+  updated_at: z.string(),
+})
+
+export const bookmarkInsertSchema = bookmarkSchema.omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+})
+
+export const appSettingsSchema = z.object({
+  theme: z.enum(['dark', 'light']),
+  viewMode: z.enum(['grid', 'list']),
+  defaultSort: z.enum(['newest', 'oldest', 'title', 'domain']),
+  showMetrics: z.boolean(),
+  compactMode: z.boolean(),
+  autoBackup: z.boolean(),
+  exportFormat: z.enum(['json', 'csv', 'html']),
+  maxBookmarks: z.number().optional(),
+  autoTagging: z.boolean().optional(),
+})
+
+export const appMetadataSchema = z.object({
+  version: z.string(),
+  lastBackup: z.string().optional(),
+  totalBookmarks: z.number(),
+  createdAt: z.string(),
+  lastUpdate: z.string(),
+  storageUsed: z.number().optional(),
+  maxStorage: z.number().optional(),
+})
+
+export const exportDataSchema = z.object({
+  bookmarks: z.array(bookmarkSchema),
+  settings: appSettingsSchema,
+  metadata: appMetadataSchema,
+  exportedAt: z.string(),
+  version: z.string(),
+})
+
+// Validation functions
 export const isValidUrl = (url: string): boolean => {
-  try {
-    new URL(url)
-    return true
-  } catch {
-    return false
-  }
+  return urlSchema.safeParse(url).success
 }
 
 export const isValidBookmark = (bookmark: any): bookmark is Bookmark => {
-  return (
-    typeof bookmark === 'object' &&
-    bookmark !== null &&
-    typeof bookmark.id === 'number' &&
-    typeof bookmark.user_id === 'string' &&
-    typeof bookmark.title === 'string' &&
-    typeof bookmark.url === 'string' &&
-    isValidUrl(bookmark.url) &&
-    typeof bookmark.description === 'string' &&
-    typeof bookmark.content === 'string' &&
-    typeof bookmark.author === 'string' &&
-    typeof bookmark.domain === 'string' &&
-    typeof bookmark.source_platform === 'string' &&
-    typeof bookmark.engagement_score === 'number' &&
-    typeof bookmark.is_starred === 'boolean' &&
-    typeof bookmark.is_read === 'boolean' &&
-    typeof bookmark.is_archived === 'boolean' &&
-    typeof bookmark.created_at === 'string' &&
-    typeof bookmark.updated_at === 'string' &&
-    Array.isArray(bookmark.tags) &&
-    bookmark.tags.every((tag: any) => typeof tag === 'string')
-  )
+  return bookmarkSchema.safeParse(bookmark).success
 }
 
 export const isValidBookmarkInsert = (bookmark: any): bookmark is BookmarkInsert => {
-  return (
-    typeof bookmark === 'object' &&
-    bookmark !== null &&
-    typeof bookmark.title === 'string' &&
-    typeof bookmark.url === 'string' &&
-    isValidUrl(bookmark.url) &&
-    typeof bookmark.description === 'string' &&
-    typeof bookmark.content === 'string' &&
-    typeof bookmark.author === 'string' &&
-    typeof bookmark.domain === 'string' &&
-    typeof bookmark.source_platform === 'string' &&
-    typeof bookmark.engagement_score === 'number' &&
-    typeof bookmark.is_starred === 'boolean' &&
-    typeof bookmark.is_read === 'boolean' &&
-    typeof bookmark.is_archived === 'boolean' &&
-    Array.isArray(bookmark.tags) &&
-    bookmark.tags.every((tag: any) => typeof tag === 'string')
-  )
+  return bookmarkInsertSchema.safeParse(bookmark).success
 }
 
 export const isValidSettings = (settings: any): settings is AppSettings => {
-  return (
-    typeof settings === 'object' &&
-    settings !== null &&
-    ['dark', 'light'].includes(settings.theme) &&
-    ['grid', 'list'].includes(settings.viewMode) &&
-    ['newest', 'oldest', 'title', 'domain'].includes(settings.defaultSort) &&
-    typeof settings.showMetrics === 'boolean' &&
-    typeof settings.compactMode === 'boolean' &&
-    typeof settings.autoBackup === 'boolean' &&
-    ['json', 'csv', 'html'].includes(settings.exportFormat)
-  )
+  return appSettingsSchema.safeParse(settings).success
 }
 
 export const isValidMetadata = (metadata: any): metadata is AppMetadata => {
-  return (
-    typeof metadata === 'object' &&
-    metadata !== null &&
-    typeof metadata.version === 'string' &&
-    typeof metadata.totalBookmarks === 'number' &&
-    typeof metadata.createdAt === 'string' &&
-    typeof metadata.lastUpdate === 'string'
-  )
+  return appMetadataSchema.safeParse(metadata).success
 }
 
 // Sanitization functions
 export const sanitizeBookmark = (bookmark: any): BookmarkInsert | null => {
   try {
+    // Apply defaults and sanitization
     const sanitized: BookmarkInsert = {
       user_id: String(bookmark.user_id || 'ae879c80-f3fc-4e05-a837-384e4b9bfb28'),
       title: String(bookmark.title || '').trim(),
@@ -115,7 +119,9 @@ export const sanitizeBookmark = (bookmark: any): BookmarkInsert | null => {
       return null
     }
 
-    return sanitized
+    // Use Zod to validate the final structure
+    const result = bookmarkInsertSchema.safeParse(sanitized)
+    return result.success ? result.data : null
   } catch {
     return null
   }
@@ -137,19 +143,23 @@ export const migrateBookmarkData = (data: any[]): Bookmark[] => {
   for (const item of data) {
     // Handle old format (mock data) vs new format (localStorage)
     const sanitized = sanitizeBookmark({
-      id: item.id,
+      user_id: item.user_id || 'ae879c80-f3fc-4e05-a837-384e4b9bfb28',
       title: item.title,
       url: item.url,
+      description: item.description || item.content || '',
       content: item.content || item.description || '',
       author: typeof item.author === 'string' ? item.author : item.author?.name || 'Unknown Author',
       domain: item.domain || extractDomain(item.url),
-      created_at: item.created_at || item.timestamp || new Date().toISOString(),
-      updated_at: item.updated_at,
+      source_platform: item.source_platform || 'manual',
+      engagement_score: item.engagement_score || 0,
+      is_starred: item.is_starred || item.isStarred || false,
+      is_read: item.is_read || false,
+      is_archived: item.is_archived || false,
       tags: item.tags || [],
-      isStarred: item.isStarred || item.is_starred || false,
-      metrics: item.metrics || { likes: '0', retweets: '0', replies: '0' },
       thumbnail_url: item.thumbnail_url,
-      hasMedia: item.hasMedia || Boolean(item.thumbnail_url)
+      favicon_url: item.favicon_url,
+      source_id: item.source_id,
+      metadata: item.metadata,
     })
 
     if (sanitized) {

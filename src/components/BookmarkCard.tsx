@@ -173,6 +173,28 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
 
         {/* Actions and Tags */}
         <VStack alignItems="stretch" gap={2}>
+          {getTags().length > 0 && (
+            <Wrap gap={2}>
+              <For each={getTags()}>
+                {(tag) => (
+                  <WrapItem>
+                    <Badge
+                      bg="#2a2d35"
+                      color="#71767b"
+                      fontSize="xs"
+                      px={2}
+                      py={1}
+                      borderRadius="full"
+                      _hover={{ bg: '#3a3d45', color: '#e1e5e9' }}
+                      cursor="pointer"
+                    >
+                      #{tag}
+                    </Badge>
+                  </WrapItem>
+                )}
+              </For>
+            </Wrap>
+          )}
           <HStack gap={1}>
             <IconButton
               size="sm"
@@ -236,28 +258,6 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
               <LuDownload />
             </IconButton>
           </HStack>
-          {getTags().length > 0 && (
-            <Wrap gap={2}>
-              <For each={getTags()}>
-                {(tag) => (
-                  <WrapItem>
-                    <Badge
-                      bg="#2a2d35"
-                      color="#71767b"
-                      fontSize="xs"
-                      px={2}
-                      py={1}
-                      borderRadius="full"
-                      _hover={{ bg: '#3a3d45', color: '#e1e5e9' }}
-                      cursor="pointer"
-                    >
-                      #{tag}
-                    </Badge>
-                  </WrapItem>
-                )}
-              </For>
-            </Wrap>
-          )}
         </VStack>
       </Box>
     </Card.Root>
