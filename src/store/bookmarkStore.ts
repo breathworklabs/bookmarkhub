@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { mockBookmarks } from '../data/mockBookmarks'
 import { localStorageService, type StoredBookmark } from '../lib/localStorage'
 import { sanitizeBookmark, validateImportData } from '../lib/dataValidation'
 import type { Bookmark, BookmarkInsert, AppSettings } from '../types/bookmark'
@@ -115,22 +114,18 @@ export const useBookmarkStore = create<BookmarkState>()(
           // Try to load bookmarks from localStorage
           const bookmarks = await localStorageService.getBookmarks()
 
-          if (bookmarks.length > 0) {
-            set({
-              bookmarks,
-              selectedTags: [], // Clear filters on startup
-              searchQuery: '', // Clear search on startup
-              activeTab: 0 // Reset to "All" tab
-            }, false, 'initialize:loadedFromStorage')
-          } else {
-            set({ bookmarks: mockBookmarks }, false, 'initialize:useMockData')
-          }
+          set({
+            bookmarks,
+            selectedTags: [], // Clear filters on startup
+            searchQuery: '', // Clear search on startup
+            activeTab: 0 // Reset to "All" tab
+          }, false, 'initialize:loadedFromStorage')
 
         } catch (error) {
           console.error('Failed to initialize app:', error)
           set({
             error: error instanceof Error ? error.message : 'Failed to initialize',
-            bookmarks: mockBookmarks // Fallback to mock data
+            bookmarks: []
           }, false, 'initialize:error')
         } finally {
           set({ isLoading: false }, false, 'initialize:complete')
