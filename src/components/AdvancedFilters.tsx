@@ -7,6 +7,17 @@ const MotionBox = motion.create(Box)
 
 const AdvancedFilters = () => {
   const isFiltersPanelOpen = useBookmarkStore((state) => state.isFiltersPanelOpen)
+  const authorFilter = useBookmarkStore((state) => state.authorFilter)
+  const domainFilter = useBookmarkStore((state) => state.domainFilter)
+  const contentTypeFilter = useBookmarkStore((state) => state.contentTypeFilter)
+  const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)
+  const quickFilters = useBookmarkStore((state) => state.quickFilters)
+  const setAuthorFilter = useBookmarkStore((state) => state.setAuthorFilter)
+  const setDomainFilter = useBookmarkStore((state) => state.setDomainFilter)
+  const setContentTypeFilter = useBookmarkStore((state) => state.setContentTypeFilter)
+  const setDateRangeFilter = useBookmarkStore((state) => state.setDateRangeFilter)
+  const toggleQuickFilter = useBookmarkStore((state) => state.toggleQuickFilter)
+  const clearAdvancedFilters = useBookmarkStore((state) => state.clearAdvancedFilters)
 
   return (
     <AnimatePresence>
@@ -101,20 +112,20 @@ const AdvancedFilters = () => {
                     Date Range
                   </Text>
                 </HStack>
-                <Button
+                <Input
                   size="sm"
-                  variant="outline"
+                  placeholder="Date range (today, week, month)..."
+                  value={dateRangeFilter}
+                  onChange={(e) => setDateRangeFilter(e.target.value)}
                   bg="#1a1d23"
                   borderColor="#2a2d35"
                   color="#e1e5e9"
-                  justifyContent="flex-start"
-                  _hover={{ borderColor: '#3a3d45', bg: '#2a2d35' }}
-                  w="full"
+                  _placeholder={{ color: '#71767b' }}
+                  _hover={{ borderColor: '#3a3d45' }}
+                  _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
                   h="32px"
                   fontSize="12px"
-                >
-                  All Time
-                </Button>
+                />
               </VStack>
 
               {/* Author Filter */}
@@ -128,6 +139,8 @@ const AdvancedFilters = () => {
                 <Input
                   size="sm"
                   placeholder="Search by author..."
+                  value={authorFilter}
+                  onChange={(e) => setAuthorFilter(e.target.value)}
                   bg="#1a1d23"
                   borderColor="#2a2d35"
                   color="#e1e5e9"
@@ -147,20 +160,20 @@ const AdvancedFilters = () => {
                     Domain
                   </Text>
                 </HStack>
-                <Button
+                <Input
                   size="sm"
-                  variant="outline"
+                  placeholder="Filter by domain..."
+                  value={domainFilter}
+                  onChange={(e) => setDomainFilter(e.target.value)}
                   bg="#1a1d23"
                   borderColor="#2a2d35"
                   color="#e1e5e9"
-                  justifyContent="flex-start"
-                  _hover={{ borderColor: '#3a3d45', bg: '#2a2d35' }}
-                  w="full"
+                  _placeholder={{ color: '#71767b' }}
+                  _hover={{ borderColor: '#3a3d45' }}
+                  _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
                   h="32px"
                   fontSize="12px"
-                >
-                  All Domains
-                </Button>
+                />
               </VStack>
 
               {/* Content Type Filter */}
@@ -171,20 +184,20 @@ const AdvancedFilters = () => {
                     Content Type
                   </Text>
                 </HStack>
-                <Button
+                <Input
                   size="sm"
-                  variant="outline"
+                  placeholder="Filter by content type..."
+                  value={contentTypeFilter}
+                  onChange={(e) => setContentTypeFilter(e.target.value)}
                   bg="#1a1d23"
                   borderColor="#2a2d35"
                   color="#e1e5e9"
-                  justifyContent="flex-start"
-                  _hover={{ borderColor: '#3a3d45', bg: '#2a2d35' }}
-                  w="full"
+                  _placeholder={{ color: '#71767b' }}
+                  _hover={{ borderColor: '#3a3d45' }}
+                  _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
                   h="32px"
                   fontSize="12px"
-                >
-                  All Types
-                </Button>
+                />
               </VStack>
             </HStack>
 
@@ -207,24 +220,20 @@ const AdvancedFilters = () => {
                       key={filter.value}
                       size="xs"
                       variant="outline"
-                      bg="transparent"
+                      bg={quickFilters.includes(filter.value) ? '#1d4ed8' : 'transparent'}
                       border="1px solid #2a2d35"
-                      color="#71767b"
+                      color={quickFilters.includes(filter.value) ? 'white' : '#71767b'}
                       fontSize="11px"
                       fontWeight="500"
                       px={2}
                       h="24px"
                       borderRadius="12px"
                       _hover={{
-                        bg: '#1a1d23',
-                        color: '#e1e5e9',
+                        bg: quickFilters.includes(filter.value) ? '#1e40af' : '#1a1d23',
+                        color: quickFilters.includes(filter.value) ? 'white' : '#e1e5e9',
                         borderColor: '#3a3d45'
                       }}
-                      _active={{
-                        bg: '#1d4ed8',
-                        color: 'white',
-                        borderColor: '#1d4ed8'
-                      }}
+                      onClick={() => toggleQuickFilter(filter.value)}
                     >
                       {filter.label}
                     </Button>
@@ -234,42 +243,21 @@ const AdvancedFilters = () => {
             </VStack>
 
             {/* Actions */}
-            <HStack justify="space-between" pt={1}>
+            <HStack justify="center" pt={1}>
               <Button
                 size="sm"
-                variant="ghost"
+                variant="outline"
+                borderColor="#2a2d35"
                 color="#71767b"
+                bg="transparent"
                 fontSize="12px"
-                h="28px"
-                _hover={{ color: '#e1e5e9', bg: '#2a2d35' }}
+                h="32px"
+                px={4}
+                _hover={{ borderColor: '#3a3d45', color: '#e1e5e9', bg: '#1a1d23' }}
+                onClick={clearAdvancedFilters}
               >
                 Clear All Filters
               </Button>
-              <HStack gap={2}>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  borderColor="#2a2d35"
-                  color="#71767b"
-                  fontSize="12px"
-                  h="28px"
-                  px={3}
-                  _hover={{ borderColor: '#3a3d45', color: '#e1e5e9', bg: '#1a1d23' }}
-                >
-                  Save Filter
-                </Button>
-                <Button
-                  size="sm"
-                  bg="#1d4ed8"
-                  color="white"
-                  fontSize="12px"
-                  h="28px"
-                  px={3}
-                  _hover={{ bg: '#1e40af' }}
-                >
-                  Apply Filters
-                </Button>
-              </HStack>
             </HStack>
           </VStack>
           </Box>

@@ -19,6 +19,13 @@ interface BookmarkState {
   error: string | null
   settings: AppSettings
 
+  // Advanced filters
+  authorFilter: string
+  domainFilter: string
+  contentTypeFilter: string
+  dateRangeFilter: string
+  quickFilters: string[]
+
   // Actions
   setBookmarks: (bookmarks: Bookmark[]) => void
   loadBookmarks: () => Promise<void>
@@ -48,6 +55,14 @@ interface BookmarkState {
   // Settings actions
   loadSettings: () => Promise<void>
   updateSettings: (settings: Partial<AppSettings>) => Promise<void>
+
+  // Advanced filter actions
+  setAuthorFilter: (filter: string) => void
+  setDomainFilter: (filter: string) => void
+  setContentTypeFilter: (filter: string) => void
+  setDateRangeFilter: (filter: string) => void
+  toggleQuickFilter: (filter: string) => void
+  clearAdvancedFilters: () => void
 
   // Data management
   exportBookmarks: () => Promise<void>
@@ -81,6 +96,13 @@ export const useBookmarkStore = create<BookmarkState>()(
         autoBackup: true,
         exportFormat: 'json'
       },
+
+      // Advanced filters initial state
+      authorFilter: '',
+      domainFilter: '',
+      contentTypeFilter: '',
+      dateRangeFilter: '',
+      quickFilters: [],
 
       // Initialize store
       initialize: async () => {
@@ -409,7 +431,29 @@ export const useBookmarkStore = create<BookmarkState>()(
         'toggleFiltersPanel'
       ),
       setActiveSidebarItem: (item) => set({ activeSidebarItem: item }, false, 'setActiveSidebarItem'),
-      setError: (error) => set({ error }, false, 'setError')
+      setError: (error) => set({ error }, false, 'setError'),
+
+      // Advanced filter actions
+      setAuthorFilter: (filter) => set({ authorFilter: filter }, false, 'setAuthorFilter'),
+      setDomainFilter: (filter) => set({ domainFilter: filter }, false, 'setDomainFilter'),
+      setContentTypeFilter: (filter) => set({ contentTypeFilter: filter }, false, 'setContentTypeFilter'),
+      setDateRangeFilter: (filter) => set({ dateRangeFilter: filter }, false, 'setDateRangeFilter'),
+      toggleQuickFilter: (filter) => set(
+        (state) => ({
+          quickFilters: state.quickFilters.includes(filter)
+            ? state.quickFilters.filter(f => f !== filter)
+            : [...state.quickFilters, filter]
+        }),
+        false,
+        'toggleQuickFilter'
+      ),
+      clearAdvancedFilters: () => set({
+        authorFilter: '',
+        domainFilter: '',
+        contentTypeFilter: '',
+        dateRangeFilter: '',
+        quickFilters: []
+      }, false, 'clearAdvancedFilters')
     }),
     {
       name: 'bookmark-store', // Store name for devtools
