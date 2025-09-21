@@ -1,7 +1,6 @@
-import { Box, HStack, Text, Button, For, Input } from '@chakra-ui/react'
-import { Dialog } from '@chakra-ui/react'
-import { useState } from 'react'
+import { Box, HStack, Text, Button, For } from '@chakra-ui/react'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { useModal } from './modals/ModalProvider'
 
 const FilterBar = () => {
   const activeTab = useBookmarkStore((state) => state.activeTab)
@@ -10,28 +9,14 @@ const FilterBar = () => {
   const removeTag = useBookmarkStore((state) => state.removeTag)
   const addTag = useBookmarkStore((state) => state.addTag)
   const filterTabs = ['All', 'Today', 'This Week', 'Threads', 'Media']
-
-  const [isOpen, setIsOpen] = useState(false)
-  const [newTagName, setNewTagName] = useState('')
-
-  const onOpen = () => setIsOpen(true)
-  const onClose = () => {
-    setIsOpen(false)
-    setNewTagName('')
-  }
+  const { showAddTag } = useModal()
 
   const handleAddTag = () => {
-    if (newTagName.trim() && !selectedTags.includes(newTagName.trim())) {
-      addTag(newTagName.trim())
-      setNewTagName('')
-      onClose()
-    }
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleAddTag()
-    }
+    showAddTag({
+      placeholder: "Enter tag name...",
+      existingTags: selectedTags,
+      onAdd: (tagName: string) => addTag(tagName)
+    })
   }
 
   return (
@@ -120,7 +105,7 @@ const FilterBar = () => {
               color: '#e1e5e9',
               borderColor: '#3a3d45'
             }}
-            onClick={onOpen}
+            onClick={handleAddTag}
             gap={1}
             alignItems="center"
           >
@@ -130,90 +115,6 @@ const FilterBar = () => {
         </HStack>
       </HStack>
 
-      {/* Add Tag Dialog */}
-      <Dialog.Root open={isOpen} onOpenChange={(e) => !e.open && onClose()} placement="center">
-        <Dialog.Backdrop bg="rgba(0, 0, 0, 0.7)" backdropFilter="blur(4px)" />
-        <Dialog.Positioner>
-          <Dialog.Content
-            bg="#1a1d23"
-            border="1px solid #2a2d35"
-            borderRadius="16px"
-            boxShadow="0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2)"
-            maxW="400px"
-            w="400px"
-          >
-            <Dialog.Header
-              color="#e1e5e9"
-              fontSize="18px"
-              fontWeight="600"
-              pb={3}
-              pt={6}
-              px={6}
-            >
-              <Dialog.Title>Add New Tag</Dialog.Title>
-            </Dialog.Header>
-            <Dialog.Body px={6} pb={4}>
-              <Input
-                placeholder="Enter tag name..."
-                value={newTagName}
-                onChange={(e) => setNewTagName(e.target.value)}
-                onKeyPress={handleKeyPress}
-                bg="#0f1419"
-                borderColor="#2a2d35"
-                color="#e1e5e9"
-                fontSize="14px"
-                h="40px"
-                _placeholder={{ color: '#71767b' }}
-                _hover={{ borderColor: '#3a3d45' }}
-                _focus={{
-                  borderColor: '#1d4ed8',
-                  boxShadow: '0 0 0 1px #1d4ed8',
-                  outline: 'none'
-                }}
-                autoFocus
-              />
-            </Dialog.Body>
-            <Dialog.Footer px={6} pb={6} pt={2}>
-              <HStack gap={3} w="full" justify="flex-end">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  borderColor="#2a2d35"
-                  color="#71767b"
-                  bg="transparent"
-                  h="36px"
-                  px={4}
-                  _hover={{
-                    borderColor: '#3a3d45',
-                    color: '#e1e5e9',
-                    bg: '#252932'
-                  }}
-                  onClick={onClose}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  bg="#1d4ed8"
-                  color="white"
-                  h="36px"
-                  px={4}
-                  _hover={{ bg: '#1e40af' }}
-                  _disabled={{
-                    bg: '#374151',
-                    color: '#6b7280',
-                    cursor: 'not-allowed'
-                  }}
-                  onClick={handleAddTag}
-                  disabled={!newTagName.trim() || selectedTags.includes(newTagName.trim())}
-                >
-                  Add Tag
-                </Button>
-              </HStack>
-            </Dialog.Footer>
-          </Dialog.Content>
-        </Dialog.Positioner>
-      </Dialog.Root>
     </Box>
   )
 }

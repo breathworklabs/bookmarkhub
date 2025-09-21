@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { mockBookmarks } from '../data/mockBookmarks'
 import { localStorageService } from '../lib/localStorage'
-import { sanitizeBookmark, isValidBookmark, isValidSettings, isValidMetadata, validateImportData } from '../lib/dataValidation'
+import { sanitizeBookmark, validateImportData } from '../lib/dataValidation'
 import type { Bookmark, BookmarkInsert, AppSettings } from '../types/bookmark'
 
 interface BookmarkState {

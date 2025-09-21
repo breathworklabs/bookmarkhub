@@ -1,16 +1,32 @@
-import { useState } from 'react'
 import { Box, HStack, Input, Button, Spacer } from '@chakra-ui/react'
 import { LuMenu } from 'react-icons/lu'
 import { theme } from '../styles/theme'
 import { useBookmarkStore } from '../store/bookmarkStore'
-import AddBookmarkModal from './AddBookmarkModal'
+import { useModal } from './modals/ModalProvider'
+import { sanitizeBookmark } from '../lib/dataValidation'
 
 const SearchHeader = () => {
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const searchQuery = useBookmarkStore((state) => state.searchQuery)
   const setSearchQuery = useBookmarkStore((state) => state.setSearchQuery)
+  const addBookmark = useBookmarkStore((state) => state.addBookmark)
   const isFiltersPanelOpen = useBookmarkStore((state) => state.isFiltersPanelOpen)
   const toggleFiltersPanel = useBookmarkStore((state) => state.toggleFiltersPanel)
+  const { showAddBookmark } = useModal()
+
+  const handleAddBookmark = () => {
+    showAddBookmark({
+      onAdd: async (bookmarkData) => {
+        try {
+          const validatedBookmark = sanitizeBookmark(bookmarkData)
+          if (validatedBookmark) {
+            await addBookmark(validatedBookmark)
+          }
+        } catch (error) {
+          console.error('Failed to add bookmark:', error)
+        }
+      }
+    })
+  }
   return (
     <Box {...theme.styles.container.header}>
       <HStack gap={6} alignItems="center">
@@ -54,17 +70,12 @@ const SearchHeader = () => {
             +
             Import
           </Button>
-          <Button {...theme.styles.primaryButton} onClick={() => setIsAddModalOpen(true)}>
+          <Button {...theme.styles.primaryButton} onClick={handleAddBookmark}>
             +
             Add Bookmark
           </Button>
         </HStack>
       </HStack>
-
-      <AddBookmarkModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-      />
     </Box>
   )
 }

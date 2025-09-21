@@ -2,11 +2,13 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import BookmarkCard from '../components/BookmarkCard'
+import { ModalProvider } from '../components/modals/ModalProvider'
 
 // Mock the bookmark store
 vi.mock('../store/bookmarkStore', () => ({
   useBookmarkStore: vi.fn(() => ({
-    toggleStarBookmark: vi.fn()
+    toggleStarBookmark: vi.fn(),
+    removeBookmark: vi.fn()
   }))
 }))
 
@@ -49,7 +51,9 @@ const databaseBookmarkFormat: TestBookmark = {
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <ChakraProvider value={defaultSystem}>
-    {children}
+    <ModalProvider>
+      {children}
+    </ModalProvider>
   </ChakraProvider>
 )
 

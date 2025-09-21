@@ -1,7 +1,8 @@
 import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem } from '@chakra-ui/react'
-import { LuMenu, LuStar, LuExternalLink, LuDownload } from 'react-icons/lu'
+import { LuMenu, LuStar, LuExternalLink, LuDownload, LuTrash2 } from 'react-icons/lu'
 import { type Bookmark } from '../types/bookmark'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { useModal } from './modals/ModalProvider'
 
 interface BookmarkCardProps {
   bookmark: Bookmark
@@ -9,6 +10,8 @@ interface BookmarkCardProps {
 
 const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
   const toggleStarBookmark = useBookmarkStore((state) => state.toggleStarBookmark)
+  const removeBookmark = useBookmarkStore((state) => state.removeBookmark)
+  const { showDeleteConfirmation } = useModal()
 
   // Helper functions to handle both mock and database bookmark formats
   const getAuthorName = () => {
@@ -256,6 +259,32 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
               }}
             >
               <LuDownload />
+            </IconButton>
+            <IconButton
+              size="sm"
+              variant="ghost"
+              aria-label="Delete bookmark"
+              color="#71767b"
+              borderRadius="full"
+              w="32px"
+              h="32px"
+              minW="32px"
+              border="1px solid #2f3336"
+              _hover={{
+                bg: '#dc2626',
+                color: '#ffffff',
+                borderColor: '#dc2626',
+                transform: 'scale(1.1)',
+                transition: 'all 0.2s'
+              }}
+              onClick={() => showDeleteConfirmation({
+                title: 'Delete Bookmark',
+                message: 'Are you sure you want to delete this bookmark? This action cannot be undone.',
+                preview: getContent().slice(0, 100) + (getContent().length > 100 ? '...' : ''),
+                onConfirm: () => removeBookmark(bookmark.id)
+              })}
+            >
+              <LuTrash2 />
             </IconButton>
           </HStack>
         </VStack>

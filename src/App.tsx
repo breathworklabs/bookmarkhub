@@ -1,12 +1,15 @@
 import { ChakraProvider, defaultSystem, Box, Spinner, Text, VStack } from '@chakra-ui/react'
 import XBookmarkManager from './components/XBookmarkManager'
 import { useInitializeApp } from './hooks/useInitializeApp'
+import { ModalProvider } from './components/modals/ModalProvider'
 // import { AuthDebug } from './components/debug/AuthDebug'
 
 function App() {
   return (
     <ChakraProvider value={defaultSystem}>
-      <AppContent />
+      <ModalProvider>
+        <AppContent />
+      </ModalProvider>
     </ChakraProvider>
   )
 }

@@ -29,7 +29,7 @@
 ### 2. **Core Bookmark Management**
 - [x] Add new bookmark functionality (currently button does nothing)
 - [ ] Edit bookmark content and metadata
-- [ ] Delete bookmarks (with confirmation)
+- [x] Delete bookmarks (with confirmation)
 - [ ] Bulk operations (select multiple, delete, tag, etc.)
 - [ ] Duplicate bookmark detection
 - [ ] Bookmark validation (check if URLs still work)
