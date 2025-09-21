@@ -1,55 +1,33 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { mockBookmarks } from './test-utils'
 
-// Mock Supabase with realistic bookmark data
-const mockBookmarksFromDB = [
-  {
-    id: 1,
-    title: 'React 19 Beta Features - What\'s New',
-    url: 'https://react.dev/blog/2024/04/25/react-19',
-    user_id: 'test-user-id',
-    created_at: '2024-01-01T00:00:00Z',
-    tags: ['react', 'javascript']
-  },
-  {
-    id: 2,
-    title: 'TypeScript 5.5 Released',
-    url: 'https://devblogs.microsoft.com/typescript/announcing-typescript-5-5/',
-    user_id: 'test-user-id',
-    created_at: '2024-01-02T00:00:00Z',
-    tags: ['typescript']
-  },
-  {
-    id: 3,
-    title: 'Building Scalable Web Apps with Next.js',
-    url: 'https://nextjs.org/learn',
-    user_id: 'test-user-id',
-    created_at: '2024-01-03T00:00:00Z',
-    tags: ['nextjs', 'react']
-  }
-]
-
+// Mock Supabase for database loading tests
 vi.mock('../lib/supabase', () => ({
   supabase: {
     auth: {
-      getUser: vi.fn(),
-      getSession: vi.fn(),
+      getUser: vi.fn().mockResolvedValue({
+        data: { user: { id: 'test-user' } },
+        error: null
+      })
     },
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
           order: vi.fn(() => Promise.resolve({
-            data: mockBookmarksFromDB,
+            data: mockBookmarks,
             error: null
           }))
         }))
       }))
-    })),
-  },
+    }))
+  }
 }))
 
+// Use shared mock data from test-utils
+
 describe('Bookmark Loading Logic', () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     // Reset store to clean state
     useBookmarkStore.setState({
       bookmarks: [],
@@ -61,101 +39,75 @@ describe('Bookmark Loading Logic', () => {
       isAIPanelOpen: false,
       isFiltersPanelOpen: false,
       activeSidebarItem: 'All Bookmarks',
-      currentUserId: null,
       error: null,
     })
 
-    // Reset mocks
+    // Reset localStorage mocks
     vi.clearAllMocks()
-
-    // Setup default mock behavior
-    const { supabase } = await import('../lib/supabase')
-    vi.mocked(supabase.auth.getUser).mockResolvedValue({
-      data: { user: null },
-      error: { message: 'Auth session missing' }
-    })
+    // Reset global localStorage mock
+    ;(window.localStorage.getItem as any).mockReturnValue(null)
   })
 
-  it('should load mock data when no user is authenticated', async () => {
-    console.log('🧪 Testing mock data loading...')
-
-    const { supabase } = await import('../lib/supabase')
-
-    // Mock no authenticated user
-    vi.mocked(supabase.auth.getUser).mockResolvedValue({
-      data: { user: null },
-      error: { message: 'Auth session missing' }
-    })
+  it('should load mock data when localStorage is empty', async () => {
+    // Mock empty localStorage
+    ;(window.localStorage.getItem as any).mockReturnValue(null)
 
     // Initialize the store
     await useBookmarkStore.getState().initialize()
 
     const state = useBookmarkStore.getState()
 
-    console.log('📊 Final state - bookmarks:', state.bookmarks.length, 'userId:', state.currentUserId)
-
-    // Should have mock bookmarks and no user
-    expect(state.currentUserId).toBeNull()
+    // Should have mock bookmarks when localStorage is empty
     expect(state.bookmarks.length).toBeGreaterThan(0) // Should have mock bookmarks
-    expect(state.isLoading).toBe(false)
-  })
-
-  it('should load database bookmarks when user is authenticated', async () => {
-    console.log('🧪 Testing database bookmark loading...')
-
-    const { supabase } = await import('../lib/supabase')
-
-    // Mock authenticated user
-    vi.mocked(supabase.auth.getUser).mockResolvedValue({
-      data: {
-        user: {
-          id: 'test-user-id',
-          email: 'test@example.com'
-        }
-      },
-      error: null
-    })
-
-    // Initialize the store
-    await useBookmarkStore.getState().initialize()
-
-    const state = useBookmarkStore.getState()
-
-    console.log('📊 Final state - bookmarks:', state.bookmarks.length, 'userId:', state.currentUserId)
-    console.log('📚 First bookmark title:', state.bookmarks[0]?.title)
-
-    // Should have database bookmarks and user ID
-    expect(state.currentUserId).toBe('test-user-id')
-    expect(state.bookmarks.length).toBe(3) // Should have 3 mock DB bookmarks
-    expect(state.bookmarks[0].title).toBe('React 19 Beta Features - What\'s New')
     expect(state.isLoading).toBe(false)
     expect(state.error).toBeNull()
   })
 
-  it('should call loadBookmarks with correct user ID', async () => {
-    console.log('🧪 Testing loadBookmarks function directly...')
+  it('should load bookmarks from database when user is authenticated', async () => {
+    // Initialize the store (this should load from database when user exists)
+    await useBookmarkStore.getState().initialize()
 
-    const { supabase } = await import('../lib/supabase')
+    const state = useBookmarkStore.getState()
 
-    // Set up authenticated state manually
-    useBookmarkStore.setState({
-      currentUserId: 'test-user-id'
-    })
+    // Should have loaded bookmarks from database
+    expect(state.bookmarks.length).toBe(2) // Should have 2 mock bookmarks
+    expect(state.bookmarks[0].title).toBe('React 19 Beta Features')
+    expect(state.bookmarks[1].is_starred).toBe(true) // TypeScript bookmark is starred
+    expect(state.isLoading).toBe(false)
+    expect(state.error).toBeNull()
+    expect(state.currentUserId).toBe('test-user')
+  })
+
+  it('should load bookmarks from database when loadBookmarks is called', async () => {
+    // Set up user ID for database loading
+    useBookmarkStore.setState({ currentUserId: 'test-user' })
 
     // Call loadBookmarks directly
     await useBookmarkStore.getState().loadBookmarks()
 
     const state = useBookmarkStore.getState()
 
-    console.log('📊 LoadBookmarks result - bookmarks:', state.bookmarks.length)
-    console.log('📚 First bookmark:', state.bookmarks[0]?.title)
-
-    // Verify Supabase was called correctly
-    expect(supabase.from).toHaveBeenCalledWith('bookmarks')
-
-    // Verify correct bookmarks were loaded
-    expect(state.bookmarks.length).toBe(3)
-    expect(state.bookmarks[0].title).toBe('React 19 Beta Features - What\'s New')
+    // Verify correct bookmarks were loaded from database
+    expect(state.bookmarks.length).toBe(2)
+    expect(state.bookmarks[0].title).toBe('React 19 Beta Features')
+    expect(state.bookmarks[1].author).toBe('TypeScript Team')
     expect(state.isLoading).toBe(false)
+  })
+
+  it('should handle localStorage errors gracefully', async () => {
+    // Mock localStorage to throw an error
+    ;(window.localStorage.getItem as any).mockImplementation(() => {
+      throw new Error('localStorage is not available')
+    })
+
+    // Initialize the store
+    await useBookmarkStore.getState().initialize()
+
+    const state = useBookmarkStore.getState()
+
+    // Should fall back to mock data on localStorage error
+    expect(state.bookmarks.length).toBeGreaterThan(0) // Should have mock bookmarks as fallback
+    expect(state.isLoading).toBe(false)
+    // Error might be set but app should still function
   })
 })

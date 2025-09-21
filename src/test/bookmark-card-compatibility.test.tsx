@@ -55,8 +55,6 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => (
 
 describe('BookmarkCard Compatibility', () => {
   it('should render mock bookmark format correctly', () => {
-    console.log('🧪 Testing mock bookmark format rendering...')
-
     render(
       <TestWrapper>
         <BookmarkCard bookmark={mockBookmarkFormat} />
@@ -84,13 +82,9 @@ describe('BookmarkCard Compatibility', () => {
     // Check tags
     expect(screen.getByText('#react')).toBeInTheDocument()
     expect(screen.getByText('#javascript')).toBeInTheDocument()
-
-    console.log('✅ Mock bookmark format rendered successfully')
   })
 
   it('should render database bookmark format correctly', () => {
-    console.log('🧪 Testing database bookmark format rendering...')
-
     render(
       <TestWrapper>
         <BookmarkCard bookmark={databaseBookmarkFormat} />
@@ -117,13 +111,9 @@ describe('BookmarkCard Compatibility', () => {
     // Check tags
     expect(screen.getByText('#typescript')).toBeInTheDocument()
     expect(screen.getByText('#database')).toBeInTheDocument()
-
-    console.log('✅ Database bookmark format rendered successfully')
   })
 
   it('should handle missing or undefined properties gracefully', () => {
-    console.log('🧪 Testing graceful handling of missing properties...')
-
     const incompleteBookmark: TestBookmark = {
       id: 3,
       // Missing most properties to test fallbacks
@@ -144,13 +134,9 @@ describe('BookmarkCard Compatibility', () => {
 
     // Check default metrics
     expect(screen.getAllByText('0')).toHaveLength(3) // likes, retweets, replies
-
-    console.log('✅ Missing properties handled gracefully')
   })
 
   it('should handle starred state correctly for both formats', () => {
-    console.log('🧪 Testing starred state handling...')
-
     // Test mock format starred
     const { rerender } = render(
       <TestWrapper>
@@ -172,13 +158,9 @@ describe('BookmarkCard Compatibility', () => {
     // Check star is not filled (not starred state)
     starIcon = document.querySelector('[fill="none"]')
     expect(starIcon).toBeInTheDocument()
-
-    console.log('✅ Starred state handled correctly for both formats')
   })
 
   it('should handle media presence correctly for both formats', () => {
-    console.log('🧪 Testing media handling...')
-
     // Test mock format with media
     const { rerender } = render(
       <TestWrapper>
@@ -208,13 +190,9 @@ describe('BookmarkCard Compatibility', () => {
 
     // Check media placeholder is not shown
     expect(screen.queryByText('📷 Media Content')).not.toBeInTheDocument()
-
-    console.log('✅ Media handling works correctly for both formats')
   })
 
   it('should filter non-string tags correctly', () => {
-    console.log('🧪 Testing tag filtering...')
-
     const bookmarkWithMixedTags: TestBookmark = {
       id: 4,
       tags: ['valid-tag', 123, { invalid: 'tag' }, 'another-valid-tag', null, undefined]
@@ -233,7 +211,5 @@ describe('BookmarkCard Compatibility', () => {
     // Check non-string tags are not rendered
     expect(screen.queryByText('#123')).not.toBeInTheDocument()
     expect(screen.queryByText('#[object Object]')).not.toBeInTheDocument()
-
-    console.log('✅ Tag filtering works correctly')
   })
 })

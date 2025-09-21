@@ -3,6 +3,7 @@ import { render, screen, act } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useFilteredBookmarks } from '../hooks/useFilteredBookmarks'
+import { TEST_CONSTANTS, resetBookmarkStore } from './test-utils'
 
 // Mock Supabase
 vi.mock('../lib/supabase', () => ({
@@ -51,35 +52,18 @@ function TestComponent() {
 
 describe('Render Loop Detection', () => {
   beforeEach(() => {
-    // Reset store completely
-    useBookmarkStore.setState({
-      bookmarks: [],
-      selectedTags: [],
-      searchQuery: '',
-      activeTab: 0,
-      viewMode: 'grid',
-      isLoading: false,
-      isAIPanelOpen: false,
-      isFiltersPanelOpen: false,
-      activeSidebarItem: 'All Bookmarks',
-      currentUserId: null,
-      error: null,
-    })
+    resetBookmarkStore()
     vi.clearAllMocks()
   })
 
   it('should not cause infinite renders when using useFilteredBookmarks', async () => {
-    console.log('🧪 Starting render loop detection test')
-
     let renderCount = 0
-    const maxRenders = 5 // Very low threshold
 
     function RenderCounter() {
       renderCount++
-      console.log(`🧪 Render #${renderCount}`)
 
-      if (renderCount > maxRenders) {
-        throw new Error(`INFINITE RENDER LOOP DETECTED! ${renderCount} renders exceeded threshold of ${maxRenders}`)
+      if (renderCount > TEST_CONSTANTS.MAX_RENDER_COUNT) {
+        throw new Error(`INFINITE RENDER LOOP DETECTED! ${renderCount} renders exceeded threshold of ${TEST_CONSTANTS.MAX_RENDER_COUNT}`)
       }
 
       return <TestComponent />
@@ -90,13 +74,11 @@ describe('Render Loop Detection', () => {
 
     // Wait for any async effects to settle
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, TEST_CONSTANTS.TIMEOUT_DELAY))
     })
 
-    console.log(`🧪 Final render count: ${renderCount}`)
-
     // Should render a reasonable number of times (initial + maybe one update)
-    expect(renderCount).toBeLessThanOrEqual(maxRenders)
+    expect(renderCount).toBeLessThanOrEqual(TEST_CONSTANTS.MAX_RENDER_COUNT)
     expect(renderCount).toBeGreaterThan(0)
 
     // Component should be functional
@@ -105,22 +87,19 @@ describe('Render Loop Detection', () => {
   })
 
   it('should not re-render when searchQuery is empty string repeatedly', async () => {
-    console.log('🧪 Testing empty searchQuery stability')
-
     let effectCallCount = 0
-    const originalConsoleLog = console.log
 
     // Spy on the useFilteredBookmarks effect calls
-    console.log = vi.fn((message: string, ...args) => {
+    const originalConsoleLog = console.log
+    console.log = vi.fn((message: string) => {
       if (message.includes('🔍 useFilteredBookmarks effect triggered')) {
         effectCallCount++
-        console.warn(`Effect call #${effectCallCount}: ${message}`, ...args)
 
-        if (effectCallCount > 3) {
+        if (effectCallCount > TEST_CONSTANTS.MAX_EFFECT_CALLS) {
           throw new Error(`useFilteredBookmarks effect called too many times: ${effectCallCount}`)
         }
       }
-      originalConsoleLog(message, ...args)
+      originalConsoleLog(message)
     })
 
     try {
@@ -128,10 +107,8 @@ describe('Render Loop Detection', () => {
 
       // Wait for effects to settle
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 200))
+        await new Promise(resolve => setTimeout(resolve, TEST_CONSTANTS.TIMEOUT_DELAY * 2))
       })
-
-      console.warn(`🧪 useFilteredBookmarks effect was called ${effectCallCount} times`)
 
       // Effect should be called at most 2 times (mount + maybe one update)
       expect(effectCallCount).toBeLessThanOrEqual(2)
@@ -142,12 +119,10 @@ describe('Render Loop Detection', () => {
   })
 
   it('should handle authentication state changes without loops', async () => {
-    console.log('🧪 Testing auth state changes')
-
     let renderCount = 0
     function RenderCounter() {
       renderCount++
-      if (renderCount > 10) {
+      if (renderCount > TEST_CONSTANTS.MAX_AUTH_RENDERS) {
         throw new Error(`Too many renders during auth: ${renderCount}`)
       }
       return <TestComponent />
@@ -167,11 +142,10 @@ describe('Render Loop Detection', () => {
 
     // Wait for effects
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, TEST_CONSTANTS.TIMEOUT_DELAY))
     })
 
-    console.log(`🧪 Renders during auth change: ${renderCount}`)
-    expect(renderCount).toBeLessThan(10)
+    expect(renderCount).toBeLessThan(TEST_CONSTANTS.MAX_AUTH_RENDERS)
 
     // Verify state updated correctly
     expect(screen.getByTestId('user-id')).toHaveTextContent('test-user-123')

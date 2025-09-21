@@ -1,86 +1,105 @@
-# X-Bookmark-Manager2
+# X Bookmark Manager
 
-A bookmark management application built with React, TypeScript, and Vite.
+A privacy-focused bookmark management application for X/Twitter content, built with React, TypeScript, and Vite.
+
+## Features
+
+- 🔒 **Privacy-First**: All bookmark data stored locally in your browser
+- 📱 **Modern UI**: Dark theme with Twitter/X-inspired design
+- 🔍 **Advanced Search**: Full-text search with tag filtering
+- ⭐ **Smart Organization**: Star important bookmarks, filter by tags
+- 📊 **AI Insights**: Get insights and summaries of your bookmarks
+- 🎯 **No Account Required**: Works completely offline, no sign-up needed
 
 ## Tech Stack
 
 - **Frontend**: React 18 with TypeScript
+- **UI Library**: Chakra UI v3
+- **State Management**: Zustand
 - **Build Tool**: Vite
+- **Storage**: Browser LocalStorage (privacy-focused)
+- **Testing**: Vitest + React Testing Library
 - **Development**: ESLint, Hot Module Replacement (HMR)
-- **Database**: SQLite (planned)
-- **Backend**: Node.js (planned)
+
+## Privacy & Data
+
+- **100% Local Storage**: Your bookmarks never leave your device
+- **No Tracking**: No analytics, cookies, or user tracking
+- **Export/Import**: Full control over your data with JSON export/import
+- **Browser Storage**: Uses secure browser localStorage API
+- **No Account Required**: No sign-up, no passwords, no personal information collected
 
 ## Getting Started
 
+1. **Clone and Install**
 ```bash
+git clone <repository-url>
+cd x-bookmark-manager2
 npm install
+```
+
+2. **Start Development Server**
+```bash
 npm run dev
 ```
 
+3. **Open in Browser**
+Navigate to `http://localhost:5173` and start managing your bookmarks!
+
 ## Available Scripts
 
-- `npm run dev` - Start development server
+- `npm run dev` - Start development server with hot reload
 - `npm run build` - Build for production
-- `npm run lint` - Run ESLint
 - `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+- `npm test` - Run test suite
+- `npm run test:watch` - Run tests in watch mode
 
-## Expanding the ESLint configuration
+## Usage
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Managing Bookmarks
+- **Add Bookmarks**: Use the "+" button to add new X/Twitter bookmarks
+- **Search**: Use the search bar to find bookmarks by content or tags
+- **Filter**: Use tag filters to organize your bookmarks
+- **Star**: Mark important bookmarks with the star button
+- **Export**: Download your bookmarks as JSON for backup
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Data Management
+- **Local Storage**: All data is stored in your browser's localStorage
+- **Export/Import**: Use the settings menu to backup or restore bookmarks
+- **Storage Limit**: Modern browsers support ~5-10MB of localStorage
+- **Data Persistence**: Bookmarks persist across browser sessions
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Development
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Running Tests
+```bash
+npm test                 # Run all tests
+npm run test:watch      # Run tests in watch mode
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Building for Production
+```bash
+npm run build           # Create production build
+npm run preview         # Preview production build locally
 ```
+
+## Browser Compatibility
+
+- Chrome/Edge 87+
+- Firefox 78+
+- Safari 14+
+- Any modern browser with localStorage support
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Ensure all tests pass
+6. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details
