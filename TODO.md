@@ -27,7 +27,7 @@
 - [x] Backup and restore system (✅ Included in export/import)
 
 ### 2. **Core Bookmark Management**
-- [ ] Add new bookmark functionality (currently button does nothing)
+- [x] Add new bookmark functionality (currently button does nothing)
 - [ ] Edit bookmark content and metadata
 - [ ] Delete bookmarks (with confirmation)
 - [ ] Bulk operations (select multiple, delete, tag, etc.)

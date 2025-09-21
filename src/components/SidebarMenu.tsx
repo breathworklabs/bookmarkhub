@@ -14,10 +14,15 @@ const SidebarMenu = () => {
   const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
   const toggleAIPanel = useBookmarkStore((state) => state.toggleAIPanel)
+  const bookmarks = useBookmarkStore((state) => state.bookmarks)
+
+  // Calculate actual counts
+  const totalBookmarks = bookmarks.length
+  const starredBookmarks = bookmarks.filter(bookmark => bookmark.is_starred).length
 
   const sidebarItems: SidebarItem[] = [
-    { icon: LuMenu, label: 'All Bookmarks', count: '2,847' },
-    { icon: LuStar, label: 'Starred', count: '156' },
+    { icon: LuMenu, label: 'All Bookmarks', count: totalBookmarks.toLocaleString() },
+    { icon: LuStar, label: 'Starred', count: starredBookmarks.toString() },
     { icon: LuMenu, label: 'Collections', count: null },
     { icon: LuStar, label: 'AI Insights', badge: 'New' },
     { icon: LuDownload, label: 'Archives', count: null },

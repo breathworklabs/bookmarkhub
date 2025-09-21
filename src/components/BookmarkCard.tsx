@@ -177,7 +177,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
             <Wrap gap={2}>
               <For each={getTags()}>
                 {(tag) => (
-                  <WrapItem>
+                  <WrapItem key={tag}>
                     <Badge
                       bg="#2a2d35"
                       color="#71767b"

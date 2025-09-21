@@ -7,6 +7,7 @@ export const useFilteredBookmarks = (): Bookmark[] => {
   const selectedTags = useBookmarkStore((state) => state.selectedTags)
   const searchQuery = useBookmarkStore((state) => state.searchQuery)
   const activeTab = useBookmarkStore((state) => state.activeTab)
+  const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
 
   // Store reference to searchBookmarks function
   const searchBookmarksRef = useRef(useBookmarkStore.getState().searchBookmarks)
@@ -26,6 +27,20 @@ export const useFilteredBookmarks = (): Bookmark[] => {
 
   return useMemo(() => {
     let filtered = bookmarks
+
+    // Filter by sidebar selection first
+    switch (activeSidebarItem) {
+      case 'Starred':
+        filtered = filtered.filter(bookmark => bookmark.is_starred)
+        break
+      case 'Archives':
+        filtered = filtered.filter(bookmark => bookmark.is_archived)
+        break
+      case 'All Bookmarks':
+      default:
+        // Show all bookmarks
+        break
+    }
 
     // Filter by selected tags
     if (selectedTags.length > 0) {
@@ -76,5 +91,5 @@ export const useFilteredBookmarks = (): Bookmark[] => {
     }
 
     return filtered
-  }, [bookmarks, selectedTags, activeTab])
+  }, [bookmarks, selectedTags, activeTab, activeSidebarItem])
 }
