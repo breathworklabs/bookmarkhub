@@ -1,4 +1,4 @@
-import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For } from '@chakra-ui/react'
+import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuExternalLink, LuDownload } from 'react-icons/lu'
 import { type Bookmark } from '../data/mockBookmarks'
 import { useBookmarkStore } from '../store/bookmarkStore'
@@ -172,7 +172,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
         <Separator borderColor="#2a2d35" mb={3} />
 
         {/* Actions and Tags */}
-        <HStack justify="space-between" alignItems="center">
+        <VStack alignItems="stretch" gap={2}>
           <HStack gap={1}>
             <IconButton
               size="sm"
@@ -236,26 +236,29 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
               <LuDownload />
             </IconButton>
           </HStack>
-          <HStack gap={2}>
-            <For each={getTags()}>
-              {(tag) => (
-                <Badge
-                  key={tag}
-                  bg="#2a2d35"
-                  color="#71767b"
-                  fontSize="xs"
-                  px={2}
-                  py={1}
-                  borderRadius="full"
-                  _hover={{ bg: '#3a3d45', color: '#e1e5e9' }}
-                  cursor="pointer"
-                >
-                  #{tag}
-                </Badge>
-              )}
-            </For>
-          </HStack>
-        </HStack>
+          {getTags().length > 0 && (
+            <Wrap gap={2}>
+              <For each={getTags()}>
+                {(tag) => (
+                  <WrapItem>
+                    <Badge
+                      bg="#2a2d35"
+                      color="#71767b"
+                      fontSize="xs"
+                      px={2}
+                      py={1}
+                      borderRadius="full"
+                      _hover={{ bg: '#3a3d45', color: '#e1e5e9' }}
+                      cursor="pointer"
+                    >
+                      #{tag}
+                    </Badge>
+                  </WrapItem>
+                )}
+              </For>
+            </Wrap>
+          )}
+        </VStack>
       </Box>
     </Card.Root>
   )

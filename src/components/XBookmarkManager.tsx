@@ -29,11 +29,11 @@ const XBookmarkManager = () => {
           <FilterBar />
 
           {/* Bookmarks Grid */}
-          <Box flex={1} p={6} overflowY="auto">
-            <VStack alignItems="stretch" gap={6}>
+          <Box flex={1} p={4} overflowY="auto">
+            <VStack alignItems="stretch" gap={4}>
               <SimpleGrid
-                columns={{ base: 1, md: 2, lg: 3 }}
-                gap={6}
+                columns={{ base: 1, md: 2, lg: 3, xl: 4, "2xl": 5 }}
+                gap={4}
                 w="full"
               >
                 <For each={filteredBookmarks}>
