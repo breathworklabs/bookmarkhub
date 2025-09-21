@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, waitFor, act } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import { useBookmarkStore } from '../store/bookmarkStore'
@@ -42,10 +42,7 @@ function TestInitComponent() {
 }
 
 describe('Local Storage Initialization Flow', () => {
-  let renderCount = 0
-
   beforeEach(() => {
-    renderCount = 0
     resetBookmarkStore()
     vi.clearAllMocks()
   })

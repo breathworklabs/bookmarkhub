@@ -13,22 +13,25 @@ const STORAGE_KEYS = {
 // Types for localStorage data
 export interface StoredBookmark {
   id: number
+  user_id: string
   title: string
   url: string
+  description: string
   content: string
+  thumbnail_url?: string
+  favicon_url?: string
   author: string
   domain: string
-  created_at: string
-  updated_at?: string
+  source_platform: string
+  source_id?: string
+  engagement_score: number
+  is_starred: boolean
+  is_read: boolean
+  is_archived: boolean
   tags: string[]
-  isStarred: boolean
-  metrics: {
-    likes: string
-    retweets: string
-    replies: string
-  }
-  thumbnail_url?: string
-  hasMedia?: boolean
+  metadata?: any
+  created_at: string
+  updated_at: string
 }
 
 export interface BookmarkInsert extends Omit<StoredBookmark, 'id' | 'created_at' | 'updated_at'> {
@@ -174,7 +177,7 @@ class LocalStorageService {
       throw new Error(`Bookmark with id ${id} not found`)
     }
 
-    return this.updateBookmark(id, { isStarred: !bookmark.isStarred })
+    return this.updateBookmark(id, { is_starred: !bookmark.is_starred })
   }
 
   async searchBookmarks(query: string): Promise<StoredBookmark[]> {
@@ -204,7 +207,7 @@ class LocalStorageService {
 
   async getStarredBookmarks(): Promise<StoredBookmark[]> {
     const bookmarks = await this.getBookmarks()
-    return bookmarks.filter(bookmark => bookmark.isStarred)
+    return bookmarks.filter(bookmark => bookmark.is_starred)
   }
 
   // Settings operations

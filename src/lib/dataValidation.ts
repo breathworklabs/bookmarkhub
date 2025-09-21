@@ -19,20 +19,23 @@ export const isValidBookmark = (bookmark: any): bookmark is Bookmark => {
     typeof bookmark === 'object' &&
     bookmark !== null &&
     typeof bookmark.id === 'number' &&
+    typeof bookmark.user_id === 'string' &&
     typeof bookmark.title === 'string' &&
     typeof bookmark.url === 'string' &&
     isValidUrl(bookmark.url) &&
+    typeof bookmark.description === 'string' &&
     typeof bookmark.content === 'string' &&
     typeof bookmark.author === 'string' &&
     typeof bookmark.domain === 'string' &&
+    typeof bookmark.source_platform === 'string' &&
+    typeof bookmark.engagement_score === 'number' &&
+    typeof bookmark.is_starred === 'boolean' &&
+    typeof bookmark.is_read === 'boolean' &&
+    typeof bookmark.is_archived === 'boolean' &&
     typeof bookmark.created_at === 'string' &&
+    typeof bookmark.updated_at === 'string' &&
     Array.isArray(bookmark.tags) &&
-    bookmark.tags.every((tag: any) => typeof tag === 'string') &&
-    typeof bookmark.isStarred === 'boolean' &&
-    bookmark.metrics &&
-    typeof bookmark.metrics.likes === 'string' &&
-    typeof bookmark.metrics.retweets === 'string' &&
-    typeof bookmark.metrics.replies === 'string'
+    bookmark.tags.every((tag: any) => typeof tag === 'string')
   )
 }
 
@@ -43,16 +46,17 @@ export const isValidBookmarkInsert = (bookmark: any): bookmark is BookmarkInsert
     typeof bookmark.title === 'string' &&
     typeof bookmark.url === 'string' &&
     isValidUrl(bookmark.url) &&
+    typeof bookmark.description === 'string' &&
     typeof bookmark.content === 'string' &&
     typeof bookmark.author === 'string' &&
     typeof bookmark.domain === 'string' &&
+    typeof bookmark.source_platform === 'string' &&
+    typeof bookmark.engagement_score === 'number' &&
+    typeof bookmark.is_starred === 'boolean' &&
+    typeof bookmark.is_read === 'boolean' &&
+    typeof bookmark.is_archived === 'boolean' &&
     Array.isArray(bookmark.tags) &&
-    bookmark.tags.every((tag: any) => typeof tag === 'string') &&
-    typeof bookmark.isStarred === 'boolean' &&
-    bookmark.metrics &&
-    typeof bookmark.metrics.likes === 'string' &&
-    typeof bookmark.metrics.retweets === 'string' &&
-    typeof bookmark.metrics.replies === 'string'
+    bookmark.tags.every((tag: any) => typeof tag === 'string')
   )
 }
 
@@ -85,22 +89,25 @@ export const isValidMetadata = (metadata: any): metadata is AppMetadata => {
 export const sanitizeBookmark = (bookmark: any): BookmarkInsert | null => {
   try {
     const sanitized: BookmarkInsert = {
+      user_id: String(bookmark.user_id || 'ae879c80-f3fc-4e05-a837-384e4b9bfb28'),
       title: String(bookmark.title || '').trim(),
       url: String(bookmark.url || '').trim(),
-      content: String(bookmark.content || '').trim(),
+      description: String(bookmark.description || bookmark.content || '').trim(),
+      content: String(bookmark.content || bookmark.description || '').trim(),
       author: String(bookmark.author || 'Unknown Author').trim(),
       domain: String(bookmark.domain || extractDomain(bookmark.url)).trim(),
+      source_platform: String(bookmark.source_platform || 'manual').trim(),
+      engagement_score: Number(bookmark.engagement_score || 0),
+      is_starred: Boolean(bookmark.is_starred || bookmark.isStarred),
+      is_read: Boolean(bookmark.is_read || false),
+      is_archived: Boolean(bookmark.is_archived || false),
       tags: Array.isArray(bookmark.tags)
         ? bookmark.tags.filter((tag: any) => typeof tag === 'string').map((tag: string) => tag.trim())
         : [],
-      isStarred: Boolean(bookmark.isStarred),
-      metrics: {
-        likes: String(bookmark.metrics?.likes || '0'),
-        retweets: String(bookmark.metrics?.retweets || '0'),
-        replies: String(bookmark.metrics?.replies || '0')
-      },
       thumbnail_url: bookmark.thumbnail_url ? String(bookmark.thumbnail_url).trim() : undefined,
-      hasMedia: Boolean(bookmark.hasMedia || bookmark.thumbnail_url)
+      favicon_url: bookmark.favicon_url ? String(bookmark.favicon_url).trim() : undefined,
+      source_id: bookmark.source_id ? String(bookmark.source_id).trim() : undefined,
+      metadata: bookmark.metadata
     }
 
     // Validate required fields

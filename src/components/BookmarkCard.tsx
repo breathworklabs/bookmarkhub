@@ -1,6 +1,6 @@
 import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuExternalLink, LuDownload } from 'react-icons/lu'
-import { type Bookmark } from '../data/mockBookmarks'
+import { type Bookmark } from '../types/bookmark'
 import { useBookmarkStore } from '../store/bookmarkStore'
 
 interface BookmarkCardProps {

@@ -1,6 +1,6 @@
 import { useMemo, useEffect, useRef } from 'react'
 import { useBookmarkStore } from '../store/bookmarkStore'
-import { type Bookmark } from '../lib/database'
+import { type Bookmark } from '../types/bookmark'
 
 export const useFilteredBookmarks = (): Bookmark[] => {
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
@@ -58,14 +58,14 @@ export const useFilteredBookmarks = (): Bookmark[] => {
         // Filter bookmarks that might be threads (longer content or from twitter)
         filtered = filtered.filter(bookmark =>
           (bookmark.content && bookmark.content.length > 200) ||
-          bookmark.source_platform === 'twitter'
+          bookmark.domain === 'x.com' ||
+          bookmark.domain === 'twitter.com'
         )
         break
       case 4: // Media
         // Filter bookmarks that have media
         filtered = filtered.filter(bookmark =>
           bookmark.thumbnail_url ||
-          bookmark.source_platform === 'youtube' ||
           bookmark.url.includes('youtube.com') ||
           bookmark.url.includes('vimeo.com') ||
           bookmark.url.match(/\.(jpg|jpeg|png|gif|webp|mp4|mp3)$/i)

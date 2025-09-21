@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { mockBookmarks } from '../data/mockBookmarks'
-import { db, type Bookmark, type BookmarkInsert } from '../lib/database'
-import { supabase } from '../lib/supabase'
+import { localStorageService } from '../lib/localStorage'
+import type { Bookmark, BookmarkInsert, AppSettings } from '../types/bookmark'
 
 interface BookmarkState {
   // State
@@ -15,8 +15,8 @@ interface BookmarkState {
   isAIPanelOpen: boolean
   isFiltersPanelOpen: boolean
   activeSidebarItem: string
-  currentUserId: string | null
   error: string | null
+  settings: AppSettings
 
   // Actions
   setBookmarks: (bookmarks: Bookmark[]) => void
@@ -40,8 +40,16 @@ interface BookmarkState {
   setFiltersPanelOpen: (isOpen: boolean) => void
   toggleFiltersPanel: () => void
   setActiveSidebarItem: (item: string) => void
-  setCurrentUserId: (userId: string | null) => void
   setError: (error: string | null) => void
+
+  // Settings actions
+  loadSettings: () => Promise<void>
+  updateSettings: (settings: Partial<AppSettings>) => Promise<void>
+
+  // Data management
+  exportBookmarks: () => Promise<void>
+  importBookmarks: (file: File) => Promise<void>
+  clearAllData: () => Promise<void>
 
   // Initialize store
   initialize: () => Promise<void>
@@ -60,51 +68,44 @@ export const useBookmarkStore = create<BookmarkState>()(
       isAIPanelOpen: false,
       isFiltersPanelOpen: false,
       activeSidebarItem: 'All Bookmarks',
-      currentUserId: null,
       error: null,
+      settings: {
+        theme: 'dark',
+        viewMode: 'grid',
+        defaultSort: 'newest',
+        showMetrics: true,
+        compactMode: false,
+        autoBackup: true,
+        exportFormat: 'json'
+      },
 
       // Initialize store
       initialize: async () => {
         try {
           set({ isLoading: true, error: null }, false, 'initialize:start')
 
-          // Check if Supabase is configured
-          if (!supabase) {
+          // Load settings first
+          await get().loadSettings()
+
+          // Try to load bookmarks from localStorage
+          const bookmarks = await localStorageService.getBookmarks()
+
+          if (bookmarks.length > 0) {
+            console.log('📂 Loaded bookmarks from localStorage:', bookmarks.length)
             set({
-              bookmarks: mockBookmarks,
-              currentUserId: null
-            }, false, 'initialize:useMockData')
-            return
-          }
-
-          // Get current user
-          const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-          // AuthSessionMissingError is expected when no user is logged in
-          if (authError && !authError.message.includes('Auth session missing')) {
-            console.error('Authentication error:', authError)
-          }
-
-          if (user) {
-            // Set user ID, clear filters, and ensure isLoading is false, then load bookmarks
-            set({
-              currentUserId: user.id,
-              bookmarks: [],
-              selectedTags: [], // Clear tag filters on login
-              searchQuery: '', // Clear search on login
-              activeTab: 0, // Reset to "All" tab
-              isLoading: false
-            }, false, 'initialize:setUser')
-            await get().loadBookmarks()
+              bookmarks,
+              selectedTags: [], // Clear filters on startup
+              searchQuery: '', // Clear search on startup
+              activeTab: 0 // Reset to "All" tab
+            }, false, 'initialize:loadedFromStorage')
           } else {
-            // Use mock data if no user is logged in
-            set({
-              bookmarks: mockBookmarks,
-              currentUserId: null
-            }, false, 'initialize:useMockData')
+            console.log('📋 No stored bookmarks found, using mock data')
+            set({ bookmarks: mockBookmarks }, false, 'initialize:useMockData')
           }
+
         } catch (error) {
           console.error('Failed to initialize app:', error)
+          console.log('📋 Falling back to mock data')
           set({
             error: error instanceof Error ? error.message : 'Failed to initialize',
             bookmarks: mockBookmarks // Fallback to mock data
@@ -114,14 +115,9 @@ export const useBookmarkStore = create<BookmarkState>()(
         }
       },
 
-      // Async Actions
+      // Load bookmarks from localStorage
       loadBookmarks: async () => {
         const state = get()
-        const userId = state.currentUserId
-
-        if (!userId) {
-          return
-        }
 
         // Prevent multiple simultaneous calls
         if (state.isLoading) {
@@ -131,35 +127,21 @@ export const useBookmarkStore = create<BookmarkState>()(
         try {
           set({ isLoading: true, error: null }, false, 'loadBookmarks:start')
 
-          // Use direct Supabase call instead of database service
-          if (!supabase) {
-            throw new Error('Supabase not configured')
-          }
-
-          const { data: bookmarks, error } = await supabase
-            .from('bookmarks')
-            .select('*')
-            .eq('user_id', userId)
-            .order('created_at', { ascending: false })
-
-          if (error) {
-            throw error
-          }
-
+          const bookmarks = await localStorageService.getBookmarks()
           set({ bookmarks, isLoading: false }, false, 'loadBookmarks:success')
         } catch (error) {
           console.error('Error loading bookmarks:', error)
-          set({ error: error instanceof Error ? error.message : 'Failed to load bookmarks', isLoading: false }, false, 'loadBookmarks:error')
+          set({
+            error: error instanceof Error ? error.message : 'Failed to load bookmarks',
+            isLoading: false
+          }, false, 'loadBookmarks:error')
         }
       },
 
       addBookmark: async (bookmark) => {
-        const userId = get().currentUserId
-        if (!userId) return
-
         try {
           set({ isLoading: true, error: null }, false, 'addBookmark:start')
-          const newBookmark = await db.createBookmark({ ...bookmark, user_id: userId })
+          const newBookmark = await localStorageService.createBookmark(bookmark)
           set(
             (state) => ({ bookmarks: [newBookmark, ...state.bookmarks] }),
             false,
@@ -174,12 +156,9 @@ export const useBookmarkStore = create<BookmarkState>()(
       },
 
       removeBookmark: async (id) => {
-        const userId = get().currentUserId
-        if (!userId) return
-
         try {
           set({ isLoading: true, error: null }, false, 'removeBookmark:start')
-          await db.deleteBookmark(id, userId)
+          await localStorageService.deleteBookmark(id)
           set(
             (state) => ({ bookmarks: state.bookmarks.filter(b => b.id !== id) }),
             false,
@@ -194,11 +173,8 @@ export const useBookmarkStore = create<BookmarkState>()(
       },
 
       toggleStarBookmark: async (id) => {
-        const userId = get().currentUserId
-        if (!userId) return
-
         try {
-          const updatedBookmark = await db.toggleBookmarkStar(id, userId)
+          const updatedBookmark = await localStorageService.toggleBookmarkStar(id)
           set(
             (state) => ({
               bookmarks: state.bookmarks.map(bookmark =>
@@ -215,15 +191,14 @@ export const useBookmarkStore = create<BookmarkState>()(
       },
 
       searchBookmarks: async (query) => {
-        const userId = get().currentUserId
-        if (!userId || !query.trim()) {
+        if (!query.trim()) {
           await get().loadBookmarks()
           return
         }
 
         try {
           set({ isLoading: true, error: null }, false, 'searchBookmarks:start')
-          const results = await db.searchBookmarks(userId, query)
+          const results = await localStorageService.searchBookmarks(query)
           set({ bookmarks: results }, false, 'searchBookmarks:success')
         } catch (error) {
           console.error('Error searching bookmarks:', error)
@@ -233,30 +208,127 @@ export const useBookmarkStore = create<BookmarkState>()(
         }
       },
 
-      // Sync Actions
+      // Settings management
+      loadSettings: async () => {
+        try {
+          const settings = await localStorageService.getSettings()
+          set({ settings }, false, 'loadSettings:success')
+        } catch (error) {
+          console.error('Error loading settings:', error)
+          // Keep default settings on error
+        }
+      },
+
+      updateSettings: async (newSettings) => {
+        try {
+          const updatedSettings = await localStorageService.updateSettings(newSettings)
+          set({ settings: updatedSettings }, false, 'updateSettings:success')
+
+          // Update view mode if it changed
+          if (newSettings.viewMode) {
+            set({ viewMode: newSettings.viewMode }, false, 'updateSettings:viewMode')
+          }
+        } catch (error) {
+          console.error('Error updating settings:', error)
+          set({ error: error instanceof Error ? error.message : 'Failed to update settings' }, false, 'updateSettings:error')
+        }
+      },
+
+      // Data management
+      exportBookmarks: async () => {
+        try {
+          const data = await localStorageService.exportData()
+
+          // Create and download file
+          const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+          const url = URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = `x-bookmarks-${new Date().toISOString().split('T')[0]}.json`
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          URL.revokeObjectURL(url)
+
+          console.log('📁 Bookmarks exported successfully')
+        } catch (error) {
+          console.error('Error exporting bookmarks:', error)
+          set({ error: error instanceof Error ? error.message : 'Failed to export bookmarks' }, false, 'exportBookmarks:error')
+        }
+      },
+
+      importBookmarks: async (file) => {
+        try {
+          set({ isLoading: true, error: null }, false, 'importBookmarks:start')
+
+          const text = await file.text()
+          const data = JSON.parse(text)
+
+          await localStorageService.importData(data)
+          await get().loadBookmarks()
+          await get().loadSettings()
+
+          console.log('📁 Bookmarks imported successfully')
+        } catch (error) {
+          console.error('Error importing bookmarks:', error)
+          set({ error: error instanceof Error ? error.message : 'Failed to import bookmarks' }, false, 'importBookmarks:error')
+        } finally {
+          set({ isLoading: false }, false, 'importBookmarks:complete')
+        }
+      },
+
+      clearAllData: async () => {
+        try {
+          set({ isLoading: true, error: null }, false, 'clearAllData:start')
+
+          await localStorageService.clearAllData()
+
+          // Reset store to initial state
+          set({
+            bookmarks: [],
+            selectedTags: [],
+            searchQuery: '',
+            activeTab: 0,
+            viewMode: 'grid',
+            activeSidebarItem: 'All Bookmarks',
+            settings: {
+              theme: 'dark',
+              viewMode: 'grid',
+              defaultSort: 'newest',
+              showMetrics: true,
+              compactMode: false,
+              autoBackup: true,
+              exportFormat: 'json'
+            }
+          }, false, 'clearAllData:success')
+
+          console.log('🗑️ All data cleared successfully')
+        } catch (error) {
+          console.error('Error clearing data:', error)
+          set({ error: error instanceof Error ? error.message : 'Failed to clear data' }, false, 'clearAllData:error')
+        } finally {
+          set({ isLoading: false }, false, 'clearAllData:complete')
+        }
+      },
+
+      // Sync Actions (unchanged)
       setBookmarks: (bookmarks) => set({ bookmarks }, false, 'setBookmarks'),
-
       setSelectedTags: (tags) => set({ selectedTags: tags }, false, 'setSelectedTags'),
-
       addTag: (tag) => set(
         (state) => ({ selectedTags: [...state.selectedTags, tag] }),
         false,
         'addTag'
       ),
-
       removeTag: (tag) => set(
         (state) => ({ selectedTags: state.selectedTags.filter(t => t !== tag) }),
         false,
         'removeTag'
       ),
-
       clearTags: () => set({ selectedTags: [] }, false, 'clearTags'),
-
       setSearchQuery: (query) => set({ searchQuery: query }, false, 'setSearchQuery'),
       setActiveTab: (tab) => set({ activeTab: tab }, false, 'setActiveTab'),
       setViewMode: (mode) => set({ viewMode: mode }, false, 'setViewMode'),
       setIsLoading: (loading) => set({ isLoading: loading }, false, 'setIsLoading'),
-
       setAIPanelOpen: (isOpen) => set({ isAIPanelOpen: isOpen }, false, 'setAIPanelOpen'),
       toggleAIPanel: () => set(
         (state) => ({ isAIPanelOpen: !state.isAIPanelOpen }),
@@ -270,7 +342,6 @@ export const useBookmarkStore = create<BookmarkState>()(
         'toggleFiltersPanel'
       ),
       setActiveSidebarItem: (item) => set({ activeSidebarItem: item }, false, 'setActiveSidebarItem'),
-      setCurrentUserId: (userId) => set({ currentUserId: userId }, false, 'setCurrentUserId'),
       setError: (error) => set({ error }, false, 'setError')
     }),
     {

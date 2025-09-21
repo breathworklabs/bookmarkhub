@@ -1,9 +1,7 @@
-import { Box, VStack, HStack, Text, Badge, For, Button } from '@chakra-ui/react'
+import { Box, VStack, HStack, Text, Badge, For } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuDownload, LuExternalLink } from 'react-icons/lu'
 import { theme } from '../styles/theme'
 import { useBookmarkStore } from '../store/bookmarkStore'
-import { SignInModal } from './auth/SignInModal'
-import { useState } from 'react'
 
 interface SidebarItem {
   icon: React.ComponentType<{ size: number }>
@@ -16,8 +14,6 @@ const SidebarMenu = () => {
   const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
   const toggleAIPanel = useBookmarkStore((state) => state.toggleAIPanel)
-  const currentUserId = useBookmarkStore((state) => state.currentUserId)
-  const [isSignInOpen, setIsSignInOpen] = useState(false)
 
   const sidebarItems: SidebarItem[] = [
     { icon: LuMenu, label: 'All Bookmarks', count: '2,847' },
@@ -115,44 +111,8 @@ const SidebarMenu = () => {
           </For>
         </VStack>
 
-        {/* Authentication Status */}
+        {/* Settings */}
         <VStack alignItems="stretch" borderTopWidth="1px" borderColor="#2a2d35" pt={4} mt="auto">
-          {currentUserId ? (
-            <HStack
-              p={3}
-              borderRadius="12px"
-              bg="#1a5f3f"
-              color="white"
-              fontSize="14px"
-              fontWeight="500"
-            >
-              <Text fontSize="16px" mr={2}>👤</Text>
-              <VStack alignItems="flex-start" spacing={0} flex={1}>
-                <Text fontSize="12px" opacity={0.8}>Signed in</Text>
-                <Text fontSize="11px" opacity={0.6}>Real data active</Text>
-              </VStack>
-            </HStack>
-          ) : (
-            <Button
-              variant="ghost"
-              onClick={() => setIsSignInOpen(true)}
-              justifyContent="flex-start"
-              p={3}
-              borderRadius="12px"
-              color="#71767b"
-              fontSize="14px"
-              fontWeight="500"
-              _hover={{
-                bg: '#2a2d35',
-                color: '#e1e5e9'
-              }}
-            >
-              <Text fontSize="16px" mr={2}>🔑</Text>
-              Sign In for Real Data
-            </Button>
-          )}
-
-          {/* Settings */}
           <HStack
             p={3}
             borderRadius="12px"
@@ -171,7 +131,6 @@ const SidebarMenu = () => {
           </HStack>
         </VStack>
 
-        <SignInModal open={isSignInOpen} onOpenChange={setIsSignInOpen} />
       </VStack>
     </Box>
   )

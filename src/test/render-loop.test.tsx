@@ -36,15 +36,11 @@ vi.mock('../lib/supabase', () => ({
 // Test component that uses the problematic hook
 function TestComponent() {
   const filteredBookmarks = useFilteredBookmarks()
-  const currentUserId = useBookmarkStore((state) => state.currentUserId)
   const isLoading = useBookmarkStore((state) => state.isLoading)
-
-  console.log('🧪 TestComponent render - bookmarks:', filteredBookmarks.length, 'userId:', currentUserId, 'loading:', isLoading)
 
   return (
     <ChakraProvider value={defaultSystem}>
       <div data-testid="bookmarks-count">{filteredBookmarks.length}</div>
-      <div data-testid="user-id">{currentUserId || 'none'}</div>
       <div data-testid="loading">{isLoading.toString()}</div>
     </ChakraProvider>
   )
@@ -83,7 +79,6 @@ describe('Render Loop Detection', () => {
 
     // Component should be functional
     expect(screen.getByTestId('bookmarks-count')).toHaveTextContent('0')
-    expect(screen.getByTestId('user-id')).toHaveTextContent('none')
   })
 
   it('should not re-render when searchQuery is empty string repeatedly', async () => {
@@ -118,22 +113,21 @@ describe('Render Loop Detection', () => {
     }
   })
 
-  it('should handle authentication state changes without loops', async () => {
+  it('should handle bookmark state changes without loops', async () => {
     let renderCount = 0
     function RenderCounter() {
       renderCount++
       if (renderCount > TEST_CONSTANTS.MAX_AUTH_RENDERS) {
-        throw new Error(`Too many renders during auth: ${renderCount}`)
+        throw new Error(`Too many renders during state change: ${renderCount}`)
       }
       return <TestComponent />
     }
 
     render(<RenderCounter />)
 
-    // Simulate authentication
+    // Simulate bookmark state change
     await act(async () => {
       useBookmarkStore.setState({
-        currentUserId: 'test-user-123',
         bookmarks: [
           { id: 1, title: 'Test', url: 'https://test.com', tags: [], created_at: new Date().toISOString() } as any
         ]
@@ -148,7 +142,6 @@ describe('Render Loop Detection', () => {
     expect(renderCount).toBeLessThan(TEST_CONSTANTS.MAX_AUTH_RENDERS)
 
     // Verify state updated correctly
-    expect(screen.getByTestId('user-id')).toHaveTextContent('test-user-123')
     expect(screen.getByTestId('bookmarks-count')).toHaveTextContent('1')
   })
 })

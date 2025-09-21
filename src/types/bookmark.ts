@@ -6,18 +6,25 @@
 // Core bookmark interface for localStorage
 export interface Bookmark {
   id: number
+  user_id: string
   title: string
   url: string
+  description: string
   content: string
+  thumbnail_url?: string
+  favicon_url?: string
   author: string
   domain: string
-  created_at: string
-  updated_at?: string
+  source_platform: string
+  source_id?: string
+  engagement_score: number
+  is_starred: boolean
+  is_read: boolean
+  is_archived: boolean
   tags: string[]
-  isStarred: boolean
-  metrics: BookmarkMetrics
-  thumbnail_url?: string
-  hasMedia?: boolean
+  metadata?: any
+  created_at: string
+  updated_at: string
 }
 
 // Bookmark metrics for engagement data
@@ -127,13 +134,18 @@ export interface StorageService {
 
 // Error types
 export class BookmarkError extends Error {
+  public code: 'NOT_FOUND' | 'STORAGE_FULL' | 'INVALID_DATA' | 'STORAGE_UNAVAILABLE'
+  public details?: any
+
   constructor(
     message: string,
-    public code: 'NOT_FOUND' | 'STORAGE_FULL' | 'INVALID_DATA' | 'STORAGE_UNAVAILABLE',
-    public details?: any
+    code: 'NOT_FOUND' | 'STORAGE_FULL' | 'INVALID_DATA' | 'STORAGE_UNAVAILABLE',
+    details?: any
   ) {
     super(message)
     this.name = 'BookmarkError'
+    this.code = code
+    this.details = details
   }
 }
 

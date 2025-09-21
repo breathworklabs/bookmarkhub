@@ -205,7 +205,7 @@ const FilterBar = () => {
                     cursor: 'not-allowed'
                   }}
                   onClick={handleAddTag}
-                  isDisabled={!newTagName.trim() || selectedTags.includes(newTagName.trim())}
+                  disabled={!newTagName.trim() || selectedTags.includes(newTagName.trim())}
                 >
                   Add Tag
                 </Button>

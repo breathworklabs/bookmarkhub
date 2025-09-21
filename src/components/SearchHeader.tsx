@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import { Box, HStack, Input, Button, Spacer } from '@chakra-ui/react'
 import { LuMenu } from 'react-icons/lu'
 import { theme } from '../styles/theme'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import AddBookmarkModal from './AddBookmarkModal'
 
 const SearchHeader = () => {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const searchQuery = useBookmarkStore((state) => state.searchQuery)
   const setSearchQuery = useBookmarkStore((state) => state.setSearchQuery)
   const isFiltersPanelOpen = useBookmarkStore((state) => state.isFiltersPanelOpen)
@@ -51,12 +54,17 @@ const SearchHeader = () => {
             +
             Import
           </Button>
-          <Button {...theme.styles.primaryButton}>
+          <Button {...theme.styles.primaryButton} onClick={() => setIsAddModalOpen(true)}>
             +
             Add Bookmark
           </Button>
         </HStack>
       </HStack>
+
+      <AddBookmarkModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+      />
     </Box>
   )
 }

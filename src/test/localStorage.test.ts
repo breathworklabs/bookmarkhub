@@ -18,18 +18,19 @@ describe('LocalStorageService', () => {
   let service: LocalStorageService
 
   const sampleBookmark: BookmarkInsert = {
+      user_id: 'ae879c80-f3fc-4e05-a837-384e4b9bfb28',
       title: 'Test Bookmark',
       url: 'https://example.com',
+      description: 'This is a test bookmark',
       content: 'This is a test bookmark',
       author: 'Test Author',
       domain: 'example.com',
-      tags: ['test', 'bookmark'],
-      isStarred: false,
-      metrics: {
-        likes: '10',
-        retweets: '5',
-        replies: '2'
-      }
+      source_platform: 'manual',
+      engagement_score: 10,
+      is_starred: false,
+      is_read: false,
+      is_archived: false,
+      tags: ['test', 'bookmark']
     }
 
   beforeEach(() => {
@@ -97,11 +98,11 @@ describe('LocalStorageService', () => {
       localStorageMock.getItem.mockReturnValue(JSON.stringify(existingBookmarks))
       localStorageMock.setItem.mockReturnValue(undefined)
 
-      const updates = { title: 'Updated Title', isStarred: true }
+      const updates = { title: 'Updated Title', is_starred: true }
       const result = await service.updateBookmark(1, updates)
 
       expect(result.title).toBe('Updated Title')
-      expect(result.isStarred).toBe(true)
+      expect(result.is_starred).toBe(true)
       expect(result.updated_at).not.toBe('2024-01-01T00:00:00Z')
     })
 
@@ -133,7 +134,7 @@ describe('LocalStorageService', () => {
       )
       expect(setItemCall).toBeDefined()
 
-      const savedBookmarks = JSON.parse(setItemCall[1])
+      const savedBookmarks = JSON.parse(setItemCall![1])
       expect(savedBookmarks).toHaveLength(1)
       expect(savedBookmarks[0].id).toBe(2)
     })
@@ -154,7 +155,7 @@ describe('LocalStorageService', () => {
 
       const result = await service.toggleBookmarkStar(1)
 
-      expect(result.isStarred).toBe(true)
+      expect(result.is_starred).toBe(true)
     })
 
     it('should search bookmarks by query', async () => {
@@ -167,21 +168,25 @@ describe('LocalStorageService', () => {
           domain: 'reactjs.org',
           url: 'https://reactjs.org/tutorial',
           tags: ['react', 'tutorial'],
-          isStarred: false,
-          metrics: { likes: '10', retweets: '5', replies: '2' },
+          is_starred: false,
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-01T00:00:00Z'
         },
         {
           id: 2,
+          user_id: 'ae879c80-f3fc-4e05-a837-384e4b9bfb28',
           title: 'Vue.js Guide',
+          url: 'https://vuejs.org/guide',
+          description: 'Getting started with Vue.js',
           content: 'Getting started with Vue.js',
           author: 'Vue Team',
           domain: 'vuejs.org',
-          url: 'https://vuejs.org/guide',
+          source_platform: 'manual',
+          engagement_score: 8,
+          is_starred: false,
+          is_read: false,
+          is_archived: false,
           tags: ['vue', 'tutorial'],
-          isStarred: false,
-          metrics: { likes: '8', retweets: '3', replies: '1' },
           created_at: '2024-01-02T00:00:00Z',
           updated_at: '2024-01-02T00:00:00Z'
         }
@@ -206,7 +211,7 @@ describe('LocalStorageService', () => {
           id: 1,
           ...sampleBookmark,
           title: 'Starred Bookmark',
-          isStarred: true,
+          is_starred: true,
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-01T00:00:00Z'
         },
@@ -214,7 +219,7 @@ describe('LocalStorageService', () => {
           id: 2,
           ...sampleBookmark,
           title: 'Regular Bookmark',
-          isStarred: false,
+          is_starred: false,
           created_at: '2024-01-02T00:00:00Z',
           updated_at: '2024-01-02T00:00:00Z'
         }
@@ -260,7 +265,7 @@ describe('LocalStorageService', () => {
       localStorageMock.getItem.mockReturnValue(JSON.stringify(existingSettings))
       localStorageMock.setItem.mockReturnValue(undefined)
 
-      const updates = { theme: 'light', viewMode: 'list' }
+      const updates = { theme: 'light' as const, viewMode: 'list' as const }
       const result = await service.updateSettings(updates)
 
       expect(result.theme).toBe('light')
@@ -293,7 +298,7 @@ describe('LocalStorageService', () => {
 
       const importData = {
         bookmarks: [{ id: 1, ...sampleBookmark, created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' }],
-        settings: { theme: 'light', viewMode: 'list', defaultSort: 'title', showMetrics: false, compactMode: true, autoBackup: false, exportFormat: 'csv' }
+        settings: { theme: 'light' as const, viewMode: 'list' as const, defaultSort: 'title' as const, showMetrics: false, compactMode: true, autoBackup: false, exportFormat: 'csv' as const }
       }
 
       await service.importData(importData)

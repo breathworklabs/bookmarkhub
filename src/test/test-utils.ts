@@ -1,4 +1,4 @@
-import { vi } from 'vitest'
+// No imports needed for this test utils file
 
 // Common test constants
 export const TEST_CONSTANTS = {
@@ -12,60 +12,44 @@ export const TEST_CONSTANTS = {
 export const mockBookmarks = [
   {
     id: 1,
+    user_id: 'ae879c80-f3fc-4e05-a837-384e4b9bfb28',
     title: 'React 19 Beta Features',
     url: 'https://react.dev/blog/2024/04/25/react-19',
+    description: 'React 19 introduces new features...',
     content: 'React 19 introduces new features...',
     author: 'React Team',
     domain: 'react.dev',
-    created_at: '2024-01-01T00:00:00Z',
-    tags: ['react', 'javascript'],
+    source_platform: 'manual',
+    engagement_score: 42,
     is_starred: false,
-    metrics: { likes: '42', retweets: '15', replies: '8' }
+    is_read: false,
+    is_archived: false,
+    tags: ['react', 'javascript'],
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z'
   },
   {
     id: 2,
+    user_id: 'ae879c80-f3fc-4e05-a837-384e4b9bfb28',
     title: 'TypeScript 5.5 Released',
     url: 'https://devblogs.microsoft.com/typescript/',
+    description: 'TypeScript 5.5 brings new features...',
     content: 'TypeScript 5.5 brings new features...',
     author: 'TypeScript Team',
     domain: 'devblogs.microsoft.com',
-    created_at: '2024-01-02T00:00:00Z',
-    tags: ['typescript'],
+    source_platform: 'manual',
+    engagement_score: 28,
     is_starred: true,
-    metrics: { likes: '28', retweets: '12', replies: '5' }
+    is_read: false,
+    is_archived: false,
+    tags: ['typescript'],
+    created_at: '2024-01-02T00:00:00Z',
+    updated_at: '2024-01-02T00:00:00Z'
   }
 ]
 
 // Common mock setup functions
-export const createLocalStorageMock = () => ({
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-})
 
-export const createSupabaseMock = () => ({
-  auth: {
-    getUser: vi.fn().mockResolvedValue({
-      data: { user: { id: 'test-user', email: 'test@test.com' } },
-      error: null
-    }),
-    getSession: vi.fn().mockResolvedValue({
-      data: { session: null },
-      error: null
-    }),
-  },
-  from: vi.fn(() => ({
-    select: vi.fn(() => ({
-      eq: vi.fn(() => ({
-        order: vi.fn(() => Promise.resolve({
-          data: mockBookmarks,
-          error: null
-        }))
-      }))
-    }))
-  })),
-})
 
 // Helper to reset store state
 export const resetBookmarkStore = () => {
@@ -81,7 +65,6 @@ export const resetBookmarkStore = () => {
       isAIPanelOpen: false,
       isFiltersPanelOpen: false,
       activeSidebarItem: 'All Bookmarks',
-      currentUserId: null,
       error: null,
     })
   } catch (error) {
