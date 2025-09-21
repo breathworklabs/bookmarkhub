@@ -1,6 +1,6 @@
 import { Box, VStack, HStack, Text, Button, Input, For } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LuCalendar, LuUser, LuTag, LuLink, LuX } from 'react-icons/lu'
+import { LuTag } from 'react-icons/lu'
 import { useBookmarkStore } from '../store/bookmarkStore'
 
 const MotionBox = motion.create(Box)
@@ -87,7 +87,7 @@ const AdvancedFilters = () => {
                 _hover={{ color: '#e1e5e9', bg: '#2a2d35' }}
                 onClick={() => useBookmarkStore.getState().setFiltersPanelOpen(false)}
               >
-                <LuX size={16} />
+                ×
               </Button>
             </HStack>
 
@@ -96,7 +96,7 @@ const AdvancedFilters = () => {
               {/* Date Range Filter */}
               <VStack alignItems="start" gap={2} flex="1" minW="180px">
                 <HStack gap={2} alignItems="center">
-                  <LuCalendar size={14} color="#71767b" />
+                  <Text fontSize="14px" color="#71767b">📅</Text>
                   <Text fontSize="13px" fontWeight="500" color="#e1e5e9">
                     Date Range
                   </Text>
@@ -120,7 +120,7 @@ const AdvancedFilters = () => {
               {/* Author Filter */}
               <VStack alignItems="start" gap={2} flex="1" minW="180px">
                 <HStack gap={2} alignItems="center">
-                  <LuUser size={14} color="#71767b" />
+                  <Text fontSize="14px" color="#71767b">👤</Text>
                   <Text fontSize="13px" fontWeight="500" color="#e1e5e9">
                     Author
                   </Text>
@@ -142,7 +142,7 @@ const AdvancedFilters = () => {
               {/* Domain Filter */}
               <VStack alignItems="start" gap={2} flex="1" minW="180px">
                 <HStack gap={2} alignItems="center">
-                  <LuLink size={14} color="#71767b" />
+                  <Text fontSize="14px" color="#71767b">🔗</Text>
                   <Text fontSize="13px" fontWeight="500" color="#e1e5e9">
                     Domain
                   </Text>

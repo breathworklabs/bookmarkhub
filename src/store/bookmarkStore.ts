@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { mockBookmarks, type Bookmark } from '../data/mockBookmarks'
+import { mockBookmarks } from '../data/mockBookmarks'
+import { db, type Bookmark, type BookmarkInsert } from '../lib/database'
+import { supabase } from '../lib/supabase'
 
 interface BookmarkState {
   // State
@@ -13,12 +15,16 @@ interface BookmarkState {
   isAIPanelOpen: boolean
   isFiltersPanelOpen: boolean
   activeSidebarItem: string
+  currentUserId: string | null
+  error: string | null
 
   // Actions
   setBookmarks: (bookmarks: Bookmark[]) => void
-  addBookmark: (bookmark: Bookmark) => void
-  removeBookmark: (id: number) => void
-  toggleStarBookmark: (id: number) => void
+  loadBookmarks: () => Promise<void>
+  addBookmark: (bookmark: BookmarkInsert) => Promise<void>
+  removeBookmark: (id: number) => Promise<void>
+  toggleStarBookmark: (id: number) => Promise<void>
+  searchBookmarks: (query: string) => Promise<void>
 
   setSelectedTags: (tags: string[]) => void
   addTag: (tag: string) => void
@@ -34,11 +40,16 @@ interface BookmarkState {
   setFiltersPanelOpen: (isOpen: boolean) => void
   toggleFiltersPanel: () => void
   setActiveSidebarItem: (item: string) => void
+  setCurrentUserId: (userId: string | null) => void
+  setError: (error: string | null) => void
+
+  // Initialize store
+  initialize: () => Promise<void>
 }
 
 export const useBookmarkStore = create<BookmarkState>()(
   devtools(
-    (set) => ({
+    (set, get) => ({
       // Initial state
       bookmarks: mockBookmarks,
       selectedTags: ['tech', 'AI'],
@@ -49,31 +60,152 @@ export const useBookmarkStore = create<BookmarkState>()(
       isAIPanelOpen: false,
       isFiltersPanelOpen: false,
       activeSidebarItem: 'All Bookmarks',
+      currentUserId: null,
+      error: null,
 
-      // Actions
-      setBookmarks: (bookmarks) => set({ bookmarks }, false, 'setBookmarks'),
+      // Initialize store
+      initialize: async () => {
+        try {
+          set({ isLoading: true, error: null }, false, 'initialize:start')
 
-      addBookmark: (bookmark) => set(
-        (state) => ({ bookmarks: [...state.bookmarks, bookmark] }),
-        false,
-        'addBookmark'
-      ),
+          // Check if Supabase is configured
+          if (!supabase) {
+            set({
+              bookmarks: mockBookmarks,
+              currentUserId: null
+            }, false, 'initialize:useMockData')
+            return
+          }
 
-      removeBookmark: (id) => set(
-        (state) => ({ bookmarks: state.bookmarks.filter(b => b.id !== id) }),
-        false,
-        'removeBookmark'
-      ),
+          // Get current user
+          const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-      toggleStarBookmark: (id) => set(
-        (state) => ({
-          bookmarks: state.bookmarks.map(bookmark =>
-            bookmark.id === id ? { ...bookmark, isStarred: !bookmark.isStarred } : bookmark
+          // AuthSessionMissingError is expected when no user is logged in
+          if (authError && !authError.message.includes('Auth session missing')) {
+            console.error('Authentication error:', authError)
+          }
+
+          if (user) {
+            console.info('👤 User authenticated, loading bookmarks...')
+            set({ currentUserId: user.id }, false, 'initialize:setUser')
+            await get().loadBookmarks()
+          } else {
+            // Use mock data if no user is logged in
+            set({
+              bookmarks: mockBookmarks,
+              currentUserId: null
+            }, false, 'initialize:useMockData')
+          }
+        } catch (error) {
+          console.error('Failed to initialize app:', error)
+          set({
+            error: error instanceof Error ? error.message : 'Failed to initialize',
+            bookmarks: mockBookmarks // Fallback to mock data
+          }, false, 'initialize:error')
+        } finally {
+          set({ isLoading: false }, false, 'initialize:complete')
+        }
+      },
+
+      // Async Actions
+      loadBookmarks: async () => {
+        const userId = get().currentUserId
+        if (!userId) return
+
+        try {
+          set({ isLoading: true, error: null }, false, 'loadBookmarks:start')
+          const bookmarks = await db.getBookmarks(userId)
+          set({ bookmarks }, false, 'loadBookmarks:success')
+        } catch (error) {
+          console.error('Error loading bookmarks:', error)
+          set({ error: error instanceof Error ? error.message : 'Failed to load bookmarks' }, false, 'loadBookmarks:error')
+        } finally {
+          set({ isLoading: false }, false, 'loadBookmarks:complete')
+        }
+      },
+
+      addBookmark: async (bookmark) => {
+        const userId = get().currentUserId
+        if (!userId) return
+
+        try {
+          set({ isLoading: true, error: null }, false, 'addBookmark:start')
+          const newBookmark = await db.createBookmark({ ...bookmark, user_id: userId })
+          set(
+            (state) => ({ bookmarks: [newBookmark, ...state.bookmarks] }),
+            false,
+            'addBookmark:success'
           )
-        }),
-        false,
-        'toggleStarBookmark'
-      ),
+        } catch (error) {
+          console.error('Error adding bookmark:', error)
+          set({ error: error instanceof Error ? error.message : 'Failed to add bookmark' }, false, 'addBookmark:error')
+        } finally {
+          set({ isLoading: false }, false, 'addBookmark:complete')
+        }
+      },
+
+      removeBookmark: async (id) => {
+        const userId = get().currentUserId
+        if (!userId) return
+
+        try {
+          set({ isLoading: true, error: null }, false, 'removeBookmark:start')
+          await db.deleteBookmark(id, userId)
+          set(
+            (state) => ({ bookmarks: state.bookmarks.filter(b => b.id !== id) }),
+            false,
+            'removeBookmark:success'
+          )
+        } catch (error) {
+          console.error('Error removing bookmark:', error)
+          set({ error: error instanceof Error ? error.message : 'Failed to remove bookmark' }, false, 'removeBookmark:error')
+        } finally {
+          set({ isLoading: false }, false, 'removeBookmark:complete')
+        }
+      },
+
+      toggleStarBookmark: async (id) => {
+        const userId = get().currentUserId
+        if (!userId) return
+
+        try {
+          const updatedBookmark = await db.toggleBookmarkStar(id, userId)
+          set(
+            (state) => ({
+              bookmarks: state.bookmarks.map(bookmark =>
+                bookmark.id === id ? updatedBookmark : bookmark
+              )
+            }),
+            false,
+            'toggleStarBookmark:success'
+          )
+        } catch (error) {
+          console.error('Error toggling bookmark star:', error)
+          set({ error: error instanceof Error ? error.message : 'Failed to toggle star' }, false, 'toggleStarBookmark:error')
+        }
+      },
+
+      searchBookmarks: async (query) => {
+        const userId = get().currentUserId
+        if (!userId || !query.trim()) {
+          await get().loadBookmarks()
+          return
+        }
+
+        try {
+          set({ isLoading: true, error: null }, false, 'searchBookmarks:start')
+          const results = await db.searchBookmarks(userId, query)
+          set({ bookmarks: results }, false, 'searchBookmarks:success')
+        } catch (error) {
+          console.error('Error searching bookmarks:', error)
+          set({ error: error instanceof Error ? error.message : 'Failed to search bookmarks' }, false, 'searchBookmarks:error')
+        } finally {
+          set({ isLoading: false }, false, 'searchBookmarks:complete')
+        }
+      },
+
+      // Sync Actions
+      setBookmarks: (bookmarks) => set({ bookmarks }, false, 'setBookmarks'),
 
       setSelectedTags: (tags) => set({ selectedTags: tags }, false, 'setSelectedTags'),
 
@@ -108,7 +240,9 @@ export const useBookmarkStore = create<BookmarkState>()(
         false,
         'toggleFiltersPanel'
       ),
-      setActiveSidebarItem: (item) => set({ activeSidebarItem: item }, false, 'setActiveSidebarItem')
+      setActiveSidebarItem: (item) => set({ activeSidebarItem: item }, false, 'setActiveSidebarItem'),
+      setCurrentUserId: (userId) => set({ currentUserId: userId }, false, 'setCurrentUserId'),
+      setError: (error) => set({ error }, false, 'setError')
     }),
     {
       name: 'bookmark-store', // Store name for devtools

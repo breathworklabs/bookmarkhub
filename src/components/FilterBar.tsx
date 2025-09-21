@@ -1,6 +1,5 @@
 import { Box, HStack, Text, Button, For, Input } from '@chakra-ui/react'
 import { Dialog } from '@chakra-ui/react'
-import { LuPlus } from 'react-icons/lu'
 import { useState } from 'react'
 import { useBookmarkStore } from '../store/bookmarkStore'
 
@@ -125,7 +124,7 @@ const FilterBar = () => {
             gap={1}
             alignItems="center"
           >
-            <LuPlus size={12} />
+            +
             Add Tag
           </Button>
         </HStack>

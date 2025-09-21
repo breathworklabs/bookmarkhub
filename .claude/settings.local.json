@@ -11,7 +11,9 @@
       "Bash(npm run lint)",
       "Bash(npm run dev:*)",
       "Bash(curl:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(node:*)",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": []

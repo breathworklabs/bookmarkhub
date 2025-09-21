@@ -1,5 +1,5 @@
 import { Box, HStack, Input, Button, Spacer } from '@chakra-ui/react'
-import { LuMenu, LuPlus } from 'react-icons/lu'
+import { LuMenu } from 'react-icons/lu'
 import { theme } from '../styles/theme'
 import { useBookmarkStore } from '../store/bookmarkStore'
 
@@ -48,11 +48,11 @@ const SearchHeader = () => {
             Filters
           </Button>
           <Button {...theme.styles.secondaryButton}>
-            <LuPlus size={14} />
+            +
             Import
           </Button>
           <Button {...theme.styles.primaryButton}>
-            <LuPlus size={14} />
+            +
             Add Bookmark
           </Button>
         </HStack>
