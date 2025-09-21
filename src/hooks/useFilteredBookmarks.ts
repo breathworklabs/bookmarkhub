@@ -1,5 +1,6 @@
 import { useMemo, useEffect, useRef } from 'react'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { useCollectionsStore } from '../store/collectionsStore'
 import { type Bookmark } from '../types/bookmark'
 
 export const useFilteredBookmarks = (): Bookmark[] => {
@@ -14,6 +15,9 @@ export const useFilteredBookmarks = (): Bookmark[] => {
   const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)
   const quickFilters = useBookmarkStore((state) => state.quickFilters)
 
+  const activeCollectionId = useCollectionsStore((state) => state.activeCollectionId)
+  const collectionBookmarks = useCollectionsStore((state) => state.collectionBookmarks)
+
   // No need for searchBookmarks effect, filtering is done in useMemo
 
   return useMemo(() => {
@@ -23,6 +27,12 @@ export const useFilteredBookmarks = (): Bookmark[] => {
     switch (activeSidebarItem) {
       case 'Archives':
         filtered = filtered.filter(bookmark => bookmark.is_archived)
+        break
+      case 'Collections':
+        if (activeCollectionId) {
+          const bookmarkIdsInCollection = collectionBookmarks[activeCollectionId] || []
+          filtered = filtered.filter(bookmark => bookmarkIdsInCollection.includes(bookmark.id))
+        }
         break
       case 'All Bookmarks':
       default:
@@ -175,5 +185,5 @@ export const useFilteredBookmarks = (): Bookmark[] => {
     }
 
     return filtered
-  }, [bookmarks, selectedTags, searchQuery, activeTab, activeSidebarItem, authorFilter, domainFilter, contentTypeFilter, dateRangeFilter, quickFilters])
+  }, [bookmarks, selectedTags, searchQuery, activeTab, activeSidebarItem, authorFilter, domainFilter, contentTypeFilter, dateRangeFilter, quickFilters, activeCollectionId, collectionBookmarks])
 }

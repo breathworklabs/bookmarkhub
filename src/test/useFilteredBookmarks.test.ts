@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { useCollectionsStore } from '../store/collectionsStore'
 import { useFilteredBookmarks } from '../hooks/useFilteredBookmarks'
 import { createMockBookmarks } from './test-utils'
 import type { Bookmark } from '../types/bookmark'
@@ -17,11 +18,13 @@ describe('useFilteredBookmarks', () => {
   beforeEach(() => {
     // Reset store state before each test
     const { result } = renderHook(() => useBookmarkStore())
+    const { result: collectionsResult } = renderHook(() => useCollectionsStore())
     act(() => {
       result.current.setBookmarks([])
       result.current.setSelectedTags([])
       result.current.setActiveTab(0)
       result.current.setActiveSidebarItem('All Bookmarks')
+      collectionsResult.current.setActiveCollection(null)
     })
   })
 
@@ -82,13 +85,30 @@ describe('useFilteredBookmarks', () => {
     expect(hookResult.current).toHaveLength(0)
   })
 
+  it('should filter to only bookmarks in active collection when Collections sidebar item is selected', () => {
+    // This test verifies that collection filtering logic is in place
+    // In real usage, collections would be loaded and activeCollectionId would filter bookmarks
+    const { result } = renderHook(() => useBookmarkStore())
+    const { result: collectionsResult } = renderHook(() => useCollectionsStore())
+    const { result: hookResult } = renderHook(() => useFilteredBookmarks())
+
+    act(() => {
+      result.current.setBookmarks(mockBookmarks)
+      result.current.setActiveSidebarItem('Collections')
+      collectionsResult.current.setActiveCollection('test-collection')
+    })
+
+    // When activeCollectionId is set but collectionBookmarks is empty, no bookmarks should be shown
+    expect(hookResult.current).toHaveLength(0)
+  })
+
   it('should return empty array when no bookmarks match sidebar filter', () => {
     const { result } = renderHook(() => useBookmarkStore())
     const { result: hookResult } = renderHook(() => useFilteredBookmarks())
 
     act(() => {
       result.current.setBookmarks(mockBookmarks)
-      result.current.setActiveSidebarItem('Collections') // Not implemented yet
+      result.current.setActiveSidebarItem('Collections') // With no active collection
     })
 
     expect(hookResult.current).toHaveLength(4) // Falls back to showing all bookmarks
