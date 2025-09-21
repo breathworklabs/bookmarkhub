@@ -1,11 +1,13 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react'
 import { Dialog, Button, HStack, Text, Box, Input, VStack, Textarea, Badge } from '@chakra-ui/react'
-import type { BookmarkInsert } from '../../types/bookmark'
+import type { BookmarkInsert, Bookmark } from '../../types/bookmark'
+import { sanitizeBookmark } from '../../lib/dataValidation'
 
 interface ModalContextType {
   showDeleteConfirmation: (options: DeleteConfirmationOptions) => void
   showAddTag: (options: AddTagOptions) => void
   showAddBookmark: (options: AddBookmarkOptions) => void
+  showEditBookmark: (options: EditBookmarkOptions) => void
   closeModal: () => void
 }
 
@@ -30,6 +32,12 @@ interface AddBookmarkOptions {
   onCancel?: () => void
 }
 
+interface EditBookmarkOptions {
+  bookmark: Bookmark
+  onEdit: (id: number, bookmark: BookmarkInsert) => void
+  onCancel?: () => void
+}
+
 const ModalContext = createContext<ModalContextType | null>(null)
 
 export const useModal = () => {
@@ -41,7 +49,7 @@ export const useModal = () => {
 }
 
 interface ModalState {
-  type: 'delete' | 'addTag' | 'addBookmark' | null
+  type: 'delete' | 'addTag' | 'addBookmark' | 'editBookmark' | null
   options: any
 }
 
@@ -91,6 +99,27 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       is_read: false,
       is_archived: false,
       tags: []
+    })
+    setIsAddingTag(false)
+    setNewTagInput('')
+  }
+
+  const showEditBookmark = (options: EditBookmarkOptions) => {
+    setModalState({ type: 'editBookmark', options })
+    setBookmarkFormData({
+      user_id: options.bookmark.user_id || 'ae879c80-f3fc-4e05-a837-384e4b9bfb28',
+      title: options.bookmark.title || '',
+      url: options.bookmark.url || '',
+      description: options.bookmark.description || '',
+      content: options.bookmark.content || '',
+      author: options.bookmark.author || '',
+      domain: options.bookmark.domain || '',
+      source_platform: options.bookmark.source_platform || 'manual',
+      engagement_score: options.bookmark.engagement_score || 0,
+      is_starred: options.bookmark.is_starred || false,
+      is_read: options.bookmark.is_read || false,
+      is_archived: options.bookmark.is_archived || false,
+      tags: options.bookmark.tags || []
     })
     setIsAddingTag(false)
     setNewTagInput('')
@@ -173,7 +202,11 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       author: bookmarkFormData.author || 'Unknown'
     }
 
-    modalState.options?.onAdd?.(bookmarkData)
+    if (modalState.type === 'editBookmark') {
+      modalState.options?.onEdit?.(modalState.options.bookmark.id, bookmarkData)
+    } else {
+      modalState.options?.onAdd?.(bookmarkData)
+    }
     closeModal()
   }
 
@@ -213,6 +246,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     showDeleteConfirmation,
     showAddTag,
     showAddBookmark,
+    showEditBookmark,
     closeModal
   }
 
@@ -397,8 +431,8 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
         </Dialog.Root>
       )}
 
-      {/* Add Bookmark Modal */}
-      {modalState.type === 'addBookmark' && (
+      {/* Add/Edit Bookmark Modal */}
+      {(modalState.type === 'addBookmark' || modalState.type === 'editBookmark') && (
         <Dialog.Root
           open={true}
           onOpenChange={(e) => !e.open && closeModal()}
@@ -424,7 +458,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                   pt={6}
                   px={6}
                 >
-                  <Dialog.Title>Add New Bookmark</Dialog.Title>
+                  <Dialog.Title>{modalState.type === 'editBookmark' ? 'Edit Bookmark' : 'Add New Bookmark'}</Dialog.Title>
                 </Dialog.Header>
 
                 <Dialog.Body px={6} pb={4}>
@@ -598,7 +632,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                       type="submit"
                       disabled={!bookmarkFormData.title.trim() || !bookmarkFormData.url.trim()}
                     >
-                      Add Bookmark
+                      {modalState.type === 'editBookmark' ? 'Edit Bookmark' : 'Add Bookmark'}
                     </Button>
                   </HStack>
                 </Dialog.Footer>

@@ -23,6 +23,7 @@ interface BookmarkState {
   setBookmarks: (bookmarks: Bookmark[]) => void
   loadBookmarks: () => Promise<void>
   addBookmark: (bookmark: BookmarkInsert) => Promise<void>
+  updateBookmark: (id: number, bookmark: BookmarkInsert) => Promise<void>
   removeBookmark: (id: number) => Promise<void>
   toggleStarBookmark: (id: number) => Promise<void>
   searchBookmarks: (query: string) => Promise<void>
@@ -160,6 +161,32 @@ export const useBookmarkStore = create<BookmarkState>()(
           set({ error: error instanceof Error ? error.message : 'Failed to add bookmark' }, false, 'addBookmark:error')
         } finally {
           set({ isLoading: false }, false, 'addBookmark:complete')
+        }
+      },
+
+      updateBookmark: async (id, bookmark) => {
+        try {
+          set({ isLoading: true, error: null }, false, 'updateBookmark:start')
+
+          // Validate and sanitize bookmark data
+          const sanitizedBookmark = sanitizeBookmark(bookmark)
+          if (!sanitizedBookmark) {
+            throw new Error('Invalid bookmark data')
+          }
+
+          const updatedBookmark = await localStorageService.updateBookmark(id, sanitizedBookmark)
+          set(
+            (state) => ({
+              bookmarks: state.bookmarks.map(b => b.id === id ? updatedBookmark : b)
+            }),
+            false,
+            'updateBookmark:success'
+          )
+        } catch (error) {
+          console.error('Error updating bookmark:', error)
+          set({ error: error instanceof Error ? error.message : 'Failed to update bookmark' }, false, 'updateBookmark:error')
+        } finally {
+          set({ isLoading: false }, false, 'updateBookmark:complete')
         }
       },
 

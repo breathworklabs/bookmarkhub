@@ -11,7 +11,8 @@ interface BookmarkCardProps {
 const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
   const toggleStarBookmark = useBookmarkStore((state) => state.toggleStarBookmark)
   const removeBookmark = useBookmarkStore((state) => state.removeBookmark)
-  const { showDeleteConfirmation } = useModal()
+  const updateBookmark = useBookmarkStore((state) => state.updateBookmark)
+  const { showDeleteConfirmation, showEditBookmark } = useModal()
 
   // Helper functions to handle both mock and database bookmark formats
   const getAuthorName = () => {
@@ -109,6 +110,10 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
             aria-label="Edit bookmark"
             color="#71767b"
             _hover={{ bg: '#2a2d35' }}
+            onClick={() => showEditBookmark({
+              bookmark,
+              onEdit: (id, updatedBookmark) => updateBookmark(id, updatedBookmark)
+            })}
           >
             <LuPencil />
           </IconButton>
