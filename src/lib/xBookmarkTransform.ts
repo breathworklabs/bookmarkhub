@@ -43,10 +43,17 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
     platformTags.push('video')
   }
 
-  // Separate profile images from content images
+  // Separate different types of images
   const allImages = xBookmark.images || []
-  const profileImages = allImages.filter(img => img.includes('_normal'))
-  const contentImages = allImages.filter(img => !img.includes('_normal'))
+  const normalProfileImages = allImages.filter(img => img.includes('_normal'))
+  const biggerProfileImages = allImages.filter(img => img.includes('_bigger'))
+  const contentImages = allImages.filter(img => !img.includes('_normal') && !img.includes('_bigger'))
+
+  console.log('Processing bookmark:', xBookmark.display_name)
+  console.log('All images:', allImages)
+  console.log('Normal images:', normalProfileImages)
+  console.log('Bigger images:', biggerProfileImages)
+  console.log('Content images:', contentImages)
 
   // Add images tag if there are content images
   if (contentImages.length > 0) {
@@ -67,7 +74,7 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
     description: xBookmark.text,
     content: xBookmark.text,
     thumbnail_url: contentImages.length > 0 ? contentImages[0] : undefined,
-    favicon_url: profileImages.length > 0 ? profileImages[0] : `https://x.com/favicon.ico`,
+    favicon_url: normalProfileImages.length > 0 ? normalProfileImages[0] : `https://x.com/favicon.ico`,
     author: `${xBookmark.display_name} (@${xBookmark.username})`,
     domain: domain,
     source_platform: 'x.com',
@@ -85,7 +92,8 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
       display_name: xBookmark.display_name,
       has_video: xBookmark.has_video || false,
       images: contentImages, // Only content images, not profile images
-      profile_image: profileImages.length > 0 ? profileImages[0] : undefined
+      profile_image_normal: normalProfileImages.length > 0 ? normalProfileImages[0] : undefined,
+      profile_image_bigger: biggerProfileImages.length > 0 ? biggerProfileImages[0] : undefined
     }
   }
 

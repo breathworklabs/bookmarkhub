@@ -1,6 +1,7 @@
-import { Box, Image, IconButton, Text, HStack } from '@chakra-ui/react'
+import { Box, IconButton, Text, HStack } from '@chakra-ui/react'
 import { LuX, LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 import { useState, useEffect } from 'react'
+import LazyImage from '../LazyImage'
 
 interface ImageModalProps {
   isOpen: boolean
@@ -121,18 +122,30 @@ const ImageModal = ({ isOpen, onClose, images, initialIndex = 0, title }: ImageM
         )}
 
         {/* Image */}
-        <Image
-          src={currentImage}
-          alt={title || `Image ${currentIndex + 1}`}
-          maxW="90vw"
-          maxH="90vh"
-          objectFit="contain"
-          borderRadius="8px"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement
-            target.style.display = 'none'
-          }}
-        />
+        <Box maxW="90vw" maxH="90vh">
+          <LazyImage
+            src={currentImage}
+            alt={title || `Image ${currentIndex + 1}`}
+            w="auto"
+            h="auto"
+            objectFit="contain"
+            borderRadius="8px"
+            fallback={
+              <Box
+                minW="300px"
+                minH="200px"
+                bg="#0f1419"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                color="#71767b"
+                borderRadius="8px"
+              >
+                Failed to load image
+              </Box>
+            }
+          />
+        </Box>
 
         {/* Image Counter and Title */}
         {(hasMultipleImages || title) && (

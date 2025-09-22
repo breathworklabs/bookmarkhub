@@ -1,8 +1,9 @@
-import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem, Image, SimpleGrid } from '@chakra-ui/react'
-import { LuMenu, LuStar, LuExternalLink, LuDownload, LuTrash2, LuPencil } from 'react-icons/lu'
+import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem, Image, SimpleGrid, Menu, Portal } from '@chakra-ui/react'
+import { LuMenu, LuStar, LuExternalLink, LuDownload, LuTrash2, LuPencil, LuShare2 } from 'react-icons/lu'
 import { type Bookmark } from '../types/bookmark'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'
+import LazyImage from './LazyImage'
 
 interface BookmarkCardProps {
   bookmark: Bookmark
@@ -29,10 +30,10 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
   }
 
   const getProfileImage = () => {
-    // Check for X bookmark profile image in metadata
+    // Check for X bookmark _normal profile image in metadata
     const metadata = (bookmark as any).metadata
-    if (metadata && metadata.profile_image) {
-      return metadata.profile_image
+    if (metadata && metadata.profile_image_normal) {
+      return metadata.profile_image_normal
     }
 
     // Check for general favicon_url which might contain profile image
@@ -40,6 +41,18 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
       return (bookmark as any).favicon_url
     }
 
+    return null
+  }
+
+  const getBadgeImage = () => {
+    // Check for X bookmark _bigger profile image in metadata
+    const metadata = (bookmark as any).metadata
+    if (metadata && metadata.profile_image_bigger) {
+      console.log('Found badge image:', metadata.profile_image_bigger)
+      return metadata.profile_image_bigger
+    }
+
+    console.log('No badge image found. Metadata:', metadata)
     return null
   }
 
@@ -51,7 +64,13 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
   }
 
   const getTimestamp = () => {
-    // Handle both timestamp (mock) and created_at (database) formats
+    // For X bookmarks, prefer tweet_date from metadata
+    const metadata = (bookmark as any).metadata
+    if (metadata && metadata.tweet_date) {
+      return new Date(metadata.tweet_date).toLocaleDateString()
+    }
+
+    // Fallback to general timestamp or created_at
     const timestamp = (bookmark as any).timestamp || (bookmark as any).created_at
     if (timestamp) {
       return new Date(timestamp).toLocaleDateString()
@@ -146,7 +165,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
           position="relative"
         >
           {getProfileImage() ? (
-            <Image
+            <LazyImage
               src={getProfileImage()}
               alt={`${getAuthorName()} profile`}
               w="100%"
@@ -155,74 +174,198 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
               position="absolute"
               top={0}
               left={0}
-              onError={(e) => {
-                // Hide image and show initial on error
-                const target = e.target as HTMLImageElement
-                target.style.display = 'none'
-              }}
+              fallback={
+                <Box
+                  w="100%"
+                  h="100%"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  bg="linear-gradient(135deg, #667eea, #764ba2)"
+                  color="white"
+                  fontSize="sm"
+                  fontWeight="bold"
+                >
+                  {getAuthorInitial()}
+                </Box>
+              }
             />
           ) : null}
           {/* Fallback initial */}
-          {getAuthorInitial()}
+          <Box
+            position={getProfileImage() ? "absolute" : "static"}
+            zIndex={getProfileImage() ? -1 : 1}
+          >
+            {getAuthorInitial()}
+          </Box>
         </Box>
         <VStack alignItems="start" gap={0} flex={1}>
-          <Text fontWeight="600" fontSize="sm" color="#e1e5e9">
-            {getAuthorName()}
-          </Text>
+          <HStack gap={2} alignItems="center">
+            <Text fontWeight="600" fontSize="sm" color="#e1e5e9">
+              {getAuthorName()}
+            </Text>
+            {getBadgeImage() && (
+              <Box
+                w="16px"
+                h="16px"
+                borderRadius="2px"
+                overflow="hidden"
+                border="1px solid #1d4ed8"
+                flexShrink={0}
+                bg="#1d4ed8"
+                p="1px"
+                title="Verified profile"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <LazyImage
+                  src={getBadgeImage()}
+                  alt={`${getAuthorName()} verified`}
+                  w="14px"
+                  h="14px"
+                  objectFit="cover"
+                  borderRadius="1px"
+                  fallback={
+                    <Box
+                      w="14px"
+                      h="14px"
+                      bg="white"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      fontSize="8px"
+                      color="#1d4ed8"
+                      borderRadius="1px"
+                    >
+                      ✓
+                    </Box>
+                  }
+                />
+              </Box>
+            )}
+          </HStack>
           <Text fontSize="xs" color="#71767b">
             {getAuthorUsername()} · {getTimestamp()}
           </Text>
         </VStack>
-        <HStack gap={1}>
-          <IconButton
-            size="xs"
-            variant="ghost"
-            aria-label="Archive bookmark"
-            title={bookmark.is_archived ? 'Unarchive bookmark' : 'Archive bookmark'}
-            color={bookmark.is_archived ? '#f59e0b' : '#71767b'}
-            _hover={{ bg: '#2a2d35' }}
-            onClick={() => toggleArchiveBookmark(bookmark.id)}
-          >
-            <LuDownload />
-          </IconButton>
-          <IconButton
-            size="xs"
-            variant="ghost"
-            aria-label="Edit bookmark"
-            title="Edit bookmark"
-            color="#71767b"
-            _hover={{ bg: '#2a2d35' }}
-            onClick={() => showEditBookmark({
-              bookmark,
-              onEdit: (id, updatedBookmark) => updateBookmark(id, updatedBookmark)
-            })}
-          >
-            <LuPencil />
-          </IconButton>
-          <IconButton
-            size="xs"
-            variant="ghost"
-            aria-label="Delete bookmark"
-            title="Delete bookmark"
-            color="#71767b"
-            border="1px solid #2f3336"
-            _hover={{
-              bg: '#dc2626',
-              color: '#ffffff',
-              borderColor: '#000000',
-              transform: 'scale(1.1)',
-              transition: 'all 0.2s'
-            }}
-            onClick={() => showDeleteConfirmation({
-              title: 'Delete Bookmark',
-              message: 'Are you sure you want to delete this bookmark? This action cannot be undone.',
-              preview: getContent().slice(0, 100) + (getContent().length > 100 ? '...' : ''),
-              onConfirm: () => removeBookmark(bookmark.id)
-            })}
-          >
-            <LuTrash2 />
-          </IconButton>
-        </HStack>
+        <Menu.Root>
+          <Menu.Trigger asChild>
+            <IconButton
+              size="sm"
+              variant="ghost"
+              aria-label="Bookmark actions"
+              color="#71767b"
+              borderRadius="full"
+              w="32px"
+              h="32px"
+              minW="32px"
+              border="1px solid #2f3336"
+              _hover={{
+                bg: '#2a2d35',
+                color: '#e1e5e9',
+                borderColor: '#3a3d45',
+                transform: 'scale(1.1)',
+                transition: 'all 0.2s'
+              }}
+            >
+              <Box display="flex" alignItems="center" justifyContent="center" h="100%">
+                <Text fontSize="md" lineHeight="1">☰</Text>
+              </Box>
+            </IconButton>
+          </Menu.Trigger>
+          <Portal>
+            <Menu.Positioner>
+              <Menu.Content
+                bg="#1a1d23"
+                border="1px solid #2a2d35"
+                borderRadius="8px"
+                boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
+                py={1}
+                minW="160px"
+              >
+                <Menu.Item
+                  value="archive"
+                  color="#e1e5e9"
+                  _hover={{
+                    bg: '#2a2d35',
+                    color: '#ffffff'
+                  }}
+                  _focus={{
+                    bg: '#2a2d35',
+                    color: '#ffffff'
+                  }}
+                  onClick={() => toggleArchiveBookmark(bookmark.id)}
+                  px={3}
+                  py={2}
+                  fontSize="sm"
+                  cursor="pointer"
+                  transition="all 0.15s ease"
+                >
+                  <HStack gap={2}>
+                    <LuDownload size={14} color={bookmark.is_archived ? '#f59e0b' : '#71767b'} />
+                    <Text>{bookmark.is_archived ? 'Unarchive' : 'Archive'}</Text>
+                  </HStack>
+                </Menu.Item>
+                <Menu.Item
+                  value="edit"
+                  color="#e1e5e9"
+                  _hover={{
+                    bg: '#2a2d35',
+                    color: '#ffffff'
+                  }}
+                  _focus={{
+                    bg: '#2a2d35',
+                    color: '#ffffff'
+                  }}
+                  onClick={() => showEditBookmark({
+                    bookmark,
+                    onEdit: (id, updatedBookmark) => updateBookmark(id, updatedBookmark)
+                  })}
+                  px={3}
+                  py={2}
+                  fontSize="sm"
+                  cursor="pointer"
+                  transition="all 0.15s ease"
+                >
+                  <HStack gap={2}>
+                    <LuPencil size={14} color="#71767b" />
+                    <Text>Edit</Text>
+                  </HStack>
+                </Menu.Item>
+                <Menu.Separator borderColor="#2a2d35" />
+                <Menu.Item
+                  value="delete"
+                  color="#dc2626"
+                  _hover={{
+                    bg: '#dc2626',
+                    color: 'white'
+                  }}
+                  _focus={{
+                    bg: '#dc2626',
+                    color: 'white'
+                  }}
+                  onClick={() => showDeleteConfirmation({
+                    title: 'Delete Bookmark',
+                    message: 'Are you sure you want to delete this bookmark? This action cannot be undone.',
+                    preview: getContent().slice(0, 100) + (getContent().length > 100 ? '...' : ''),
+                    onConfirm: () => removeBookmark(bookmark.id)
+                  })}
+                  px={3}
+                  py={2}
+                  fontSize="sm"
+                  cursor="pointer"
+                  transition="all 0.15s ease"
+                >
+                  <HStack gap={2}>
+                    <LuTrash2 size={14} />
+                    <Text>Delete</Text>
+                  </HStack>
+                </Menu.Item>
+              </Menu.Content>
+            </Menu.Positioner>
+          </Portal>
+        </Menu.Root>
       </HStack>
 
       {/* Content */}
@@ -263,16 +406,12 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                     })}
                   >
                     {images.length > 0 ? (
-                      <Image
+                      <LazyImage
                         src={images[0]}
                         alt="Video thumbnail"
                         w="100%"
                         h="200px"
                         objectFit="cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement
-                          target.style.display = 'none'
-                        }}
                       />
                     ) : (
                       <Box
@@ -313,7 +452,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                 return (
                   <Box borderRadius="lg" overflow="hidden" border="1px solid #2a2d35">
                     {images.length === 1 ? (
-                      <Image
+                      <LazyImage
                         src={images[0]}
                         alt="Tweet image"
                         w="100%"
@@ -326,17 +465,13 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                           initialIndex: 0,
                           title: getContent().slice(0, 100) + (getContent().length > 100 ? '...' : '')
                         })}
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement
-                          target.style.display = 'none'
-                        }}
                       />
                     ) : (
                       <SimpleGrid columns={images.length === 2 ? 2 : 2} gap={1}>
                         <For each={images.slice(0, 4)}>
                           {(imageUrl, index) => (
                             <Box key={`img-${index}`} position="relative">
-                              <Image
+                              <LazyImage
                                 src={String(imageUrl)}
                                 alt={`Tweet image ${index + 1}`}
                                 w="100%"
@@ -349,10 +484,6 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                                   initialIndex: index,
                                   title: getContent().slice(0, 100) + (getContent().length > 100 ? '...' : '')
                                 })}
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement
-                                  target.style.display = 'none'
-                                }}
                               />
                               {/* Show +N overlay for additional images */}
                               {index === 3 && images.length > 4 && (
@@ -444,34 +575,57 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
               </For>
             </Wrap>
           )}
-          <HStack gap={1}>
+          <HStack gap={1} justify="space-between" w="100%">
+            <HStack gap={1}>
+              <IconButton
+                size="sm"
+                variant="ghost"
+                aria-label="Star bookmark"
+                title={isStarred() ? 'Unstar bookmark' : 'Star bookmark'}
+                color={isStarred() ? '#ffd700' : '#71767b'}
+                borderRadius="full"
+                w="32px"
+                h="32px"
+                minW="32px"
+                border="1px solid #2f3336"
+                _hover={{
+                  bg: '#2a2d35',
+                  color: isStarred() ? '#ffd700' : '#e1e5e9',
+                  borderColor: '#3a3d45',
+                  transform: 'scale(1.1)',
+                  transition: 'all 0.2s'
+                }}
+                onClick={() => toggleStarBookmark(bookmark.id)}
+              >
+                <LuStar fill={isStarred() ? 'currentColor' : 'none'} />
+              </IconButton>
+              <IconButton
+                size="sm"
+                variant="ghost"
+                aria-label="Share bookmark"
+                title="Share bookmark"
+                color="#71767b"
+                borderRadius="full"
+                w="32px"
+                h="32px"
+                minW="32px"
+                border="1px solid #2f3336"
+                _hover={{
+                  bg: '#2a2d35',
+                  color: '#e1e5e9',
+                  borderColor: '#3a3d45',
+                  transform: 'scale(1.1)',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <LuShare2 />
+              </IconButton>
+            </HStack>
             <IconButton
               size="sm"
               variant="ghost"
-              aria-label="Star bookmark"
-              title={isStarred() ? 'Unstar bookmark' : 'Star bookmark'}
-              color={isStarred() ? '#ffd700' : '#71767b'}
-              borderRadius="full"
-              w="32px"
-              h="32px"
-              minW="32px"
-              border="1px solid #2f3336"
-              _hover={{
-                bg: '#2a2d35',
-                color: isStarred() ? '#ffd700' : '#e1e5e9',
-                borderColor: '#3a3d45',
-                transform: 'scale(1.1)',
-                transition: 'all 0.2s'
-              }}
-              onClick={() => toggleStarBookmark(bookmark.id)}
-            >
-              <LuStar fill={isStarred() ? 'currentColor' : 'none'} />
-            </IconButton>
-            <IconButton
-              size="sm"
-              variant="ghost"
-              aria-label="Share bookmark"
-              title="Share bookmark"
+              aria-label="View original tweet"
+              title="View original tweet"
               color="#71767b"
               borderRadius="full"
               w="32px"
@@ -485,6 +639,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                 transform: 'scale(1.1)',
                 transition: 'all 0.2s'
               }}
+              onClick={() => window.open(bookmark.url, '_blank')}
             >
               <LuExternalLink />
             </IconButton>
