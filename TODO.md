@@ -13,6 +13,13 @@
 - [x] Responsive layout
 - [x] TypeScript implementation
 - [x] Advanced filters panel with slide animation
+- [x] Local storage integration (bookmark storage)
+- [x] Data export/import functionality
+- [x] Add new bookmark functionality
+- [x] Delete bookmarks (with confirmation)
+- [x] Archive/unarchive bookmarks
+- [x] Create bookmark collections/folders
+- [x] Smart collections (auto-categorization)
 
 ---
 
@@ -30,221 +37,26 @@
 - [x] Add new bookmark functionality (currently button does nothing)
 - [ ] Edit bookmark content and metadata
 - [x] Delete bookmarks (with confirmation)
-- [ ] Bulk operations (select multiple, delete, tag, etc.)
+- [ ] Bulk operations (select multiple, delete, tag, etc.) - Planned for list view implementation
 - [ ] Duplicate bookmark detection
 - [ ] Bookmark validation (check if URLs still work)
 - [x] Archive/unarchive bookmarks
 - [ ] Recently deleted/trash functionality
 
 ### 3. **Collections & Organization System**
-- [ ] Create bookmark collections/folders
+- [x] Create bookmark collections/folders
 - [ ] Move bookmarks between collections
 - [ ] Collection management (rename, delete, share)
 - [ ] Nested collections/sub-folders
 - [ ] Collection templates
-- [ ] Smart collections (auto-categorization)
+- [x] Smart collections (auto-categorization)
 
-#### **📁 COLLECTIONS SYSTEM ARCHITECTURE**
-
-**Data Structure Changes:**
-- [ ] **Collection Interface/Type**
-  ```typescript
-  interface Collection {
-    id: string
-    name: string
-    description?: string
-    parentId?: string | null  // For nested collections
-    color?: string
-    icon?: string
-    isPrivate: boolean
-    isDefault: boolean
-    createdAt: Date
-    updatedAt: Date
-    bookmarkCount: number
-    userId: string
-  }
-  ```
-
-- [ ] **Bookmark-Collection Relationship**
-  ```typescript
-  interface BookmarkCollection {
-    bookmarkId: number
-    collectionId: string
-    addedAt: Date
-    order?: number  // For custom ordering
-  }
-  ```
-
-- [ ] **Enhanced Bookmark Interface**
-  ```typescript
-  interface Bookmark {
-    // ... existing fields
-    collections: string[]  // Array of collection IDs
-    primaryCollection?: string  // Main collection
-  }
-  ```
-
-**Store Architecture Updates:**
-- [ ] **Collections State Management**
-  ```typescript
-  interface CollectionsState {
-    collections: Collection[]
-    activeCollectionId: string | null
-    collectionBookmarks: Record<string, number[]>
-    isCreatingCollection: boolean
-    collectionFilter: 'all' | 'private' | 'shared'
-    expandedCollections: string[]  // For tree view
-  }
-  ```
-
-- [ ] **Collections Actions**
-  ```typescript
-  // CRUD Operations
-  createCollection(collection: Omit<Collection, 'id'>)
-  updateCollection(id: string, updates: Partial<Collection>)
-  deleteCollection(id: string, moveBookmarksTo?: string)
-
-  // Bookmark-Collection Management
-  addBookmarkToCollection(bookmarkId: number, collectionId: string)
-  removeBookmarkFromCollection(bookmarkId: number, collectionId: string)
-  moveBookmarkBetweenCollections(bookmarkId: number, fromId: string, toId: string)
-
-  // Collection Navigation
-  setActiveCollection(collectionId: string | null)
-  toggleCollectionExpansion(collectionId: string)
-
-  // Bulk Operations
-  moveMultipleBookmarks(bookmarkIds: number[], toCollectionId: string)
-  duplicateCollection(collectionId: string, newName: string)
-  ```
-
-**UI Component Architecture:**
-- [ ] **CollectionsSidebar Component**
-  - Tree view with expand/collapse
-  - Drag & drop support
-  - Context menu (rename, delete, share, etc.)
-  - Collection badges (count, privacy, etc.)
-  - Search/filter collections
-
-- [ ] **CollectionModal Component**
-  - Create/edit collection form
-  - Color and icon picker
-  - Privacy settings
-  - Parent collection selector
-
-- [ ] **CollectionBreadcrumb Component**
-  - Show current collection path
-  - Quick navigation to parent collections
-  - "All Bookmarks" root option
-
-- [ ] **BookmarkCollectionTags Component**
-  - Show which collections a bookmark belongs to
-  - Quick add/remove from collections
-  - Visual collection indicators
-
-- [ ] **CollectionDropZone Component**
-  - Drag & drop target for moving bookmarks
-  - Visual feedback during drag operations
-  - Validation for drop actions
-
-**Database Schema (if using SQL):**
-- [ ] **Collections Table**
-  ```sql
-  CREATE TABLE collections (
-    id VARCHAR(36) PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    parent_id VARCHAR(36),
-    color VARCHAR(7),
-    icon VARCHAR(50),
-    is_private BOOLEAN DEFAULT false,
-    is_default BOOLEAN DEFAULT false,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    user_id VARCHAR(36) NOT NULL,
-    FOREIGN KEY (parent_id) REFERENCES collections(id) ON DELETE CASCADE
-  );
-  ```
-
-- [ ] **Bookmark_Collections Junction Table**
-  ```sql
-  CREATE TABLE bookmark_collections (
-    bookmark_id INT,
-    collection_id VARCHAR(36),
-    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    order_index INT DEFAULT 0,
-    PRIMARY KEY (bookmark_id, collection_id),
-    FOREIGN KEY (bookmark_id) REFERENCES bookmarks(id) ON DELETE CASCADE,
-    FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE
-  );
-  ```
-
-**File Structure Organization:**
-- [ ] **Create Collections Module**
-  ```
-  src/
-  ├── components/
-  │   ├── collections/
-  │   │   ├── CollectionsSidebar.tsx
-  │   │   ├── CollectionModal.tsx
-  │   │   ├── CollectionBreadcrumb.tsx
-  │   │   ├── CollectionDropZone.tsx
-  │   │   └── CollectionBookmarkTags.tsx
-  ├── hooks/
-  │   ├── useCollections.ts
-  │   ├── useCollectionDragDrop.ts
-  │   └── useCollectionBookmarks.ts
-  ├── store/
-  │   ├── collectionsStore.ts
-  │   └── collectionBookmarkStore.ts
-  ├── types/
-  │   └── collections.ts
-  └── utils/
-      ├── collectionHelpers.ts
-      └── collectionValidation.ts
-  ```
-
-**Key Features Implementation:**
-- [ ] **Default Collections Setup**
-  - "All Bookmarks" (virtual collection)
-  - "Uncategorized" (default for new bookmarks)
-  - "Starred" (smart collection for starred bookmarks)
-  - "Recent" (smart collection for recently added)
-
-- [ ] **Smart Collections Logic**
-  - Auto-updating based on criteria
-  - Date-based collections (Today, This Week, This Month)
-  - Tag-based smart collections
-  - Source-based collections (Twitter, LinkedIn, etc.)
-
-- [ ] **Collection Permissions**
-  - Private (only owner can see)
-  - Shared (specific users can view/edit)
-  - Public (anyone with link can view)
-  - Team collections (organization-wide)
-
-- [ ] **Advanced Collection Features**
-  - Collection templates for quick setup
-  - Bulk import into collections
-  - Collection-specific settings (auto-tag, etc.)
-  - Collection statistics and analytics
-  - Collection export/backup
-
-**Migration Strategy:**
-- [ ] **Phase 1: Basic Collections**
-  - Simple flat collections (no nesting)
-  - Basic CRUD operations
-  - Move bookmarks between collections
-
-- [ ] **Phase 2: Enhanced Features**
-  - Nested collections
-  - Smart collections
-  - Drag & drop interface
-
-- [ ] **Phase 3: Advanced Features**
-  - Sharing and collaboration
-  - Collection templates
-  - Advanced permissions
+#### **📁 COLLECTIONS SYSTEM - Remaining Features**
+- [ ] Move bookmarks between collections (drag & drop from list view)
+- [ ] Collection management (rename, delete, share)
+- [ ] Nested collections/sub-folders
+- [ ] Collection templates
+- [ ] Advanced collection features (permissions, templates, analytics)
 
 ### 4. **Advanced Search & Filtering**
 - [ ] **Advanced Filters Functionality Implementation**
@@ -294,12 +106,27 @@
 - [ ] Content quality scoring
 
 ### 8. **User Interface Enhancements**
-- [ ] List view implementation (currently only grid)
-- [ ] Compact/detailed view modes
+- [ ] **List/Grid View Toggle with Drag & Drop & Multi-Select**
+  - [ ] Add view mode toggle UI component (button/switch) to FilterBar or SearchHeader
+  - [ ] Create new BookmarkList component with condensed table layout (title, author, date, tags)
+  - [ ] Implement multi-select functionality in list view only (checkboxes, selection state management)
+  - [ ] Add bulk action bar for selected items (delete/archive buttons, selection counter)
+  - [ ] Implement drag and drop using react-dnd library for individual bookmark items
+  - [ ] Extend drag and drop to support multi-selection (dragging multiple selected items)
+  - [ ] Add drop zones to CollectionsList sidebar items for dropping bookmarks into collections
+  - [ ] Update collectionsStore to handle bulk bookmark additions via drag and drop
+  - [ ] Integrate view mode toggle with settings persistence in bookmarkStore
+  - [ ] Add visual feedback for drag operations (highlighting drop zones, drag previews)
+  - [ ] Update FilterBar to conditionally show bulk actions when items are selected in list view
+  - [ ] Add keyboard shortcuts for multi-select (Ctrl+A for select all, Escape to clear)
+  - [ ] Update tests to cover new list view functionality and drag/drop interactions
+  - [ ] Add loading states and error handling for bulk operations
+  - [ ] Ensure responsive design for list view on smaller screens
+
+- [ ] Compact/detailed view modes (beyond list/grid toggle)
 - [ ] Customizable dashboard layout
-- [ ] Keyboard shortcuts
+- [ ] Additional keyboard shortcuts (beyond multi-select)
 - [ ] Context menus (right-click actions)
-- [ ] Drag & drop for organization
 - [ ] Infinite scroll or pagination
 - [ ] Loading states and skeletons
 
@@ -414,9 +241,9 @@
 
 ## 📊 Feature Completion Status
 
-**Core Features:** 60% Complete (✅ UI, state management, privacy-first approach, localStorage, add bookmark)
+**Core Features:** 75% Complete (✅ UI, state management, privacy-first approach, localStorage, bookmarks, collections)
 **Local Storage Migration:** 100% Complete (✅ Migration completed)
-**Advanced Features:** 5% Complete
-**Overall Application:** 45% Complete
+**Advanced Features:** 10% Complete (✅ List view plan added)
+**Overall Application:** 55% Complete
 
-**Current Status:** Migrating from database-backed to **privacy-first local storage** application. Focus: Complete migration first, then enhance core bookmark management features.
+**Current Status:** Privacy-first local storage application with core bookmark management. Next: Implement list view with drag & drop and multi-select functionality.
