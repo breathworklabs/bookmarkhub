@@ -5,14 +5,16 @@ import {
   HStack,
   Text,
   Button,
-  Input
+  Input,
+  Select,
+  createListCollection,
+  Portal
 } from '@chakra-ui/react'
-import { LuCalendar, LuChevronDown } from 'react-icons/lu'
+import { LuCalendar } from 'react-icons/lu'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useBookmarkStore, type DateRangeFilter } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
-import { useClickOutside } from '../hooks/useClickOutside'
 
 const DateRangeFilterComponent = () => {
   const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)
@@ -22,24 +24,21 @@ const DateRangeFilterComponent = () => {
 
   const [tempStartDate, setTempStartDate] = useState<Date | null>(dateRangeFilter.customStart || null)
   const [tempEndDate, setTempEndDate] = useState<Date | null>(dateRangeFilter.customEnd || null)
-  const [showOptions, setShowOptions] = useState(false)
   const [showCustomPicker, setShowCustomPicker] = useState(false)
 
-  const dateRangeOptions = [
-    { label: 'All Time', value: 'all' as const },
-    { label: 'Today', value: 'today' as const },
-    { label: 'This Week', value: 'week' as const },
-    { label: 'This Month', value: 'month' as const },
-    { label: 'Custom Range', value: 'custom' as const }
-  ]
+  const dateRangeOptions = createListCollection({
+    items: [
+      { label: 'All Time', value: 'all' },
+      { label: 'Today', value: 'today' },
+      { label: 'This Week', value: 'week' },
+      { label: 'This Month', value: 'month' },
+      { label: 'Custom Range', value: 'custom' },
+    ],
+  })
 
-  // Close dropdown when clicking outside using custom hook
-  const dropdownRef = useClickOutside<HTMLDivElement>(() => {
-    setShowOptions(false)
-  }, showOptions)
+  const handleSelectChange = (details: { value: string[] }) => {
+    const type = details.value[0] as DateRangeFilter['type']
 
-  const handleOptionSelect = (type: DateRangeFilter['type']) => {
-    setShowOptions(false)
     if (type === 'custom') {
       setShowCustomPicker(true)
     } else {
@@ -48,6 +47,23 @@ const DateRangeFilterComponent = () => {
       setActiveSidebarItem('All Bookmarks')
       setActiveCollection(null)
     }
+  }
+
+  const getDisplayValue = () => {
+    if (dateRangeFilter.type === 'custom' && dateRangeFilter.customStart) {
+      const startStr = dateRangeFilter.customStart.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      })
+      const endStr = dateRangeFilter.customEnd?.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }) || 'Present'
+      return `${startStr} - ${endStr}`
+    }
+    return dateRangeFilter.type
   }
 
   const handleCustomRangeApply = () => {
@@ -70,27 +86,6 @@ const DateRangeFilterComponent = () => {
     setShowCustomPicker(false)
   }
 
-  const getDisplayLabel = () => {
-    switch (dateRangeFilter.type) {
-      case 'all':
-        return 'All Time'
-      case 'today':
-        return 'Today'
-      case 'week':
-        return 'This Week'
-      case 'month':
-        return 'This Month'
-      case 'custom':
-        if (dateRangeFilter.customStart) {
-          const startStr = dateRangeFilter.customStart.toLocaleDateString()
-          const endStr = dateRangeFilter.customEnd?.toLocaleDateString() || 'Present'
-          return `${startStr} - ${endStr}`
-        }
-        return 'Custom Range'
-      default:
-        return 'All Time'
-    }
-  }
 
   return (
     <>
@@ -102,68 +97,90 @@ const DateRangeFilterComponent = () => {
           </Text>
         </HStack>
 
-        <Box position="relative" width="100%" ref={dropdownRef}>
-          <Button
-            size="sm"
-            w="100%"
-            justifyContent="space-between"
-            bg="#1a1d23"
-            borderColor="#2a2d35"
-            color="#e1e5e9"
-            border="1px solid"
-            _hover={{ borderColor: '#3a3d45', bg: '#252932' }}
-            _active={{ borderColor: '#1d4ed8', bg: '#252932' }}
-            h="32px"
-            fontSize="12px"
-            fontWeight="400"
-            px={3}
-            onClick={() => setShowOptions(!showOptions)}
-          >
-            <HStack justify="space-between" w="100%">
-              <Text truncate>{getDisplayLabel()}</Text>
-              <LuChevronDown size={12} />
-            </HStack>
-          </Button>
-
-          {showOptions && (
-            <Box
-              position="absolute"
-              top="100%"
-              left={0}
-              right={0}
+        <Select.Root
+          collection={dateRangeOptions}
+          value={[dateRangeFilter.type]}
+          onValueChange={handleSelectChange}
+          size="sm"
+        >
+          <Select.HiddenSelect />
+          <Select.Control h="32px">
+            <Select.Trigger
+              h="32px"
+              minH="32px"
+              maxH="32px"
+              fontSize="12px"
               bg="#1a1d23"
-              border="1px solid #2a2d35"
+              borderColor="#2a2d35"
+              color="#e1e5e9"
+              border="1px solid"
               borderRadius="6px"
-              mt={1}
-              zIndex={9999}
-              maxH="240px"
-              overflowY="auto"
-              minW="200px"
-              boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
-
+              px={3}
+              py={0}
+              _hover={{ borderColor: '#3a3d45', bg: '#252932' }}
+              _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
+              _open={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
             >
-              {dateRangeOptions.map((option) => (
-                <Button
-                  key={option.value}
-                  onClick={() => handleOptionSelect(option.value)}
-                  w="100%"
-                  bg="transparent"
-                  color="#e1e5e9"
-                  fontSize="12px"
-                  fontWeight="400"
-                  h="32px"
-                  borderRadius="0"
-                  border="none"
-                  justifyContent="flex-start"
-                  _hover={{ bg: '#2a2d35' }}
-                  _focus={{ bg: '#2a2d35' }}
-                >
-                  {option.label}
-                </Button>
-              ))}
-            </Box>
-          )}
-        </Box>
+              <Select.ValueText
+                placeholder="Select date range"
+                color="#e1e5e9"
+                fontSize="12px"
+              >
+                {dateRangeFilter.type === 'custom' && dateRangeFilter.customStart
+                  ? getDisplayValue()
+                  : undefined
+                }
+              </Select.ValueText>
+            </Select.Trigger>
+            <Select.IndicatorGroup>
+              <Select.Indicator color="#71767b" />
+            </Select.IndicatorGroup>
+          </Select.Control>
+          <Portal>
+            <Select.Positioner>
+              <Select.Content
+                bg="#1a1d23"
+                border="1px solid #2a2d35"
+                borderRadius="6px"
+                boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
+                maxH="240px"
+                overflowY="auto"
+              >
+                {dateRangeOptions.items.map((option) => (
+                  <Select.Item
+                    item={option}
+                    key={option.value}
+                    color="#e1e5e9"
+                    fontSize="12px"
+                    bg="transparent"
+                    _hover={{
+                      bg: '#2a2d35',
+                      color: '#e1e5e9'
+                    }}
+                    _focus={{
+                      bg: '#2a2d35',
+                      color: '#e1e5e9'
+                    }}
+                    _selected={{
+                      bg: '#1d4ed8 !important',
+                      color: 'white !important'
+                    }}
+                    _highlighted={{
+                      bg: '#2a2d35',
+                      color: '#e1e5e9'
+                    }}
+                    px={3}
+                    py={2}
+                    cursor="pointer"
+                  >
+                    {option.label}
+                    <Select.ItemIndicator color="currentColor" />
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Positioner>
+          </Portal>
+        </Select.Root>
       </VStack>
 
       {/* Custom Date Range Picker */}
