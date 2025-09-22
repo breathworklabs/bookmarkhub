@@ -1,5 +1,5 @@
-import { useMemo, useEffect, useRef } from 'react'
-import { useBookmarkStore } from '../store/bookmarkStore'
+import { useMemo } from 'react'
+import { useBookmarkStore, type DateRangeFilter } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { type Bookmark } from '../types/bookmark'
 
@@ -132,23 +132,39 @@ export const useFilteredBookmarks = (): Bookmark[] => {
     }
 
     // Filter by date range
-    if (dateRangeFilter) {
-      const now = new Date()
+    if (dateRangeFilter.type !== 'all') {
       filtered = filtered.filter(bookmark => {
         const bookmarkDate = new Date(bookmark.created_at)
-        switch (dateRangeFilter) {
-          case 'today':
+
+        switch (dateRangeFilter.type) {
+          case 'today': {
             const today = new Date()
             today.setHours(0, 0, 0, 0)
             return bookmarkDate >= today
-          case 'week':
+          }
+          case 'week': {
             const weekAgo = new Date()
             weekAgo.setDate(weekAgo.getDate() - 7)
             return bookmarkDate >= weekAgo
-          case 'month':
+          }
+          case 'month': {
             const monthAgo = new Date()
             monthAgo.setMonth(monthAgo.getMonth() - 1)
             return bookmarkDate >= monthAgo
+          }
+          case 'custom': {
+            if (!dateRangeFilter.customStart) return true
+
+            const startDate = new Date(dateRangeFilter.customStart)
+            startDate.setHours(0, 0, 0, 0)
+
+            const endDate = dateRangeFilter.customEnd
+              ? new Date(dateRangeFilter.customEnd)
+              : new Date()
+            endDate.setHours(23, 59, 59, 999)
+
+            return bookmarkDate >= startDate && bookmarkDate <= endDate
+          }
           default:
             return true
         }

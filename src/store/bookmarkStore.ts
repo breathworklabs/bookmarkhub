@@ -4,6 +4,12 @@ import { localStorageService, type StoredBookmark } from '../lib/localStorage'
 import { sanitizeBookmark, validateImportData } from '../lib/dataValidation'
 import type { Bookmark, BookmarkInsert, AppSettings } from '../types/bookmark'
 
+export interface DateRangeFilter {
+  type: 'all' | 'today' | 'week' | 'month' | 'custom'
+  customStart?: Date
+  customEnd?: Date
+}
+
 interface BookmarkState {
   // State
   bookmarks: Bookmark[]
@@ -23,7 +29,7 @@ interface BookmarkState {
   authorFilter: string
   domainFilter: string
   contentTypeFilter: string
-  dateRangeFilter: string
+  dateRangeFilter: DateRangeFilter
   quickFilters: string[]
 
   // Actions
@@ -65,7 +71,7 @@ interface BookmarkState {
   setAuthorFilter: (filter: string) => void
   setDomainFilter: (filter: string) => void
   setContentTypeFilter: (filter: string) => void
-  setDateRangeFilter: (filter: string) => void
+  setDateRangeFilter: (filter: DateRangeFilter) => void
   toggleQuickFilter: (filter: string) => void
   clearAdvancedFilters: () => void
 
@@ -107,7 +113,7 @@ export const useBookmarkStore = create<BookmarkState>()(
       authorFilter: '',
       domainFilter: '',
       contentTypeFilter: '',
-      dateRangeFilter: '',
+      dateRangeFilter: { type: 'all' },
       quickFilters: [],
 
       // Initialize store
@@ -470,7 +476,7 @@ export const useBookmarkStore = create<BookmarkState>()(
         authorFilter: '',
         domainFilter: '',
         contentTypeFilter: '',
-        dateRangeFilter: '',
+        dateRangeFilter: { type: 'all' },
         quickFilters: []
       }, false, 'clearAdvancedFilters')
     }),

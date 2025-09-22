@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { LuTag } from 'react-icons/lu'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
+import DateRangeFilter from './DateRangeFilter'
 
 const MotionBox = motion.create(Box)
 
@@ -11,12 +12,10 @@ const AdvancedFilters = () => {
   const authorFilter = useBookmarkStore((state) => state.authorFilter)
   const domainFilter = useBookmarkStore((state) => state.domainFilter)
   const contentTypeFilter = useBookmarkStore((state) => state.contentTypeFilter)
-  const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)
   const quickFilters = useBookmarkStore((state) => state.quickFilters)
   const setAuthorFilter = useBookmarkStore((state) => state.setAuthorFilter)
   const setDomainFilter = useBookmarkStore((state) => state.setDomainFilter)
   const setContentTypeFilter = useBookmarkStore((state) => state.setContentTypeFilter)
-  const setDateRangeFilter = useBookmarkStore((state) => state.setDateRangeFilter)
   const toggleQuickFilter = useBookmarkStore((state) => state.toggleQuickFilter)
   const clearAdvancedFilters = useBookmarkStore((state) => state.clearAdvancedFilters)
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
@@ -87,7 +86,7 @@ const AdvancedFilters = () => {
           overflow="hidden"
           transformOrigin="top"
         >
-          <Box py={4}>
+          <Box py={4} pb={6}>
           <VStack alignItems="stretch" gap={4}>
             {/* Filter Header */}
             <HStack justify="space-between" alignItems="center">
@@ -106,35 +105,9 @@ const AdvancedFilters = () => {
             </HStack>
 
             {/* Filter Controls */}
-            <HStack gap={4} wrap="wrap" alignItems="flex-start">
+            <HStack gap={4} wrap="wrap" alignItems="flex-start" mb={4}>
               {/* Date Range Filter */}
-              <VStack alignItems="start" gap={2} flex="1" minW="180px">
-                <HStack gap={2} alignItems="center">
-                  <Text fontSize="14px" color="#71767b">📅</Text>
-                  <Text fontSize="13px" fontWeight="500" color="#e1e5e9">
-                    Date Range
-                  </Text>
-                </HStack>
-                <Input
-                  size="sm"
-                  placeholder="Date range (today, week, month)..."
-                  value={dateRangeFilter}
-                  onChange={(e) => {
-                    setDateRangeFilter(e.target.value)
-                    // Reset sidebar to All Bookmarks and clear active collection when applying filters
-                    setActiveSidebarItem('All Bookmarks')
-                    setActiveCollection(null)
-                  }}
-                  bg="#1a1d23"
-                  borderColor="#2a2d35"
-                  color="#e1e5e9"
-                  _placeholder={{ color: '#71767b' }}
-                  _hover={{ borderColor: '#3a3d45' }}
-                  _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
-                  h="32px"
-                  fontSize="12px"
-                />
-              </VStack>
+              <DateRangeFilter />
 
               {/* Author Filter */}
               <VStack alignItems="start" gap={2} flex="1" minW="180px">

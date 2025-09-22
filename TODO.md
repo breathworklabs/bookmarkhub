@@ -51,13 +51,6 @@
 - [ ] Collection templates
 - [x] Smart collections (auto-categorization)
 
-#### **📁 COLLECTIONS SYSTEM - Remaining Features**
-- [ ] Move bookmarks between collections (drag & drop from list view)
-- [ ] Collection management (rename, delete, share)
-- [ ] Nested collections/sub-folders
-- [ ] Collection templates
-- [ ] Advanced collection features (permissions, templates, analytics)
-
 ### 4. **Advanced Search & Filtering**
 - [ ] **Advanced Filters Functionality Implementation**
   - [ ] Date range filter (All Time, Today, This Week, This Month, Custom Range)
