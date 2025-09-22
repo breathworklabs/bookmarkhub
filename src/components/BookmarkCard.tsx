@@ -1,5 +1,5 @@
 import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem, Image, SimpleGrid, Menu, Portal } from '@chakra-ui/react'
-import { LuMenu, LuStar, LuExternalLink, LuDownload, LuTrash2, LuPencil, LuShare2 } from 'react-icons/lu'
+import { LuMenu, LuStar, LuExternalLink, LuDownload, LuTrash2, LuPencil, LuShare2, LuPlay } from 'react-icons/lu'
 import { type Bookmark } from '../types/bookmark'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'
@@ -431,7 +431,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                       top="50%"
                       left="50%"
                       transform="translate(-50%, -50%)"
-                      bg="rgba(0, 0, 0, 0.7)"
+                      bg="rgba(0, 0, 0, 0.8)"
                       borderRadius="full"
                       w="60px"
                       h="60px"
@@ -439,9 +439,16 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                       alignItems="center"
                       justifyContent="center"
                       color="white"
-                      fontSize="24px"
+                      border="2px solid rgba(255, 255, 255, 0.8)"
+                      _hover={{
+                        bg: "rgba(0, 0, 0, 0.9)",
+                        borderColor: "white",
+                        transform: "translate(-50%, -50%) scale(1.1)"
+                      }}
+                      transition="all 0.2s ease"
+                      cursor="pointer"
                     >
-                      ▶️
+                      <LuPlay size={24} />
                     </Box>
                   </Box>
                 )

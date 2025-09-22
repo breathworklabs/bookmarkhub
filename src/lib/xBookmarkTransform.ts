@@ -33,15 +33,8 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
     ? xBookmark.text.substring(0, 80) + '...'
     : xBookmark.text
 
-  // Extract hashtags as tags
-  const hashtags = xBookmark.text.match(/#\w+/g) || []
-  const tags = hashtags.map(tag => tag.substring(1).toLowerCase())
-
-  // Add platform-specific tags
-  const platformTags = ['twitter', 'x-com']
-  if (xBookmark.has_video) {
-    platformTags.push('video')
-  }
+  // For now, just add X platform tag
+  const platformTags = ['X']
 
   // Separate different types of images
   const allImages = xBookmark.images || []
@@ -55,15 +48,10 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
   console.log('Bigger images:', biggerProfileImages)
   console.log('Content images:', contentImages)
 
-  // Add images tag if there are content images
-  if (contentImages.length > 0) {
-    platformTags.push('images')
-  }
 
   // Calculate engagement score (basic scoring for now)
   let engagementScore = 50 // Default middle score
   if (xBookmark.text.length > 200) engagementScore += 10 // Longer content
-  if (hashtags.length > 0) engagementScore += 10 // Has hashtags
   if (xBookmark.has_video) engagementScore += 20 // Has video
   if (contentImages.length > 0) engagementScore += 10 // Has content images
 
@@ -83,7 +71,7 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
     is_starred: false,
     is_read: false,
     is_archived: false,
-    tags: [...new Set([...tags, ...platformTags])], // Remove duplicates
+    tags: platformTags,
     collections: [],
     metadata: {
       tweet_date: xBookmark.tweet_date,
