@@ -4,16 +4,15 @@ import { LuTag } from 'react-icons/lu'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import DateRangeFilter from './DateRangeFilter'
+import AuthorFilter from './AuthorFilter'
 
 const MotionBox = motion.create(Box)
 
 const AdvancedFilters = () => {
   const isFiltersPanelOpen = useBookmarkStore((state) => state.isFiltersPanelOpen)
-  const authorFilter = useBookmarkStore((state) => state.authorFilter)
   const domainFilter = useBookmarkStore((state) => state.domainFilter)
   const contentTypeFilter = useBookmarkStore((state) => state.contentTypeFilter)
   const quickFilters = useBookmarkStore((state) => state.quickFilters)
-  const setAuthorFilter = useBookmarkStore((state) => state.setAuthorFilter)
   const setDomainFilter = useBookmarkStore((state) => state.setDomainFilter)
   const setContentTypeFilter = useBookmarkStore((state) => state.setContentTypeFilter)
   const toggleQuickFilter = useBookmarkStore((state) => state.toggleQuickFilter)
@@ -110,33 +109,7 @@ const AdvancedFilters = () => {
               <DateRangeFilter />
 
               {/* Author Filter */}
-              <VStack alignItems="start" gap={2} flex="1" minW="180px">
-                <HStack gap={2} alignItems="center">
-                  <Text fontSize="14px" color="#71767b">👤</Text>
-                  <Text fontSize="13px" fontWeight="500" color="#e1e5e9">
-                    Author
-                  </Text>
-                </HStack>
-                <Input
-                  size="sm"
-                  placeholder="Search by author..."
-                  value={authorFilter}
-                  onChange={(e) => {
-                    setAuthorFilter(e.target.value)
-                    // Reset sidebar to All Bookmarks and clear active collection when applying filters
-                    setActiveSidebarItem('All Bookmarks')
-                    setActiveCollection(null)
-                  }}
-                  bg="#1a1d23"
-                  borderColor="#2a2d35"
-                  color="#e1e5e9"
-                  _placeholder={{ color: '#71767b' }}
-                  _hover={{ borderColor: '#3a3d45' }}
-                  _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
-                  h="32px"
-                  fontSize="12px"
-                />
-              </VStack>
+              <AuthorFilter />
 
               {/* Domain Filter */}
               <VStack alignItems="start" gap={2} flex="1" minW="180px">

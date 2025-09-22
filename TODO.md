@@ -53,8 +53,8 @@
 
 ### 4. **Advanced Search & Filtering**
 - [ ] **Advanced Filters Functionality Implementation**
-  - [ ] Date range filter (All Time, Today, This Week, This Month, Custom Range)
-  - [ ] Author filter with search and autocomplete
+  - [x] Date range filter (All Time, Today, This Week, This Month, Custom Range)
+  - [x] Author filter with search and autocomplete
   - [ ] Domain filter with dropdown of available domains
   - [ ] Content type filter (Article, Video, Tweet, etc.)
   - [ ] Quick filters implementation (Starred Only, Unread, Has Comments, High Engagement, Recently Added, Archived)
