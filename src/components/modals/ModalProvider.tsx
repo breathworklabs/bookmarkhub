@@ -3,6 +3,7 @@ import { Dialog, Button, HStack, Text, Box, Input, VStack, Textarea, Badge } fro
 import type { BookmarkInsert, Bookmark } from '../../types/bookmark'
 import type { CollectionInsert } from '../../lib/localStorage'
 import { sanitizeBookmark } from '../../lib/dataValidation'
+import ImageModal from './ImageModal'
 
 interface ModalContextType {
   showDeleteConfirmation: (options: DeleteConfirmationOptions) => void
@@ -11,6 +12,7 @@ interface ModalContextType {
   showEditBookmark: (options: EditBookmarkOptions) => void
   showCreateCollection: (options: CreateCollectionOptions) => void
   showEditCollection: (options: EditCollectionOptions) => void
+  showImageModal: (options: ImageModalOptions) => void
   closeModal: () => void
 }
 
@@ -52,6 +54,12 @@ interface EditCollectionOptions {
   onCancel?: () => void
 }
 
+interface ImageModalOptions {
+  images: string[]
+  initialIndex?: number
+  title?: string
+}
+
 const ModalContext = createContext<ModalContextType | null>(null)
 
 export const useModal = () => {
@@ -63,12 +71,25 @@ export const useModal = () => {
 }
 
 interface ModalState {
-  type: 'delete' | 'addTag' | 'addBookmark' | 'editBookmark' | 'createCollection' | 'editCollection' | null
+  type: 'delete' | 'addTag' | 'addBookmark' | 'editBookmark' | 'createCollection' | 'editCollection' | 'imageModal' | null
   options: any
+}
+
+interface ImageModalState {
+  isOpen: boolean
+  images: string[]
+  initialIndex: number
+  title?: string
 }
 
 export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [modalState, setModalState] = useState<ModalState>({ type: null, options: null })
+  const [imageModalState, setImageModalState] = useState<ImageModalState>({
+    isOpen: false,
+    images: [],
+    initialIndex: 0,
+    title: undefined
+  })
   const [tagInput, setTagInput] = useState('')
   const [bookmarkFormData, setBookmarkFormData] = useState<BookmarkInsert>({
     user_id: 'ae879c80-f3fc-4e05-a837-384e4b9bfb28',
@@ -319,6 +340,24 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setCollectionFormData(prev => ({ ...prev, [field]: value }))
   }
 
+  const showImageModal = (options: ImageModalOptions) => {
+    setImageModalState({
+      isOpen: true,
+      images: options.images,
+      initialIndex: options.initialIndex || 0,
+      title: options.title
+    })
+  }
+
+  const closeImageModal = () => {
+    setImageModalState({
+      isOpen: false,
+      images: [],
+      initialIndex: 0,
+      title: undefined
+    })
+  }
+
   const contextValue: ModalContextType = {
     showDeleteConfirmation,
     showAddTag,
@@ -326,6 +365,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     showEditBookmark,
     showCreateCollection,
     showEditCollection,
+    showImageModal,
     closeModal
   }
 
@@ -826,6 +866,15 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
           </Dialog.Positioner>
         </Dialog.Root>
       )}
+
+      {/* Image Modal */}
+      <ImageModal
+        isOpen={imageModalState.isOpen}
+        onClose={closeImageModal}
+        images={imageModalState.images}
+        initialIndex={imageModalState.initialIndex}
+        title={imageModalState.title}
+      />
     </ModalContext.Provider>
   )
 }

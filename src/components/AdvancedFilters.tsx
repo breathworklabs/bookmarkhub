@@ -11,13 +11,17 @@ const MotionBox = motion.create(Box)
 
 const AdvancedFilters = () => {
   const isFiltersPanelOpen = useBookmarkStore((state) => state.isFiltersPanelOpen)
+  const authorFilter = useBookmarkStore((state) => state.authorFilter)
+  const domainFilter = useBookmarkStore((state) => state.domainFilter)
   const contentTypeFilter = useBookmarkStore((state) => state.contentTypeFilter)
+  const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)
   const quickFilters = useBookmarkStore((state) => state.quickFilters)
   const setContentTypeFilter = useBookmarkStore((state) => state.setContentTypeFilter)
   const toggleQuickFilter = useBookmarkStore((state) => state.toggleQuickFilter)
   const clearAdvancedFilters = useBookmarkStore((state) => state.clearAdvancedFilters)
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
   const setActiveCollection = useCollectionsStore((state) => state.setActiveCollection)
+
 
   return (
     <AnimatePresence>
@@ -88,9 +92,11 @@ const AdvancedFilters = () => {
           <VStack alignItems="stretch" gap={4}>
             {/* Filter Header */}
             <HStack justify="space-between" alignItems="center">
-              <Text fontSize="16px" fontWeight="600" color="#e1e5e9">
-                Advanced Filters
-              </Text>
+              <HStack gap={2} alignItems="center">
+                <Text fontSize="16px" fontWeight="600" color="#e1e5e9">
+                  Advanced Filters
+                </Text>
+              </HStack>
               <Button
                 size="sm"
                 variant="ghost"

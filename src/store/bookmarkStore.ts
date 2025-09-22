@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { localStorageService, type StoredBookmark } from '../lib/localStorage'
 import { sanitizeBookmark, validateImportData } from '../lib/dataValidation'
+import { transformXBookmarks, validateXBookmarkData } from '../lib/xBookmarkTransform'
 import type { Bookmark, BookmarkInsert, AppSettings } from '../types/bookmark'
 
 export interface DateRangeFilter {
@@ -78,6 +79,7 @@ interface BookmarkState {
   // Data management
   exportBookmarks: () => Promise<void>
   importBookmarks: (file: File) => Promise<void>
+  importXBookmarks: (data: any[], limit?: number) => Promise<void>
   clearAllData: () => Promise<void>
 
   // Initialize store
@@ -367,6 +369,46 @@ export const useBookmarkStore = create<BookmarkState>()(
           set({ error: error instanceof Error ? error.message : 'Failed to import bookmarks' }, false, 'importBookmarks:error')
         } finally {
           set({ isLoading: false }, false, 'importBookmarks:complete')
+        }
+      },
+
+      importXBookmarks: async (data, limit) => {
+        try {
+          set({ isLoading: true, error: null }, false, 'importXBookmarks:start')
+
+          // Validate X bookmark data
+          const validation = validateXBookmarkData(data)
+          if (!validation.valid) {
+            throw new Error(`Invalid X bookmark data: ${validation.errors.join(', ')}`)
+          }
+
+          // Transform X bookmarks to our format
+          const transformedBookmarks = transformXBookmarks(data, limit)
+
+          // Add each bookmark using the existing addBookmark function
+          let successCount = 0
+          for (const bookmark of transformedBookmarks) {
+            try {
+              const sanitized = sanitizeBookmark(bookmark)
+              if (sanitized) {
+                await localStorageService.createBookmark(sanitized)
+                successCount++
+              }
+            } catch (error) {
+              console.warn('Failed to import bookmark:', bookmark.title, error)
+            }
+          }
+
+          console.log(`Successfully imported ${successCount} of ${transformedBookmarks.length} X bookmarks`)
+
+          // Reload bookmarks to show imported data
+          await get().loadBookmarks()
+
+        } catch (error) {
+          console.error('Error importing X bookmarks:', error)
+          set({ error: error instanceof Error ? error.message : 'Failed to import X bookmarks' }, false, 'importXBookmarks:error')
+        } finally {
+          set({ isLoading: false }, false, 'importXBookmarks:complete')
         }
       },
 

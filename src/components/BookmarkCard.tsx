@@ -1,4 +1,4 @@
-import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem } from '@chakra-ui/react'
+import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem, Image, SimpleGrid } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuExternalLink, LuDownload, LuTrash2, LuPencil } from 'react-icons/lu'
 import { type Bookmark } from '../types/bookmark'
 import { useBookmarkStore } from '../store/bookmarkStore'
@@ -13,7 +13,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
   const removeBookmark = useBookmarkStore((state) => state.removeBookmark)
   const updateBookmark = useBookmarkStore((state) => state.updateBookmark)
   const toggleArchiveBookmark = useBookmarkStore((state) => state.toggleArchiveBookmark)
-  const { showDeleteConfirmation, showEditBookmark } = useModal()
+  const { showDeleteConfirmation, showEditBookmark, showImageModal } = useModal()
 
   // Helper functions to handle both mock and database bookmark formats
   const getAuthorName = () => {
@@ -26,6 +26,21 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
   const getAuthorInitial = () => {
     const name = getAuthorName()
     return name.charAt(0).toUpperCase()
+  }
+
+  const getProfileImage = () => {
+    // Check for X bookmark profile image in metadata
+    const metadata = (bookmark as any).metadata
+    if (metadata && metadata.profile_image) {
+      return metadata.profile_image
+    }
+
+    // Check for general favicon_url which might contain profile image
+    if ((bookmark as any).favicon_url && !(bookmark as any).favicon_url.includes('favicon.ico')) {
+      return (bookmark as any).favicon_url
+    }
+
+    return null
   }
 
   const getAuthorUsername = () => {
@@ -45,7 +60,41 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
   }
 
   const hasMedia = () => {
-    return (bookmark as any).hasMedia || (bookmark as any).thumbnail_url
+    // Check for general media fields
+    const hasGeneralMedia = (bookmark as any).hasMedia || (bookmark as any).thumbnail_url
+
+    // Check for X bookmark specific media
+    const metadata = (bookmark as any).metadata
+    const hasXMedia = metadata && (
+      (metadata.images && metadata.images.length > 0) ||
+      metadata.has_video
+    )
+
+    return hasGeneralMedia || hasXMedia
+  }
+
+  const getMediaContent = () => {
+    const metadata = (bookmark as any).metadata
+
+    // Handle X bookmark media
+    if (metadata && (metadata.images || metadata.has_video)) {
+      return {
+        type: metadata.has_video ? 'video' : 'images',
+        images: metadata.images || [],
+        hasVideo: metadata.has_video || false
+      }
+    }
+
+    // Handle general thumbnail
+    if ((bookmark as any).thumbnail_url) {
+      return {
+        type: 'images',
+        images: [(bookmark as any).thumbnail_url],
+        hasVideo: false
+      }
+    }
+
+    return null
   }
 
   const getContent = () => {
@@ -86,6 +135,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
           w={10}
           h={10}
           borderRadius="full"
+          overflow="hidden"
           bg="linear-gradient(135deg, #667eea, #764ba2)"
           display="flex"
           alignItems="center"
@@ -93,7 +143,26 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
           fontSize="sm"
           fontWeight="bold"
           color="white"
+          position="relative"
         >
+          {getProfileImage() ? (
+            <Image
+              src={getProfileImage()}
+              alt={`${getAuthorName()} profile`}
+              w="100%"
+              h="100%"
+              objectFit="cover"
+              position="absolute"
+              top={0}
+              left={0}
+              onError={(e) => {
+                // Hide image and show initial on error
+                const target = e.target as HTMLImageElement
+                target.style.display = 'none'
+              }}
+            />
+          ) : null}
+          {/* Fallback initial */}
           {getAuthorInitial()}
         </Box>
         <VStack alignItems="start" gap={0} flex={1}>
@@ -168,19 +237,153 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
           {getContent()}
         </Text>
 
-        {/* Media placeholder */}
+        {/* Media Display */}
         {hasMedia() && (
-          <Box
-            h="180px"
-            bg="#0f1419"
-            borderRadius="lg"
-            border="1px solid #2a2d35"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            color="#71767b"
-          >
-            📷 Media Content
+          <Box mb={3}>
+            {(() => {
+              const mediaContent = getMediaContent()
+              if (!mediaContent) return null
+
+              const { images, hasVideo } = mediaContent
+
+              // Video indicator
+              if (hasVideo) {
+                return (
+                  <Box
+                    position="relative"
+                    borderRadius="lg"
+                    overflow="hidden"
+                    border="1px solid #2a2d35"
+                    cursor="pointer"
+                    _hover={{ filter: 'brightness(1.1)' }}
+                    onClick={() => showImageModal({
+                      images: images,
+                      initialIndex: 0,
+                      title: `🎥 ${getContent().slice(0, 100)}${getContent().length > 100 ? '...' : ''}`
+                    })}
+                  >
+                    {images.length > 0 ? (
+                      <Image
+                        src={images[0]}
+                        alt="Video thumbnail"
+                        w="100%"
+                        h="200px"
+                        objectFit="cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement
+                          target.style.display = 'none'
+                        }}
+                      />
+                    ) : (
+                      <Box
+                        h="200px"
+                        bg="#0f1419"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        color="#71767b"
+                      >
+                        🎥 Video Content
+                      </Box>
+                    )}
+                    {/* Video play overlay */}
+                    <Box
+                      position="absolute"
+                      top="50%"
+                      left="50%"
+                      transform="translate(-50%, -50%)"
+                      bg="rgba(0, 0, 0, 0.7)"
+                      borderRadius="full"
+                      w="60px"
+                      h="60px"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      color="white"
+                      fontSize="24px"
+                    >
+                      ▶️
+                    </Box>
+                  </Box>
+                )
+              }
+
+              // Images
+              if (images.length > 0) {
+                return (
+                  <Box borderRadius="lg" overflow="hidden" border="1px solid #2a2d35">
+                    {images.length === 1 ? (
+                      <Image
+                        src={images[0]}
+                        alt="Tweet image"
+                        w="100%"
+                        h="200px"
+                        objectFit="cover"
+                        cursor="pointer"
+                        _hover={{ filter: 'brightness(1.1)' }}
+                        onClick={() => showImageModal({
+                          images: images,
+                          initialIndex: 0,
+                          title: getContent().slice(0, 100) + (getContent().length > 100 ? '...' : '')
+                        })}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement
+                          target.style.display = 'none'
+                        }}
+                      />
+                    ) : (
+                      <SimpleGrid columns={images.length === 2 ? 2 : 2} gap={1}>
+                        <For each={images.slice(0, 4)}>
+                          {(imageUrl, index) => (
+                            <Box key={`img-${index}`} position="relative">
+                              <Image
+                                src={String(imageUrl)}
+                                alt={`Tweet image ${index + 1}`}
+                                w="100%"
+                                h={images.length === 2 ? "150px" : "100px"}
+                                objectFit="cover"
+                                cursor="pointer"
+                                _hover={{ filter: 'brightness(1.1)' }}
+                                onClick={() => showImageModal({
+                                  images: images,
+                                  initialIndex: index,
+                                  title: getContent().slice(0, 100) + (getContent().length > 100 ? '...' : '')
+                                })}
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement
+                                  target.style.display = 'none'
+                                }}
+                              />
+                              {/* Show +N overlay for additional images */}
+                              {index === 3 && images.length > 4 && (
+                                <Box
+                                  position="absolute"
+                                  top="0"
+                                  left="0"
+                                  right="0"
+                                  bottom="0"
+                                  bg="rgba(0, 0, 0, 0.7)"
+                                  display="flex"
+                                  alignItems="center"
+                                  justifyContent="center"
+                                  color="white"
+                                  fontWeight="bold"
+                                  fontSize="lg"
+                                >
+                                  +{images.length - 4}
+                                </Box>
+                              )}
+                            </Box>
+                          )}
+                        </For>
+                      </SimpleGrid>
+                    )}
+                  </Box>
+                )
+              }
+
+              return null
+            })()}
           </Box>
         )}
       </Box>
