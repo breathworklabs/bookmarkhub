@@ -19,6 +19,17 @@ interface XBookmarkData {
  * Transform X/Twitter bookmark data to our Bookmark format
  */
 export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'local-user'): BookmarkInsert {
+  if (!xBookmark) {
+    throw new Error('xBookmark is null or undefined')
+  }
+
+  if (!xBookmark.url) {
+    throw new Error('xBookmark.url is required')
+  }
+
+  // Handle missing or empty text (could be media-only posts, retweets, etc.)
+  const text = xBookmark.text || '[No text content]'
+
   // Extract domain from URL
   let domain = ''
   try {
@@ -29,18 +40,18 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
   }
 
   // Create title from text (truncated for readability)
-  const title = xBookmark.text.length > 80
-    ? xBookmark.text.substring(0, 80) + '...'
-    : xBookmark.text
+  const title = text.length > 80
+    ? text.substring(0, 80) + '...'
+    : text
 
   // For now, just add X platform tag
   const platformTags = ['X']
 
   // Separate different types of images
-  const allImages = xBookmark.images || []
-  const normalProfileImages = allImages.filter(img => img.includes('_normal'))
-  const biggerProfileImages = allImages.filter(img => img.includes('_bigger'))
-  const contentImages = allImages.filter(img => !img.includes('_normal') && !img.includes('_bigger'))
+  const allImages = Array.isArray(xBookmark.images) ? xBookmark.images : []
+  const normalProfileImages = allImages.filter(img => img && typeof img === 'string' && img.includes('_normal'))
+  const biggerProfileImages = allImages.filter(img => img && typeof img === 'string' && img.includes('_bigger'))
+  const contentImages = allImages.filter(img => img && typeof img === 'string' && !img.includes('_normal') && !img.includes('_bigger'))
 
   console.log('Processing bookmark:', xBookmark.display_name)
   console.log('All images:', allImages)
@@ -51,7 +62,7 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
 
   // Calculate engagement score (basic scoring for now)
   let engagementScore = 50 // Default middle score
-  if (xBookmark.text.length > 200) engagementScore += 10 // Longer content
+  if (text.length > 200) engagementScore += 10 // Longer content
   if (xBookmark.has_video) engagementScore += 20 // Has video
   if (contentImages.length > 0) engagementScore += 10 // Has content images
 
@@ -59,8 +70,8 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
     user_id: userId,
     title: title,
     url: xBookmark.url,
-    description: xBookmark.text,
-    content: xBookmark.text,
+    description: text,
+    content: text,
     thumbnail_url: contentImages.length > 0 ? contentImages[0] : undefined,
     favicon_url: normalProfileImages.length > 0 ? normalProfileImages[0] : `https://x.com/favicon.ico`,
     author: `${xBookmark.display_name} (@${xBookmark.username})`,
@@ -94,11 +105,21 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
  * @param limit Optional limit for testing (default: no limit)
  */
 export function transformXBookmarks(xBookmarks: XBookmarkData[], limit?: number): BookmarkInsert[] {
+  if (!Array.isArray(xBookmarks)) {
+    throw new Error('xBookmarks must be an array')
+  }
+
   const bookmarksToProcess = limit ? xBookmarks.slice(0, limit) : xBookmarks
 
-  return bookmarksToProcess.map(xBookmark =>
-    transformXBookmark(xBookmark)
-  )
+  return bookmarksToProcess.map((xBookmark, index) => {
+    try {
+      return transformXBookmark(xBookmark)
+    } catch (error) {
+      console.error(`Error transforming bookmark at index ${index}:`, error)
+      console.error('Bookmark data:', xBookmark)
+      throw new Error(`Failed to transform bookmark at index ${index}: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    }
+  })
 }
 
 /**

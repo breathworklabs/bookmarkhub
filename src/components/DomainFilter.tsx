@@ -13,44 +13,21 @@ import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 
 const DomainFilter = () => {
-  const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const domainFilter = useBookmarkStore((state) => state.domainFilter)
   const setDomainFilter = useBookmarkStore((state) => state.setDomainFilter)
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
+  const filterOptions = useBookmarkStore((state) => state.filterOptions)
   const setActiveCollection = useCollectionsStore((state) => state.setActiveCollection)
 
   const { contains } = useFilter({ sensitivity: 'base' })
 
-  // Extract unique domains from bookmarks (base domain only)
+  // Use cached domains from the store
   const domains = useMemo(() => {
-    const extractBaseDomain = (url: string) => {
-      try {
-        const urlObj = new URL(url.startsWith('http') ? url : `https://${url}`)
-        return urlObj.hostname.replace(/^www\./, '')
-      } catch {
-        // If URL parsing fails, try to extract domain from string
-        const match = url.match(/(?:https?:\/\/)?(?:www\.)?([^\/\?]+)/i)
-        return match ? match[1] : url
-      }
-    }
-
-    const uniqueDomains = Array.from(
-      new Set(
-        bookmarks
-          .map(bookmark => {
-            // Use the existing domain field or extract from URL
-            const domain = bookmark.domain || extractBaseDomain(bookmark.url)
-            return domain.replace(/^www\./, '') // Remove www prefix
-          })
-          .filter(domain => domain && domain.trim() !== '')
-      )
-    ).sort()
-
-    return uniqueDomains.map(domain => ({
+    return filterOptions.domains.map(domain => ({
       label: domain,
       value: domain
     }))
-  }, [bookmarks])
+  }, [filterOptions.domains])
 
   const { collection, filter } = useListCollection({
     initialItems: domains,

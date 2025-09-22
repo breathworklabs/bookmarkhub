@@ -33,6 +33,14 @@ interface BookmarkState {
   dateRangeFilter: DateRangeFilter
   quickFilters: string[]
 
+  // Cached filter options (calculated once)
+  filterOptions: {
+    authors: string[]
+    domains: string[]
+    tags: string[]
+    contentTypes: string[]
+  }
+
   // Actions
   setBookmarks: (bookmarks: Bookmark[]) => void
   loadBookmarks: () => Promise<void>
@@ -75,6 +83,7 @@ interface BookmarkState {
   setDateRangeFilter: (filter: DateRangeFilter) => void
   toggleQuickFilter: (filter: string) => void
   clearAdvancedFilters: () => void
+  calculateFilterOptions: () => void
 
   // Data management
   exportBookmarks: () => Promise<void>
@@ -118,6 +127,14 @@ export const useBookmarkStore = create<BookmarkState>()(
       dateRangeFilter: { type: 'all' },
       quickFilters: [],
 
+      // Cached filter options initial state
+      filterOptions: {
+        authors: [],
+        domains: [],
+        tags: [],
+        contentTypes: ['article', 'tweet', 'video', 'image']
+      },
+
       // Initialize store
       initialize: async () => {
         try {
@@ -136,6 +153,9 @@ export const useBookmarkStore = create<BookmarkState>()(
             activeTab: 0, // Reset to "All" tab
             selectedBookmarks: [] // Clear selection on startup
           }, false, 'initialize:loadedFromStorage')
+
+          // Calculate filter options after loading bookmarks
+          get().calculateFilterOptions()
 
         } catch (error) {
           console.error('Failed to initialize app:', error)
@@ -162,6 +182,9 @@ export const useBookmarkStore = create<BookmarkState>()(
 
           const bookmarks = await localStorageService.getBookmarks()
           set({ bookmarks, isLoading: false }, false, 'loadBookmarks:success')
+
+          // Recalculate filter options after loading bookmarks
+          get().calculateFilterOptions()
         } catch (error) {
           console.error('Error loading bookmarks:', error)
           set({
@@ -404,6 +427,8 @@ export const useBookmarkStore = create<BookmarkState>()(
           // Reload bookmarks to show imported data
           await get().loadBookmarks()
 
+          // Filter options will be recalculated in loadBookmarks()
+
         } catch (error) {
           console.error('Error importing X bookmarks:', error)
           set({ error: error instanceof Error ? error.message : 'Failed to import X bookmarks' }, false, 'importXBookmarks:error')
@@ -520,7 +545,38 @@ export const useBookmarkStore = create<BookmarkState>()(
         contentTypeFilter: '',
         dateRangeFilter: { type: 'all' },
         quickFilters: []
-      }, false, 'clearAdvancedFilters')
+      }, false, 'clearAdvancedFilters'),
+
+      // Calculate filter options from current bookmarks
+      calculateFilterOptions: () => {
+        const state = get()
+        const bookmarks = state.bookmarks
+
+        // Extract unique authors
+        const authors = [...new Set(bookmarks.map(bookmark => bookmark.author))]
+          .filter(author => author && author.trim() !== '')
+          .sort()
+
+        // Extract unique domains
+        const domains = [...new Set(bookmarks.map(bookmark => bookmark.domain))]
+          .filter(domain => domain && domain.trim() !== '')
+          .sort()
+
+        // Extract unique tags
+        const allTags = bookmarks.flatMap(bookmark => bookmark.tags || [])
+        const tags = [...new Set(allTags)]
+          .filter(tag => tag && tag.trim() !== '')
+          .sort()
+
+        set({
+          filterOptions: {
+            authors,
+            domains,
+            tags,
+            contentTypes: ['article', 'tweet', 'video', 'image'] // Static content types
+          }
+        }, false, 'calculateFilterOptions')
+      }
     }),
     {
       name: 'bookmark-store', // Store name for devtools

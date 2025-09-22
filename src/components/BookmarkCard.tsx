@@ -1,5 +1,6 @@
 import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem, Image, SimpleGrid, Menu, Portal } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuExternalLink, LuDownload, LuTrash2, LuPencil, LuShare2, LuPlay } from 'react-icons/lu'
+import { useState } from 'react'
 import { type Bookmark } from '../types/bookmark'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'
@@ -15,6 +16,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
   const updateBookmark = useBookmarkStore((state) => state.updateBookmark)
   const toggleArchiveBookmark = useBookmarkStore((state) => state.toggleArchiveBookmark)
   const { showDeleteConfirmation, showEditBookmark, showImageModal } = useModal()
+  const [isCopied, setIsCopied] = useState(false)
 
   // Helper functions to handle both mock and database bookmark formats
   const getAuthorName = () => {
@@ -48,11 +50,9 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
     // Check for X bookmark _bigger profile image in metadata
     const metadata = (bookmark as any).metadata
     if (metadata && metadata.profile_image_bigger) {
-      console.log('Found badge image:', metadata.profile_image_bigger)
       return metadata.profile_image_bigger
     }
 
-    console.log('No badge image found. Metadata:', metadata)
     return null
   }
 
@@ -132,6 +132,29 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
     const tags = (bookmark as any).tags || []
     // Ensure we return an array of strings
     return Array.isArray(tags) ? tags.filter(tag => typeof tag === 'string') : []
+  }
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(bookmark.url)
+      setIsCopied(true)
+      setTimeout(() => setIsCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy URL to clipboard:', err)
+      // Fallback for older browsers
+      try {
+        const textArea = document.createElement('textarea')
+        textArea.value = bookmark.url
+        document.body.appendChild(textArea)
+        textArea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textArea)
+        setIsCopied(true)
+        setTimeout(() => setIsCopied(false), 2000)
+      } catch (fallbackErr) {
+        console.error('Fallback copy also failed:', fallbackErr)
+      }
+    }
   }
 
   return (
@@ -602,6 +625,37 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                   transform: 'scale(1.1)',
                   transition: 'all 0.2s'
                 }}
+                _focus={{
+                  boxShadow: 'none !important',
+                  borderColor: '#3a3d45 !important',
+                  outline: 'none !important'
+                }}
+                _active={{
+                  bg: '#2a2d35 !important',
+                  borderColor: '#3a3d45 !important',
+                  transform: 'scale(0.95)',
+                  boxShadow: 'none !important',
+                  outline: 'none !important'
+                }}
+                _focusVisible={{
+                  boxShadow: 'none !important',
+                  borderColor: '#3a3d45 !important',
+                  outline: 'none !important'
+                }}
+                sx={{
+                  '&:focus': {
+                    boxShadow: 'none !important',
+                    outline: 'none !important'
+                  },
+                  '&:active': {
+                    boxShadow: 'none !important',
+                    outline: 'none !important'
+                  },
+                  '&:focus-visible': {
+                    boxShadow: 'none !important',
+                    outline: 'none !important'
+                  }
+                }}
                 onClick={() => toggleStarBookmark(bookmark.id)}
               >
                 <LuStar fill={isStarred() ? 'currentColor' : 'none'} />
@@ -610,20 +664,53 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                 size="sm"
                 variant="ghost"
                 aria-label="Share bookmark"
-                title="Share bookmark"
-                color="#71767b"
+                title={isCopied ? "Copied!" : "Copy URL to clipboard"}
+                color={isCopied ? "#22c55e" : "#71767b"}
+                bg={isCopied ? "rgba(34, 197, 94, 0.1)" : "transparent"}
                 borderRadius="full"
                 w="32px"
                 h="32px"
                 minW="32px"
-                border="1px solid #2f3336"
+                border={isCopied ? "1px solid #22c55e" : "1px solid #2f3336"}
                 _hover={{
-                  bg: '#2a2d35',
-                  color: '#e1e5e9',
-                  borderColor: '#3a3d45',
+                  bg: isCopied ? "rgba(34, 197, 94, 0.2)" : '#2a2d35',
+                  color: isCopied ? "#22c55e" : '#e1e5e9',
+                  borderColor: isCopied ? "#22c55e" : '#3a3d45',
                   transform: 'scale(1.1)',
                   transition: 'all 0.2s'
                 }}
+                _focus={{
+                  boxShadow: 'none !important',
+                  borderColor: isCopied ? "#22c55e !important" : '#3a3d45 !important',
+                  outline: 'none !important'
+                }}
+                _active={{
+                  bg: isCopied ? "rgba(34, 197, 94, 0.2) !important" : '#2a2d35 !important',
+                  borderColor: isCopied ? "#22c55e !important" : '#3a3d45 !important',
+                  transform: 'scale(0.95)',
+                  boxShadow: 'none !important',
+                  outline: 'none !important'
+                }}
+                _focusVisible={{
+                  boxShadow: 'none !important',
+                  borderColor: isCopied ? "#22c55e !important" : '#3a3d45 !important',
+                  outline: 'none !important'
+                }}
+                sx={{
+                  '&:focus': {
+                    boxShadow: 'none !important',
+                    outline: 'none !important'
+                  },
+                  '&:active': {
+                    boxShadow: 'none !important',
+                    outline: 'none !important'
+                  },
+                  '&:focus-visible': {
+                    boxShadow: 'none !important',
+                    outline: 'none !important'
+                  }
+                }}
+                onClick={handleShare}
               >
                 <LuShare2 />
               </IconButton>
@@ -645,6 +732,37 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                 borderColor: '#3a3d45',
                 transform: 'scale(1.1)',
                 transition: 'all 0.2s'
+              }}
+              _focus={{
+                boxShadow: 'none !important',
+                borderColor: '#3a3d45 !important',
+                outline: 'none !important'
+              }}
+              _active={{
+                bg: '#2a2d35 !important',
+                borderColor: '#3a3d45 !important',
+                transform: 'scale(0.95)',
+                boxShadow: 'none !important',
+                outline: 'none !important'
+              }}
+              _focusVisible={{
+                boxShadow: 'none !important',
+                borderColor: '#3a3d45 !important',
+                outline: 'none !important'
+              }}
+              sx={{
+                '&:focus': {
+                  boxShadow: 'none !important',
+                  outline: 'none !important'
+                },
+                '&:active': {
+                  boxShadow: 'none !important',
+                  outline: 'none !important'
+                },
+                '&:focus-visible': {
+                  boxShadow: 'none !important',
+                  outline: 'none !important'
+                }
               }}
               onClick={() => window.open(bookmark.url, '_blank')}
             >

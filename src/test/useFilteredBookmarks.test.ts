@@ -38,7 +38,8 @@ describe('useFilteredBookmarks', () => {
     })
 
     expect(hookResult.current).toHaveLength(4)
-    expect(hookResult.current.map(b => b.id)).toEqual([1, 2, 3, 4])
+    // Bookmarks should be sorted by date descending (newest first)
+    expect(hookResult.current.map(b => b.id)).toEqual([4, 3, 2, 1])
   })
 
 

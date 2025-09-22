@@ -49,22 +49,20 @@ const SearchHeader = () => {
           // Check if this looks like X bookmark data (array with tweet-like structure)
           if (Array.isArray(data) && data.length > 0 && data[0].tweet_id && data[0].username) {
             console.log('Detected X bookmark format, importing as X bookmarks...')
-            await importXBookmarks(data, 10) // Import first 10 for testing
-
-            // Force UI refresh
-            console.log('Refreshing UI after import...')
-            window.location.reload()
+            await importXBookmarks(data) // Import all bookmarks
+            console.log('X bookmarks import completed successfully')
 
           } else {
             console.log('Detected standard bookmark format, using regular import...')
             // Fall back to regular import
             const importBookmarks = useBookmarkStore.getState().importBookmarks
             await importBookmarks(file)
-
-            // Force UI refresh
-            console.log('Refreshing UI after import...')
-            window.location.reload()
+            console.log('Standard bookmarks import completed successfully')
           }
+
+          // Only refresh on successful import
+          console.log('Import successful, refreshing UI...')
+          window.location.reload()
         } catch (error) {
           console.error('Import failed:', error)
           alert(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`)

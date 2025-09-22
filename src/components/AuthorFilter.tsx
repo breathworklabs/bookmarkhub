@@ -13,29 +13,21 @@ import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 
 const AuthorFilter = () => {
-  const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const authorFilter = useBookmarkStore((state) => state.authorFilter)
   const setAuthorFilter = useBookmarkStore((state) => state.setAuthorFilter)
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
+  const filterOptions = useBookmarkStore((state) => state.filterOptions)
   const setActiveCollection = useCollectionsStore((state) => state.setActiveCollection)
 
   const { contains } = useFilter({ sensitivity: 'base' })
 
-  // Extract unique authors from bookmarks
+  // Use cached authors from the store
   const authors = useMemo(() => {
-    const uniqueAuthors = Array.from(
-      new Set(
-        bookmarks
-          .map(bookmark => bookmark.author)
-          .filter(author => author && author.trim() !== '')
-      )
-    ).sort()
-
-    return uniqueAuthors.map(author => ({
+    return filterOptions.authors.map(author => ({
       label: author,
       value: author
     }))
-  }, [bookmarks])
+  }, [filterOptions.authors])
 
   const { collection, filter } = useListCollection({
     initialItems: authors,

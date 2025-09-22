@@ -50,18 +50,24 @@ export const useFilteredBookmarks = (): Bookmark[] => {
         {
           const today = new Date()
           today.setHours(0, 0, 0, 0)
-          filtered = filtered.filter(bookmark =>
-            new Date(bookmark.created_at) >= today
-          )
+          filtered = filtered.filter(bookmark => {
+            const dateToUse = bookmark.metadata && bookmark.metadata.tweet_date
+              ? bookmark.metadata.tweet_date
+              : bookmark.created_at
+            return new Date(dateToUse) >= today
+          })
         }
         break
       case 2: // This Week
         {
           const weekAgo = new Date()
           weekAgo.setDate(weekAgo.getDate() - 7)
-          filtered = filtered.filter(bookmark =>
-            new Date(bookmark.created_at) >= weekAgo
-          )
+          filtered = filtered.filter(bookmark => {
+            const dateToUse = bookmark.metadata && bookmark.metadata.tweet_date
+              ? bookmark.metadata.tweet_date
+              : bookmark.created_at
+            return new Date(dateToUse) >= weekAgo
+          })
         }
         break
       case 3: // Threads
@@ -134,7 +140,11 @@ export const useFilteredBookmarks = (): Bookmark[] => {
     // Filter by date range
     if (dateRangeFilter.type !== 'all') {
       filtered = filtered.filter(bookmark => {
-        const bookmarkDate = new Date(bookmark.created_at)
+        // For X bookmarks, prefer tweet_date from metadata
+        const dateToUse = bookmark.metadata && bookmark.metadata.tweet_date
+          ? bookmark.metadata.tweet_date
+          : bookmark.created_at
+        const bookmarkDate = new Date(dateToUse)
 
         switch (dateRangeFilter.type) {
           case 'today': {
@@ -187,7 +197,10 @@ export const useFilteredBookmarks = (): Bookmark[] => {
             case 'recent':
               const recent = new Date()
               recent.setDate(recent.getDate() - 1)
-              return new Date(bookmark.created_at) >= recent
+              const dateToUse = bookmark.metadata && bookmark.metadata.tweet_date
+                ? bookmark.metadata.tweet_date
+                : bookmark.created_at
+              return new Date(dateToUse) >= recent
             case 'archived':
               return bookmark.is_archived
             default:
@@ -197,6 +210,18 @@ export const useFilteredBookmarks = (): Bookmark[] => {
       })
     }
 
-    return filtered
+    // Sort by date descending (newest first) - use tweet_date when available
+    const sorted = filtered.sort((a, b) => {
+      const dateA = a.metadata && a.metadata.tweet_date
+        ? new Date(a.metadata.tweet_date)
+        : new Date(a.created_at)
+      const dateB = b.metadata && b.metadata.tweet_date
+        ? new Date(b.metadata.tweet_date)
+        : new Date(b.created_at)
+
+      return dateB.getTime() - dateA.getTime() // Descending order (newest first)
+    })
+
+    return sorted
   }, [bookmarks, selectedTags, searchQuery, activeTab, activeSidebarItem, authorFilter, domainFilter, contentTypeFilter, dateRangeFilter, quickFilters, activeCollectionId, collectionBookmarks])
 }
