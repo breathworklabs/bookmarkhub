@@ -86,7 +86,7 @@ const InfiniteBookmarkGrid = memo(() => {
 
       {/* Status Information */}
       {bookmarks.length > 0 && (
-        <Box mb={4} textAlign="center">
+        <Box pt={4} textAlign="center">
           <Text color="#71767b" fontSize="sm">
             Showing {bookmarks.length} of {totalItems} bookmarks
             {currentPage > 1 && ` (Page ${currentPage})`}
@@ -96,7 +96,7 @@ const InfiniteBookmarkGrid = memo(() => {
 
       {/* End of Results */}
       {!hasMore && bookmarks.length > 0 && (
-        <Box textAlign="center" py={4}>
+        <Box textAlign="center" pb={4}>
           <Text color="#71767b" fontSize="sm">
             You've reached the end of your bookmarks
           </Text>

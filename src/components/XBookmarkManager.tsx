@@ -53,7 +53,7 @@ const XBookmarkManager = () => {
   }
 
   return (
-    <Box {...theme.styles.container.background}>
+    <Box {...theme.styles.container.background} data-testid="x-bookmark-manager">
       {bookmarks.length === 0 ? (
         // Empty state - full window
         <Flex

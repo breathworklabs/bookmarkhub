@@ -2,6 +2,7 @@ import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wra
 import { LuMenu, LuStar, LuExternalLink, LuDownload, LuTrash2, LuPencil, LuShare2, LuPlay } from 'react-icons/lu'
 import { useState, memo, useCallback, useMemo } from 'react'
 import { useDrag } from 'react-dnd'
+import toast from 'react-hot-toast'
 import { type Bookmark } from '../types/bookmark'
 import { ItemTypes, type DropResult } from '../types/dnd'
 import { useBookmarkStore } from '../store/bookmarkStore'
@@ -18,6 +19,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   const removeBookmark = useBookmarkStore((state) => state.removeBookmark)
   const updateBookmark = useBookmarkStore((state) => state.updateBookmark)
   const toggleArchiveBookmark = useBookmarkStore((state) => state.toggleArchiveBookmark)
+  const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const { showDeleteConfirmation, showEditBookmark, showImageModal } = useModal()
   const [isCopied, setIsCopied] = useState(false)
   const addBookmarkToCollection = useCollectionsStore((state) => state.addBookmarkToCollection)
@@ -33,25 +35,42 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
       const dropResult = monitor.getDropResult<DropResult>()
       if (dropResult) {
         try {
+          // Get current bookmark state to avoid stale data
+          const currentBookmark = bookmarks.find(b => b.id === item.id)
+          const currentCollections = (currentBookmark as any)?.collections || ['uncategorized']
 
-          // If bookmark is currently in "uncategorized", remove it from there first
-          const currentCollections = (item.bookmark as any).collections || ['uncategorized']
-          if (currentCollections.includes('uncategorized') && dropResult.collectionId !== 'uncategorized') {
-            await removeBookmarkFromCollection(item.id, 'uncategorized')
+          // If moving TO uncategorized, remove from all other collections first
+          if (dropResult.collectionId === 'uncategorized') {
+            // Remove from all non-uncategorized collections
+            for (const collectionId of currentCollections) {
+              if (collectionId !== 'uncategorized') {
+                await removeBookmarkFromCollection(item.id, collectionId)
+              }
+            }
+          } else {
+            // If moving FROM uncategorized TO another collection, remove from uncategorized
+            if (currentCollections.includes('uncategorized')) {
+              await removeBookmarkFromCollection(item.id, 'uncategorized')
+            }
           }
 
           // Add to the new collection
           await addBookmarkToCollection(item.id, dropResult.collectionId)
+
+          // Show success toast
+          toast.success(`Moved to "${dropResult.collectionName}"`)
         } catch (error) {
           console.error('Failed to move bookmark to collection:', error)
-          // TODO: Show error toast notification
+
+          // Show error toast
+          toast.error(`Failed to move bookmark: ${error instanceof Error ? error.message : "An unexpected error occurred"}`)
         }
       }
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  }), [bookmark.id, bookmark, addBookmarkToCollection, removeBookmarkFromCollection])
+  }), [bookmark.id, bookmark, addBookmarkToCollection, removeBookmarkFromCollection, bookmarks])
 
   // Helper functions to handle both mock and database bookmark formats
   const getAuthorName = () => {
@@ -192,18 +211,35 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
     }
   }, [bookmark.url])
 
-  const handleToggleStar = useCallback(() => {
-    toggleStarBookmark(bookmark.id)
-  }, [toggleStarBookmark, bookmark.id])
+  const handleToggleStar = useCallback(async () => {
+    try {
+      await toggleStarBookmark(bookmark.id)
+      toast.success(bookmark.is_starred ? "Removed from starred" : "Added to starred")
+    } catch (error) {
+      toast.error(`Failed to update bookmark: ${error instanceof Error ? error.message : "An unexpected error occurred"}`)
+    }
+  }, [toggleStarBookmark, bookmark.id, bookmark.is_starred])
 
-  const handleToggleArchive = useCallback(() => {
-    toggleArchiveBookmark(bookmark.id)
-  }, [toggleArchiveBookmark, bookmark.id])
+  const handleToggleArchive = useCallback(async () => {
+    try {
+      await toggleArchiveBookmark(bookmark.id)
+      toast.success(bookmark.is_archived ? "Moved back to active bookmarks" : "Moved to archive")
+    } catch (error) {
+      toast.error(`Failed to update bookmark: ${error instanceof Error ? error.message : "An unexpected error occurred"}`)
+    }
+  }, [toggleArchiveBookmark, bookmark.id, bookmark.is_archived])
 
   const handleEdit = useCallback(() => {
     showEditBookmark({
       bookmark,
-      onEdit: (id, updatedBookmark) => updateBookmark(id, updatedBookmark)
+      onEdit: async (id, updatedBookmark) => {
+        try {
+          await updateBookmark(id, updatedBookmark)
+          toast.success("Bookmark updated successfully")
+        } catch (error) {
+          toast.error(`Failed to update bookmark: ${error instanceof Error ? error.message : "An unexpected error occurred"}`)
+        }
+      }
     })
   }, [showEditBookmark, bookmark, updateBookmark])
 
@@ -212,7 +248,14 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
       title: 'Delete Bookmark',
       message: 'Are you sure you want to delete this bookmark? This action cannot be undone.',
       preview: getContent.slice(0, 100) + (getContent.length > 100 ? '...' : ''),
-      onConfirm: () => removeBookmark(bookmark.id)
+      onConfirm: async () => {
+        try {
+          await removeBookmark(bookmark.id)
+          toast.success("Bookmark deleted successfully")
+        } catch (error) {
+          toast.error(`Failed to delete bookmark: ${error instanceof Error ? error.message : "An unexpected error occurred"}`)
+        }
+      }
     })
   }, [showDeleteConfirmation, removeBookmark, bookmark.id, getContent])
 
@@ -223,6 +266,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   return (
     <Card.Root
       ref={drag}
+      data-testid="bookmark-card"
       bg="#16181c"
       borderWidth="1px"
       borderColor="#2a2d35"

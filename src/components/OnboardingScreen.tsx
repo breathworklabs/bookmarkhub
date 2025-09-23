@@ -4,46 +4,37 @@ import { theme } from '../styles/theme';
 import { useBookmarkStore } from '../store/bookmarkStore';
 
 const OnboardingScreen = () => {
-  const handleImport = () => {
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.accept = '.json'
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0]
-      if (file) {
-        try {
-          console.log('File selected:', file.name)
-          const text = await file.text()
-          const data = JSON.parse(text)
+  const handleFileChosen = async (file: File) => {
+    try {
+      const text = await file.text()
+      const data = JSON.parse(text)
 
-          console.log('Parsed JSON data:', data)
-
-          // Check if this looks like X bookmark data (array with tweet-like structure)
-          if (Array.isArray(data) && data.length > 0 && data[0].tweet_id && data[0].username) {
-            console.log('Detected X bookmark format, importing as X bookmarks...')
-            await useBookmarkStore.getState().importXBookmarks(data) // Import all bookmarks
-            console.log('X bookmarks import completed successfully')
-
-          } else {
-            console.log('Detected standard bookmark format, using regular import...')
-            await useBookmarkStore.getState().importBookmarks(file)
-            console.log('Standard bookmarks import completed successfully')
-          }
-
-          // Only refresh on successful import
-          console.log('Import successful, refreshing UI...')
-          // window.location.reload()
-        } catch (error) {
-          console.error('Import failed:', error)
-          alert(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
-        }
+      if (Array.isArray(data) && data.length > 0 && (data as any)[0].tweet_id && (data as any)[0].username) {
+        await useBookmarkStore.getState().importXBookmarks(data)
+      } else {
+        await useBookmarkStore.getState().importBookmarks(file)
       }
+    } catch (error) {
+      console.error('Import failed:', error)
+      alert(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
-    input.click()
   }
 
   return (
-    <Box {...theme.styles.container.background} w="100vw">
+    <Box {...theme.styles.container.background} w="100vw" data-testid="onboarding-screen">
+      {/* hidden file input for E2E */}
+      <input
+        type="file"
+        accept=".json"
+        data-testid="import-input"
+        style={{ display: 'none' }}
+        onChange={async (e) => {
+          const file = (e.target as HTMLInputElement).files?.[0]
+          if (file) {
+            await handleFileChosen(file)
+          }
+        }}
+      />
       <Flex
         h="100vh"
         w="100vw"
@@ -71,7 +62,10 @@ const OnboardingScreen = () => {
             bg="#1d4ed8"
             color="white"
             _hover={{ bg: "#1e40af" }}
-            onClick={handleImport}
+            onClick={() => {
+              const input = document.querySelector('input[data-testid="import-input"]') as HTMLInputElement | null
+              input?.click()
+            }}
           >
             <HStack gap={2}>
               <LuImport />

@@ -1,4 +1,5 @@
 import { ChakraProvider, defaultSystem, Box, Spinner, Text, VStack } from '@chakra-ui/react'
+import { Toaster } from 'react-hot-toast'
 import XBookmarkManager from './components/XBookmarkManager'
 import OnboardingScreen from './components/OnboardingScreen'
 import { useInitializeApp } from './hooks/useInitializeApp'
@@ -8,6 +9,28 @@ import { ModalProvider } from './components/modals/ModalProvider'
 function App() {
   return (
     <ChakraProvider value={defaultSystem}>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: 'rgba(0, 0, 0, 0.9)',
+            color: '#e1e5e9',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '8px',
+            padding: '20px',
+            fontSize: '14px',
+            fontWeight: '500',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.6), 0 0 0 20px rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(10px)',
+            minWidth: '300px',
+          },
+        }}
+        containerStyle={{
+          top: '20px',
+          right: '20px',
+        }}
+      />
       <ModalProvider>
         <AppContent />
       </ModalProvider>

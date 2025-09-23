@@ -233,6 +233,10 @@ export const useCollectionsStore = create<CollectionsStore>()(
             false,
             'collections:addBookmark:success'
           )
+
+          // Reload bookmarks to refresh their collections data
+          const { useBookmarkStore } = await import('./bookmarkStore')
+          await useBookmarkStore.getState().loadBookmarks()
         } catch (error) {
           console.error('Error adding bookmark to collection:', error)
           set({
@@ -256,6 +260,10 @@ export const useCollectionsStore = create<CollectionsStore>()(
             false,
             'collections:removeBookmark:success'
           )
+
+          // Reload bookmarks to refresh their collections data
+          const { useBookmarkStore } = await import('./bookmarkStore')
+          await useBookmarkStore.getState().loadBookmarks()
         } catch (error) {
           console.error('Error removing bookmark from collection:', error)
           set({
