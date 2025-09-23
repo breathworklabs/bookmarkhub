@@ -27,11 +27,16 @@ const InfiniteBookmarkGrid = memo(() => {
     return (
       <Box
         flex={1}
+        w="100%"
+        h="100%"
         display="flex"
         alignItems="center"
         justifyContent="center"
         p={8}
         textAlign="center"
+        position="relative"
+        left={0}
+        right={0}
       >
         <Text color="#71767b" fontSize="lg">
           No bookmarks found matching your filters

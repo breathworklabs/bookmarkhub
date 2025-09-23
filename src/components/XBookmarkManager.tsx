@@ -104,12 +104,12 @@ const XBookmarkManager = () => {
         </Flex>
       ) : (
         // Normal layout with bookmarks
-        <Flex h="100vh">
+        <Flex h="100vh" w="100vw">
           {/* Sidebar */}
           <UnifiedSidebar />
 
           {/* Main Content */}
-          <Flex flex={1} direction="column">
+          <Flex flex={1} direction="column" w="100%">
             {/* Header */}
             <SearchHeader />
 
