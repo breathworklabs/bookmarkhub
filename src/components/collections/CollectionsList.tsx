@@ -1,5 +1,5 @@
 import { Box, VStack, HStack, Text, Button, IconButton, Badge, For } from '@chakra-ui/react'
-import { LuFolder, LuStar, LuClock, LuArchive, LuEllipsis } from 'react-icons/lu'
+import { LuFolder, LuStar, LuClock, LuArchive } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
 import { useDrop } from 'react-dnd'
 import { useCollectionsStore } from '../../store/collectionsStore'
@@ -124,24 +124,6 @@ const DroppableCollectionItem = ({
           >
             {getBookmarkCount(collection.id)}
           </Badge>
-          {isUserCollection && (
-            <IconButton
-              size="xs"
-              variant="ghost"
-              aria-label="Collection options"
-              color={isActive(collection.id) ? 'white' : '#71767b'}
-              _hover={{
-                color: isActive(collection.id) ? 'white' : '#e1e5e9',
-                bg: isActive(collection.id) ? 'rgba(255,255,255,0.1)' : '#3a3d45'
-              }}
-              onClick={(e) => {
-                e.stopPropagation()
-                // Future: Show context menu
-              }}
-            >
-              <LuEllipsis size={12} />
-            </IconButton>
-          )}
         </HStack>
       </HStack>
     </Box>

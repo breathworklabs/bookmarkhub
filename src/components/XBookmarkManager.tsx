@@ -9,6 +9,7 @@ import UnifiedSidebar from './UnifiedSidebar';
 import SearchHeader from './SearchHeader';
 import AdvancedFilters from './AdvancedFilters';
 import FilterBar from './FilterBar';
+import CollectionsActions from './collections/CollectionsActions';
 import InfiniteBookmarkGrid from './InfiniteBookmarkGrid';
 
 const XBookmarkManager = () => {
@@ -121,6 +122,9 @@ const XBookmarkManager = () => {
 
               {/* Filter Bar */}
               <FilterBar />
+
+              {/* Collections Actions Panel */}
+              <CollectionsActions />
 
               {/* Infinite Scroll Bookmarks Grid */}
               <InfiniteBookmarkGrid />
