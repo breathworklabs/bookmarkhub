@@ -1,6 +1,6 @@
 import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem, Image, SimpleGrid, Menu, Portal } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuExternalLink, LuDownload, LuTrash2, LuPencil, LuShare2, LuPlay } from 'react-icons/lu'
-import { useState, memo, useCallback } from 'react'
+import { useState, memo, useCallback, useMemo } from 'react'
 import { type Bookmark } from '../types/bookmark'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'
@@ -116,9 +116,9 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
     return null
   }
 
-  const getContent = useCallback(() => {
+  const getContent = useMemo(() => {
     return (bookmark as any).content || (bookmark as any).description || 'No content available'
-  }, [bookmark])
+  }, [(bookmark as any).content, (bookmark as any).description])
 
   const getMetrics = () => {
     return (bookmark as any).metrics || { likes: '0', retweets: '0', replies: '0' }
@@ -173,14 +173,13 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   }, [showEditBookmark, bookmark, updateBookmark])
 
   const handleDelete = useCallback(() => {
-    const content = (bookmark as any).content || (bookmark as any).description || 'No content available'
     showDeleteConfirmation({
       title: 'Delete Bookmark',
       message: 'Are you sure you want to delete this bookmark? This action cannot be undone.',
-      preview: content.slice(0, 100) + (content.length > 100 ? '...' : ''),
+      preview: getContent.slice(0, 100) + (getContent.length > 100 ? '...' : ''),
       onConfirm: () => removeBookmark(bookmark.id)
     })
-  }, [showDeleteConfirmation, removeBookmark, bookmark.id, bookmark])
+  }, [showDeleteConfirmation, removeBookmark, bookmark.id, getContent])
 
   const handleOpenUrl = useCallback(() => {
     window.open(bookmark.url, '_blank')
@@ -421,7 +420,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
           mb={hasMedia() ? 3 : 0}
           whiteSpace="pre-line"
         >
-          {getContent()}
+          {getContent}
         </Text>
 
         {/* Media Display */}
@@ -446,7 +445,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                     onClick={() => showImageModal({
                       images: images,
                       initialIndex: 0,
-                      title: `🎥 ${getContent().slice(0, 100)}${getContent().length > 100 ? '...' : ''}`
+                      title: `🎥 ${getContent.slice(0, 100)}${getContent.length > 100 ? '...' : ''}`
                     })}
                   >
                     {images.length > 0 ? (
@@ -514,7 +513,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                         onClick={() => showImageModal({
                           images: images,
                           initialIndex: 0,
-                          title: getContent().slice(0, 100) + (getContent().length > 100 ? '...' : '')
+                          title: getContent.slice(0, 100) + (getContent.length > 100 ? '...' : '')
                         })}
                       />
                     ) : (
@@ -533,7 +532,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                                 onClick={() => showImageModal({
                                   images: images,
                                   initialIndex: index,
-                                  title: getContent().slice(0, 100) + (getContent().length > 100 ? '...' : '')
+                                  title: getContent.slice(0, 100) + (getContent.length > 100 ? '...' : '')
                                 })}
                               />
                               {/* Show +N overlay for additional images */}

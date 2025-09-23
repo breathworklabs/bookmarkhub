@@ -1,9 +1,10 @@
 import { Box, SimpleGrid, For, Text, Spinner, HStack } from '@chakra-ui/react'
-import { useEffect, useRef, useCallback } from 'react'
+import { memo, useCallback } from 'react'
 import { usePaginatedBookmarks } from '../hooks/usePaginatedBookmarks'
+import { useInfiniteScrollObserver } from '../hooks/useIntersectionObserver'
 import BookmarkCard from './BookmarkCard'
 
-const InfiniteBookmarkGrid = () => {
+const InfiniteBookmarkGrid = memo(() => {
   const {
     bookmarks,
     hasMore,
@@ -13,36 +14,14 @@ const InfiniteBookmarkGrid = () => {
     currentPage
   } = usePaginatedBookmarks()
 
-  // Ref for the loading trigger element
-  const loadingTriggerRef = useRef<HTMLDivElement>(null)
-
-  // Intersection Observer callback
-  const handleIntersection = useCallback((entries: IntersectionObserverEntry[]) => {
-    const target = entries[0]
-    if (target.isIntersecting && hasMore && !isLoading) {
+  // Optimized intersection observer for infinite scroll
+  const handleLoadMore = useCallback(() => {
+    if (!isLoading) {
       loadMore()
     }
-  }, [hasMore, isLoading, loadMore])
+  }, [isLoading, loadMore])
 
-  // Set up Intersection Observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(handleIntersection, {
-      root: null, // Use viewport as root
-      rootMargin: '100px', // Trigger 100px before reaching the element
-      threshold: 0.1
-    })
-
-    const currentTrigger = loadingTriggerRef.current
-    if (currentTrigger) {
-      observer.observe(currentTrigger)
-    }
-
-    return () => {
-      if (currentTrigger) {
-        observer.unobserve(currentTrigger)
-      }
-    }
-  }, [handleIntersection])
+  const loadingTriggerRef = useInfiniteScrollObserver(handleLoadMore, hasMore)
 
   if (bookmarks.length === 0 && !isLoading) {
     return (
@@ -118,6 +97,8 @@ const InfiniteBookmarkGrid = () => {
       )}
     </Box>
   )
-}
+})
+
+InfiniteBookmarkGrid.displayName = 'InfiniteBookmarkGrid'
 
 export default InfiniteBookmarkGrid

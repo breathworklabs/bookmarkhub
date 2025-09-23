@@ -53,6 +53,9 @@ interface BookmarkState {
     contentTypes: string[]
   }
 
+  // Performance optimization - track when filter options need recalculation
+  filterOptionsHash: string
+
   // Actions
   setBookmarks: (bookmarks: Bookmark[]) => void
   loadBookmarks: () => Promise<void>
@@ -162,6 +165,9 @@ export const useBookmarkStore = create<BookmarkState>()(
         tags: [],
         contentTypes: ['article', 'tweet', 'video', 'image']
       },
+
+      // Performance tracking for filter options
+      filterOptionsHash: '',
 
       // Initialize store
       initialize: async () => {
@@ -575,26 +581,50 @@ export const useBookmarkStore = create<BookmarkState>()(
         quickFilters: []
       }, false, 'clearAdvancedFilters'),
 
-      // Calculate filter options from current bookmarks
+      // Calculate filter options from current bookmarks (optimized with memoization)
       calculateFilterOptions: () => {
         const state = get()
         const bookmarks = state.bookmarks
 
-        // Extract unique authors
-        const authors = [...new Set(bookmarks.map(bookmark => bookmark.author))]
-          .filter(author => author && author.trim() !== '')
-          .sort()
+        // Create a hash of bookmark data to check if recalculation is needed
+        const currentHash = bookmarks.length + '-' +
+          bookmarks.slice(0, 5).map(b => `${b.id}-${b.author}-${b.domain}-${(b.tags || []).join(',')}`).join('|')
 
-        // Extract unique domains
-        const domains = [...new Set(bookmarks.map(bookmark => bookmark.domain))]
-          .filter(domain => domain && domain.trim() !== '')
-          .sort()
+        // Only recalculate if the data has actually changed
+        if (currentHash === state.filterOptionsHash) {
+          return // Skip expensive calculation
+        }
 
-        // Extract unique tags
-        const allTags = bookmarks.flatMap(bookmark => bookmark.tags || [])
-        const tags = [...new Set(allTags)]
-          .filter(tag => tag && tag.trim() !== '')
-          .sort()
+        // Optimize extraction with single pass through bookmarks
+        const authorsSet = new Set<string>()
+        const domainsSet = new Set<string>()
+        const tagsSet = new Set<string>()
+
+        for (const bookmark of bookmarks) {
+          // Add author if valid
+          if (bookmark.author && bookmark.author.trim()) {
+            authorsSet.add(bookmark.author.trim())
+          }
+
+          // Add domain if valid
+          if (bookmark.domain && bookmark.domain.trim()) {
+            domainsSet.add(bookmark.domain.trim())
+          }
+
+          // Add tags if they exist
+          if (bookmark.tags && Array.isArray(bookmark.tags)) {
+            for (const tag of bookmark.tags) {
+              if (tag && typeof tag === 'string' && tag.trim()) {
+                tagsSet.add(tag.trim())
+              }
+            }
+          }
+        }
+
+        // Convert sets to sorted arrays
+        const authors = Array.from(authorsSet).sort()
+        const domains = Array.from(domainsSet).sort()
+        const tags = Array.from(tagsSet).sort()
 
         set({
           filterOptions: {
@@ -602,7 +632,8 @@ export const useBookmarkStore = create<BookmarkState>()(
             domains,
             tags,
             contentTypes: ['article', 'tweet', 'video', 'image'] // Static content types
-          }
+          },
+          filterOptionsHash: currentHash
         }, false, 'calculateFilterOptions')
       },
 
