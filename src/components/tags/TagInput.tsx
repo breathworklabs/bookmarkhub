@@ -1,0 +1,253 @@
+import { Box, Input, VStack, Text, HStack, For } from '@chakra-ui/react'
+import { useState, useCallback, useMemo, useRef, useEffect, memo } from 'react'
+import { useBookmarkStore } from '../../store/bookmarkStore'
+import TagChip from './TagChip'
+
+interface TagInputProps {
+  selectedTags: string[]
+  onTagAdd: (tag: string) => void
+  onTagRemove: (tag: string) => void
+  placeholder?: string
+  maxSuggestions?: number
+  size?: 'sm' | 'md' | 'lg'
+}
+
+const TagInput = memo(({
+  selectedTags = [],
+  onTagAdd,
+  onTagRemove,
+  placeholder = "Add tags...",
+  maxSuggestions = 8,
+  size = 'md'
+}: TagInputProps) => {
+  const [inputValue, setInputValue] = useState('')
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [focusedIndex, setFocusedIndex] = useState(-1)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Get all available tags from bookmarks
+  const filterOptions = useBookmarkStore((state) => state.filterOptions)
+  const allTags = useMemo(() => filterOptions.tags || [], [filterOptions.tags])
+
+  // Filter suggestions based on input and exclude already selected tags
+  const suggestions = useMemo(() => {
+    if (!inputValue.trim()) return []
+
+    const filtered = allTags
+      .filter(tag =>
+        tag.toLowerCase().includes(inputValue.toLowerCase()) &&
+        !selectedTags.includes(tag)
+      )
+      .slice(0, maxSuggestions)
+
+    return filtered
+  }, [inputValue, allTags, selectedTags, maxSuggestions])
+
+  // Handle input changes
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setInputValue(value)
+    setShowSuggestions(value.trim().length > 0)
+    setFocusedIndex(-1)
+  }, [])
+
+  // Handle adding a tag
+  const handleAddTag = useCallback((tag: string) => {
+    const trimmedTag = tag.trim()
+    if (trimmedTag && !selectedTags.includes(trimmedTag)) {
+      onTagAdd(trimmedTag)
+      setInputValue('')
+      setShowSuggestions(false)
+      setFocusedIndex(-1)
+    }
+  }, [selectedTags, onTagAdd])
+
+  // Handle keyboard events
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      if (focusedIndex >= 0 && suggestions[focusedIndex]) {
+        handleAddTag(suggestions[focusedIndex])
+      } else if (inputValue.trim()) {
+        handleAddTag(inputValue.trim())
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setFocusedIndex(prev =>
+        prev < suggestions.length - 1 ? prev + 1 : prev
+      )
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setFocusedIndex(prev => prev > 0 ? prev - 1 : -1)
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false)
+      setFocusedIndex(-1)
+    } else if (e.key === 'Backspace' && !inputValue && selectedTags.length > 0) {
+      // Remove last tag when backspace is pressed on empty input
+      onTagRemove(selectedTags[selectedTags.length - 1])
+    }
+  }, [focusedIndex, suggestions, inputValue, handleAddTag, selectedTags, onTagRemove])
+
+  // Handle input focus
+  const handleFocus = useCallback(() => {
+    if (inputValue.trim()) {
+      setShowSuggestions(true)
+    }
+  }, [inputValue])
+
+  // Handle input blur (with delay to allow for suggestion clicks)
+  const handleBlur = useCallback(() => {
+    setTimeout(() => {
+      setShowSuggestions(false)
+      setFocusedIndex(-1)
+    }, 150)
+  }, [])
+
+  // Click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false)
+        setFocusedIndex(-1)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const getSizeStyles = () => {
+    switch (size) {
+      case 'lg':
+        return {
+          input: { h: '48px', fontSize: 'md' },
+          suggestion: { py: 3, fontSize: 'sm' }
+        }
+      case 'sm':
+        return {
+          input: { h: '32px', fontSize: 'sm' },
+          suggestion: { py: 1, fontSize: 'xs' }
+        }
+      case 'md':
+      default:
+        return {
+          input: { h: '40px', fontSize: 'sm' },
+          suggestion: { py: 2, fontSize: 'sm' }
+        }
+    }
+  }
+
+  const sizeStyles = getSizeStyles()
+
+  return (
+    <Box ref={containerRef} position="relative" w="100%">
+      {/* Selected Tags */}
+      {selectedTags.length > 0 && (
+        <HStack gap={2} mb={2} flexWrap="wrap">
+          <For each={selectedTags}>
+            {(tag) => (
+              <TagChip
+                key={tag}
+                tag={tag}
+                isRemovable={true}
+                variant="editable"
+                size={size}
+                onRemove={onTagRemove}
+              />
+            )}
+          </For>
+        </HStack>
+      )}
+
+      {/* Input Field */}
+      <Input
+        ref={inputRef}
+        value={inputValue}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        placeholder={placeholder}
+        bg="#1a1d23"
+        border="1px solid #2a2d35"
+        borderRadius="8px"
+        color="#e1e5e9"
+        _placeholder={{ color: '#71767b' }}
+        _hover={{
+          borderColor: '#3a3d45'
+        }}
+        _focus={{
+          borderColor: '#1d4ed8',
+          boxShadow: '0 0 0 1px #1d4ed8'
+        }}
+        {...sizeStyles.input}
+      />
+
+      {/* Suggestions Dropdown */}
+      {showSuggestions && suggestions.length > 0 && (
+        <Box
+          position="absolute"
+          top="100%"
+          left={0}
+          right={0}
+          mt={1}
+          bg="#1a1d23"
+          border="1px solid #2a2d35"
+          borderRadius="8px"
+          boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
+          zIndex={1000}
+          maxH="200px"
+          overflowY="auto"
+        >
+          <VStack align="stretch" gap={0}>
+            <For each={suggestions}>
+              {(suggestion, index) => (
+                <Box
+                  key={suggestion}
+                  px={3}
+                  cursor="pointer"
+                  bg={focusedIndex === index ? '#2a2d35' : 'transparent'}
+                  color={focusedIndex === index ? '#e1e5e9' : '#9ca3af'}
+                  _hover={{
+                    bg: '#2a2d35',
+                    color: '#e1e5e9'
+                  }}
+                  onClick={() => handleAddTag(suggestion)}
+                  transition="all 0.15s ease"
+                  {...sizeStyles.suggestion}
+                >
+                  <Text>#{suggestion}</Text>
+                </Box>
+              )}
+            </For>
+
+            {/* Option to create new tag if input doesn't match any suggestion */}
+            {inputValue.trim() && !suggestions.some(s => s.toLowerCase() === inputValue.toLowerCase()) && (
+              <Box
+                px={3}
+                cursor="pointer"
+                bg={focusedIndex === suggestions.length ? '#2a2d35' : 'transparent'}
+                color={focusedIndex === suggestions.length ? '#e1e5e9' : '#71767b'}
+                borderTop="1px solid #2a2d35"
+                _hover={{
+                  bg: '#2a2d35',
+                  color: '#e1e5e9'
+                }}
+                onClick={() => handleAddTag(inputValue.trim())}
+                transition="all 0.15s ease"
+                {...sizeStyles.suggestion}
+              >
+                <Text>Create "#{inputValue.trim()}"</Text>
+              </Box>
+            )}
+          </VStack>
+        </Box>
+      )}
+    </Box>
+  )
+})
+
+TagInput.displayName = 'TagInput'
+
+export default TagInput

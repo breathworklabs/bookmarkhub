@@ -1,4 +1,4 @@
-import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem, Image, SimpleGrid, Menu, Portal, Checkbox } from '@chakra-ui/react'
+import { Box, HStack, VStack, Text, IconButton, Card, Separator, For, Wrap, WrapItem, Image, SimpleGrid, Menu, Portal, Checkbox } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuExternalLink, LuDownload, LuTrash2, LuPencil, LuShare2, LuPlay } from 'react-icons/lu'
 import { useState, memo, useCallback, useMemo } from 'react'
 import { useDrag } from 'react-dnd'
@@ -9,6 +9,7 @@ import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { useModal } from './modals/ModalProvider'
 import LazyImage from './LazyImage'
+import TagChip from './tags/TagChip'
 
 interface BookmarkCardProps {
   bookmark: Bookmark
@@ -23,6 +24,8 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
   const toggleBookmarkSelection = useBookmarkStore((state) => state.toggleBookmarkSelection)
   const clearBookmarkSelection = useBookmarkStore((state) => state.clearBookmarkSelection)
+  const selectedTags = useBookmarkStore((state) => state.selectedTags)
+  const addTag = useBookmarkStore((state) => state.addTag)
   const { showDeleteConfirmation, showEditBookmark, showImageModal } = useModal()
   const [isCopied, setIsCopied] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
@@ -306,6 +309,21 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
     }
     // If not in bulk mode, normal behavior (no action needed, URL opens via other handlers)
   }, [isInBulkMode, toggleBookmarkSelection, bookmark.id])
+
+  // Handle tag click for filtering
+  const handleTagClick = useCallback((tag: string) => {
+    // Don't filter if in bulk mode
+    if (isInBulkMode) return
+
+    // Toggle tag selection
+    if (selectedTags.includes(tag)) {
+      // If tag is already selected, remove it (handled by filter logic)
+      return
+    } else {
+      // Add tag to filters
+      addTag(tag)
+    }
+  }, [isInBulkMode, selectedTags, addTag])
 
   return (
     <Card.Root
@@ -883,24 +901,13 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
               <For each={getTags()}>
                 {(tag) => (
                   <WrapItem key={tag}>
-                    <Badge
-                      bg="#2a2d35"
-                      color="#71767b"
-                      fontSize="xs"
-                      px={2}
-                      py={1}
-                      borderRadius="full"
-                      _hover={isInBulkMode ? {} : { bg: '#3a3d45', color: '#e1e5e9' }}
-                      cursor={isInBulkMode ? 'default' : 'pointer'}
-                      onClick={(e) => {
-                        if (isInBulkMode) {
-                          e.preventDefault()
-                          e.stopPropagation()
-                        }
-                      }}
-                    >
-                      #{tag}
-                    </Badge>
+                    <TagChip
+                      tag={tag}
+                      isActive={selectedTags.includes(tag)}
+                      variant="default"
+                      size="sm"
+                      onClick={!isInBulkMode ? handleTagClick : undefined}
+                    />
                   </WrapItem>
                 )}
               </For>
