@@ -11,9 +11,18 @@ export interface DateRangeFilter {
   customEnd?: Date
 }
 
+export interface PaginationState {
+  currentPage: number
+  itemsPerPage: number
+  totalItems: number
+  hasMore: boolean
+  isLoading: boolean
+}
+
 interface BookmarkState {
   // State
   bookmarks: Bookmark[]
+  displayedBookmarks: Bookmark[]
   selectedTags: string[]
   searchQuery: string
   activeTab: number
@@ -25,6 +34,9 @@ interface BookmarkState {
   activeSidebarItem: string
   error: string | null
   settings: AppSettings
+
+  // Pagination
+  pagination: PaginationState
 
   // Advanced filters
   authorFilter: string
@@ -85,6 +97,12 @@ interface BookmarkState {
   clearAdvancedFilters: () => void
   calculateFilterOptions: () => void
 
+  // Pagination actions
+  loadMoreBookmarks: () => void
+  resetPagination: () => void
+  setItemsPerPage: (count: number) => void
+  updateDisplayedBookmarks: () => void
+
   // Data management
   exportBookmarks: () => Promise<void>
   importBookmarks: (file: File) => Promise<void>
@@ -100,6 +118,7 @@ export const useBookmarkStore = create<BookmarkState>()(
     (set, get) => ({
       // Initial state
       bookmarks: [],
+      displayedBookmarks: [],
       selectedTags: [],
       searchQuery: '',
       activeTab: 0,
@@ -118,6 +137,15 @@ export const useBookmarkStore = create<BookmarkState>()(
         compactMode: false,
         autoBackup: true,
         exportFormat: 'json'
+      },
+
+      // Pagination initial state
+      pagination: {
+        currentPage: 1,
+        itemsPerPage: 20,
+        totalItems: 0,
+        hasMore: false,
+        isLoading: false
       },
 
       // Advanced filters initial state
@@ -576,6 +604,56 @@ export const useBookmarkStore = create<BookmarkState>()(
             contentTypes: ['article', 'tweet', 'video', 'image'] // Static content types
           }
         }, false, 'calculateFilterOptions')
+      },
+
+      // Pagination actions
+      loadMoreBookmarks: () => {
+        const state = get()
+        if (state.pagination.isLoading || !state.pagination.hasMore) return
+
+        set({
+          pagination: { ...state.pagination, isLoading: true }
+        }, false, 'loadMoreBookmarks:start')
+
+        // Get filtered bookmarks and update displayed bookmarks
+        get().updateDisplayedBookmarks()
+      },
+
+      resetPagination: () => {
+        set({
+          pagination: {
+            currentPage: 1,
+            itemsPerPage: 20,
+            totalItems: 0,
+            hasMore: false,
+            isLoading: false
+          },
+          displayedBookmarks: []
+        }, false, 'resetPagination')
+
+        // Update displayed bookmarks after reset
+        get().updateDisplayedBookmarks()
+      },
+
+      setItemsPerPage: (count: number) => {
+        const state = get()
+        set({
+          pagination: { ...state.pagination, itemsPerPage: count, currentPage: 1 }
+        }, false, 'setItemsPerPage')
+
+        // Reset and update displayed bookmarks
+        get().updateDisplayedBookmarks()
+      },
+
+      updateDisplayedBookmarks: () => {
+        const state = get()
+        // Simply stop loading without causing state updates that trigger re-renders
+        set({
+          pagination: {
+            ...state.pagination,
+            isLoading: false
+          }
+        }, false, 'updateDisplayedBookmarks')
       }
     }),
     {

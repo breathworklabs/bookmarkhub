@@ -1,17 +1,15 @@
-import { Box, Flex, VStack, SimpleGrid, For, Text, Button, HStack } from '@chakra-ui/react';
+import { Box, Flex, VStack, Text, Button, HStack } from '@chakra-ui/react';
 import { LuImport, LuBookmarkPlus, LuFolderOpen } from 'react-icons/lu';
 import { theme } from '../styles/theme';
-import { useFilteredBookmarks } from '../hooks/useFilteredBookmarks';
 import { useBookmarkStore } from '../store/bookmarkStore';
 import AIInsights from './AIInsights';
 import UnifiedSidebar from './UnifiedSidebar';
 import SearchHeader from './SearchHeader';
 import AdvancedFilters from './AdvancedFilters';
 import FilterBar from './FilterBar';
-import BookmarkCard from './BookmarkCard';
+import InfiniteBookmarkGrid from './InfiniteBookmarkGrid';
 
 const XBookmarkManager = () => {
-  const filteredBookmarks = useFilteredBookmarks()
   const { bookmarks } = useBookmarkStore()
 
   const handleImport = () => {
@@ -121,22 +119,8 @@ const XBookmarkManager = () => {
             {/* Filter Bar */}
             <FilterBar />
 
-            {/* Bookmarks Grid */}
-            <Box flex={1} p={4} overflowY="auto">
-              <VStack alignItems="stretch" gap={4}>
-                <SimpleGrid
-                  columns={{ base: 1, md: 2, lg: 3, xl: 4, "2xl": 5 }}
-                  gap={4}
-                  w="full"
-                >
-                  <For each={filteredBookmarks}>
-                    {(bookmark) => (
-                      <BookmarkCard key={bookmark.id} bookmark={bookmark} />
-                    )}
-                  </For>
-                </SimpleGrid>
-              </VStack>
-            </Box>
+            {/* Infinite Scroll Bookmarks Grid */}
+            <InfiniteBookmarkGrid />
           </Flex>
 
           {/* AI Insights Panel */}
