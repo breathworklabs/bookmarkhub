@@ -10,6 +10,7 @@ export interface DragItem {
   type: typeof ItemTypes.BOOKMARK
   id: number
   bookmark: Bookmark
+  selectedIds?: number[] // Optional array of selected bookmark IDs for bulk operations
 }
 
 // Drop result interfaces

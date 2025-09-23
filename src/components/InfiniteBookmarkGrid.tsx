@@ -1,7 +1,8 @@
 import { Box, SimpleGrid, For, Text, Spinner, HStack } from '@chakra-ui/react'
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useEffect } from 'react'
 import { usePaginatedBookmarks } from '../hooks/usePaginatedBookmarks'
 import { useInfiniteScrollObserver } from '../hooks/useIntersectionObserver'
+import { useBookmarkStore } from '../store/bookmarkStore'
 import BookmarkCard from './BookmarkCard'
 
 const InfiniteBookmarkGrid = memo(() => {
@@ -14,6 +15,11 @@ const InfiniteBookmarkGrid = memo(() => {
     currentPage
   } = usePaginatedBookmarks()
 
+  // Selection management
+  const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
+  const setSelectedBookmarks = useBookmarkStore((state) => state.setSelectedBookmarks)
+  const clearBookmarkSelection = useBookmarkStore((state) => state.clearBookmarkSelection)
+
   // Optimized intersection observer for infinite scroll
   const handleLoadMore = useCallback(() => {
     if (!isLoading) {
@@ -22,6 +28,35 @@ const InfiniteBookmarkGrid = memo(() => {
   }, [isLoading, loadMore])
 
   const loadingTriggerRef = useInfiniteScrollObserver(handleLoadMore, hasMore)
+
+  // Handle keyboard shortcuts for selection
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    // Only handle keyboard shortcuts when not typing in inputs
+    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+      return
+    }
+
+    // Ctrl+A: Select all visible bookmarks
+    if (event.ctrlKey && event.key === 'a') {
+      event.preventDefault()
+      const allVisibleIds = bookmarks.map(bookmark => bookmark.id)
+      setSelectedBookmarks(allVisibleIds)
+    }
+
+    // Escape: Clear selection
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      clearBookmarkSelection()
+    }
+  }, [bookmarks, setSelectedBookmarks, clearBookmarkSelection])
+
+  // Add/remove keyboard event listeners
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [handleKeyDown])
 
   if (bookmarks.length === 0 && !isLoading) {
     return (

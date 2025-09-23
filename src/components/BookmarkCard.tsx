@@ -1,4 +1,4 @@
-import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem, Image, SimpleGrid, Menu, Portal } from '@chakra-ui/react'
+import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem, Image, SimpleGrid, Menu, Portal, Checkbox } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuExternalLink, LuDownload, LuTrash2, LuPencil, LuShare2, LuPlay } from 'react-icons/lu'
 import { useState, memo, useCallback, useMemo } from 'react'
 import { useDrag } from 'react-dnd'
@@ -20,57 +20,90 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   const updateBookmark = useBookmarkStore((state) => state.updateBookmark)
   const toggleArchiveBookmark = useBookmarkStore((state) => state.toggleArchiveBookmark)
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
+  const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
+  const toggleBookmarkSelection = useBookmarkStore((state) => state.toggleBookmarkSelection)
+  const clearBookmarkSelection = useBookmarkStore((state) => state.clearBookmarkSelection)
   const { showDeleteConfirmation, showEditBookmark, showImageModal } = useModal()
   const [isCopied, setIsCopied] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
   const addBookmarkToCollection = useCollectionsStore((state) => state.addBookmarkToCollection)
   const removeBookmarkFromCollection = useCollectionsStore((state) => state.removeBookmarkFromCollection)
+
+  // Selection state
+  const isSelected = selectedBookmarks.includes(bookmark.id)
+  const showCheckbox = isSelected || isHovered || selectedBookmarks.length > 0
+  const isInBulkMode = selectedBookmarks.length > 0
+
 
   // Drag and drop functionality
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.BOOKMARK,
     item: () => {
-      return { id: bookmark.id, bookmark }
+      // If this bookmark is selected and there are multiple selected, include all selected IDs
+      const selectedIds = isSelected && selectedBookmarks.length > 1
+        ? selectedBookmarks
+        : [bookmark.id]
+
+      return {
+        id: bookmark.id,
+        bookmark,
+        selectedIds // Include all selected bookmark IDs for bulk operations
+      }
     },
     end: async (item, monitor) => {
       const dropResult = monitor.getDropResult<DropResult>()
       if (dropResult) {
         try {
-          // Get current bookmark state to avoid stale data
-          const currentBookmark = bookmarks.find(b => b.id === item.id)
-          const currentCollections = (currentBookmark as any)?.collections || ['uncategorized']
+          const bookmarkIds = item.selectedIds || [item.id]
+          const moveCount = bookmarkIds.length
 
-          // If moving TO uncategorized, remove from all other collections first
-          if (dropResult.collectionId === 'uncategorized') {
-            // Remove from all non-uncategorized collections
-            for (const collectionId of currentCollections) {
-              if (collectionId !== 'uncategorized') {
-                await removeBookmarkFromCollection(item.id, collectionId)
+          // Process all selected bookmarks
+          for (const bookmarkId of bookmarkIds) {
+            // Get current bookmark state to avoid stale data
+            const currentBookmark = bookmarks.find(b => b.id === bookmarkId)
+            const currentCollections = (currentBookmark as any)?.collections || ['uncategorized']
+
+            // If moving TO uncategorized, remove from all other collections first
+            if (dropResult.collectionId === 'uncategorized') {
+              // Remove from all non-uncategorized collections
+              for (const collectionId of currentCollections) {
+                if (collectionId !== 'uncategorized') {
+                  await removeBookmarkFromCollection(bookmarkId, collectionId)
+                }
+              }
+            } else {
+              // If moving FROM uncategorized TO another collection, remove from uncategorized
+              if (currentCollections.includes('uncategorized')) {
+                await removeBookmarkFromCollection(bookmarkId, 'uncategorized')
               }
             }
-          } else {
-            // If moving FROM uncategorized TO another collection, remove from uncategorized
-            if (currentCollections.includes('uncategorized')) {
-              await removeBookmarkFromCollection(item.id, 'uncategorized')
-            }
+
+            // Add to the new collection
+            await addBookmarkToCollection(bookmarkId, dropResult.collectionId)
           }
 
-          // Add to the new collection
-          await addBookmarkToCollection(item.id, dropResult.collectionId)
+          // Clear selection after successful bulk move
+          if (moveCount > 1) {
+            clearBookmarkSelection()
+          }
 
-          // Show success toast
-          toast.success(`Moved to "${dropResult.collectionName}"`)
+          // Show success toast with count
+          const message = moveCount > 1
+            ? `Moved ${moveCount} bookmarks to "${dropResult.collectionName}"`
+            : `Moved to "${dropResult.collectionName}"`
+          toast.success(message)
         } catch (error) {
-          console.error('Failed to move bookmark to collection:', error)
+          console.error('Failed to move bookmark(s) to collection:', error)
 
           // Show error toast
-          toast.error(`Failed to move bookmark: ${error instanceof Error ? error.message : "An unexpected error occurred"}`)
+          toast.error(`Failed to move bookmark(s): ${error instanceof Error ? error.message : "An unexpected error occurred"}`)
         }
       }
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  }), [bookmark.id, bookmark, addBookmarkToCollection, removeBookmarkFromCollection, bookmarks])
+  }), [bookmark.id, bookmark, addBookmarkToCollection, removeBookmarkFromCollection, bookmarks, selectedBookmarks, isSelected, clearBookmarkSelection])
 
   // Helper functions to handle both mock and database bookmark formats
   const getAuthorName = () => {
@@ -263,24 +296,120 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
     window.open(bookmark.url, '_blank')
   }, [bookmark.url])
 
+  // Handle card click for bulk selection
+  const handleCardClick = useCallback((event: React.MouseEvent) => {
+    // If in bulk mode, toggle selection instead of opening URL
+    if (isInBulkMode) {
+      event.preventDefault()
+      event.stopPropagation()
+      toggleBookmarkSelection(bookmark.id)
+    }
+    // If not in bulk mode, normal behavior (no action needed, URL opens via other handlers)
+  }, [isInBulkMode, toggleBookmarkSelection, bookmark.id])
+
   return (
     <Card.Root
       ref={drag}
       data-testid="bookmark-card"
       bg="#16181c"
       borderWidth="1px"
-      borderColor="#2a2d35"
+      borderColor={isSelected ? '#4a9eff' : '#2a2d35'}
       borderRadius="16px"
       p={4}
-      opacity={isDragging ? 0.5 : 1}
-      cursor={isDragging ? 'grabbing' : 'grab'}
+      opacity={isDragging ? 0.5 : isSelected ? 0.6 : 1}
+      cursor={isDragging ? 'grabbing' : isInBulkMode ? 'pointer' : 'grab'}
+      position="relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleCardClick}
+      transition="all 0.2s ease"
       _hover={{
-        borderColor: '#4a9eff',
-        transform: isDragging ? 'none' : 'translateY(-1px)',
-        transition: 'all 0.2s ease',
-        boxShadow: isDragging ? 'none' : '0 4px 12px rgba(0, 0, 0, 0.3)'
+        borderColor: isSelected ? '#4a9eff' : '#4a9eff',
+        transform: isDragging ? 'none' : isInBulkMode ? 'none' : 'translateY(-1px)',
+        boxShadow: isDragging ? 'none' : isInBulkMode ? '0 0 0 2px rgba(74, 158, 255, 0.3)' : '0 4px 12px rgba(0, 0, 0, 0.3)',
+        opacity: isDragging ? 0.5 : isSelected ? 0.7 : 1
+      }}
+      sx={{
+        ...(isSelected && {
+          bg: 'rgba(74, 158, 255, 0.1)',
+          borderColor: '#4a9eff',
+          boxShadow: '0 0 0 1px rgba(74, 158, 255, 0.3)'
+        })
       }}
     >
+      {/* Selection Checkbox */}
+      {showCheckbox && (
+        <Box
+          position="absolute"
+          top={2}
+          left={2}
+          zIndex={15}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Box
+            w="20px"
+            h="20px"
+            borderRadius="full"
+            bg={isSelected ? '#4a9eff' : 'rgba(0, 0, 0, 0.7)'}
+            border={isSelected ? '2px solid #4a9eff' : '2px solid rgba(255, 255, 255, 0.3)'}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            cursor="pointer"
+            transition="all 0.2s ease"
+            _hover={{
+              bg: isSelected ? '#4a9eff' : 'rgba(74, 158, 255, 0.2)',
+              borderColor: '#4a9eff',
+              transform: 'scale(1.05)'
+            }}
+            onClick={() => toggleBookmarkSelection(bookmark.id)}
+          >
+            {isSelected && (
+              <Box
+                w="8px"
+                h="8px"
+                borderRadius="full"
+                bg="white"
+              />
+            )}
+          </Box>
+        </Box>
+      )}
+
+      {/* Bulk Mode Overlay - prevents all interactions except card selection */}
+      {isInBulkMode && (
+        <Box
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          zIndex={5}
+          cursor="pointer"
+          onClick={handleCardClick}
+          bg="transparent"
+        />
+      )}
+
+      {/* Multi-item drag indicator */}
+      {isDragging && selectedBookmarks.length > 1 && isSelected && (
+        <Box
+          position="absolute"
+          top={2}
+          right={2}
+          bg="#1d4ed8"
+          color="white"
+          fontSize="xs"
+          fontWeight="bold"
+          px={2}
+          py={1}
+          borderRadius="full"
+          zIndex={20}
+        >
+          {selectedBookmarks.length}
+        </Box>
+      )}
+
       {/* Header */}
       <HStack gap={3} mb={3}>
         <Box
@@ -610,13 +739,20 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                         w="100%"
                         h="200px"
                         objectFit="cover"
-                        cursor="pointer"
-                        _hover={{ filter: 'brightness(1.1)' }}
-                        onClick={() => showImageModal({
-                          images: images,
-                          initialIndex: 0,
-                          title: getContent.slice(0, 100) + (getContent.length > 100 ? '...' : '')
-                        })}
+                        cursor={isInBulkMode ? 'default' : 'pointer'}
+                        _hover={isInBulkMode ? {} : { filter: 'brightness(1.1)' }}
+                        onClick={(e) => {
+                          if (isInBulkMode) {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            return
+                          }
+                          showImageModal({
+                            images: images,
+                            initialIndex: 0,
+                            title: getContent.slice(0, 100) + (getContent.length > 100 ? '...' : '')
+                          })
+                        }}
                       />
                     ) : (
                       <SimpleGrid columns={images.length === 2 ? 2 : 2} gap={1}>
@@ -629,13 +765,20 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                                 w="100%"
                                 h={images.length === 2 ? "150px" : "100px"}
                                 objectFit="cover"
-                                cursor="pointer"
-                                _hover={{ filter: 'brightness(1.1)' }}
-                                onClick={() => showImageModal({
-                                  images: images,
-                                  initialIndex: index,
-                                  title: getContent.slice(0, 100) + (getContent.length > 100 ? '...' : '')
-                                })}
+                                cursor={isInBulkMode ? 'default' : 'pointer'}
+                                _hover={isInBulkMode ? {} : { filter: 'brightness(1.1)' }}
+                                onClick={(e) => {
+                                  if (isInBulkMode) {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                    return
+                                  }
+                                  showImageModal({
+                                    images: images,
+                                    initialIndex: index,
+                                    title: getContent.slice(0, 100) + (getContent.length > 100 ? '...' : '')
+                                  })
+                                }}
                               />
                               {/* Show +N overlay for additional images */}
                               {index === 3 && images.length > 4 && (
@@ -675,7 +818,17 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
       <Box mt={4}>
         {/* Metrics */}
         <HStack gap="24px" color="#71767b" fontSize="sm" mb={3}>
-          <HStack gap={2} cursor="pointer" _hover={{ color: '#9ca3af' }}>
+          <HStack
+            gap={2}
+            cursor={isInBulkMode ? 'default' : 'pointer'}
+            _hover={isInBulkMode ? {} : { color: '#9ca3af' }}
+            onClick={(e) => {
+              if (isInBulkMode) {
+                e.preventDefault()
+                e.stopPropagation()
+              }
+            }}
+          >
             <Box w="16px" h="16px" display="flex" alignItems="center" justifyContent="center">
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
@@ -683,7 +836,17 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
             </Box>
             <Text>{getMetrics().likes}</Text>
           </HStack>
-          <HStack gap={2} cursor="pointer" _hover={{ color: '#9ca3af' }}>
+          <HStack
+            gap={2}
+            cursor={isInBulkMode ? 'default' : 'pointer'}
+            _hover={isInBulkMode ? {} : { color: '#9ca3af' }}
+            onClick={(e) => {
+              if (isInBulkMode) {
+                e.preventDefault()
+                e.stopPropagation()
+              }
+            }}
+          >
             <Box w="16px" h="16px" display="flex" alignItems="center" justifyContent="center">
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path>
@@ -691,7 +854,17 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
             </Box>
             <Text>{getMetrics().retweets}</Text>
           </HStack>
-          <HStack gap={2} cursor="pointer" _hover={{ color: '#9ca3af' }}>
+          <HStack
+            gap={2}
+            cursor={isInBulkMode ? 'default' : 'pointer'}
+            _hover={isInBulkMode ? {} : { color: '#9ca3af' }}
+            onClick={(e) => {
+              if (isInBulkMode) {
+                e.preventDefault()
+                e.stopPropagation()
+              }
+            }}
+          >
             <Box w="16px" h="16px" display="flex" alignItems="center" justifyContent="center">
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path>
@@ -717,8 +890,14 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                       px={2}
                       py={1}
                       borderRadius="full"
-                      _hover={{ bg: '#3a3d45', color: '#e1e5e9' }}
-                      cursor="pointer"
+                      _hover={isInBulkMode ? {} : { bg: '#3a3d45', color: '#e1e5e9' }}
+                      cursor={isInBulkMode ? 'default' : 'pointer'}
+                      onClick={(e) => {
+                        if (isInBulkMode) {
+                          e.preventDefault()
+                          e.stopPropagation()
+                        }
+                      }}
                     >
                       #{tag}
                     </Badge>
@@ -740,7 +919,10 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                 h="32px"
                 minW="32px"
                 border="1px solid #2f3336"
-                _hover={{
+                disabled={isInBulkMode}
+                opacity={isInBulkMode ? 0.5 : 1}
+                cursor={isInBulkMode ? 'default' : 'pointer'}
+                _hover={isInBulkMode ? {} : {
                   bg: '#2a2d35',
                   color: isStarred() ? '#ffd700' : '#e1e5e9',
                   borderColor: '#3a3d45',
@@ -778,7 +960,14 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                     outline: 'none !important'
                   }
                 }}
-                onClick={handleToggleStar}
+                onClick={(e) => {
+                  if (isInBulkMode) {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    return
+                  }
+                  handleToggleStar()
+                }}
               >
                 <LuStar fill={isStarred() ? 'currentColor' : 'none'} />
               </IconButton>
