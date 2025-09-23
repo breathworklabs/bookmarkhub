@@ -100,6 +100,22 @@ npm run preview         # Preview production build locally
 5. Ensure all tests pass
 6. Submit a pull request
 
+## Pull Request Checklist
+
+- Type safety: `npm run typecheck` passes with no errors
+- Linting: `npm run lint` passes; import order and named exports respected
+- Tests: `npm test` green; add/updated tests for stores, filtering, critical UI
+- Chakra UI v3: Uses correct v3 API and compound components; no deprecated patterns
+- State: Components use Zustand selectors; UI calls store setters directly
+- Filtering: Logic lives in `hooks/useFilteredBookmarks.ts`/`utils/bookmarkFiltering.ts`
+- Components: Use `components/LazyImage` for all images; meaningful `alt` text
+- Performance: Avoid heavy work in render; memoize `BookmarkCard` lists/props
+- Accessibility: Focus states visible; interactive elements accessible
+- Logging: No noisy `console.log` in production paths; guarded `console.debug` only
+- Data & Types: Domain types from `types/`; no `any`; X payloads normalized once
+- Conventions: No deep barrels; named exports for components/hooks; env kept out of code
+- Docs: Update README or comments where behavior or APIs changed
+
 ## License
 
 MIT License - see LICENSE file for details
