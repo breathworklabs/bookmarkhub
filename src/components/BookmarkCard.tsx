@@ -428,6 +428,26 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
           <Box mb={3}>
             {(() => {
               const mediaContent = getMediaContent()
+
+              // If no specific media content but hasMedia is true, show fallback
+              if (!mediaContent && (bookmark as any).hasMedia) {
+                return (
+                  <Box
+                    h="200px"
+                    bg="#0f1419"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    color="#71767b"
+                    borderRadius="lg"
+                    border="1px solid #2a2d35"
+                    data-testid="media-placeholder"
+                  >
+                    📷 Media Content
+                  </Box>
+                )
+              }
+
               if (!mediaContent) return null
 
               const { images, hasVideo } = mediaContent

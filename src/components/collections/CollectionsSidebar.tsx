@@ -66,10 +66,10 @@ const CollectionsSidebar = () => {
   const getBookmarkCount = (collectionId: string) => {
     // Handle smart collections with dynamic counts
     if (collectionId === 'starred') {
-      return bookmarks.filter(bookmark => bookmark.is_starred).length
+      return bookmarks.filter(bookmark => bookmark.is_starred === true).length
     }
     if (collectionId === 'archived') {
-      return bookmarks.filter(bookmark => bookmark.is_archived).length
+      return bookmarks.filter(bookmark => bookmark.is_archived === true).length
     }
     if (collectionId === 'recent') {
       // Recent: bookmarks from last 7 days

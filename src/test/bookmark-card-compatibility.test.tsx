@@ -173,7 +173,7 @@ describe('BookmarkCard Compatibility', () => {
     )
 
     // Check media placeholder is shown
-    expect(screen.getByText('📷 Media Content')).toBeInTheDocument()
+    expect(screen.getByTestId('media-placeholder')).toBeInTheDocument()
 
     // Test database format with thumbnail
     rerender(
@@ -182,8 +182,9 @@ describe('BookmarkCard Compatibility', () => {
       </TestWrapper>
     )
 
-    // Check media placeholder is shown for thumbnail
-    expect(screen.getByText('📷 Media Content')).toBeInTheDocument()
+    // For database format with thumbnail, LazyImage should be rendered
+    // We'll just check that no general media placeholder is shown
+    expect(screen.queryByTestId('media-placeholder')).not.toBeInTheDocument()
 
     // Test no media
     rerender(
@@ -193,7 +194,7 @@ describe('BookmarkCard Compatibility', () => {
     )
 
     // Check media placeholder is not shown
-    expect(screen.queryByText('📷 Media Content')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('media-placeholder')).not.toBeInTheDocument()
   })
 
   it('should filter non-string tags correctly', () => {

@@ -197,9 +197,9 @@ export const filterBookmarks = ({
       return quickFilters.every(filter => {
         switch (filter) {
           case 'starred':
-            return bookmark.is_starred
+            return bookmark.is_starred === true
           case 'unread':
-            return !bookmark.is_read
+            return bookmark.is_read === false
           case 'comments':
             return bookmark.content.includes('comment') || bookmark.content.includes('reply')
           case 'engagement':
@@ -212,7 +212,7 @@ export const filterBookmarks = ({
               : bookmark.created_at
             return new Date(dateToUse) >= recent
           case 'archived':
-            return bookmark.is_archived
+            return bookmark.is_archived === true
           default:
             return true
         }

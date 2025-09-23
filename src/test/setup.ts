@@ -16,6 +16,24 @@ Object.defineProperty(window, 'localStorage', {
   writable: true,
 })
 
+// Mock IntersectionObserver globally
+const IntersectionObserverMock = vi.fn(() => ({
+  disconnect: vi.fn(),
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  takeRecords: vi.fn(() => []),
+}))
+
+Object.defineProperty(window, 'IntersectionObserver', {
+  value: IntersectionObserverMock,
+  writable: true,
+})
+
+Object.defineProperty(global, 'IntersectionObserver', {
+  value: IntersectionObserverMock,
+  writable: true,
+})
+
 // Mock console methods to reduce noise in tests
 const originalConsole = { ...console }
 beforeAll(() => {
