@@ -1,8 +1,11 @@
 import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem, Image, SimpleGrid, Menu, Portal } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuExternalLink, LuDownload, LuTrash2, LuPencil, LuShare2, LuPlay } from 'react-icons/lu'
 import { useState, memo, useCallback, useMemo } from 'react'
+import { useDrag } from 'react-dnd'
 import { type Bookmark } from '../types/bookmark'
+import { ItemTypes, type DropResult } from '../types/dnd'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { useCollectionsStore } from '../store/collectionsStore'
 import { useModal } from './modals/ModalProvider'
 import LazyImage from './LazyImage'
 
@@ -17,6 +20,38 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   const toggleArchiveBookmark = useBookmarkStore((state) => state.toggleArchiveBookmark)
   const { showDeleteConfirmation, showEditBookmark, showImageModal } = useModal()
   const [isCopied, setIsCopied] = useState(false)
+  const addBookmarkToCollection = useCollectionsStore((state) => state.addBookmarkToCollection)
+  const removeBookmarkFromCollection = useCollectionsStore((state) => state.removeBookmarkFromCollection)
+
+  // Drag and drop functionality
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: ItemTypes.BOOKMARK,
+    item: () => {
+      return { id: bookmark.id, bookmark }
+    },
+    end: async (item, monitor) => {
+      const dropResult = monitor.getDropResult<DropResult>()
+      if (dropResult) {
+        try {
+
+          // If bookmark is currently in "uncategorized", remove it from there first
+          const currentCollections = (item.bookmark as any).collections || ['uncategorized']
+          if (currentCollections.includes('uncategorized') && dropResult.collectionId !== 'uncategorized') {
+            await removeBookmarkFromCollection(item.id, 'uncategorized')
+          }
+
+          // Add to the new collection
+          await addBookmarkToCollection(item.id, dropResult.collectionId)
+        } catch (error) {
+          console.error('Failed to move bookmark to collection:', error)
+          // TODO: Show error toast notification
+        }
+      }
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }), [bookmark.id, bookmark, addBookmarkToCollection, removeBookmarkFromCollection])
 
   // Helper functions to handle both mock and database bookmark formats
   const getAuthorName = () => {
@@ -187,16 +222,19 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
 
   return (
     <Card.Root
+      ref={drag}
       bg="#16181c"
       borderWidth="1px"
       borderColor="#2a2d35"
       borderRadius="16px"
       p={4}
+      opacity={isDragging ? 0.5 : 1}
+      cursor={isDragging ? 'grabbing' : 'grab'}
       _hover={{
         borderColor: '#4a9eff',
-        transform: 'translateY(-1px)',
+        transform: isDragging ? 'none' : 'translateY(-1px)',
         transition: 'all 0.2s ease',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+        boxShadow: isDragging ? 'none' : '0 4px 12px rgba(0, 0, 0, 0.3)'
       }}
     >
       {/* Header */}

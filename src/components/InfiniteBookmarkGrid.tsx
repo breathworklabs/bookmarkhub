@@ -61,15 +61,7 @@ const InfiniteBookmarkGrid = memo(() => {
         </For>
       </SimpleGrid>
 
-      {/* Status Information */}
-      {bookmarks.length > 0 && (
-        <Box mb={4} textAlign="center">
-          <Text color="#71767b" fontSize="sm">
-            Showing {bookmarks.length} of {totalItems} bookmarks
-            {currentPage > 1 && ` (Page ${currentPage})`}
-          </Text>
-        </Box>
-      )}
+
 
       {/* Loading Trigger */}
       {hasMore && (
@@ -90,6 +82,16 @@ const InfiniteBookmarkGrid = memo(() => {
             </HStack>
           )}
         </div>
+      )}
+
+      {/* Status Information */}
+      {bookmarks.length > 0 && (
+        <Box mb={4} textAlign="center">
+          <Text color="#71767b" fontSize="sm">
+            Showing {bookmarks.length} of {totalItems} bookmarks
+            {currentPage > 1 && ` (Page ${currentPage})`}
+          </Text>
+        </Box>
       )}
 
       {/* End of Results */}

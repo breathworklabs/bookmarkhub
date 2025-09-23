@@ -1,8 +1,131 @@
 import { Box, VStack, HStack, Text, Button, IconButton, Badge, Separator, For, Flex } from '@chakra-ui/react'
 import { LuFolderPlus, LuFolder, LuStar, LuClock, LuArchive, LuEllipsis, LuFolderOpen } from 'react-icons/lu'
+import { useDrop } from 'react-dnd'
 import { useCollectionsStore } from '../../store/collectionsStore'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useEffect } from 'react'
+import { ItemTypes, type DragItem, type DropResult } from '../../types/dnd'
+
+// Helper component for droppable collection items
+const DroppableCollectionItem = ({
+  collection,
+  isActive,
+  getCollectionIcon,
+  getCollectionColor,
+  getBookmarkCount,
+  handleCollectionClick,
+  isUserCollection = false
+}: any) => {
+  const [{ isOver, canDrop }, drop] = useDrop(() => ({
+    accept: ItemTypes.BOOKMARK,
+    drop: (): DropResult => ({
+      collectionId: collection.id,
+      collectionName: collection.name
+    }),
+    canDrop: (item: DragItem) => {
+      // Prevent drops on smart collections (except uncategorized)
+      if (collection.isSmartCollection && collection.id !== 'uncategorized') {
+        return false
+      }
+      return true
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
+  }), [collection.id, collection.isSmartCollection])
+
+  const isDropZone = isOver && canDrop
+  const isInvalidDrop = isOver && !canDrop
+
+  // Debug logging
+  if (isOver) {
+    console.log(`Drop zone debug - Collection: ${collection.name}, isOver: ${isOver}, canDrop: ${canDrop}`)
+  }
+
+  return (
+    <Box
+      ref={drop}
+      key={collection.id}
+      px={3}
+      py={2}
+      borderRadius="md"
+      cursor="pointer"
+      bg={
+        isDropZone
+          ? '#1d4ed8 !important'
+          : isActive(collection.id)
+            ? '#1d4ed8'
+            : 'transparent'
+      }
+      color={isActive(collection.id) ? 'white' : '#e1e5e9'}
+      border={
+        isDropZone
+          ? '3px dashed #3b82f6 !important'
+          : isInvalidDrop
+            ? '3px dashed #ef4444 !important'
+            : '2px solid transparent'
+      }
+      boxShadow={
+        isDropZone
+          ? '0 0 0 2px rgba(59, 130, 246, 0.5)'
+          : undefined
+      }
+      _hover={{
+        bg: isActive(collection.id) ? '#1e40af' : '#2a2d35'
+      }}
+      onClick={() => handleCollectionClick(collection.id)}
+      transition="all 0.2s ease"
+    >
+      <HStack justify="space-between">
+        <HStack gap={isUserCollection ? 3 : 2}>
+          {isUserCollection && (
+            <Box w="16px" h="16px" display="flex" alignItems="center" justifyContent="center">
+              {/* Future: Show expand/collapse for nested collections */}
+            </Box>
+          )}
+          <Box color={getCollectionColor(collection)}>
+            {getCollectionIcon(collection)}
+          </Box>
+          <Text fontSize="sm" fontWeight="500" lineClamp={isUserCollection ? 1 : undefined}>
+            {collection.name}
+          </Text>
+        </HStack>
+        <HStack gap={1}>
+          <Badge
+            size="sm"
+            bg={isActive(collection.id) ? 'rgba(255,255,255,0.2)' : (isUserCollection ? '#2a2d35' : '#1a1d23')}
+            color={isActive(collection.id) ? 'white' : '#71767b'}
+            fontSize="xs"
+            px={2}
+            py={1}
+            borderRadius="full"
+          >
+            {getBookmarkCount(collection.id)}
+          </Badge>
+          {isUserCollection && (
+            <IconButton
+              size="xs"
+              variant="ghost"
+              aria-label="Collection options"
+              color={isActive(collection.id) ? 'white' : '#71767b'}
+              _hover={{
+                color: isActive(collection.id) ? 'white' : '#e1e5e9',
+                bg: isActive(collection.id) ? 'rgba(255,255,255,0.1)' : '#3a3d45'
+              }}
+              onClick={(e) => {
+                e.stopPropagation()
+                // Future: Show context menu
+              }}
+            >
+              <LuEllipsis size={12} />
+            </IconButton>
+          )}
+        </HStack>
+      </HStack>
+    </Box>
+  )
+}
 
 const CollectionsSidebar = () => {
   const {
@@ -164,41 +287,15 @@ const CollectionsSidebar = () => {
               <>
                 <For each={defaultCollections}>
                   {(collection) => (
-                    <Box
+                    <DroppableCollectionItem
                       key={collection.id}
-                      px={3}
-                      py={2}
-                      borderRadius="md"
-                      cursor="pointer"
-                      bg={isActive(collection.id) ? '#1d4ed8' : 'transparent'}
-                      color={isActive(collection.id) ? 'white' : '#e1e5e9'}
-                      _hover={{
-                        bg: isActive(collection.id) ? '#1e40af' : '#2a2d35'
-                      }}
-                      onClick={() => handleCollectionClick(collection.id)}
-                    >
-                      <HStack justify="space-between">
-                        <HStack gap={3}>
-                          <Box color={getCollectionColor(collection)}>
-                            {getCollectionIcon(collection)}
-                          </Box>
-                          <Text fontSize="sm" fontWeight="500">
-                            {collection.name}
-                          </Text>
-                        </HStack>
-                        <Badge
-                          size="sm"
-                          bg={isActive(collection.id) ? 'rgba(255,255,255,0.2)' : '#2a2d35'}
-                          color={isActive(collection.id) ? 'white' : '#71767b'}
-                          fontSize="xs"
-                          px={2}
-                          py={1}
-                          borderRadius="full"
-                        >
-                          {getBookmarkCount(collection.id)}
-                        </Badge>
-                      </HStack>
-                    </Box>
+                      collection={collection}
+                      isActive={isActive}
+                      getCollectionIcon={getCollectionIcon}
+                      getCollectionColor={getCollectionColor}
+                      getBookmarkCount={getBookmarkCount}
+                      handleCollectionClick={handleCollectionClick}
+                    />
                   )}
                 </For>
 
@@ -212,63 +309,16 @@ const CollectionsSidebar = () => {
             {userCollections.length > 0 && (
               <For each={userCollections}>
                 {(collection) => (
-                  <Box
+                  <DroppableCollectionItem
                     key={collection.id}
-                    px={3}
-                    py={2}
-                    borderRadius="md"
-                    cursor="pointer"
-                    bg={isActive(collection.id) ? '#1d4ed8' : 'transparent'}
-                    color={isActive(collection.id) ? 'white' : '#e1e5e9'}
-                    _hover={{
-                      bg: isActive(collection.id) ? '#1e40af' : '#2a2d35'
-                    }}
-                    onClick={() => handleCollectionClick(collection.id)}
-                  >
-                    <HStack justify="space-between">
-                      <HStack gap={3}>
-                        {/* Expand/Collapse Button (for future nested collections) */}
-                        <Box w="16px" h="16px" display="flex" alignItems="center" justifyContent="center">
-                          {/* Future: Show expand/collapse for nested collections */}
-                        </Box>
-                        <Box color={getCollectionColor(collection)}>
-                          {getCollectionIcon(collection)}
-                        </Box>
-                        <Text fontSize="sm" fontWeight="500" lineClamp={1}>
-                          {collection.name}
-                        </Text>
-                      </HStack>
-                      <HStack gap={1}>
-                        <Badge
-                          size="sm"
-                          bg={isActive(collection.id) ? 'rgba(255,255,255,0.2)' : '#2a2d35'}
-                          color={isActive(collection.id) ? 'white' : '#71767b'}
-                          fontSize="xs"
-                          px={2}
-                          py={1}
-                          borderRadius="full"
-                        >
-                          {getBookmarkCount(collection.id)}
-                        </Badge>
-                        <IconButton
-                          size="xs"
-                          variant="ghost"
-                          aria-label="Collection options"
-                          color={isActive(collection.id) ? 'white' : '#71767b'}
-                          _hover={{
-                            color: isActive(collection.id) ? 'white' : '#e1e5e9',
-                            bg: isActive(collection.id) ? 'rgba(255,255,255,0.1)' : '#3a3d45'
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            // Future: Show context menu
-                          }}
-                        >
-                          <LuEllipsis size={12} />
-                        </IconButton>
-                      </HStack>
-                    </HStack>
-                  </Box>
+                    collection={collection}
+                    isActive={isActive}
+                    getCollectionIcon={getCollectionIcon}
+                    getCollectionColor={getCollectionColor}
+                    getBookmarkCount={getBookmarkCount}
+                    handleCollectionClick={handleCollectionClick}
+                    isUserCollection={true}
+                  />
                 )}
               </For>
             )}

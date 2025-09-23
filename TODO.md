@@ -96,11 +96,22 @@
 
 ### 3. **Collections & Organization System**
 - [x] Create bookmark collections/folders
-- [ ] Move bookmarks between collections
+- [ ] **Move bookmarks between collections** - Priority implementation
+  - [x] Install and configure react-dnd library (`npm install react-dnd react-dnd-html5-backend`)
+  - [x] Setup DndProvider context in App.tsx or XBookmarkManager.tsx
+  - [x] Make BookmarkCard draggable with useDrag hook
+  - [x] Make collection items in CollectionsSidebar droppable with useDrop hook
+  - [x] Implement drop handler logic in collectionsStore (addBookmarkToCollection)
+  - [x] Add visual feedback for drag operations (opacity, borders, highlights)
+  - [x] Handle smart collections (prevent drops on starred/recent/archived)
+  - [ ] Add error handling and success feedback (toasts, animations)
+  - [ ] Implement accessibility features (keyboard navigation, screen reader support)
+  - [ ] Test drag & drop functionality end-to-end
 - [ ] Collection management (rename, delete, share)
 - [ ] Nested collections/sub-folders
 - [ ] Collection templates
 - [x] Smart collections (auto-categorization)
+- [ ] Remove collection side menu menu it should be somewhere else
 
 ### 4. **Advanced Search & Filtering**
 - [x] **Advanced Filters Functionality Implementation**
@@ -136,8 +147,6 @@
 - [ ] Twitter/X API integration for live importing
 - [ ] LinkedIn, Reddit, GitHub bookmarks support
 - [ ] Browser extension for easy bookmark saving
-- [ ] Import from browser bookmarks !!!!!NEXT!!!!!
-- [ ] Import from other bookmark managers !!!!!NEXT!!!!!
 - [x] Automatic metadata extraction from URLs (basic)
 
 ### 7. **AI Features (Real Implementation)**

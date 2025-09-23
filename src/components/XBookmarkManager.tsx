@@ -1,5 +1,7 @@
 import { Box, Flex, VStack, Text, Button, HStack } from '@chakra-ui/react';
 import { LuImport, LuBookmarkPlus, LuFolderOpen } from 'react-icons/lu';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { theme } from '../styles/theme';
 import { useBookmarkStore } from '../store/bookmarkStore';
 import AIInsights from './AIInsights';
@@ -103,29 +105,31 @@ const XBookmarkManager = () => {
           </HStack>
         </Flex>
       ) : (
-        // Normal layout with bookmarks
-        <Flex h="100vh" w="100vw">
-          {/* Sidebar */}
-          <UnifiedSidebar />
+        // Normal layout with bookmarks - wrapped with DndProvider
+        <DndProvider backend={HTML5Backend}>
+          <Flex h="100vh" w="100vw">
+            {/* Sidebar */}
+            <UnifiedSidebar />
 
-          {/* Main Content */}
-          <Flex flex={1} direction="column" w="100%">
-            {/* Header */}
-            <SearchHeader />
+            {/* Main Content */}
+            <Flex flex={1} direction="column" w="100%">
+              {/* Header */}
+              <SearchHeader />
 
-            {/* Advanced Filters Panel */}
-            <AdvancedFilters />
+              {/* Advanced Filters Panel */}
+              <AdvancedFilters />
 
-            {/* Filter Bar */}
-            <FilterBar />
+              {/* Filter Bar */}
+              <FilterBar />
 
-            {/* Infinite Scroll Bookmarks Grid */}
-            <InfiniteBookmarkGrid />
+              {/* Infinite Scroll Bookmarks Grid */}
+              <InfiniteBookmarkGrid />
+            </Flex>
+
+            {/* AI Insights Panel */}
+            <AIInsights />
           </Flex>
-
-          {/* AI Insights Panel */}
-          <AIInsights />
-        </Flex>
+        </DndProvider>
       )}
     </Box>
   );
