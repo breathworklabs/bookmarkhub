@@ -98,7 +98,7 @@ const DroppableCollectionItem = ({
     >
       <HStack justify="space-between" align="center">
         <HStack gap={2} align="center" flex={1} minW={0}>
-          <Box color={getCollectionColor(collection)} flexShrink={0}>
+          <Box color={getCollectionColor(collection, isActive(collection.id))} flexShrink={0}>
             {getCollectionIcon(collection)}
           </Box>
           <Text
@@ -112,15 +112,12 @@ const DroppableCollectionItem = ({
         </HStack>
         <HStack gap={1} flexShrink={0}>
           <Badge
-            size="sm"
-            bg={isActive(collection.id) ? 'rgba(255,255,255,0.2)' : (isUserCollection ? '#2a2d35' : '#1a1d23')}
-            color={isActive(collection.id) ? 'white' : '#71767b'}
-            fontSize="xs"
+            bg={isActive(collection.id) ? 'rgba(255,255,255,0.2)' : '#2a2d35'}
+            color={isActive(collection.id) ? 'white' : '#9ca3af'}
+            fontSize="11px"
             px={2}
-            py={0.5}
-            borderRadius="full"
-            minW="24px"
-            textAlign="center"
+            py={1}
+            borderRadius="6px"
           >
             {getBookmarkCount(collection.id)}
           </Badge>
@@ -177,7 +174,12 @@ const CollectionsList = memo(() => {
     return <LuFolder size={16} />
   }, [])
 
-  const getCollectionColor = useCallback((collection: any) => {
+  const getCollectionColor = useCallback((collection: any, isActiveCollection: boolean = false) => {
+    // If collection is active, always use white for visibility
+    if (isActiveCollection) {
+      return 'white'
+    }
+
     if (collection.isSmartCollection) {
       switch (collection.id) {
         case 'starred':
@@ -263,7 +265,7 @@ const CollectionsList = memo(() => {
                 collection={collection}
                 isActive={isActive}
                 getCollectionIcon={getCollectionIcon}
-                getCollectionColor={getCollectionColor}
+                getCollectionColor={(collection: any) => getCollectionColor(collection, isActive(collection.id))}
                 getBookmarkCount={getBookmarkCount}
                 handleCollectionClick={handleCollectionClick}
                 isUserCollection={false}
@@ -286,7 +288,7 @@ const CollectionsList = memo(() => {
                 collection={collection}
                 isActive={isActive}
                 getCollectionIcon={getCollectionIcon}
-                getCollectionColor={getCollectionColor}
+                getCollectionColor={(collection: any) => getCollectionColor(collection, isActive(collection.id))}
                 getBookmarkCount={getBookmarkCount}
                 handleCollectionClick={handleCollectionClick}
                 isUserCollection={true}

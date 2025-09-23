@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react'
+import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react'
 import { Dialog, Button, HStack, Text, Box, Input, VStack, Textarea, Badge } from '@chakra-ui/react'
 import type { BookmarkInsert, Bookmark } from '../../types/bookmark'
 import type { CollectionInsert } from '../../lib/localStorage'
@@ -174,7 +174,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setNewTagInput('')
   }
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setModalState({ type: null, options: null })
     setTagInput('')
     setBookmarkFormData({
@@ -196,7 +196,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     })
     setIsAddingTag(false)
     setNewTagInput('')
-  }
+  }, [])
 
   const handleDeleteConfirm = () => {
     modalState.options?.onConfirm?.()
@@ -208,25 +208,25 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     closeModal()
   }
 
-  const handleAddTag = () => {
+  const handleAddTag = useCallback(() => {
     if (tagInput.trim()) {
       modalState.options?.onAdd?.(tagInput.trim())
       closeModal()
     }
-  }
+  }, [tagInput, modalState.options])
 
   const handleAddTagCancel = () => {
     modalState.options?.onCancel?.()
     closeModal()
   }
 
-  const handleTagKeyDown = (e: React.KeyboardEvent) => {
+  const handleTagKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleAddTag()
     } else if (e.key === 'Escape') {
       closeModal()
     }
-  }
+  }, [handleAddTag, closeModal])
 
   const handleBookmarkSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -261,11 +261,18 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     closeModal()
   }
 
-  const handleBookmarkFormChange = (field: keyof BookmarkInsert, value: any) => {
+  const handleBookmarkFormChange = useCallback((field: keyof BookmarkInsert, value: any) => {
     setBookmarkFormData(prev => ({ ...prev, [field]: value }))
-  }
+  }, [])
 
-  const handleAddBookmarkTag = () => {
+  const removeBookmarkTag = useCallback((tagToRemove: string) => {
+    setBookmarkFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }))
+  }, [])
+
+  const handleAddBookmarkTag = useCallback(() => {
     const tag = newTagInput.trim()
     if (tag && !bookmarkFormData.tags.includes(tag)) {
       setBookmarkFormData(prev => ({
@@ -275,23 +282,16 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       setNewTagInput('')
       setIsAddingTag(false)
     }
-  }
+  }, [newTagInput, bookmarkFormData.tags])
 
-  const removeBookmarkTag = (tagToRemove: string) => {
-    setBookmarkFormData(prev => ({
-      ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
-    }))
-  }
-
-  const handleNewTagKeyDown = (e: React.KeyboardEvent) => {
+  const handleNewTagKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleAddBookmarkTag()
     } else if (e.key === 'Escape') {
       setIsAddingTag(false)
       setNewTagInput('')
     }
-  }
+  }, [handleAddBookmarkTag])
 
   // Collection handlers
   const showCreateCollection = (options: CreateCollectionOptions) => {
@@ -322,7 +322,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
-  const handleCollectionSubmit = async (e: React.FormEvent) => {
+  const handleCollectionSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     if (!collectionFormData.name.trim()) {
       return
@@ -334,11 +334,11 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       modalState.options?.onCreate?.(collectionFormData)
     }
     closeModal()
-  }
+  }, [collectionFormData, modalState.type, modalState.options])
 
-  const handleCollectionFormChange = (field: keyof CollectionInsert, value: any) => {
+  const handleCollectionFormChange = useCallback((field: keyof CollectionInsert, value: any) => {
     setCollectionFormData(prev => ({ ...prev, [field]: value }))
-  }
+  }, [])
 
   const showImageModal = (options: ImageModalOptions) => {
     setImageModalState({

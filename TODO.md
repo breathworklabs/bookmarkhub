@@ -96,22 +96,25 @@
 
 ### 3. **Collections & Organization System**
 - [x] Create bookmark collections/folders
-- [ ] **Move bookmarks between collections** - Priority implementation
+- [x] **Move bookmarks between collections** ✅ COMPLETED
   - [x] Install and configure react-dnd library (`npm install react-dnd react-dnd-html5-backend`)
   - [x] Setup DndProvider context in App.tsx or XBookmarkManager.tsx
   - [x] Make BookmarkCard draggable with useDrag hook
-  - [x] Make collection items in CollectionsSidebar droppable with useDrop hook
+  - [x] Make collection items in CollectionsList droppable with useDrop hook
   - [x] Implement drop handler logic in collectionsStore (addBookmarkToCollection)
   - [x] Add visual feedback for drag operations (opacity, borders, highlights)
   - [x] Handle smart collections (prevent drops on starred/recent/archived)
-  - [ ] Add error handling and success feedback (toasts, animations)
+  - [x] Add duplicate detection and prevention (visual feedback for invalid drops)
+  - [x] Add error handling and success feedback (toasts, animations)
+  - [x] Fix stale data issues (refresh bookmark state after collection changes)
+  - [x] Implement proper move logic (remove from previous collection, add to new)
   - [ ] Implement accessibility features (keyboard navigation, screen reader support)
   - [ ] Test drag & drop functionality end-to-end
-- [ ] Collection management (rename, delete, share)
+- [x] Collection management (rename, delete, share) ✅ UI implemented with collections actions panel
 - [ ] Nested collections/sub-folders
 - [ ] Collection templates
 - [x] Smart collections (auto-categorization)
-- [ ] Remove collection side menu; it should be somewhere else
+- [x] Remove collection side menu; moved to collections actions panel below filters ✅ COMPLETED
 
 ### 4. **Advanced Search & Filtering**
 - [x] **Advanced Filters Functionality Implementation**
@@ -124,9 +127,8 @@
   - [x] Store filter state in Zustand
   - [x] Persist applied filters across sessions
   - [ ] Save custom filter combinations
-- [ ] Full-text search across bookmark content
+- [x] Full-text search across bookmark content
 - [ ] Search history and saved searches
-- [ ] Boolean search operators (AND, OR, NOT)
 - [ ] Search suggestions and autocomplete
 - [ ] Filter by bookmark source/platform
 
