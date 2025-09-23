@@ -1,5 +1,5 @@
 import { Box, VStack, HStack, Text, Badge, For } from '@chakra-ui/react'
-import { LuMenu, LuStar, LuDownload, LuExternalLink } from 'react-icons/lu'
+import { LuMenu, LuStar, LuExternalLink } from 'react-icons/lu'
 import { theme } from '../styles/theme'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'

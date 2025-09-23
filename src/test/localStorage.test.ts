@@ -407,7 +407,7 @@ describe('LocalStorageService', () => {
       localStorageMock.getItem.mockReturnValue(JSON.stringify(existingSettings))
       localStorageMock.setItem.mockReturnValue(undefined)
 
-      const updates = { theme: 'light' as const, viewMode: 'table' as const }
+      const updates = { theme: 'light' as const, viewMode: 'list' as const }
       const result = await service.updateSettings(updates)
 
       expect(result.theme).toBe('light')

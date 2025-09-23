@@ -1,5 +1,5 @@
-import { Box, HStack, Text, Button, For } from '@chakra-ui/react'
-import { useMemo, useCallback, memo } from 'react'
+import { Box, HStack, Button, For } from '@chakra-ui/react'
+import { useCallback, memo } from 'react'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { useModal } from './modals/ModalProvider'

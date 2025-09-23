@@ -18,7 +18,8 @@ export const mockBookmarks: Bookmark[] = [
     tags: ['tech', 'tesla', 'electric'],
     thumbnail_url: 'https://via.placeholder.com/400x200',
     created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-    updated_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+    updated_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    collections: ['uncategorized']
   },
   {
     id: 2,
@@ -36,7 +37,8 @@ export const mockBookmarks: Bookmark[] = [
     is_archived: false,
     tags: ['AI', 'GPT', 'technology'],
     created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
-    updated_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
+    updated_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+    collections: ['uncategorized']
   },
   {
     id: 3,
@@ -55,6 +57,7 @@ export const mockBookmarks: Bookmark[] = [
     tags: ['nextjs', 'react', 'development'],
     thumbnail_url: 'https://via.placeholder.com/400x200',
     created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
-    updated_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
+    updated_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+    collections: ['uncategorized']
   }
 ];

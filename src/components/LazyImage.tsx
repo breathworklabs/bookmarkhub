@@ -9,7 +9,7 @@ interface LazyImageProps {
   objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | 'none'
   borderRadius?: string
   cursor?: string
-  onClick?: () => void
+  onClick?: (e: React.MouseEvent) => void
   _hover?: any
   fallback?: React.ReactNode
   position?: string

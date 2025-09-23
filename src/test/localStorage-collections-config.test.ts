@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { localStorageService } from '../lib/localStorage'
-import type { StoredCollection } from '../lib/localStorage'
+// import type { StoredCollection } from '../lib/localStorage'
 
 describe('localStorage Default Collections Configuration', () => {
   beforeEach(() => {

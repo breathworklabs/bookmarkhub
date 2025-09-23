@@ -1,5 +1,5 @@
 import { Box, VStack, HStack, Text, Badge, Separator, IconButton } from '@chakra-ui/react'
-import { LuMenu, LuStar, LuDownload, LuExternalLink, LuFolderPlus } from 'react-icons/lu'
+import { LuMenu, LuStar, LuExternalLink, LuFolderPlus } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
 import { theme } from '../styles/theme'
 import { useBookmarkStore } from '../store/bookmarkStore'
@@ -47,11 +47,7 @@ const UnifiedSidebar = memo(() => {
     }
   }, [setActiveSidebarItem, setActiveCollection, toggleAIPanel])
 
-  const handleCreateCollection = useCallback(() => {
-    showCreateCollection({
-      onCreate: (collection) => createCollection(collection)
-    })
-  }, [showCreateCollection, createCollection])
+  // create handler inline where used; remove unused local
 
   const isActive = useCallback((label: string) => activeSidebarItem === label, [activeSidebarItem])
 

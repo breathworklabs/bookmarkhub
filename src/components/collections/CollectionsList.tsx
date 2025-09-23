@@ -1,4 +1,4 @@
-import { Box, VStack, HStack, Text, Button, IconButton, Badge, For } from '@chakra-ui/react'
+import { Box, VStack, HStack, Text, Button, Badge, For } from '@chakra-ui/react'
 import { LuFolder, LuStar, LuClock, LuArchive } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
 import { useDrop } from 'react-dnd'
@@ -14,8 +14,7 @@ const DroppableCollectionItem = ({
   getCollectionIcon,
   getCollectionColor,
   getBookmarkCount,
-  handleCollectionClick,
-  isUserCollection = false
+  handleCollectionClick
 }: any) => {
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: ItemTypes.BOOKMARK,
@@ -104,7 +103,7 @@ const DroppableCollectionItem = ({
           <Text
             fontSize="sm"
             fontWeight="500"
-            isTruncated
+            truncate
             flex={1}
           >
             {collection.name}
@@ -268,7 +267,6 @@ const CollectionsList = memo(() => {
                 getCollectionColor={(collection: any) => getCollectionColor(collection, isActive(collection.id))}
                 getBookmarkCount={getBookmarkCount}
                 handleCollectionClick={handleCollectionClick}
-                isUserCollection={false}
               />
             )}
           </For>
@@ -291,7 +289,6 @@ const CollectionsList = memo(() => {
                 getCollectionColor={(collection: any) => getCollectionColor(collection, isActive(collection.id))}
                 getBookmarkCount={getBookmarkCount}
                 handleCollectionClick={handleCollectionClick}
-                isUserCollection={true}
               />
             )}
           </For>

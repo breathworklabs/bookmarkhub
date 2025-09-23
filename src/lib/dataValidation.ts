@@ -26,6 +26,7 @@ export const bookmarkSchema = z.object({
   is_read: z.boolean(),
   is_archived: z.boolean(),
   tags: z.array(z.string()),
+  collections: z.array(z.string()).default(['uncategorized']),
   metadata: z.any().optional(),
   created_at: z.string(),
   updated_at: z.string(),
@@ -108,6 +109,9 @@ export const sanitizeBookmark = (bookmark: any): BookmarkInsert | null => {
       tags: Array.isArray(bookmark.tags)
         ? bookmark.tags.filter((tag: any) => typeof tag === 'string').map((tag: string) => tag.trim())
         : [],
+      collections: Array.isArray(bookmark.collections)
+        ? bookmark.collections.filter((id: any) => typeof id === 'string').map((id: string) => id.trim())
+        : ['uncategorized'],
       thumbnail_url: bookmark.thumbnail_url ? String(bookmark.thumbnail_url).trim() : undefined,
       favicon_url: bookmark.favicon_url ? String(bookmark.favicon_url).trim() : undefined,
       source_id: bookmark.source_id ? String(bookmark.source_id).trim() : undefined,

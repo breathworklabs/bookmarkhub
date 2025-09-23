@@ -11,10 +11,11 @@ const MotionBox = motion.create(Box)
 
 const AdvancedFilters = () => {
   const isFiltersPanelOpen = useBookmarkStore((state) => state.isFiltersPanelOpen)
-  const authorFilter = useBookmarkStore((state) => state.authorFilter)
-  const domainFilter = useBookmarkStore((state) => state.domainFilter)
+  // selectors used by subcomponents; avoid unused locals
+  useBookmarkStore((state) => state.authorFilter)
+  useBookmarkStore((state) => state.domainFilter)
   const contentTypeFilter = useBookmarkStore((state) => state.contentTypeFilter)
-  const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)
+  useBookmarkStore((state) => state.dateRangeFilter)
   const quickFilters = useBookmarkStore((state) => state.quickFilters)
   const setContentTypeFilter = useBookmarkStore((state) => state.setContentTypeFilter)
   const toggleQuickFilter = useBookmarkStore((state) => state.toggleQuickFilter)

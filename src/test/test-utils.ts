@@ -69,6 +69,7 @@ export interface CreateBookmarkOptions {
   thumbnail_url?: string
   favicon_url?: string
   source_id?: string
+  collections?: string[]
   metadata?: any
 }
 
@@ -97,6 +98,7 @@ export const createMockBookmark = (options: CreateBookmarkOptions = {}): Bookmar
     thumbnail_url: options.thumbnail_url,
     favicon_url: options.favicon_url,
     source_id: options.source_id,
+    collections: options.collections ?? ['uncategorized'],
     metadata: options.metadata,
   }
 }

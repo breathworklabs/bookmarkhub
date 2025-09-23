@@ -1,5 +1,5 @@
 import { Box, HStack, Text, Button } from '@chakra-ui/react'
-import { LuPencil, LuTrash2, LuFolderPlus, LuArchive, LuTag, LuFolderOpen, LuX } from 'react-icons/lu'
+import { LuPencil, LuTrash2, LuFolderPlus, LuArchive, LuX } from 'react-icons/lu'
 import { useCallback, memo } from 'react'
 import { useCollectionsStore } from '../../store/collectionsStore'
 import { useBookmarkStore } from '../../store/bookmarkStore'

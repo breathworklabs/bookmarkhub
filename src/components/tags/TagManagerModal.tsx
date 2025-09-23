@@ -15,7 +15,7 @@ import { LuX, LuPencil, LuTrash2, LuCheck, LuSearch } from 'react-icons/lu'
 import { useState, useCallback, useMemo, memo } from 'react'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import TagChip from './TagChip'
-import TagInput from './TagInput'
+// import TagInput from './TagInput'
 
 interface TagManagerModalProps {
   isOpen: boolean

@@ -22,7 +22,7 @@ const DroppableCollectionItem = ({
       collectionId: collection.id,
       collectionName: collection.name
     }),
-    canDrop: (item: DragItem) => {
+    canDrop: (_item: DragItem) => {
       // Prevent drops on smart collections (except uncategorized)
       if (collection.isSmartCollection && collection.id !== 'uncategorized') {
         return false

@@ -202,7 +202,7 @@ describe.skip('CollectionsList Archived Count Bug', () => {
     expect(expectedStarredCount).toBe(2) // "React 19" and "State Management" should be starred
 
     // Mock bookmark store with our test data
-    mockUseBookmarkStore.mockImplementation((selector) => {
+    mockUseBookmarkStore.mockImplementation((selector: any) => {
       const state = {
         bookmarks: testBookmarks,
         selectedTags: [],
@@ -224,7 +224,7 @@ describe.skip('CollectionsList Archived Count Bug', () => {
         toggleFiltersPanel: vi.fn(),
         setError: vi.fn()
       }
-      return selector ? selector(state) : state
+      return selector ? selector(state as any) : (state as any)
     })
 
     render(

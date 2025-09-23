@@ -16,7 +16,7 @@ const InfiniteBookmarkGrid = memo(() => {
   } = usePaginatedBookmarks()
 
   // Selection management
-  const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
+  useBookmarkStore((state) => state.selectedBookmarks)
   const setSelectedBookmarks = useBookmarkStore((state) => state.setSelectedBookmarks)
   const clearBookmarkSelection = useBookmarkStore((state) => state.clearBookmarkSelection)
 

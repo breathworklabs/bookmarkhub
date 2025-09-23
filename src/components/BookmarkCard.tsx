@@ -1,5 +1,5 @@
-import { Box, HStack, VStack, Text, IconButton, Card, Separator, For, Wrap, WrapItem, Image, SimpleGrid, Menu, Portal, Checkbox } from '@chakra-ui/react'
-import { LuMenu, LuStar, LuExternalLink, LuDownload, LuTrash2, LuPencil, LuShare2, LuPlay } from 'react-icons/lu'
+import { Box, HStack, VStack, Text, IconButton, Card, Separator, For, Wrap, WrapItem, SimpleGrid, Menu, Portal } from '@chakra-ui/react'
+import { LuStar, LuExternalLink, LuTrash2, LuPencil, LuShare2 } from 'react-icons/lu'
 import { useState, memo, useCallback, useMemo } from 'react'
 import { useDrag } from 'react-dnd'
 import toast from 'react-hot-toast'
@@ -327,9 +327,9 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
 
   return (
     <Card.Root
-      ref={drag}
+      ref={drag as unknown as React.Ref<HTMLDivElement>}
       data-testid="bookmark-card"
-      bg="#16181c"
+      bg={isSelected ? 'rgba(74, 158, 255, 0.1)' : '#16181c'}
       borderWidth="1px"
       borderColor={isSelected ? '#4a9eff' : '#2a2d35'}
       borderRadius="16px"
@@ -347,13 +347,9 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
         boxShadow: isDragging ? 'none' : isInBulkMode ? '0 0 0 2px rgba(74, 158, 255, 0.3)' : '0 4px 12px rgba(0, 0, 0, 0.3)',
         opacity: isDragging ? 0.5 : isSelected ? 0.7 : 1
       }}
-      sx={{
-        ...(isSelected && {
-          bg: 'rgba(74, 158, 255, 0.1)',
-          borderColor: '#4a9eff',
-          boxShadow: '0 0 0 1px rgba(74, 158, 255, 0.3)'
-        })
-      }}
+      {...(isSelected ? {
+        boxShadow: '0 0 0 1px rgba(74, 158, 255, 0.3)'
+      } : {})}
     >
       {/* Selection Checkbox */}
       {showCheckbox && (
@@ -583,7 +579,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                   transition="all 0.15s ease"
                 >
                   <HStack gap={2}>
-                    <LuDownload size={14} color={bookmark.is_archived ? '#f59e0b' : '#71767b'} />
+                    <Box as="span" w="14px" h="14px" color={bookmark.is_archived ? '#f59e0b' : '#71767b'}>⬇</Box>
                     <Text>{bookmark.is_archived ? 'Unarchive' : 'Archive'}</Text>
                   </HStack>
                 </Menu.Item>
@@ -740,7 +736,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                       transition="all 0.2s ease"
                       cursor="pointer"
                     >
-                      <LuPlay size={24} />
+                      ▶
                     </Box>
                   </Box>
                 )
@@ -759,7 +755,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                         objectFit="cover"
                         cursor={isInBulkMode ? 'default' : 'pointer'}
                         _hover={isInBulkMode ? {} : { filter: 'brightness(1.1)' }}
-                        onClick={(e) => {
+                        onClick={(e: React.MouseEvent) => {
                           if (isInBulkMode) {
                             e.preventDefault()
                             e.stopPropagation()
@@ -785,7 +781,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                                 objectFit="cover"
                                 cursor={isInBulkMode ? 'default' : 'pointer'}
                                 _hover={isInBulkMode ? {} : { filter: 'brightness(1.1)' }}
-                                onClick={(e) => {
+                                onClick={(e: React.MouseEvent) => {
                                   if (isInBulkMode) {
                                     e.preventDefault()
                                     e.stopPropagation()
@@ -953,20 +949,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                   borderColor: '#3a3d45 !important',
                   outline: 'none !important'
                 }}
-                sx={{
-                  '&:focus': {
-                    boxShadow: 'none !important',
-                    outline: 'none !important'
-                  },
-                  '&:active': {
-                    boxShadow: 'none !important',
-                    outline: 'none !important'
-                  },
-                  '&:focus-visible': {
-                    boxShadow: 'none !important',
-                    outline: 'none !important'
-                  }
-                }}
+                // remove unsupported sx prop in Chakra v3
                 onClick={(e) => {
                   if (isInBulkMode) {
                     e.preventDefault()
@@ -1014,20 +997,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                   borderColor: isCopied ? "#22c55e !important" : '#3a3d45 !important',
                   outline: 'none !important'
                 }}
-                sx={{
-                  '&:focus': {
-                    boxShadow: 'none !important',
-                    outline: 'none !important'
-                  },
-                  '&:active': {
-                    boxShadow: 'none !important',
-                    outline: 'none !important'
-                  },
-                  '&:focus-visible': {
-                    boxShadow: 'none !important',
-                    outline: 'none !important'
-                  }
-                }}
+
                 onClick={handleShare}
               >
                 <LuShare2 />
@@ -1068,20 +1038,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                 borderColor: '#3a3d45 !important',
                 outline: 'none !important'
               }}
-              sx={{
-                '&:focus': {
-                  boxShadow: 'none !important',
-                  outline: 'none !important'
-                },
-                '&:active': {
-                  boxShadow: 'none !important',
-                  outline: 'none !important'
-                },
-                '&:focus-visible': {
-                  boxShadow: 'none !important',
-                  outline: 'none !important'
-                }
-              }}
+
               onClick={handleOpenUrl}
             >
               <LuExternalLink />
