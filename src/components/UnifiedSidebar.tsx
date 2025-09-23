@@ -1,24 +1,43 @@
 import { Box, VStack, HStack, Text, Badge, Separator, IconButton } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuDownload, LuExternalLink, LuFolderPlus } from 'react-icons/lu'
+import { useMemo, useCallback, memo } from 'react'
 import { theme } from '../styles/theme'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { useModal } from './modals/ModalProvider'
 import CollectionsList from './collections/CollectionsList'
 
-const UnifiedSidebar = () => {
+// Optimized selector for bookmark data
+const useBookmarkCounts = () => {
+  const bookmarks = useBookmarkStore((state) => state.bookmarks)
+
+  return useMemo(() => {
+    const weekAgo = new Date()
+    weekAgo.setDate(weekAgo.getDate() - 7)
+
+    return {
+      total: bookmarks.length,
+      starred: bookmarks.filter(b => b.is_starred).length,
+      archived: bookmarks.filter(b => b.is_archived).length,
+      recent: bookmarks.filter(b => {
+        const date = new Date(b.created_at)
+        return date >= weekAgo
+      }).length
+    }
+  }, [bookmarks])
+}
+
+const UnifiedSidebar = memo(() => {
   const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
   const toggleAIPanel = useBookmarkStore((state) => state.toggleAIPanel)
-  const bookmarks = useBookmarkStore((state) => state.bookmarks)
+  const bookmarkCounts = useBookmarkCounts()
   const { showCreateCollection } = useModal()
   const createCollection = useCollectionsStore((state) => state.createCollection)
   const setActiveCollection = useCollectionsStore((state) => state.setActiveCollection)
 
-  // Calculate actual counts
-  const totalBookmarks = bookmarks.length
-
-  const handleNavItemClick = (label: string) => {
+  // Memoized event handlers
+  const handleNavItemClick = useCallback((label: string) => {
     setActiveSidebarItem(label)
     // Clear active collection when clicking sidebar navigation items
     setActiveCollection(null)
@@ -26,9 +45,15 @@ const UnifiedSidebar = () => {
     if (label === 'AI Insights') {
       toggleAIPanel()
     }
-  }
+  }, [setActiveSidebarItem, setActiveCollection, toggleAIPanel])
 
-  const isActive = (label: string) => activeSidebarItem === label
+  const handleCreateCollection = useCallback(() => {
+    showCreateCollection({
+      onCreate: (collection) => createCollection(collection)
+    })
+  }, [showCreateCollection, createCollection])
+
+  const isActive = useCallback((label: string) => activeSidebarItem === label, [activeSidebarItem])
 
   return (
     <Box {...theme.styles.container.sidebar}>
@@ -82,7 +107,7 @@ const UnifiedSidebar = () => {
               py={1}
               borderRadius="6px"
             >
-              {totalBookmarks.toLocaleString()}
+              {bookmarkCounts.total.toLocaleString()}
             </Badge>
           </HStack>
         </VStack>
@@ -198,6 +223,8 @@ const UnifiedSidebar = () => {
       </VStack>
     </Box>
   )
-}
+})
+
+UnifiedSidebar.displayName = 'UnifiedSidebar'
 
 export default UnifiedSidebar

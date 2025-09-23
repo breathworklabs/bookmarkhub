@@ -1,10 +1,11 @@
 import { Box, VStack, HStack, Text, Button, IconButton, Badge, For } from '@chakra-ui/react'
 import { LuFolder, LuStar, LuClock, LuArchive, LuEllipsis } from 'react-icons/lu'
+import { useMemo, useCallback, memo } from 'react'
 import { useCollectionsStore } from '../../store/collectionsStore'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useModal } from '../modals/ModalProvider'
 
-const CollectionsList = () => {
+const CollectionsList = memo(() => {
   const {
     collections,
     activeCollectionId,
@@ -20,7 +21,22 @@ const CollectionsList = () => {
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const { showCreateCollection } = useModal()
 
-  const getCollectionIcon = (collection: any) => {
+  // Memoized bookmark counts for smart collections
+  const smartCollectionCounts = useMemo(() => {
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+    return {
+      starred: bookmarks.filter(bookmark => bookmark.is_starred).length,
+      archived: bookmarks.filter(bookmark => bookmark.is_archived).length,
+      recent: bookmarks.filter(bookmark =>
+        new Date(bookmark.created_at) > sevenDaysAgo
+      ).length
+    }
+  }, [bookmarks])
+
+  // Memoized helper functions
+  const getCollectionIcon = useCallback((collection: any) => {
     if (collection.isSmartCollection) {
       switch (collection.id) {
         case 'starred':
@@ -34,9 +50,9 @@ const CollectionsList = () => {
       }
     }
     return <LuFolder size={16} />
-  }
+  }, [])
 
-  const getCollectionColor = (collection: any) => {
+  const getCollectionColor = useCallback((collection: any) => {
     if (collection.isSmartCollection) {
       switch (collection.id) {
         case 'starred':
@@ -50,13 +66,13 @@ const CollectionsList = () => {
       }
     }
     return collection.color || '#71767b'
-  }
+  }, [])
 
-  const isActive = (collectionId: string) => {
+  const isActive = useCallback((collectionId: string) => {
     return activeSidebarItem === 'Collections' && activeCollectionId === collectionId
-  }
+  }, [activeSidebarItem, activeCollectionId])
 
-  const handleCollectionClick = (collectionId: string) => {
+  const handleCollectionClick = useCallback((collectionId: string) => {
     const newActiveId = isActive(collectionId) ? null : collectionId
     setActiveCollection(newActiveId)
 
@@ -66,32 +82,29 @@ const CollectionsList = () => {
     } else {
       setActiveSidebarItem('All Bookmarks')
     }
-  }
+  }, [isActive, setActiveCollection, setActiveSidebarItem])
 
-  const getBookmarkCount = (collectionId: string) => {
-    // Handle smart collections with dynamic counts
+  const getBookmarkCount = useCallback((collectionId: string) => {
+    // Handle smart collections with pre-calculated counts
     if (collectionId === 'starred') {
-      return bookmarks.filter(bookmark => bookmark.is_starred).length
+      return smartCollectionCounts.starred
     }
     if (collectionId === 'archived') {
-      return bookmarks.filter(bookmark => bookmark.is_archived).length
+      return smartCollectionCounts.archived
     }
     if (collectionId === 'recent') {
-      // Recent: bookmarks from last 7 days
-      const sevenDaysAgo = new Date()
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-      return bookmarks.filter(bookmark =>
-        new Date(bookmark.created_at) > sevenDaysAgo
-      ).length
+      return smartCollectionCounts.recent
     }
 
     // For regular collections, use the collection bookmarks mapping
     return collectionBookmarks[collectionId]?.length || 0
-  }
+  }, [smartCollectionCounts, collectionBookmarks])
 
-  // Separate collections into categories
-  const defaultCollections = collections.filter(c => c.isDefault)
-  const userCollections = collections.filter(c => !c.isDefault)
+  // Memoized collection categories
+  const { defaultCollections, userCollections } = useMemo(() => ({
+    defaultCollections: collections.filter(c => c.isDefault),
+    userCollections: collections.filter(c => !c.isDefault)
+  }), [collections])
 
   if (error) {
     return (
@@ -260,6 +273,8 @@ const CollectionsList = () => {
       )}
     </VStack>
   )
-}
+})
+
+CollectionsList.displayName = 'CollectionsList'
 
 export default CollectionsList

@@ -1,38 +1,68 @@
 import { Box, HStack, Input, Button, Spacer, Badge } from '@chakra-ui/react'
 import { LuMenu } from 'react-icons/lu'
+import { useMemo, useCallback, memo } from 'react'
 import { theme } from '../styles/theme'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'
 import { sanitizeBookmark } from '../lib/dataValidation'
 
-const SearchHeader = () => {
+// Optimized selector to get all filter data at once
+const useFilterData = () => {
   const searchQuery = useBookmarkStore((state) => state.searchQuery)
-  const setSearchQuery = useBookmarkStore((state) => state.setSearchQuery)
-  const addBookmark = useBookmarkStore((state) => state.addBookmark)
   const isFiltersPanelOpen = useBookmarkStore((state) => state.isFiltersPanelOpen)
-  const toggleFiltersPanel = useBookmarkStore((state) => state.toggleFiltersPanel)
   const authorFilter = useBookmarkStore((state) => state.authorFilter)
   const domainFilter = useBookmarkStore((state) => state.domainFilter)
   const contentTypeFilter = useBookmarkStore((state) => state.contentTypeFilter)
   const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)
   const quickFilters = useBookmarkStore((state) => state.quickFilters)
+
+  return useMemo(() => ({
+    searchQuery,
+    isFiltersPanelOpen,
+    authorFilter,
+    domainFilter,
+    contentTypeFilter,
+    dateRangeFilter,
+    quickFilters
+  }), [searchQuery, isFiltersPanelOpen, authorFilter, domainFilter, contentTypeFilter, dateRangeFilter, quickFilters])
+}
+
+const SearchHeader = memo(() => {
+  const filterData = useFilterData()
+  const setSearchQuery = useBookmarkStore((state) => state.setSearchQuery)
+  const addBookmark = useBookmarkStore((state) => state.addBookmark)
+  const toggleFiltersPanel = useBookmarkStore((state) => state.toggleFiltersPanel)
   const { showAddBookmark } = useModal()
 
-  // Count active filters
-  const getActiveFilterCount = () => {
+  // Memoized active filter count calculation
+  const activeFilterCount = useMemo(() => {
     let count = 0
-    if (dateRangeFilter.type !== 'all') count++
-    if (authorFilter.trim()) count++
-    if (domainFilter.trim()) count++
-    if (contentTypeFilter.trim()) count++
-    if (quickFilters.length > 0) count += quickFilters.length
+    if (filterData.dateRangeFilter.type !== 'all') count++
+    if (filterData.authorFilter.trim()) count++
+    if (filterData.domainFilter.trim()) count++
+    if (filterData.contentTypeFilter.trim()) count++
+    if (filterData.quickFilters.length > 0) count += filterData.quickFilters.length
     return count
-  }
+  }, [
+    filterData.dateRangeFilter.type,
+    filterData.authorFilter,
+    filterData.domainFilter,
+    filterData.contentTypeFilter,
+    filterData.quickFilters.length
+  ])
 
-  const activeFilterCount = getActiveFilterCount()
   const importXBookmarks = useBookmarkStore((state) => state.importXBookmarks)
 
-  const handleImportXBookmarks = () => {
+  // Memoized event handlers
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }, [setSearchQuery])
+
+  const handleToggleFilters = useCallback(() => {
+    toggleFiltersPanel()
+  }, [toggleFiltersPanel])
+
+  const handleImportXBookmarks = useCallback(() => {
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = '.json'
@@ -70,9 +100,9 @@ const SearchHeader = () => {
       }
     }
     input.click()
-  }
+  }, [importXBookmarks])
 
-  const handleAddBookmark = () => {
+  const handleAddBookmark = useCallback(() => {
     showAddBookmark({
       onAdd: async (bookmarkData) => {
         try {
@@ -85,7 +115,7 @@ const SearchHeader = () => {
         }
       }
     })
-  }
+  }, [showAddBookmark, addBookmark])
   return (
     <Box {...theme.styles.container.header}>
       <HStack gap={6} alignItems="center">
@@ -100,8 +130,8 @@ const SearchHeader = () => {
             <Input
               {...theme.styles.searchInput}
               placeholder="Search bookmarks, content, authors..."
-              value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+              value={filterData.searchQuery}
+              onChange={handleSearchChange}
             />
           </HStack>
         </Box>
@@ -112,15 +142,15 @@ const SearchHeader = () => {
         <HStack gap={3}>
           <Button
             {...theme.styles.secondaryButton}
-            bg={isFiltersPanelOpen ? '#1d4ed8' : 'transparent'}
-            color={isFiltersPanelOpen ? 'white' : '#71767b'}
-            borderColor={isFiltersPanelOpen ? '#1d4ed8' : '#2a2d35'}
+            bg={filterData.isFiltersPanelOpen ? '#1d4ed8' : 'transparent'}
+            color={filterData.isFiltersPanelOpen ? 'white' : '#71767b'}
+            borderColor={filterData.isFiltersPanelOpen ? '#1d4ed8' : '#2a2d35'}
             _hover={{
-              bg: isFiltersPanelOpen ? '#1e40af' : '#1a1d23',
-              color: isFiltersPanelOpen ? 'white' : '#e1e5e9',
-              borderColor: isFiltersPanelOpen ? '#1e40af' : '#3a3d45'
+              bg: filterData.isFiltersPanelOpen ? '#1e40af' : '#1a1d23',
+              color: filterData.isFiltersPanelOpen ? 'white' : '#e1e5e9',
+              borderColor: filterData.isFiltersPanelOpen ? '#1e40af' : '#3a3d45'
             }}
-            onClick={toggleFiltersPanel}
+            onClick={handleToggleFilters}
             position="relative"
           >
             <LuMenu size={14} />
@@ -156,6 +186,8 @@ const SearchHeader = () => {
       </HStack>
     </Box>
   )
-}
+})
+
+SearchHeader.displayName = 'SearchHeader'
 
 export default SearchHeader

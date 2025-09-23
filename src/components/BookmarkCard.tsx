@@ -173,13 +173,14 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   }, [showEditBookmark, bookmark, updateBookmark])
 
   const handleDelete = useCallback(() => {
+    const content = (bookmark as any).content || (bookmark as any).description || 'No content available'
     showDeleteConfirmation({
       title: 'Delete Bookmark',
       message: 'Are you sure you want to delete this bookmark? This action cannot be undone.',
-      preview: getContent().slice(0, 100) + (getContent().length > 100 ? '...' : ''),
+      preview: content.slice(0, 100) + (content.length > 100 ? '...' : ''),
       onConfirm: () => removeBookmark(bookmark.id)
     })
-  }, [showDeleteConfirmation, getContent, removeBookmark, bookmark.id])
+  }, [showDeleteConfirmation, removeBookmark, bookmark.id, bookmark])
 
   const handleOpenUrl = useCallback(() => {
     window.open(bookmark.url, '_blank')

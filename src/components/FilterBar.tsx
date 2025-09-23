@@ -1,9 +1,13 @@
 import { Box, HStack, Text, Button, For } from '@chakra-ui/react'
+import { useMemo, useCallback, memo } from 'react'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { useModal } from './modals/ModalProvider'
 
-const FilterBar = () => {
+// Memoized filter tabs array
+const FILTER_TABS = ['All', 'Today', 'This Week', 'Threads', 'Media']
+
+const FilterBar = memo(() => {
   const activeTab = useBookmarkStore((state) => state.activeTab)
   const setActiveTab = useBookmarkStore((state) => state.setActiveTab)
   const selectedTags = useBookmarkStore((state) => state.selectedTags)
@@ -11,10 +15,10 @@ const FilterBar = () => {
   const addTag = useBookmarkStore((state) => state.addTag)
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
   const setActiveCollection = useCollectionsStore((state) => state.setActiveCollection)
-  const filterTabs = ['All', 'Today', 'This Week', 'Threads', 'Media']
   const { showAddTag } = useModal()
 
-  const handleAddTag = () => {
+  // Memoized event handlers
+  const handleAddTag = useCallback(() => {
     showAddTag({
       placeholder: "Enter tag name...",
       existingTags: selectedTags,
@@ -25,14 +29,25 @@ const FilterBar = () => {
         setActiveCollection(null)
       }
     })
-  }
+  }, [showAddTag, selectedTags, addTag, setActiveSidebarItem, setActiveCollection])
+
+  const handleTabClick = useCallback((index: number) => {
+    setActiveTab(index)
+    // Reset sidebar to All Bookmarks and clear active collection when changing tabs
+    setActiveSidebarItem('All Bookmarks')
+    setActiveCollection(null)
+  }, [setActiveTab, setActiveSidebarItem, setActiveCollection])
+
+  const handleRemoveTag = useCallback((tag: string) => {
+    removeTag(tag)
+  }, [removeTag])
 
   return (
     <Box bg="#0f1419" borderBottomWidth="1px" borderColor="gray.700" px={6} py={4}>
       <HStack justify="space-between" alignItems="center">
         {/* Filter Tabs */}
         <HStack gap={3}>
-          <For each={filterTabs}>
+          <For each={FILTER_TABS}>
             {(label, index) => (
               <Button
                 key={label}
@@ -49,7 +64,7 @@ const FilterBar = () => {
                   bg: activeTab === index ? '#1e40af' : '#2a2d35',
                   color: activeTab === index ? 'white' : '#e1e5e9'
                 }}
-                onClick={() => setActiveTab(index)}
+                onClick={() => handleTabClick(index)}
               >
                 {label}
               </Button>
@@ -78,7 +93,7 @@ const FilterBar = () => {
                   borderColor: '#3a3d45'
                 }}
                 onClick={() => {
-                  removeTag(tag)
+                  handleRemoveTag(tag)
                   // Reset sidebar to All Bookmarks and clear active collection when removing tags
                   setActiveSidebarItem('All Bookmarks')
                   setActiveCollection(null)
@@ -130,6 +145,8 @@ const FilterBar = () => {
 
     </Box>
   )
-}
+})
+
+FilterBar.displayName = 'FilterBar'
 
 export default FilterBar
