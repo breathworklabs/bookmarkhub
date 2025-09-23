@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 
 export const useInitializeApp = () => {
+  const [hasExistingBookmarks, setHasExistingBookmarks] = useState<boolean | null>(null)
   const isLoading = useBookmarkStore((state) => state.isLoading)
   const error = useBookmarkStore((state) => state.error)
   const collectionsLoading = useCollectionsStore((state) => state.isLoading)
@@ -18,19 +19,37 @@ export const useInitializeApp = () => {
 
     hasInitialized.current = true
 
-    // Initialize both stores
-    const initializeApp = async () => {
-      await Promise.all([
-        useBookmarkStore.getState().initialize(),
-        useCollectionsStore.getState().initialize()
-      ])
+    // First, synchronously check if we have existing bookmarks
+    const checkExistingBookmarks = () => {
+      try {
+        // Direct synchronous localStorage check
+        const stored = localStorage.getItem('x-bookmark-manager-bookmarks')
+        const bookmarks = stored ? JSON.parse(stored) : []
+        const hasBookmarks = Array.isArray(bookmarks) && bookmarks.length > 0
+        setHasExistingBookmarks(hasBookmarks)
+
+        // If we have bookmarks, initialize stores immediately
+        if (hasBookmarks) {
+          Promise.all([
+            useBookmarkStore.getState().initialize(),
+            useCollectionsStore.getState().initialize()
+          ])
+        }
+      } catch (error) {
+        console.error('Error checking existing bookmarks:', error)
+        setHasExistingBookmarks(false)
+      }
     }
 
-    initializeApp()
-  }, []) // Empty dependency array to run only once
+    checkExistingBookmarks()
+  }, [])
+
+  // Only show loading when we're actually loading and have existing bookmarks
+  const showLoading = hasExistingBookmarks === true && (isLoading || collectionsLoading)
 
   return {
-    isLoading: isLoading || collectionsLoading,
-    error: error || collectionsError
+    isLoading: showLoading,
+    error: error || collectionsError,
+    hasExistingBookmarks
   }
 }

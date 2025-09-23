@@ -3,6 +3,7 @@ import { devtools } from 'zustand/middleware'
 import { localStorageService, type StoredBookmark } from '../lib/localStorage'
 import { sanitizeBookmark, validateImportData } from '../lib/dataValidation'
 import { transformXBookmarks, validateXBookmarkData } from '../lib/xBookmarkTransform'
+import { mockBookmarks } from '../data/mockBookmarks'
 import type { Bookmark, BookmarkInsert, AppSettings } from '../types/bookmark'
 
 export interface DateRangeFilter {
@@ -172,33 +173,51 @@ export const useBookmarkStore = create<BookmarkState>()(
       // Initialize store
       initialize: async () => {
         try {
-          set({ isLoading: true, error: null }, false, 'initialize:start')
-
-          // Load settings first
-          await get().loadSettings()
-
-          // Try to load bookmarks from localStorage
+          // First, try to load bookmarks immediately (synchronous for better UX)
           const bookmarks = await localStorageService.getBookmarks()
 
-          set({
-            bookmarks,
-            selectedTags: [], // Clear filters on startup
-            searchQuery: '', // Clear search on startup
-            activeTab: 0, // Reset to "All" tab
-            selectedBookmarks: [] // Clear selection on startup
-          }, false, 'initialize:loadedFromStorage')
+          // If we have bookmarks, set them immediately without loading state
+          if (bookmarks.length > 0) {
+            set({
+              bookmarks,
+              selectedTags: [], // Clear filters on startup
+              searchQuery: '', // Clear search on startup
+              activeTab: 0, // Reset to "All" tab
+              selectedBookmarks: [], // Clear selection on startup
+              isLoading: false // No loading state if we have data
+            }, false, 'initialize:immediateLoad')
 
-          // Calculate filter options after loading bookmarks
-          get().calculateFilterOptions()
+            // Load settings and calculate filter options in background
+            Promise.all([
+              get().loadSettings(),
+              Promise.resolve(get().calculateFilterOptions())
+            ]).catch(error => {
+              console.error('Background initialization failed:', error)
+            })
+          } else {
+            // No bookmarks in localStorage - load mock bookmarks for demo
+            await get().loadSettings()
+
+            set({
+              bookmarks: mockBookmarks,
+              selectedTags: [],
+              searchQuery: '',
+              activeTab: 0,
+              selectedBookmarks: [],
+              isLoading: false
+            }, false, 'initialize:mockData')
+
+            // Calculate filter options with mock bookmarks
+            get().calculateFilterOptions()
+          }
 
         } catch (error) {
           console.error('Failed to initialize app:', error)
           set({
             error: error instanceof Error ? error.message : 'Failed to initialize',
-            bookmarks: []
+            bookmarks: [],
+            isLoading: false
           }, false, 'initialize:error')
-        } finally {
-          set({ isLoading: false }, false, 'initialize:complete')
         }
       },
 

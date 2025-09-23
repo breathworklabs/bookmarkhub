@@ -59,12 +59,17 @@ export const useCollectionsStore = create<CollectionsStore>()(
         }
 
         try {
-          set({ isLoading: true, error: null }, false, 'collections:initialize:start')
-
-          // Load collections directly without calling loadCollections to avoid the isLoading guard
+          // Load collections immediately without loading state for better UX
           const collections = await localStorageService.getCollections()
 
-          // Build collection bookmarks map
+          // Quick load: set collections immediately, build collection bookmarks in background
+          set({
+            collections,
+            isLoading: false,
+            error: null
+          }, false, 'collections:quickLoad')
+
+          // Build collection bookmarks map in background
           const collectionBookmarks: Record<string, number[]> = {}
           for (const collection of collections) {
             try {
@@ -76,18 +81,17 @@ export const useCollectionsStore = create<CollectionsStore>()(
             }
           }
 
+          // Update with collection bookmarks map
           set({
-            collections,
-            collectionBookmarks,
-            error: null
-          }, false, 'collections:initialize:success')
+            collectionBookmarks
+          }, false, 'collections:backgroundLoad')
+
         } catch (error) {
           console.error('Failed to initialize collections:', error)
           set({
-            error: error instanceof Error ? error.message : 'Failed to initialize collections'
+            error: error instanceof Error ? error.message : 'Failed to initialize collections',
+            isLoading: false
           }, false, 'collections:initialize:error')
-        } finally {
-          set({ isLoading: false }, false, 'collections:initialize:complete')
         }
       },
 
