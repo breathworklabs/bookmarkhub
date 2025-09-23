@@ -24,3 +24,14 @@ dist-ssr
 *.sw?
 test-results/*
 playwright-report/*
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Build artifacts
+dist/
+build/
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
