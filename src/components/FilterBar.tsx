@@ -1,7 +1,7 @@
 import { Box, HStack, Button, For } from '@chakra-ui/react'
 import { useCallback, memo } from 'react'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useCollectionsStore } from '../store/collectionsStore'
+import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
+import { useFilterReset } from '../utils/filterUtils'
 import { useModal } from './modals/ModalProvider'
 import TagChip from './tags/TagChip'
 
@@ -9,13 +9,15 @@ import TagChip from './tags/TagChip'
 const FILTER_TABS = ['All', 'Today', 'This Week', 'Threads', 'Media']
 
 const FilterBar = memo(() => {
-  const activeTab = useBookmarkStore((state) => state.activeTab)
-  const setActiveTab = useBookmarkStore((state) => state.setActiveTab)
-  const selectedTags = useBookmarkStore((state) => state.selectedTags)
-  const removeTag = useBookmarkStore((state) => state.removeTag)
-  const addTag = useBookmarkStore((state) => state.addTag)
-  const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
-  const setActiveCollection = useCollectionsStore((state) => state.setActiveCollection)
+  const {
+    activeTab,
+    setActiveTab,
+    selectedTags,
+    removeTag,
+    addTag
+  } = useBookmarkSelectors()
+
+  const resetFilters = useFilterReset()
   const { showAddTag } = useModal()
 
   // Memoized event handlers
@@ -25,19 +27,15 @@ const FilterBar = memo(() => {
       existingTags: selectedTags,
       onAdd: (tagName: string) => {
         addTag(tagName)
-        // Reset sidebar to All Bookmarks and clear active collection when adding tags
-        setActiveSidebarItem('All Bookmarks')
-        setActiveCollection(null)
+        resetFilters()
       }
     })
-  }, [showAddTag, selectedTags, addTag, setActiveSidebarItem, setActiveCollection])
+  }, [showAddTag, selectedTags, addTag, resetFilters])
 
   const handleTabClick = useCallback((index: number) => {
     setActiveTab(index)
-    // Reset sidebar to All Bookmarks and clear active collection when changing tabs
-    setActiveSidebarItem('All Bookmarks')
-    setActiveCollection(null)
-  }, [setActiveTab, setActiveSidebarItem, setActiveCollection])
+    resetFilters()
+  }, [setActiveTab, resetFilters])
 
   const handleRemoveTag = useCallback((tag: string) => {
     removeTag(tag)
@@ -86,9 +84,7 @@ const FilterBar = memo(() => {
                 size="md"
                 onRemove={(removedTag) => {
                   handleRemoveTag(removedTag)
-                  // Reset sidebar to All Bookmarks and clear active collection when removing tags
-                  setActiveSidebarItem('All Bookmarks')
-                  setActiveCollection(null)
+                  resetFilters()
                 }}
               />
             )}

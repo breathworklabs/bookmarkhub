@@ -1,8 +1,8 @@
 import { Box, VStack, HStack, Text, Button, Input, For } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LuTag } from 'react-icons/lu'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useCollectionsStore } from '../store/collectionsStore'
+import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
+import { useFilterReset } from '../utils/filterUtils'
 import DateRangeFilter from './DateRangeFilter'
 import AuthorFilter from './AuthorFilter'
 import DomainFilter from './DomainFilter'
@@ -10,18 +10,17 @@ import DomainFilter from './DomainFilter'
 const MotionBox = motion.create(Box)
 
 const AdvancedFilters = () => {
-  const isFiltersPanelOpen = useBookmarkStore((state) => state.isFiltersPanelOpen)
-  // selectors used by subcomponents; avoid unused locals
-  useBookmarkStore((state) => state.authorFilter)
-  useBookmarkStore((state) => state.domainFilter)
-  const contentTypeFilter = useBookmarkStore((state) => state.contentTypeFilter)
-  useBookmarkStore((state) => state.dateRangeFilter)
-  const quickFilters = useBookmarkStore((state) => state.quickFilters)
-  const setContentTypeFilter = useBookmarkStore((state) => state.setContentTypeFilter)
-  const toggleQuickFilter = useBookmarkStore((state) => state.toggleQuickFilter)
-  const clearAdvancedFilters = useBookmarkStore((state) => state.clearAdvancedFilters)
-  const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
-  const setActiveCollection = useCollectionsStore((state) => state.setActiveCollection)
+  const {
+    isFiltersPanelOpen,
+    contentTypeFilter,
+    quickFilters,
+    setContentTypeFilter,
+    toggleQuickFilter,
+    clearAdvancedFilters,
+    setFiltersPanelOpen
+  } = useBookmarkSelectors()
+
+  const resetFilters = useFilterReset()
 
 
   return (
@@ -103,7 +102,7 @@ const AdvancedFilters = () => {
                 variant="ghost"
                 color="#71767b"
                 _hover={{ color: '#e1e5e9', bg: '#2a2d35' }}
-                onClick={() => useBookmarkStore.getState().setFiltersPanelOpen(false)}
+                onClick={() => setFiltersPanelOpen(false)}
               >
                 ×
               </Button>
@@ -134,9 +133,7 @@ const AdvancedFilters = () => {
                   value={contentTypeFilter}
                   onChange={(e) => {
                     setContentTypeFilter(e.target.value)
-                    // Reset sidebar to All Bookmarks and clear active collection when applying filters
-                    setActiveSidebarItem('All Bookmarks')
-                    setActiveCollection(null)
+                    resetFilters()
                   }}
                   bg="#1a1d23"
                   borderColor="#2a2d35"
@@ -184,9 +181,7 @@ const AdvancedFilters = () => {
                       }}
                       onClick={() => {
                         toggleQuickFilter(filter.value)
-                        // Reset sidebar to All Bookmarks and clear active collection when applying filters
-                        setActiveSidebarItem('All Bookmarks')
-                        setActiveCollection(null)
+                        resetFilters()
                       }}
                     >
                       {filter.label}
@@ -210,9 +205,7 @@ const AdvancedFilters = () => {
                 _hover={{ borderColor: '#3a3d45', color: '#e1e5e9', bg: '#1a1d23' }}
                 onClick={() => {
                   clearAdvancedFilters()
-                  // Reset sidebar to All Bookmarks and clear active collection when clearing filters
-                  setActiveSidebarItem('All Bookmarks')
-                  setActiveCollection(null)
+                  resetFilters()
                 }}
               >
                 Clear All Filters
