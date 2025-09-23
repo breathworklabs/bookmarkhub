@@ -1,6 +1,6 @@
 import { Box, HStack, VStack, Text, IconButton, Badge, Card, Separator, For, Wrap, WrapItem, Image, SimpleGrid, Menu, Portal } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuExternalLink, LuDownload, LuTrash2, LuPencil, LuShare2, LuPlay } from 'react-icons/lu'
-import { useState } from 'react'
+import { useState, memo, useCallback } from 'react'
 import { type Bookmark } from '../types/bookmark'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'
@@ -10,7 +10,7 @@ interface BookmarkCardProps {
   bookmark: Bookmark
 }
 
-const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
+const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   const toggleStarBookmark = useBookmarkStore((state) => state.toggleStarBookmark)
   const removeBookmark = useBookmarkStore((state) => state.removeBookmark)
   const updateBookmark = useBookmarkStore((state) => state.updateBookmark)
@@ -116,9 +116,9 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
     return null
   }
 
-  const getContent = () => {
+  const getContent = useCallback(() => {
     return (bookmark as any).content || (bookmark as any).description || 'No content available'
-  }
+  }, [bookmark])
 
   const getMetrics = () => {
     return (bookmark as any).metrics || { likes: '0', retweets: '0', replies: '0' }
@@ -134,7 +134,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
     return Array.isArray(tags) ? tags.filter(tag => typeof tag === 'string') : []
   }
 
-  const handleShare = async () => {
+  const handleShare = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(bookmark.url)
       setIsCopied(true)
@@ -155,7 +155,35 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
         console.error('Fallback copy also failed:', fallbackErr)
       }
     }
-  }
+  }, [bookmark.url])
+
+  const handleToggleStar = useCallback(() => {
+    toggleStarBookmark(bookmark.id)
+  }, [toggleStarBookmark, bookmark.id])
+
+  const handleToggleArchive = useCallback(() => {
+    toggleArchiveBookmark(bookmark.id)
+  }, [toggleArchiveBookmark, bookmark.id])
+
+  const handleEdit = useCallback(() => {
+    showEditBookmark({
+      bookmark,
+      onEdit: (id, updatedBookmark) => updateBookmark(id, updatedBookmark)
+    })
+  }, [showEditBookmark, bookmark, updateBookmark])
+
+  const handleDelete = useCallback(() => {
+    showDeleteConfirmation({
+      title: 'Delete Bookmark',
+      message: 'Are you sure you want to delete this bookmark? This action cannot be undone.',
+      preview: getContent().slice(0, 100) + (getContent().length > 100 ? '...' : ''),
+      onConfirm: () => removeBookmark(bookmark.id)
+    })
+  }, [showDeleteConfirmation, getContent, removeBookmark, bookmark.id])
+
+  const handleOpenUrl = useCallback(() => {
+    window.open(bookmark.url, '_blank')
+  }, [bookmark.url])
 
   return (
     <Card.Root
@@ -318,7 +346,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                     bg: '#2a2d35',
                     color: '#ffffff'
                   }}
-                  onClick={() => toggleArchiveBookmark(bookmark.id)}
+                  onClick={handleToggleArchive}
                   px={3}
                   py={2}
                   fontSize="sm"
@@ -341,10 +369,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                     bg: '#2a2d35',
                     color: '#ffffff'
                   }}
-                  onClick={() => showEditBookmark({
-                    bookmark,
-                    onEdit: (id, updatedBookmark) => updateBookmark(id, updatedBookmark)
-                  })}
+                  onClick={handleEdit}
                   px={3}
                   py={2}
                   fontSize="sm"
@@ -368,12 +393,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                     bg: '#dc2626',
                     color: 'white'
                   }}
-                  onClick={() => showDeleteConfirmation({
-                    title: 'Delete Bookmark',
-                    message: 'Are you sure you want to delete this bookmark? This action cannot be undone.',
-                    preview: getContent().slice(0, 100) + (getContent().length > 100 ? '...' : ''),
-                    onConfirm: () => removeBookmark(bookmark.id)
-                  })}
+                  onClick={handleDelete}
                   px={3}
                   py={2}
                   fontSize="sm"
@@ -656,7 +676,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                     outline: 'none !important'
                   }
                 }}
-                onClick={() => toggleStarBookmark(bookmark.id)}
+                onClick={handleToggleStar}
               >
                 <LuStar fill={isStarred() ? 'currentColor' : 'none'} />
               </IconButton>
@@ -764,7 +784,7 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                   outline: 'none !important'
                 }
               }}
-              onClick={() => window.open(bookmark.url, '_blank')}
+              onClick={handleOpenUrl}
             >
               <LuExternalLink />
             </IconButton>
@@ -773,6 +793,8 @@ const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
       </Box>
     </Card.Root>
   )
-}
+})
+
+BookmarkCard.displayName = 'BookmarkCard'
 
 export default BookmarkCard
