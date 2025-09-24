@@ -5,6 +5,8 @@ import { theme } from '../styles/theme'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'
 import { sanitizeBookmark } from '../lib/dataValidation'
+import { useButtonStyles, useInputStyles } from '../hooks/useStyles'
+import { componentStyles } from '../styles/components'
 
 // Optimized selector to get all filter data at once
 const useFilterData = () => {
@@ -117,7 +119,7 @@ const SearchHeader = memo(() => {
     })
   }, [showAddBookmark, addBookmark])
   return (
-    <Box {...theme.styles.container.header}>
+    <Box {...componentStyles.container.header}>
       <HStack gap={6} alignItems="center">
         {/* Search Area */}
         <Box position="relative" maxW="400px" flex={1}>
@@ -128,7 +130,7 @@ const SearchHeader = memo(() => {
               </svg>
             </Box>
             <Input
-              {...theme.styles.searchInput}
+              {...useInputStyles('search')}
               placeholder="Search bookmarks, content, authors..."
               value={filterData.searchQuery}
               onChange={handleSearchChange}
@@ -141,7 +143,7 @@ const SearchHeader = memo(() => {
         {/* Action Buttons */}
         <HStack gap={3}>
           <Button
-            {...theme.styles.secondaryButton}
+            {...useButtonStyles('secondary')}
             bg={filterData.isFiltersPanelOpen ? '#1d4ed8' : 'transparent'}
             color={filterData.isFiltersPanelOpen ? 'white' : '#71767b'}
             borderColor={filterData.isFiltersPanelOpen ? '#1d4ed8' : '#2a2d35'}
@@ -174,11 +176,11 @@ const SearchHeader = memo(() => {
               </Badge>
             )}
           </Button>
-          <Button {...theme.styles.secondaryButton} onClick={handleImportXBookmarks}>
+          <Button {...useButtonStyles('secondary')} onClick={handleImportXBookmarks}>
             +
             Import
           </Button>
-          <Button {...theme.styles.primaryButton} onClick={handleAddBookmark}>
+          <Button {...useButtonStyles('primary')} onClick={handleAddBookmark}>
             +
             Add Bookmark
           </Button>

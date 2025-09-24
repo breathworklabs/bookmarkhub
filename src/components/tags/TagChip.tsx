@@ -2,6 +2,7 @@ import { Badge, Text, IconButton } from '@chakra-ui/react'
 import { LuX } from 'react-icons/lu'
 import { memo, useCallback } from 'react'
 import { useTagCategoriesStore } from '../../store/tagCategoriesStore'
+import { getTagStyle } from '../../styles/components'
 
 interface TagChipProps {
   tag: string
@@ -72,6 +73,7 @@ const TagChip = memo(({
     switch (variant) {
       case 'filter':
         return {
+          ...getTagStyle('filter'),
           bg: isActive ? (categoryColor || '#1d4ed8') : baseBg,
           color: isActive ? 'white' : (categoryColor ? 'white' : '#71767b'),
           borderColor: isActive ? (categoryColor || '#1d4ed8') : (categoryColor || 'transparent'),
@@ -83,6 +85,7 @@ const TagChip = memo(({
         }
       case 'editable':
         return {
+          ...getTagStyle('base'),
           bg: categoryColor || '#2a2d35',
           color: categoryColor ? 'white' : '#e1e5e9',
           borderColor: categoryColor || '#3a3d45',
@@ -95,6 +98,7 @@ const TagChip = memo(({
       case 'default':
       default:
         return {
+          ...getTagStyle('base'),
           bg: categoryColor || '#2a2d35',
           color: categoryColor ? 'white' : '#71767b',
           borderColor: categoryColor || 'transparent',

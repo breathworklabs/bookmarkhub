@@ -1,11 +1,12 @@
 import { Box, VStack, HStack, Text, Badge, Separator, IconButton } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuExternalLink, LuFolderPlus } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
-import { theme } from '../styles/theme'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { useModal } from './modals/ModalProvider'
 import CollectionsList from './collections/CollectionsList'
+import { useNavigationStyles, useIconButtonStyles } from '../hooks/useStyles'
+import { componentStyles } from '../styles/components'
 
 // Optimized selector for bookmark data
 const useBookmarkCounts = () => {
@@ -52,7 +53,7 @@ const UnifiedSidebar = memo(() => {
   const isActive = useCallback((label: string) => activeSidebarItem === label, [activeSidebarItem])
 
   return (
-    <Box {...theme.styles.container.sidebar}>
+    <Box {...componentStyles.container.sidebar}>
       <VStack alignItems="stretch" gap={6} h="full">
         {/* Logo */}
         <HStack gap={3} pb={4} borderBottomWidth="1px" borderColor="#2a2d35">
@@ -77,18 +78,11 @@ const UnifiedSidebar = memo(() => {
         {/* Main Navigation */}
         <VStack alignItems="stretch" gap={2}>
           <HStack
+            {...useNavigationStyles(isActive('All Bookmarks'))}
             p={3}
             borderRadius="12px"
             cursor="pointer"
-            bg={isActive('All Bookmarks') ? '#1d4ed8' : 'transparent'}
-            color={isActive('All Bookmarks') ? 'white' : '#71767b'}
             fontSize="14px"
-            fontWeight={isActive('All Bookmarks') ? '600' : '500'}
-            _hover={{
-              bg: isActive('All Bookmarks') ? '#1e40af' : '#2a2d35',
-              color: isActive('All Bookmarks') ? 'white' : '#e1e5e9'
-            }}
-            transition="all 0.2s"
             onClick={() => handleNavItemClick('All Bookmarks')}
           >
             <Box w="18px" h="18px">
@@ -115,11 +109,10 @@ const UnifiedSidebar = memo(() => {
               Collections
             </Text>
             <IconButton
+              {...useIconButtonStyles()}
               size="sm"
               variant="ghost"
               aria-label="Create collection"
-              color="#71767b"
-              _hover={{ color: '#e1e5e9', bg: '#2a2d35' }}
               onClick={() => showCreateCollection({
                 onCreate: async (collectionData) => {
                   try {
@@ -144,18 +137,11 @@ const UnifiedSidebar = memo(() => {
           <Separator borderColor="#2a2d35" />
 
           <HStack
+            {...useNavigationStyles(isActive('AI Insights'))}
             p={3}
             borderRadius="12px"
             cursor="pointer"
-            bg={isActive('AI Insights') ? '#1d4ed8' : 'transparent'}
-            color={isActive('AI Insights') ? 'white' : '#71767b'}
             fontSize="14px"
-            fontWeight={isActive('AI Insights') ? '600' : '500'}
-            _hover={{
-              bg: isActive('AI Insights') ? '#1e40af' : '#2a2d35',
-              color: isActive('AI Insights') ? 'white' : '#e1e5e9'
-            }}
-            transition="all 0.2s"
             onClick={() => handleNavItemClick('AI Insights')}
           >
             <Box w="18px" h="18px">

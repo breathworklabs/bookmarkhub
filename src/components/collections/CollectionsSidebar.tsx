@@ -5,6 +5,8 @@ import { useCollectionsStore } from '../../store/collectionsStore'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useEffect } from 'react'
 import { ItemTypes, type DragItem, type DropResult } from '../../types/dnd'
+import { useIconButtonStyles } from '../../hooks/useStyles'
+import { componentStyles } from '../../styles/components'
 
 // Helper component for droppable collection items
 const DroppableCollectionItem = ({
@@ -105,6 +107,7 @@ const DroppableCollectionItem = ({
           </Badge>
           {isUserCollection && (
             <IconButton
+              {...useIconButtonStyles()}
               size="xs"
               variant="ghost"
               aria-label="Collection options"
@@ -222,7 +225,7 @@ const CollectionsSidebar = () => {
   }
 
   return (
-    <Box bg="#0f1419" borderRight="1px solid #2a2d35" h="100%" w="280px" overflow="hidden">
+    <Box {...componentStyles.container.sidebar} h="100%" overflow="hidden">
       <VStack align="stretch" gap={0} h="100%">
         {/* Header */}
         <Box p={4} borderBottom="1px solid #2a2d35">
@@ -231,11 +234,10 @@ const CollectionsSidebar = () => {
               Collections
             </Text>
             <IconButton
+              {...useIconButtonStyles()}
               size="sm"
               variant="ghost"
               aria-label="Create collection"
-              color="#71767b"
-              _hover={{ color: '#e1e5e9', bg: '#2a2d35' }}
               onClick={() => setCreatingCollection(true)}
             >
               <LuFolderPlus size={16} />
