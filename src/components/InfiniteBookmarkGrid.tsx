@@ -1,6 +1,6 @@
 import { Box, SimpleGrid, For, Text, Spinner, HStack } from '@chakra-ui/react'
 import { memo, useCallback, useEffect } from 'react'
-import { usePaginatedBookmarks } from '../hooks/usePaginatedBookmarks'
+import { usePaginatedBookmarksOptimized } from '../hooks/composite/usePaginatedBookmarksOptimized'
 import { useInfiniteScrollObserver } from '../hooks/useIntersectionObserver'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import BookmarkCard from './BookmarkCard'
@@ -13,7 +13,7 @@ const InfiniteBookmarkGrid = memo(() => {
     loadMore,
     totalItems,
     currentPage
-  } = usePaginatedBookmarks()
+  } = usePaginatedBookmarksOptimized()
 
   // Selection management
   useBookmarkStore((state) => state.selectedBookmarks)

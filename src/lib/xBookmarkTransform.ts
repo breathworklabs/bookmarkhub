@@ -1,4 +1,5 @@
 import type { BookmarkInsert } from '../types/bookmark'
+import { DataProcessingService } from '../services/dataProcessingService'
 
 // X/Twitter bookmark data structure from the JSON file
 interface XBookmarkData {
@@ -31,40 +32,30 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
   const text = xBookmark.text || '[No text content]'
 
   // Extract domain from URL
-  let domain = ''
-  try {
-    const urlObj = new URL(xBookmark.url)
-    domain = urlObj.hostname.replace(/^www\./, '')
-  } catch {
-    domain = 'x.com'
-  }
+  const domain = DataProcessingService.extractDomain(xBookmark.url) || 'x.com'
 
   // Create title from text (truncated for readability)
-  const title = text.length > 80
-    ? text.substring(0, 80) + '...'
-    : text
+  const title = DataProcessingService.createTitleFromText(text, 80)
 
   // For now, just add X platform tag
   const platformTags = ['X']
 
   // Separate different types of images
-  const allImages = Array.isArray(xBookmark.images) ? xBookmark.images : []
-  const normalProfileImages = allImages.filter(img => img && typeof img === 'string' && img.includes('_normal'))
-  const biggerProfileImages = allImages.filter(img => img && typeof img === 'string' && img.includes('_bigger'))
-  const contentImages = allImages.filter(img => img && typeof img === 'string' && !img.includes('_normal') && !img.includes('_bigger'))
+  const { normalProfileImages, biggerProfileImages, contentImages } = DataProcessingService.processImages(xBookmark.images || [])
 
   console.log('Processing bookmark:', xBookmark.display_name)
-  console.log('All images:', allImages)
+  console.log('All images:', xBookmark.images)
   console.log('Normal images:', normalProfileImages)
   console.log('Bigger images:', biggerProfileImages)
   console.log('Content images:', contentImages)
 
 
-  // Calculate engagement score (basic scoring for now)
-  let engagementScore = 50 // Default middle score
-  if (text.length > 200) engagementScore += 10 // Longer content
-  if (xBookmark.has_video) engagementScore += 20 // Has video
-  if (contentImages.length > 0) engagementScore += 10 // Has content images
+  // Calculate engagement score
+  const engagementScore = DataProcessingService.calculateEngagementScore({
+    content: text,
+    has_video: xBookmark.has_video,
+    images: xBookmark.images
+  })
 
   const bookmark: BookmarkInsert = {
     user_id: userId,

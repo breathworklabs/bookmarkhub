@@ -4,6 +4,7 @@
 
 import { z } from 'zod'
 import type { Bookmark, BookmarkInsert, ExportData, AppSettings, AppMetadata } from '../types/bookmark'
+import { DataProcessingService } from '../services/dataProcessingService'
 
 // Zod schemas
 export const urlSchema = z.string().url()
@@ -91,53 +92,16 @@ export const isValidMetadata = (metadata: any): metadata is AppMetadata => {
 
 // Sanitization functions
 export const sanitizeBookmark = (bookmark: any): BookmarkInsert | null => {
-  try {
-    // Apply defaults and sanitization
-    const sanitized: BookmarkInsert = {
-      user_id: String(bookmark.user_id || 'ae879c80-f3fc-4e05-a837-384e4b9bfb28'),
-      title: String(bookmark.title || '').trim(),
-      url: String(bookmark.url || '').trim(),
-      description: String(bookmark.description || bookmark.content || '').trim(),
-      content: String(bookmark.content || bookmark.description || '').trim(),
-      author: String(bookmark.author || 'Unknown Author').trim(),
-      domain: String(bookmark.domain || extractDomain(bookmark.url)).trim(),
-      source_platform: String(bookmark.source_platform || 'manual').trim(),
-      engagement_score: Number(bookmark.engagement_score || 0),
-      is_starred: Boolean(bookmark.is_starred || bookmark.isStarred),
-      is_read: Boolean(bookmark.is_read || false),
-      is_archived: Boolean(bookmark.is_archived || false),
-      tags: Array.isArray(bookmark.tags)
-        ? bookmark.tags.filter((tag: any) => typeof tag === 'string').map((tag: string) => tag.trim())
-        : [],
-      collections: Array.isArray(bookmark.collections)
-        ? bookmark.collections.filter((id: any) => typeof id === 'string').map((id: string) => id.trim())
-        : ['uncategorized'],
-      thumbnail_url: bookmark.thumbnail_url ? String(bookmark.thumbnail_url).trim() : undefined,
-      favicon_url: bookmark.favicon_url ? String(bookmark.favicon_url).trim() : undefined,
-      source_id: bookmark.source_id ? String(bookmark.source_id).trim() : undefined,
-      metadata: bookmark.metadata
-    }
+  const sanitized = DataProcessingService.sanitizeBookmark(bookmark)
+  if (!sanitized) return null
 
-    // Validate required fields
-    if (!sanitized.title || !sanitized.url || !isValidUrl(sanitized.url)) {
-      return null
-    }
-
-    // Use Zod to validate the final structure
-    const result = bookmarkInsertSchema.safeParse(sanitized)
-    return result.success ? result.data : null
-  } catch {
-    return null
-  }
+  // Use Zod to validate the final structure
+  const result = bookmarkInsertSchema.safeParse(sanitized)
+  return result.success ? result.data : null
 }
 
 export const extractDomain = (url: string): string => {
-  try {
-    const urlObj = new URL(url)
-    return urlObj.hostname
-  } catch {
-    return 'unknown'
-  }
+  return DataProcessingService.extractDomain(url)
 }
 
 // Migration functions for backward compatibility

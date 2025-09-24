@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, ReactNode, useCallback } fr
 import { Dialog, Button, HStack, Text, Box, Input, VStack, Textarea, Badge } from '@chakra-ui/react'
 import type { BookmarkInsert, Bookmark } from '../../types/bookmark'
 import type { CollectionInsert } from '../../lib/localStorage'
-// import { sanitizeBookmark } from '../../lib/dataValidation'
+import { DataProcessingService } from '../../services/dataProcessingService'
 import ImageModal from './ImageModal'
 
 interface ModalContextType {
@@ -234,24 +234,8 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       return
     }
 
-    // Extract domain from URL if not provided
-    let domain = bookmarkFormData.domain
-    if (!domain && bookmarkFormData.url) {
-      try {
-        const urlObj = new URL(bookmarkFormData.url)
-        domain = urlObj.hostname.replace('www.', '')
-      } catch {
-        domain = 'unknown'
-      }
-    }
-
-    const bookmarkData: BookmarkInsert = {
-      ...bookmarkFormData,
-      domain: domain || 'unknown',
-      description: bookmarkFormData.description || `Bookmark for ${bookmarkFormData.title}`,
-      content: bookmarkFormData.content || `Bookmark for ${bookmarkFormData.title}`,
-      author: bookmarkFormData.author || 'Unknown'
-    }
+    // Prepare bookmark data using DataProcessingService
+    const bookmarkData: BookmarkInsert = DataProcessingService.prepareBookmarkForForm(bookmarkFormData)
 
     if (modalState.type === 'editBookmark') {
       modalState.options?.onEdit?.(modalState.options.bookmark.id, bookmarkData)

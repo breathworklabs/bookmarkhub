@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { useFilteredBookmarks } from '../hooks/useFilteredBookmarks'
+import { useFilteredBookmarksOptimized } from '../hooks/composite/useFilteredBookmarksOptimized'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { type Bookmark } from '../types/bookmark'
@@ -127,7 +127,7 @@ describe('Filter Functionality', () => {
         return selector(state as any)
       })
 
-      const { result } = renderHook(() => useFilteredBookmarks())
+      const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
       expect(result.current).toHaveLength(1)
       expect(result.current[0].author).toBe('The Kobeissi Letter (@KobeissiLetter)')
@@ -151,7 +151,7 @@ describe('Filter Functionality', () => {
         return selector(state as any)
       })
 
-      const { result } = renderHook(() => useFilteredBookmarks())
+      const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
       expect(result.current).toHaveLength(1)
       expect(result.current[0].author).toBe('John Doe (@johndoe)')
@@ -175,7 +175,7 @@ describe('Filter Functionality', () => {
         return selector(state as any)
       })
 
-      const { result } = renderHook(() => useFilteredBookmarks())
+      const { result } = renderHook(() => useFilteredBookmarksOptimized())
       expect(result.current).toHaveLength(0)
     })
   })
@@ -198,7 +198,7 @@ describe('Filter Functionality', () => {
         return selector(state as any)
       })
 
-      const { result } = renderHook(() => useFilteredBookmarks())
+      const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
       expect(result.current).toHaveLength(1)
       expect(result.current[0].domain).toBe('x.com')
@@ -222,7 +222,7 @@ describe('Filter Functionality', () => {
         return selector(state as any)
       })
 
-      const { result } = renderHook(() => useFilteredBookmarks())
+      const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
       expect(result.current).toHaveLength(1)
       expect(result.current[0].domain).toBe('github.com')
@@ -248,7 +248,7 @@ describe('Filter Functionality', () => {
         return selector(state as any)
       })
 
-      const { result } = renderHook(() => useFilteredBookmarks())
+      const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
       expect(result.current).toHaveLength(1)
       expect(result.current[0].author).toBe('The Kobeissi Letter (@KobeissiLetter)')
@@ -272,7 +272,7 @@ describe('Filter Functionality', () => {
         return selector(state as any)
       })
 
-      const { result } = renderHook(() => useFilteredBookmarks())
+      const { result } = renderHook(() => useFilteredBookmarksOptimized())
       expect(result.current).toHaveLength(0)
     })
   })
@@ -295,7 +295,7 @@ describe('Filter Functionality', () => {
         return selector(state as any)
       })
 
-      const { result } = renderHook(() => useFilteredBookmarks())
+      const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
       expect(result.current).toHaveLength(1)
       expect(result.current[0].content).toContain('Bitcoin')
@@ -320,7 +320,7 @@ describe('Filter Functionality', () => {
         return selector(state as any)
       })
 
-      const { result } = renderHook(() => useFilteredBookmarks())
+      const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
       expect(result.current).toHaveLength(1)
       expect(result.current[0].is_starred).toBe(true)
@@ -343,7 +343,7 @@ describe('Filter Functionality', () => {
         return selector(state as any)
       })
 
-      const { result } = renderHook(() => useFilteredBookmarks())
+      const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
       expect(result.current).toHaveLength(1)
       expect(result.current[0].is_archived).toBe(true)
@@ -368,7 +368,7 @@ describe('Filter Functionality', () => {
         return selector(state as any)
       })
 
-      const { result } = renderHook(() => useFilteredBookmarks())
+      const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
       expect(result.current).toHaveLength(2) // Both bookmark 1 and 2 have 'X' tag
       expect(result.current.every(bookmark => bookmark.tags.includes('X'))).toBe(true)

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import { useBookmarkStore } from '../store/bookmarkStore'
-import { useFilteredBookmarks } from '../hooks/useFilteredBookmarks'
+import { useFilteredBookmarksOptimized } from '../hooks/composite/useFilteredBookmarksOptimized'
 import { TEST_CONSTANTS, resetBookmarkStore } from './test-utils'
 
 // Mock Supabase
@@ -35,7 +35,7 @@ vi.mock('../lib/supabase', () => ({
 
 // Test component that uses the problematic hook
 function TestComponent() {
-  const filteredBookmarks = useFilteredBookmarks()
+  const filteredBookmarks = useFilteredBookmarksOptimized()
   const isLoading = useBookmarkStore((state) => state.isLoading)
 
   return (
@@ -52,7 +52,7 @@ describe('Render Loop Detection', () => {
     vi.clearAllMocks()
   })
 
-  it('should not cause infinite renders when using useFilteredBookmarks', async () => {
+  it('should not cause infinite renders when using useFilteredBookmarksOptimized', async () => {
     let renderCount = 0
 
     function RenderCounter() {
@@ -84,14 +84,14 @@ describe('Render Loop Detection', () => {
   it('should not re-render when searchQuery is empty string repeatedly', async () => {
     let effectCallCount = 0
 
-    // Spy on the useFilteredBookmarks effect calls
+    // Spy on the useFilteredBookmarksOptimized effect calls
     const originalConsoleLog = console.log
     console.log = vi.fn((message: string) => {
-      if (message.includes('🔍 useFilteredBookmarks effect triggered')) {
+      if (message.includes('🔍 useFilteredBookmarksOptimized effect triggered')) {
         effectCallCount++
 
         if (effectCallCount > TEST_CONSTANTS.MAX_EFFECT_CALLS) {
-          throw new Error(`useFilteredBookmarks effect called too many times: ${effectCallCount}`)
+          throw new Error(`useFilteredBookmarksOptimized effect called too many times: ${effectCallCount}`)
         }
       }
       originalConsoleLog(message)
