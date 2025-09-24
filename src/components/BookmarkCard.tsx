@@ -329,7 +329,10 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
     <Card.Root
       ref={drag as unknown as React.Ref<HTMLDivElement>}
       data-testid="bookmark-card"
-      bg={isSelected ? 'rgba(74, 158, 255, 0.1)' : '#16181c'}
+      bg={isSelected
+        ? 'linear-gradient(135deg, rgba(74, 158, 255, 0.1) 0%, rgba(29, 78, 216, 0.05) 100%)'
+        : 'linear-gradient(135deg, #16181c 0%, #1a1d23 100%)'
+      }
       borderWidth="1px"
       borderColor={isSelected ? '#4a9eff' : '#2a2d35'}
       borderRadius="16px"
@@ -344,8 +347,11 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
       _hover={{
         borderColor: isSelected ? '#4a9eff' : '#4a9eff',
         transform: isDragging ? 'none' : isInBulkMode ? 'none' : 'translateY(-1px)',
-        boxShadow: isDragging ? 'none' : isInBulkMode ? '0 0 0 2px rgba(74, 158, 255, 0.3)' : '0 4px 12px rgba(0, 0, 0, 0.3)',
-        opacity: isDragging ? 0.5 : isSelected ? 0.7 : 1
+        boxShadow: isDragging ? 'none' : isInBulkMode ? '0 0 0 2px rgba(74, 158, 255, 0.3)' : '0 8px 20px rgba(0, 0, 0, 0.4)',
+        opacity: isDragging ? 0.5 : isSelected ? 0.7 : 1,
+        bg: isSelected
+          ? 'linear-gradient(135deg, rgba(74, 158, 255, 0.15) 0%, rgba(29, 78, 216, 0.08) 100%)'
+          : 'linear-gradient(135deg, #1a1d23 0%, #0f1419 100%)'
       }}
       {...(isSelected ? {
         boxShadow: '0 0 0 1px rgba(74, 158, 255, 0.3)'

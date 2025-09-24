@@ -1,6 +1,7 @@
 import { Badge, Text, IconButton } from '@chakra-ui/react'
 import { LuX } from 'react-icons/lu'
 import { memo, useCallback } from 'react'
+import { useTagCategoriesStore } from '../../store/tagCategoriesStore'
 
 interface TagChipProps {
   tag: string
@@ -21,6 +22,8 @@ const TagChip = memo(({
   onClick,
   onRemove
 }: TagChipProps) => {
+  const getCategoryForTag = useTagCategoriesStore(state => state.getCategoryForTag)
+
   const handleClick = useCallback(() => {
     onClick?.(tag)
   }, [onClick, tag])
@@ -29,6 +32,10 @@ const TagChip = memo(({
     e.stopPropagation()
     onRemove?.(tag)
   }, [onRemove, tag])
+
+  // Get category color for the tag
+  const tagCategory = getCategoryForTag(tag)
+  const categoryColor = tagCategory?.color
 
   const getSizeStyles = () => {
     switch (size) {
@@ -58,37 +65,41 @@ const TagChip = memo(({
   }
 
   const getVariantStyles = () => {
+    // Use category color if available, otherwise use variant defaults
+    const baseBg = categoryColor || '#2a2d35'
+    const hoverBg = categoryColor ? categoryColor + '80' : '#3a3d45' // Add transparency for hover
+
     switch (variant) {
       case 'filter':
         return {
-          bg: isActive ? '#1d4ed8' : '#2a2d35',
-          color: isActive ? 'white' : '#71767b',
-          borderColor: isActive ? '#1d4ed8' : 'transparent',
+          bg: isActive ? (categoryColor || '#1d4ed8') : baseBg,
+          color: isActive ? 'white' : (categoryColor ? 'white' : '#71767b'),
+          borderColor: isActive ? (categoryColor || '#1d4ed8') : (categoryColor || 'transparent'),
           _hover: {
-            bg: isActive ? '#1e40af' : '#3a3d45',
+            bg: isActive ? hoverBg : '#3a3d45',
             color: isActive ? 'white' : '#e1e5e9',
-            borderColor: isActive ? '#1e40af' : '#4a5568'
+            borderColor: isActive ? hoverBg : '#4a5568'
           }
         }
       case 'editable':
         return {
-          bg: '#2a2d35',
-          color: '#e1e5e9',
-          borderColor: '#3a3d45',
+          bg: categoryColor || '#2a2d35',
+          color: categoryColor ? 'white' : '#e1e5e9',
+          borderColor: categoryColor || '#3a3d45',
           _hover: {
-            bg: '#3a3d45',
+            bg: hoverBg,
             color: 'white',
-            borderColor: '#4a5568'
+            borderColor: categoryColor || '#4a5568'
           }
         }
       case 'default':
       default:
         return {
-          bg: '#2a2d35',
-          color: '#71767b',
-          borderColor: 'transparent',
+          bg: categoryColor || '#2a2d35',
+          color: categoryColor ? 'white' : '#71767b',
+          borderColor: categoryColor || 'transparent',
           _hover: {
-            bg: '#3a3d45',
+            bg: hoverBg,
             color: '#e1e5e9'
           }
         }

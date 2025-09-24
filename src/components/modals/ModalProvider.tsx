@@ -4,6 +4,12 @@ import type { BookmarkInsert, Bookmark } from '../../types/bookmark'
 import type { CollectionInsert } from '../../lib/localStorage'
 import { DataProcessingService } from '../../services/dataProcessingService'
 import ImageModal from './ImageModal'
+import TagManagerModal from '../tags/TagManagerModal'
+import TagMergeModal from '../tags/TagMergeModal'
+
+interface TagMergeOptions {
+  initialSourceTags?: string[]
+}
 
 interface ModalContextType {
   showDeleteConfirmation: (options: DeleteConfirmationOptions) => void
@@ -13,6 +19,8 @@ interface ModalContextType {
   showCreateCollection: (options: CreateCollectionOptions) => void
   showEditCollection: (options: EditCollectionOptions) => void
   showImageModal: (options: ImageModalOptions) => void
+  showTagManager: () => void
+  showTagMerge: (options?: TagMergeOptions) => void
   closeModal: () => void
 }
 
@@ -82,6 +90,15 @@ interface ImageModalState {
   title?: string
 }
 
+interface TagManagerState {
+  isOpen: boolean
+}
+
+interface TagMergeState {
+  isOpen: boolean
+  initialSourceTags: string[]
+}
+
 export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [modalState, setModalState] = useState<ModalState>({ type: null, options: null })
   const [imageModalState, setImageModalState] = useState<ImageModalState>({
@@ -89,6 +106,13 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     images: [],
     initialIndex: 0,
     title: undefined
+  })
+  const [tagManagerState, setTagManagerState] = useState<TagManagerState>({
+    isOpen: false
+  })
+  const [tagMergeState, setTagMergeState] = useState<TagMergeState>({
+    isOpen: false,
+    initialSourceTags: []
   })
   const [tagInput, setTagInput] = useState('')
   const [bookmarkFormData, setBookmarkFormData] = useState<BookmarkInsert>({
@@ -342,6 +366,32 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  const showTagManager = () => {
+    setTagManagerState({
+      isOpen: true
+    })
+  }
+
+  const closeTagManager = () => {
+    setTagManagerState({
+      isOpen: false
+    })
+  }
+
+  const showTagMerge = (options?: TagMergeOptions) => {
+    setTagMergeState({
+      isOpen: true,
+      initialSourceTags: options?.initialSourceTags || []
+    })
+  }
+
+  const closeTagMerge = () => {
+    setTagMergeState({
+      isOpen: false,
+      initialSourceTags: []
+    })
+  }
+
   const contextValue: ModalContextType = {
     showDeleteConfirmation,
     showAddTag,
@@ -350,6 +400,8 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     showCreateCollection,
     showEditCollection,
     showImageModal,
+    showTagManager,
+    showTagMerge,
     closeModal
   }
 
@@ -858,6 +910,19 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
         images={imageModalState.images}
         initialIndex={imageModalState.initialIndex}
         title={imageModalState.title}
+      />
+
+      {/* Tag Manager Modal */}
+      <TagManagerModal
+        isOpen={tagManagerState.isOpen}
+        onClose={closeTagManager}
+      />
+
+      {/* Tag Merge Modal */}
+      <TagMergeModal
+        isOpen={tagMergeState.isOpen}
+        onClose={closeTagMerge}
+        initialSourceTags={tagMergeState.initialSourceTags}
       />
     </ModalContext.Provider>
   )

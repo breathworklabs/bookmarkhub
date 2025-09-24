@@ -121,7 +121,6 @@
   - [ ] Test drag & drop functionality end-to-end
 - [x] Collection management (rename, delete, share) ✅ UI implemented with collections actions panel
 - [ ] Nested collections/sub-folders
-- [ ] Collection templates
 - [x] Smart collections (auto-categorization)
 - [x] Remove collection side menu; moved to collections actions panel below filters ✅ COMPLETED
 
@@ -139,7 +138,6 @@
 - [x] Full-text search across bookmark content
 - [ ] Search history and saved searches
 - [ ] Search suggestions and autocomplete
-- [ ] Filter by bookmark source/platform
 
 ### 5. **Tag System Enhancement**
 **Phase 1: Enhanced Tag Interface & Management** ✅ COMPLETED

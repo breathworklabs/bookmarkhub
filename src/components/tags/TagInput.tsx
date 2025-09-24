@@ -1,6 +1,7 @@
-import { Box, Input, VStack, Text, HStack, For } from '@chakra-ui/react'
+import { Box, Input, VStack, Text, HStack, For, Badge } from '@chakra-ui/react'
 import { useState, useCallback, useMemo, useRef, useEffect, memo } from 'react'
 import { useBookmarkStore } from '../../store/bookmarkStore'
+import { useTagCategoriesStore } from '../../store/tagCategoriesStore'
 import TagChip from './TagChip'
 
 interface TagInputProps {
@@ -26,23 +27,63 @@ const TagInput = memo(({
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Get all available tags from bookmarks
+  // Get all available tags from bookmarks and categories
   const filterOptions = useBookmarkStore((state) => state.filterOptions)
+  const categories = useTagCategoriesStore((state) => state.categories)
+  const getCategoryForTag = useTagCategoriesStore((state) => state.getCategoryForTag)
+
   const allTags = useMemo(() => filterOptions.tags || [], [filterOptions.tags])
 
-  // Filter suggestions based on input and exclude already selected tags
+  // Generate hierarchical tag suggestions based on input
   const suggestions = useMemo(() => {
     if (!inputValue.trim()) return []
 
-    const filtered = allTags
+    const input = inputValue.toLowerCase()
+    const suggestions: Array<{tag: string, type: 'existing' | 'hierarchical' | 'category'}> = []
+
+    // Check for existing tags that match
+    const existingMatches = allTags
       .filter(tag =>
-        tag.toLowerCase().includes(inputValue.toLowerCase()) &&
+        tag.toLowerCase().includes(input) &&
         !selectedTags.includes(tag)
       )
-      .slice(0, maxSuggestions)
+      .map(tag => ({ tag, type: 'existing' as const }))
 
-    return filtered
-  }, [inputValue, allTags, selectedTags, maxSuggestions])
+    // Check for category prefixes (e.g., "work:" should suggest hierarchical tags)
+    const colonIndex = input.indexOf(':')
+    if (colonIndex > 0) {
+      const categoryPart = input.substring(0, colonIndex)
+      const tagPart = input.substring(colonIndex + 1)
+
+      const matchingCategory = categories.find(cat =>
+        cat.id.toLowerCase() === categoryPart ||
+        cat.name.toLowerCase() === categoryPart
+      )
+
+      if (matchingCategory && tagPart.length > 0) {
+        // Suggest hierarchical tags for this category
+        const hierarchicalSuggestion = `${matchingCategory.id}:${tagPart}`
+        if (!selectedTags.includes(hierarchicalSuggestion)) {
+          suggestions.push({ tag: hierarchicalSuggestion, type: 'hierarchical' })
+        }
+      }
+    } else {
+      // Suggest category prefixes if input matches a category name
+      const categoryMatches = categories
+        .filter(cat =>
+          (cat.id.toLowerCase().includes(input) ||
+           cat.name.toLowerCase().includes(input)) &&
+          input.length > 1
+        )
+        .map(cat => ({ tag: `${cat.id}:`, type: 'category' as const }))
+
+      suggestions.push(...categoryMatches)
+    }
+
+    // Combine and limit suggestions
+    return [...existingMatches, ...suggestions]
+      .slice(0, maxSuggestions)
+  }, [inputValue, allTags, selectedTags, maxSuggestions, categories])
 
   // Handle input changes
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +109,7 @@ const TagInput = memo(({
     if (e.key === 'Enter') {
       e.preventDefault()
       if (focusedIndex >= 0 && suggestions[focusedIndex]) {
-        handleAddTag(suggestions[focusedIndex])
+        handleAddTag(suggestions[focusedIndex].tag)
       } else if (inputValue.trim()) {
         handleAddTag(inputValue.trim())
       }
@@ -202,28 +243,71 @@ const TagInput = memo(({
         >
           <VStack align="stretch" gap={0}>
             <For each={suggestions}>
-              {(suggestion, index) => (
-                <Box
-                  key={suggestion}
-                  px={3}
-                  cursor="pointer"
-                  bg={focusedIndex === index ? '#2a2d35' : 'transparent'}
-                  color={focusedIndex === index ? '#e1e5e9' : '#9ca3af'}
-                  _hover={{
-                    bg: '#2a2d35',
-                    color: '#e1e5e9'
-                  }}
-                  onClick={() => handleAddTag(suggestion)}
-                  transition="all 0.15s ease"
-                  {...sizeStyles.suggestion}
-                >
-                  <Text>#{suggestion}</Text>
-                </Box>
-              )}
+              {(suggestion, index) => {
+                const category = getCategoryForTag(suggestion.tag)
+                return (
+                  <Box
+                    key={suggestion.tag}
+                    px={3}
+                    cursor="pointer"
+                    bg={focusedIndex === index ? '#2a2d35' : 'transparent'}
+                    color={focusedIndex === index ? '#e1e5e9' : '#9ca3af'}
+                    _hover={{
+                      bg: '#2a2d35',
+                      color: '#e1e5e9'
+                    }}
+                    onClick={() => handleAddTag(suggestion.tag)}
+                    transition="all 0.15s ease"
+                    {...sizeStyles.suggestion}
+                  >
+                    <HStack justify="space-between" align="center">
+                      <HStack gap={2} align="center">
+                        <Text>#{suggestion.tag}</Text>
+                        {suggestion.type === 'category' && (
+                          <Badge
+                            bg="rgba(29, 78, 216, 0.2)"
+                            color="#60a5fa"
+                            fontSize="xs"
+                            px={2}
+                            py={0.5}
+                            borderRadius="4px"
+                          >
+                            category
+                          </Badge>
+                        )}
+                        {suggestion.type === 'hierarchical' && (
+                          <Badge
+                            bg="rgba(34, 197, 94, 0.2)"
+                            color="#4ade80"
+                            fontSize="xs"
+                            px={2}
+                            py={0.5}
+                            borderRadius="4px"
+                          >
+                            new
+                          </Badge>
+                        )}
+                      </HStack>
+                      {category && (
+                        <Badge
+                          bg={category.color + '20'}
+                          color={category.color}
+                          fontSize="xs"
+                          px={2}
+                          py={0.5}
+                          borderRadius="4px"
+                        >
+                          {category.name}
+                        </Badge>
+                      )}
+                    </HStack>
+                  </Box>
+                )
+              }}
             </For>
 
             {/* Option to create new tag if input doesn't match any suggestion */}
-            {inputValue.trim() && !suggestions.some(s => s.toLowerCase() === inputValue.toLowerCase()) && (
+            {inputValue.trim() && !suggestions.some(s => s.tag.toLowerCase() === inputValue.toLowerCase()) && (
               <Box
                 px={3}
                 cursor="pointer"

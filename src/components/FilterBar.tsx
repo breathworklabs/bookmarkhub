@@ -1,4 +1,5 @@
 import { Box, HStack, Button, For } from '@chakra-ui/react'
+import { LuSettings } from 'react-icons/lu'
 import { useCallback, memo } from 'react'
 import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
 import { useFilterReset } from '../utils/filterUtils'
@@ -18,7 +19,7 @@ const FilterBar = memo(() => {
   } = useBookmarkSelectors()
 
   const resetFilters = useFilterReset()
-  const { showAddTag } = useModal()
+  const { showAddTag, showTagManager } = useModal()
 
   // Memoized event handlers
   const handleAddTag = useCallback(() => {
@@ -42,7 +43,14 @@ const FilterBar = memo(() => {
   }, [removeTag])
 
   return (
-    <Box bg="#0f1419" borderBottomWidth="1px" borderColor="gray.700" px={6} py={4}>
+    <Box
+      bg="linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)"
+      borderBottomWidth="1px"
+      borderColor="gray.700"
+      px={6}
+      py={4}
+      boxShadow="0 2px 8px rgba(0, 0, 0, 0.1)"
+    >
       <HStack justify="space-between" alignItems="center">
         {/* Filter Tabs */}
         <HStack gap={3}>
@@ -113,6 +121,28 @@ const FilterBar = memo(() => {
           >
             +
             Add Tag
+          </Button>
+
+          {/* Manage Tags Button */}
+          <Button
+            size="sm"
+            variant="ghost"
+            color="#71767b"
+            px={2}
+            py={2}
+            borderRadius="16px"
+            fontSize="13px"
+            fontWeight="500"
+            _hover={{
+              bg: '#1a1d23',
+              color: '#e1e5e9'
+            }}
+            onClick={showTagManager}
+            gap={1}
+            alignItems="center"
+            title="Manage Tags"
+          >
+            <LuSettings size={14} />
           </Button>
         </HStack>
       </HStack>
