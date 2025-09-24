@@ -416,29 +416,30 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
           onOpenChange={(e) => !e.open && closeModal()}
           placement="center"
         >
-          <Dialog.Backdrop bg="rgba(0, 0, 0, 0.7)" backdropFilter="blur(4px)" />
+          <Dialog.Backdrop bg="rgba(0, 0, 0, 0.85)" backdropFilter="blur(4px)" />
           <Dialog.Positioner>
             <Dialog.Content
-              bg="#1a1d23"
+              bg="#0f1419"
               border="1px solid #2a2d35"
               borderRadius="16px"
-              boxShadow="0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2)"
+              boxShadow="0 25px 50px rgba(0, 0, 0, 0.6)"
               maxW="400px"
               w="400px"
+              overflow="hidden"
             >
               <Dialog.Header
-                color="#e1e5e9"
-                fontSize="18px"
-                fontWeight="600"
-                pb={3}
-                pt={6}
-                px={6}
+                bg="linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)"
+                borderBottomWidth="1px"
+                borderColor="#2a2d35"
+                p={6}
               >
                 <Dialog.Title>
-                  {modalState.options?.title || 'Confirm Delete'}
+                  <Text fontSize="xl" fontWeight="700" color="#e1e5e9">
+                    {modalState.options?.title || 'Confirm Delete'}
+                  </Text>
                 </Dialog.Title>
               </Dialog.Header>
-              <Dialog.Body px={6} pb={4}>
+              <Dialog.Body px={6} py={6}>
                 <Text color="#e1e5e9" mb={3}>
                   {modalState.options?.message}
                 </Text>
@@ -458,31 +459,26 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                   </Box>
                 )}
               </Dialog.Body>
-              <Dialog.Footer px={6} pb={6} pt={2}>
+              <Dialog.Footer
+                bg="linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)"
+                borderTopWidth="1px"
+                borderColor="#2a2d35"
+                p={6}
+              >
                 <HStack gap={3} w="full" justify="flex-end">
                   <Button
-                    variant="outline"
-                    size="sm"
-                    borderColor="#2a2d35"
+                    variant="ghost"
                     color="#71767b"
-                    bg="transparent"
-                    h="36px"
-                    px={4}
-                    _hover={{
-                      borderColor: '#3a3d45',
-                      color: '#e1e5e9',
-                      bg: '#252932'
-                    }}
+                    borderRadius="10px"
+                    _hover={{ color: '#e1e5e9', bg: 'rgba(42, 45, 53, 0.5)' }}
                     onClick={handleDeleteCancel}
                   >
                     Cancel
                   </Button>
                   <Button
-                    size="sm"
                     bg="#dc2626"
                     color="white"
-                    h="36px"
-                    px={4}
+                    borderRadius="10px"
                     _hover={{ bg: '#b91c1c' }}
                     onClick={handleDeleteConfirm}
                   >
@@ -502,72 +498,71 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
           onOpenChange={(e) => !e.open && closeModal()}
           placement="center"
         >
-          <Dialog.Backdrop bg="rgba(0, 0, 0, 0.7)" backdropFilter="blur(4px)" />
+          <Dialog.Backdrop bg="rgba(0, 0, 0, 0.85)" backdropFilter="blur(4px)" />
           <Dialog.Positioner>
             <Dialog.Content
-              bg="#1a1d23"
+              bg="#0f1419"
               border="1px solid #2a2d35"
               borderRadius="16px"
-              boxShadow="0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2)"
+              boxShadow="0 25px 50px rgba(0, 0, 0, 0.6)"
               maxW="400px"
               w="400px"
+              overflow="hidden"
             >
               <Dialog.Header
-                color="#e1e5e9"
-                fontSize="18px"
-                fontWeight="600"
-                pb={3}
-                pt={6}
-                px={6}
+                bg="linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)"
+                borderBottomWidth="1px"
+                borderColor="#2a2d35"
+                p={6}
               >
-                <Dialog.Title>Add New Tag</Dialog.Title>
+                <Dialog.Title>
+                  <Text fontSize="xl" fontWeight="700" color="#e1e5e9">
+                    Add New Tag
+                  </Text>
+                </Dialog.Title>
               </Dialog.Header>
-              <Dialog.Body px={6} pb={4}>
+              <Dialog.Body px={6} py={6}>
                 <Input
                   placeholder={modalState.options?.placeholder || "Enter tag name..."}
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={handleTagKeyDown}
-                  bg="#0f1419"
-                  borderColor="#2a2d35"
+                  bg="#1a1d23"
+                  border="1px solid #2a2d35"
+                  borderRadius="12px"
                   color="#e1e5e9"
                   fontSize="14px"
-                  h="40px"
+                  h="44px"
                   _placeholder={{ color: '#71767b' }}
                   _hover={{ borderColor: '#3a3d45' }}
                   _focus={{
                     borderColor: '#1d4ed8',
-                    boxShadow: '0 0 0 1px #1d4ed8',
+                    boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)',
                     outline: 'none'
                   }}
                   autoFocus
                 />
               </Dialog.Body>
-              <Dialog.Footer px={6} pb={6} pt={2}>
+              <Dialog.Footer
+                bg="linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)"
+                borderTopWidth="1px"
+                borderColor="#2a2d35"
+                p={6}
+              >
                 <HStack gap={3} w="full" justify="flex-end">
                   <Button
-                    variant="outline"
-                    size="sm"
-                    borderColor="#2a2d35"
+                    variant="ghost"
                     color="#71767b"
-                    bg="transparent"
-                    h="36px"
-                    px={4}
-                    _hover={{
-                      borderColor: '#3a3d45',
-                      color: '#e1e5e9',
-                      bg: '#252932'
-                    }}
+                    borderRadius="10px"
+                    _hover={{ color: '#e1e5e9', bg: 'rgba(42, 45, 53, 0.5)' }}
                     onClick={handleAddTagCancel}
                   >
                     Cancel
                   </Button>
                   <Button
-                    size="sm"
                     bg="#1d4ed8"
                     color="white"
-                    h="36px"
-                    px={4}
+                    borderRadius="10px"
                     _hover={{ bg: '#1e40af' }}
                     disabled={!tagInput.trim() || modalState.options?.existingTags?.includes(tagInput.trim())}
                     _disabled={{
@@ -593,27 +588,30 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
           onOpenChange={(e) => !e.open && closeModal()}
           placement="center"
         >
-          <Dialog.Backdrop bg="rgba(0, 0, 0, 0.7)" backdropFilter="blur(4px)" />
+          <Dialog.Backdrop bg="rgba(0, 0, 0, 0.85)" backdropFilter="blur(4px)" />
           <Dialog.Positioner>
             <Dialog.Content
-              bg="#1a1d23"
+              bg="#0f1419"
               border="1px solid #2a2d35"
               borderRadius="16px"
-              boxShadow="0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2)"
+              boxShadow="0 25px 50px rgba(0, 0, 0, 0.6)"
               maxW="500px"
               w="500px"
               color="white"
+              overflow="hidden"
             >
               <form onSubmit={handleBookmarkSubmit}>
                 <Dialog.Header
-                  color="#e1e5e9"
-                  fontSize="18px"
-                  fontWeight="600"
-                  pb={3}
-                  pt={6}
-                  px={6}
+                  bg="linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)"
+                  borderBottomWidth="1px"
+                  borderColor="#2a2d35"
+                  p={6}
                 >
-                  <Dialog.Title>{modalState.type === 'editBookmark' ? 'Edit Bookmark' : 'Add New Bookmark'}</Dialog.Title>
+                  <Dialog.Title>
+                    <Text fontSize="xl" fontWeight="700" color="#e1e5e9">
+                      {modalState.type === 'editBookmark' ? 'Edit Bookmark' : 'Add New Bookmark'}
+                    </Text>
+                  </Dialog.Title>
                 </Dialog.Header>
 
                 <Dialog.Body px={6} pb={4}>
@@ -753,31 +751,26 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                   </VStack>
                 </Dialog.Body>
 
-                <Dialog.Footer px={6} pb={6} pt={2}>
+                <Dialog.Footer
+                  bg="linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)"
+                  borderTopWidth="1px"
+                  borderColor="#2a2d35"
+                  p={6}
+                >
                   <HStack gap={3} w="full" justify="flex-end">
                     <Button
-                      variant="outline"
-                      size="sm"
-                      borderColor="#2a2d35"
+                      variant="ghost"
                       color="#71767b"
-                      bg="transparent"
-                      h="36px"
-                      px={4}
-                      _hover={{
-                        borderColor: '#3a3d45',
-                        color: '#e1e5e9',
-                        bg: '#252932'
-                      }}
+                      borderRadius="10px"
+                      _hover={{ color: '#e1e5e9', bg: 'rgba(42, 45, 53, 0.5)' }}
                       onClick={closeModal}
                     >
                       Cancel
                     </Button>
                     <Button
-                      size="sm"
                       bg="#1d4ed8"
                       color="white"
-                      h="36px"
-                      px={4}
+                      borderRadius="10px"
                       _hover={{ bg: '#1e40af' }}
                       _disabled={{
                         bg: '#374151',
@@ -804,30 +797,33 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
           onOpenChange={(e) => !e.open && closeModal()}
           placement="center"
         >
-          <Dialog.Backdrop bg="rgba(0, 0, 0, 0.7)" backdropFilter="blur(4px)" />
+          <Dialog.Backdrop bg="rgba(0, 0, 0, 0.85)" backdropFilter="blur(4px)" />
           <Dialog.Positioner>
             <Dialog.Content
-              bg="#1a1d23"
+              bg="#0f1419"
               border="1px solid #2a2d35"
               borderRadius="16px"
-              boxShadow="0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2)"
+              boxShadow="0 25px 50px rgba(0, 0, 0, 0.6)"
               maxW="400px"
               w="400px"
               color="white"
+              overflow="hidden"
             >
               <form onSubmit={handleCollectionSubmit}>
                 <Dialog.Header
-                  color="#e1e5e9"
-                  fontSize="18px"
-                  fontWeight="600"
-                  pb={3}
-                  pt={6}
-                  px={6}
+                  bg="linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)"
+                  borderBottomWidth="1px"
+                  borderColor="#2a2d35"
+                  p={6}
                 >
-                  <Dialog.Title>{modalState.type === 'editCollection' ? 'Edit Collection' : 'Create Collection'}</Dialog.Title>
+                  <Dialog.Title>
+                    <Text fontSize="xl" fontWeight="700" color="#e1e5e9">
+                      {modalState.type === 'editCollection' ? 'Edit Collection' : 'Create Collection'}
+                    </Text>
+                  </Dialog.Title>
                 </Dialog.Header>
 
-                <Dialog.Body px={6} pb={4}>
+                <Dialog.Body px={6} py={6}>
                   <VStack gap={4} align="stretch">
                     <VStack gap={2} align="stretch">
                       <Text fontSize="sm" color="#9ca3af">Name *</Text>
@@ -836,10 +832,11 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                         onChange={(e) => handleCollectionFormChange('name', e.target.value)}
                         placeholder="Collection name"
                         required
-                        bg="#2a2d35"
-                        border="1px solid #3a3d45"
+                        bg="#1a1d23"
+                        border="1px solid #2a2d35"
+                        borderRadius="12px"
                         _hover={{ borderColor: '#4a4d55' }}
-                        _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
+                        _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)' }}
                       />
                     </VStack>
 
@@ -850,40 +847,36 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                         onChange={(e) => handleCollectionFormChange('description', e.target.value)}
                         placeholder="Collection description (optional)"
                         rows={2}
-                        bg="#2a2d35"
-                        border="1px solid #3a3d45"
+                        bg="#1a1d23"
+                        border="1px solid #2a2d35"
+                        borderRadius="12px"
                         _hover={{ borderColor: '#4a4d55' }}
-                        _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
+                        _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)' }}
                       />
                     </VStack>
                   </VStack>
                 </Dialog.Body>
 
-                <Dialog.Footer px={6} pb={6} pt={2}>
+                <Dialog.Footer
+                  bg="linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)"
+                  borderTopWidth="1px"
+                  borderColor="#2a2d35"
+                  p={6}
+                >
                   <HStack gap={3} w="full" justify="flex-end">
                     <Button
-                      variant="outline"
-                      size="sm"
-                      borderColor="#2a2d35"
+                      variant="ghost"
                       color="#71767b"
-                      bg="transparent"
-                      h="36px"
-                      px={4}
-                      _hover={{
-                        borderColor: '#3a3d45',
-                        color: '#e1e5e9',
-                        bg: '#252932'
-                      }}
+                      borderRadius="10px"
+                      _hover={{ color: '#e1e5e9', bg: 'rgba(42, 45, 53, 0.5)' }}
                       onClick={closeModal}
                     >
                       Cancel
                     </Button>
                     <Button
-                      size="sm"
                       bg="#1d4ed8"
                       color="white"
-                      h="36px"
-                      px={4}
+                      borderRadius="10px"
                       _hover={{ bg: '#1e40af' }}
                       _disabled={{
                         bg: '#374151',

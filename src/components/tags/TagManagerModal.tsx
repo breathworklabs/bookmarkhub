@@ -12,7 +12,7 @@ import {
   Portal,
   Tabs
 } from '@chakra-ui/react'
-import { LuX, LuPencil, LuTrash2, LuCheck, LuSearch, LuTags, LuFolderOpen, LuMerge } from 'react-icons/lu'
+import { LuPencil, LuTrash2, LuCheck, LuSearch, LuTags, LuFolderOpen, LuMerge } from 'react-icons/lu'
 import { useState, useCallback, useMemo, memo } from 'react'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useModal } from '../modals/ModalProvider'
@@ -188,27 +188,14 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
               p={6}
             >
               <Dialog.Title>
-                <HStack justify="space-between" align="center">
-                  <VStack align="start" gap={1}>
-                    <Text fontSize="xl" fontWeight="700" color="#e1e5e9">
-                      Tag Manager
-                    </Text>
-                    <Text fontSize="sm" color="#71767b">
-                      Organize and manage your bookmark tags
-                    </Text>
-                  </VStack>
-                  <Dialog.CloseTrigger asChild>
-                    <IconButton
-                      variant="ghost"
-                      size="sm"
-                      color="#71767b"
-                      borderRadius="8px"
-                      _hover={{ color: '#e1e5e9', bg: 'rgba(42, 45, 53, 0.5)' }}
-                    >
-                      <LuX size={18} />
-                    </IconButton>
-                  </Dialog.CloseTrigger>
-                </HStack>
+                <VStack align="start" gap={1}>
+                  <Text fontSize="xl" fontWeight="700" color="#e1e5e9">
+                    Tag Manager
+                  </Text>
+                  <Text fontSize="sm" color="#71767b">
+                    Organize and manage your bookmark tags
+                  </Text>
+                </VStack>
               </Dialog.Title>
             </Dialog.Header>
 
