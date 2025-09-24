@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { localStorageService, type StoredCollection, type CollectionInsert } from '../lib/localStorage'
+import { createErrorHandler } from '../utils/errorHandling'
 import type {
   CollectionsState
 } from '../types/collections'
@@ -87,9 +88,10 @@ export const useCollectionsStore = create<CollectionsStore>()(
           }, false, 'collections:backgroundLoad')
 
         } catch (error) {
-          console.error('Failed to initialize collections:', error)
+          const errorHandler = createErrorHandler('CollectionsStore.initialize')
+          const appError = errorHandler(error)
           set({
-            error: error instanceof Error ? error.message : 'Failed to initialize collections',
+            error: appError.toUserMessage(),
             isLoading: false
           }, false, 'collections:initialize:error')
         }

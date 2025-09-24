@@ -4,6 +4,7 @@ import XBookmarkManager from './components/XBookmarkManager'
 import OnboardingScreen from './components/OnboardingScreen'
 import { useInitializeApp } from './hooks/useInitializeApp'
 import { ModalProvider } from './components/modals/ModalProvider'
+import { ErrorBoundary } from './components/ErrorBoundary'
 // import { AuthDebug } from './components/debug/AuthDebug'
 
 function App() {
@@ -31,9 +32,11 @@ function App() {
           right: '20px',
         }}
       />
-      <ModalProvider>
-        <AppContent />
-      </ModalProvider>
+      <ErrorBoundary context="App">
+        <ModalProvider>
+          <AppContent />
+        </ModalProvider>
+      </ErrorBoundary>
     </ChakraProvider>
   )
 }

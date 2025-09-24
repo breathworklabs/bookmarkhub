@@ -4,6 +4,7 @@ import { localStorageService, type StoredBookmark } from '../lib/localStorage'
 import { sanitizeBookmark, validateImportData } from '../lib/dataValidation'
 import { transformXBookmarks, validateXBookmarkData } from '../lib/xBookmarkTransform'
 import { mockBookmarks } from '../data/mockBookmarks'
+import { createErrorHandler } from '../utils/errorHandling'
 import type { Bookmark, BookmarkInsert, AppSettings } from '../types/bookmark'
 
 export interface DateRangeFilter {
@@ -212,9 +213,10 @@ export const useBookmarkStore = create<BookmarkState>()(
           }
 
         } catch (error) {
-          console.error('Failed to initialize app:', error)
+          const errorHandler = createErrorHandler('BookmarkStore.initialize')
+          const appError = errorHandler(error)
           set({
-            error: error instanceof Error ? error.message : 'Failed to initialize',
+            error: appError.toUserMessage(),
             bookmarks: [],
             isLoading: false
           }, false, 'initialize:error')
@@ -239,9 +241,10 @@ export const useBookmarkStore = create<BookmarkState>()(
           // Recalculate filter options after loading bookmarks
           get().calculateFilterOptions()
         } catch (error) {
-          console.error('Error loading bookmarks:', error)
+          const errorHandler = createErrorHandler('BookmarkStore.loadBookmarks')
+          const appError = errorHandler(error)
           set({
-            error: error instanceof Error ? error.message : 'Failed to load bookmarks',
+            error: appError.toUserMessage(),
             isLoading: false
           }, false, 'loadBookmarks:error')
         }
@@ -264,8 +267,9 @@ export const useBookmarkStore = create<BookmarkState>()(
             'addBookmark:success'
           )
         } catch (error) {
-          console.error('Error adding bookmark:', error)
-          set({ error: error instanceof Error ? error.message : 'Failed to add bookmark' }, false, 'addBookmark:error')
+          const errorHandler = createErrorHandler('BookmarkStore.addBookmark')
+          const appError = errorHandler(error)
+          set({ error: appError.toUserMessage() }, false, 'addBookmark:error')
         } finally {
           set({ isLoading: false }, false, 'addBookmark:complete')
         }

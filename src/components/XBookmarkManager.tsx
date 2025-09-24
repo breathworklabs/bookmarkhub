@@ -4,6 +4,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { theme } from '../styles/theme';
 import { useBookmarkStore } from '../store/bookmarkStore';
+import { ErrorBoundary } from './ErrorBoundary';
 import AIInsights from './AIInsights';
 import UnifiedSidebar from './UnifiedSidebar';
 import SearchHeader from './SearchHeader';
@@ -110,28 +111,42 @@ const XBookmarkManager = () => {
         <DndProvider backend={HTML5Backend}>
           <Flex h="100vh" w="100vw">
             {/* Sidebar */}
-            <UnifiedSidebar />
+            <ErrorBoundary context="UnifiedSidebar">
+              <UnifiedSidebar />
+            </ErrorBoundary>
 
             {/* Main Content */}
             <Flex flex={1} direction="column" w="100%">
               {/* Header */}
-              <SearchHeader />
+              <ErrorBoundary context="SearchHeader">
+                <SearchHeader />
+              </ErrorBoundary>
 
               {/* Advanced Filters Panel */}
-              <AdvancedFilters />
+              <ErrorBoundary context="AdvancedFilters">
+                <AdvancedFilters />
+              </ErrorBoundary>
 
               {/* Filter Bar */}
-              <FilterBar />
+              <ErrorBoundary context="FilterBar">
+                <FilterBar />
+              </ErrorBoundary>
 
               {/* Collections Actions Panel */}
-              <CollectionsActions />
+              <ErrorBoundary context="CollectionsActions">
+                <CollectionsActions />
+              </ErrorBoundary>
 
               {/* Infinite Scroll Bookmarks Grid */}
-              <InfiniteBookmarkGrid />
+              <ErrorBoundary context="InfiniteBookmarkGrid">
+                <InfiniteBookmarkGrid />
+              </ErrorBoundary>
             </Flex>
 
             {/* AI Insights Panel */}
-            <AIInsights />
+            <ErrorBoundary context="AIInsights">
+              <AIInsights />
+            </ErrorBoundary>
           </Flex>
         </DndProvider>
       )}
