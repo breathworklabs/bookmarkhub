@@ -1,8 +1,10 @@
-import { Box, VStack, HStack, Text, Button, Input, For, Badge, IconButton } from '@chakra-ui/react'
-import { LuPlus, LuPencil, LuTrash2, LuCheck, LuX } from 'react-icons/lu'
+import { Box, VStack, HStack, Text, Button, Input, For, Badge, IconButton, Wrap, WrapItem } from '@chakra-ui/react'
+import { LuPlus, LuPencil, LuTrash2, LuCheck, LuX, LuTag } from 'react-icons/lu'
 import { useState, useCallback, memo } from 'react'
 import { useTagCategoriesStore } from '../../store/tagCategoriesStore'
+import { useBookmarkStore } from '../../store/bookmarkStore'
 import { TagCategory } from '../../types/tags'
+import TagChip from './TagChip'
 
 interface EditingCategory {
   id: string
@@ -18,12 +20,17 @@ const TagCategoriesManager = memo(() => {
     updateCategory,
     deleteCategory,
     resetCategories,
-    getTagsInCategory
+    getTagsInCategory,
+    assignTagToCategory,
+    removeTagFromCategory
   } = useTagCategoriesStore()
+
+  const bookmarks = useBookmarkStore((state) => state.bookmarks)
 
   const [isCreating, setIsCreating] = useState(false)
   const [editingCategory, setEditingCategory] = useState<EditingCategory | null>(null)
   const [newCategory, setNewCategory] = useState({ name: '', color: '#3b82f6', description: '' })
+  const [managingTagsFor, setManagingTagsFor] = useState<string | null>(null)
 
   // Available colors for categories
   const availableColors = [
@@ -86,6 +93,33 @@ const TagCategoriesManager = memo(() => {
       resetCategories()
     }
   }, [resetCategories])
+
+  // Get all unique tags from bookmarks
+  const allTags = useCallback(() => {
+    const tags = new Set<string>()
+    bookmarks.forEach(bookmark => {
+      bookmark.tags?.forEach(tag => {
+        if (tag && typeof tag === 'string') {
+          tags.add(tag)
+        }
+      })
+    })
+    return Array.from(tags).sort()
+  }, [bookmarks])
+
+  const handleToggleTagAssignment = useCallback((tag: string, categoryId: string) => {
+    const categoryTags = getTagsInCategory(categoryId)
+    if (categoryTags.includes(tag)) {
+      removeTagFromCategory(tag)
+    } else {
+      assignTagToCategory(tag, categoryId)
+    }
+  }, [assignTagToCategory, removeTagFromCategory, getTagsInCategory])
+
+  const getUnassignedTags = useCallback((categoryId: string) => {
+    const categoryTags = getTagsInCategory(categoryId)
+    return allTags().filter(tag => !categoryTags.includes(tag))
+  }, [allTags, getTagsInCategory])
 
   return (
     <VStack align="stretch" gap={4}>
@@ -319,6 +353,20 @@ const TagCategoriesManager = memo(() => {
                       </VStack>
                     </HStack>
                     <HStack gap={1}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        bg="transparent"
+                        border="1px solid #2a2d35"
+                        color="#71767b"
+                        _hover={{ bg: '#1a1d23', color: '#e1e5e9', borderColor: '#3a3d45' }}
+                        onClick={() => setManagingTagsFor(managingTagsFor === category.id ? null : category.id)}
+                      >
+                        <HStack gap={1}>
+                          <LuTag size={12} />
+                          <Text fontSize="xs">Manage Tags</Text>
+                        </HStack>
+                      </Button>
                       <IconButton
                         size="sm"
                         variant="ghost"
@@ -341,6 +389,68 @@ const TagCategoriesManager = memo(() => {
                       </IconButton>
                     </HStack>
                   </HStack>
+                )}
+
+                {/* Tag Assignment Section */}
+                {managingTagsFor === category.id && (
+                  <VStack align="stretch" gap={3} mt={3} pt={3} borderTop="1px solid #2a2d35">
+                    <Text fontSize="sm" fontWeight="500" color="#e1e5e9">
+                      Assign Tags to Category
+                    </Text>
+
+                    {/* Assigned Tags */}
+                    <VStack align="stretch" gap={2}>
+                      <Text fontSize="xs" color="#71767b" fontWeight="500">ASSIGNED TAGS</Text>
+                      <Wrap>
+                        <For each={getTagsInCategory(category.id)}>
+                          {(tag) => (
+                            <WrapItem key={tag}>
+                              <TagChip
+                                tag={tag}
+                                isActive={true}
+                                isRemovable={true}
+                                variant="category"
+                                size="sm"
+                                color={category.color}
+                                onRemove={() => handleToggleTagAssignment(tag, category.id)}
+                              />
+                            </WrapItem>
+                          )}
+                        </For>
+                        {getTagsInCategory(category.id).length === 0 && (
+                          <Text fontSize="xs" color="#71767b" fontStyle="italic">
+                            No tags assigned to this category
+                          </Text>
+                        )}
+                      </Wrap>
+                    </VStack>
+
+                    {/* Available Tags */}
+                    <VStack align="stretch" gap={2}>
+                      <Text fontSize="xs" color="#71767b" fontWeight="500">AVAILABLE TAGS</Text>
+                      <Wrap>
+                        <For each={getUnassignedTags(category.id)}>
+                          {(tag) => (
+                            <WrapItem key={tag}>
+                              <TagChip
+                                tag={tag}
+                                isActive={false}
+                                isRemovable={false}
+                                variant="default"
+                                size="sm"
+                                onClick={() => handleToggleTagAssignment(tag, category.id)}
+                              />
+                            </WrapItem>
+                          )}
+                        </For>
+                        {getUnassignedTags(category.id).length === 0 && (
+                          <Text fontSize="xs" color="#71767b" fontStyle="italic">
+                            All tags are assigned to categories
+                          </Text>
+                        )}
+                      </Wrap>
+                    </VStack>
+                  </VStack>
                 )}
               </Box>
             )

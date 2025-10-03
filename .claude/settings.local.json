@@ -20,7 +20,8 @@
       "Bash(npm run:*)",
       "WebFetch(domain:www.chakra-ui.com)",
       "Bash(npm ls:*)",
-      "WebFetch(domain:chakra-ui.com)"
+      "WebFetch(domain:chakra-ui.com)",
+      "WebFetch(domain:screvi.com)"
     ],
     "deny": [],
     "ask": []

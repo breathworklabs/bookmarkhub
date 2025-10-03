@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X Bookmark Manager</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      </div>
+      <h1>X Bookmark Manager</h1>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Status -->
+      <div class="status-section">
+        <div id="status-text" class="status-text">Ready to extract bookmarks</div>
+        <div id="progress-bar" class="progress-bar" style="display: none;">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="buttons-section">
+        <button id="extract-bookmarks" class="btn btn-primary">
+          <span class="btn-icon">📚</span>
+          <span class="btn-text">Extract Bookmarks</span>
+        </button>
+
+        <button id="open-manager" class="btn btn-secondary">
+          <span class="btn-icon">⚙️</span>
+          <span class="btn-text">Go to Manager</span>
+        </button>
+
+        <button id="test-connection" class="btn btn-tertiary">
+          <span class="btn-icon">🔧</span>
+          <span class="btn-text">Test Connection</span>
+        </button>
+      </div>
+
+      <!-- Debug Info -->
+      <div id="debug-info" class="debug-section" style="display: none;">
+        <div class="debug-title">Debug Information</div>
+        <div id="debug-content" class="debug-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

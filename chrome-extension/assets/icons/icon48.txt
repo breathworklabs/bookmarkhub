@@ -1,0 +1,4 @@
+# Placeholder icon for icon48.png
+# Size: 48x48
+# This is a placeholder file. In production, replace with actual PNG icon.
+# You can use the generate-icons.html file to create proper icons.

@@ -1,5 +1,5 @@
 import { Box, HStack, VStack, Text, IconButton, Menu, Portal } from '@chakra-ui/react'
-import { LuPencil, LuTrash2 } from 'react-icons/lu'
+import { LuPencil, LuTrash2, LuArchive } from 'react-icons/lu'
 import { memo, useCallback } from 'react'
 import { type Bookmark } from '../../types/bookmark'
 import { useBookmarkStore } from '../../store/bookmarkStore'
@@ -260,7 +260,7 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
                 onClick={handleToggleArchive}
               >
                 <HStack gap={2}>
-                  <Box as="span" w="14px" h="14px" color={bookmark.is_archived ? '#f59e0b' : '#71767b'}>⬇</Box>
+                  <LuArchive size={14} color={bookmark.is_archived ? '#f59e0b' : '#71767b'} />
                   <Text>{bookmark.is_archived ? 'Unarchive' : 'Archive'}</Text>
                 </HStack>
               </Menu.Item>

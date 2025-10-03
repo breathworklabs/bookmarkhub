@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "X Bookmark Manager - Automated",
+  "version": "3.0.0",
+  "description": "Automatically extract ALL your X/Twitter bookmarks with one click - no manual navigation required!",
+
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs",
+    "scripting",
+    "cookies"
+  ],
+
+  "host_permissions": [
+    "https://twitter.com/*",
+    "https://x.com/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "js": ["content-scripts/localhost-bridge.js"],
+      "run_at": "document_start"
+    }
+  ],
+
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Extract X Bookmarks (Automated)"
+  }
+}
