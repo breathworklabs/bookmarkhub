@@ -55,7 +55,7 @@ export const useInitializeApp = () => {
       ) {
         console.log('📦 Extension bookmark update received:', event.data)
 
-        const { count, total } = event.data
+        const { count, total, showNotification = true } = event.data
 
         // Reload bookmarks from localStorage without page reload
         Promise.all([
@@ -64,16 +64,18 @@ export const useInitializeApp = () => {
         ]).then(() => {
           console.log(`✓ Reloaded stores: ${count} new bookmarks (${total} total)`)
 
-          // Phase 4: Show success toast notification
-          const message = count === 1
-            ? 'Imported 1 new bookmark from X/Twitter'
-            : `Imported ${count} new bookmarks from X/Twitter`
+          // Phase 4: Show success toast notification (if enabled in settings)
+          if (showNotification) {
+            const message = count === 1
+              ? 'Imported 1 new bookmark from X/Twitter'
+              : `Imported ${count} new bookmarks from X/Twitter`
 
-          toast.success(message)
+            toast.success(message)
+          }
         }).catch((error) => {
           console.error('Error reloading stores after extension update:', error)
 
-          // Show error toast if reload fails
+          // Always show error toast (regardless of notification setting)
           toast.error('Failed to load imported bookmarks. Please refresh the page.')
         })
       }

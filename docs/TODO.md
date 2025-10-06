@@ -239,12 +239,71 @@
 - [x] Loading states and skeletons (✅ Basic loading states implemented)
 
 ### 9. **Settings & Customization**
-- [ ] User preferences and settings page
-- [ ] Theme customization (colors, fonts, layout)
-- [ ] Notification preferences
-- [ ] Privacy settings
-- [ ] Data export preferences
-- [ ] Keyboard shortcut customization
+- [x] Settings page with routing (/settings) ✅ COMPLETED
+- [x] Clear All Data functionality ✅ COMPLETED
+
+**Settings Categories to Implement:**
+
+#### 9.1 **Data Management**
+- [x] Clear All Data (with confirmation)
+- [ ] Export bookmarks (JSON, CSV, HTML formats)
+- [ ] Import bookmarks (multiple format support)
+- [ ] Automatic backups (schedule, retention settings)
+- [ ] Backup restoration interface
+- [ ] Storage usage statistics
+
+#### 9.2 **Display & View Settings**
+- [ ] Theme selection (Dark, Light, Auto)
+- [ ] Color scheme customization
+- [ ] Font size adjustment (Small, Medium, Large)
+- [ ] View mode preference (Grid/List default)
+- [ ] Cards per page setting
+- [ ] Compact/Detailed view toggle
+- [ ] Media preview settings (Auto-load, Click to load, Off)
+- [ ] Animation preferences (Enable/Disable)
+
+#### 9.3 **Collections & Organization**
+- [ ] Default collection for new bookmarks
+- [ ] Auto-categorization rules
+- [ ] Smart collection configuration
+- [ ] Tag management preferences
+- [ ] Duplicate handling (Skip/Replace/Keep both)
+- [ ] Sorting preferences (Date, Title, Author)
+
+#### 9.4 **Extension Integration** ✅ COMPLETED
+- [x] Auto-sync interval (Off, 5min, 15min, 30min, 1hour, Manual)
+- [x] Sync notifications toggle
+- [x] Default tags for imported bookmarks
+- [x] Import duplicates handling (Skip/Replace/Keep both)
+- [x] Auto-open app on extension import (setting available, implementation pending)
+- [ ] Extension communication status indicator
+
+#### 9.5 **Privacy & Storage**
+- [ ] Analytics opt-in/out
+- [ ] Clear browsing history
+- [ ] Data anonymization options
+- [ ] Cookie preferences
+- [ ] Local storage limits and warnings
+
+#### 9.6 **Search & Filter Preferences**
+- [ ] Search history toggle (Enable/Disable)
+- [ ] Default filters on startup
+- [ ] Save custom filter presets
+- [ ] Search suggestions toggle
+
+#### 9.7 **Advanced Settings**
+- [ ] Debug mode toggle
+- [ ] Performance mode (Reduce animations)
+- [ ] Developer tools access
+- [ ] API rate limiting settings
+- [ ] Cache management
+- [ ] Reset all settings to defaults
+
+#### 9.8 **Account & Sync** (Future)
+- [ ] Account creation/management
+- [ ] Cloud sync settings
+- [ ] Multi-device sync
+- [ ] Shared collections management
 
 ### 10. **Sharing & Collaboration**
 - [ ] Share individual bookmarks
