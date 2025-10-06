@@ -71,13 +71,12 @@ const BookmarkMedia = memo(({ bookmark, isInBulkMode, getContent }: BookmarkMedi
       <Box mb={3}>
         <Box
           h="200px"
-          bg="#0f1419"
+          style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-tertiary)' }}
           display="flex"
           alignItems="center"
           justifyContent="center"
-          color="#71767b"
           borderRadius="lg"
-          border="1px solid #2a2d35"
+          border="1px solid var(--color-border)"
           data-testid="media-placeholder"
         >
           📷 Media Content
@@ -98,7 +97,7 @@ const BookmarkMedia = memo(({ bookmark, isInBulkMode, getContent }: BookmarkMedi
           position="relative"
           borderRadius="lg"
           overflow="hidden"
-          border="1px solid #2a2d35"
+          border="1px solid var(--color-border)"
           cursor="pointer"
           _hover={{ filter: 'brightness(1.1)' }}
           onClick={() => handleImageClick(images, 0)}
@@ -114,11 +113,10 @@ const BookmarkMedia = memo(({ bookmark, isInBulkMode, getContent }: BookmarkMedi
           ) : (
             <Box
               h="200px"
-              bg="#0f1419"
+              style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-tertiary)' }}
               display="flex"
               alignItems="center"
               justifyContent="center"
-              color="#71767b"
             >
               🎥 Video Content
             </Box>
@@ -157,7 +155,7 @@ const BookmarkMedia = memo(({ bookmark, isInBulkMode, getContent }: BookmarkMedi
   if (images.length > 0) {
     return (
       <Box mb={3}>
-        <Box borderRadius="lg" overflow="hidden" border="1px solid #2a2d35">
+        <Box borderRadius="lg" overflow="hidden" border="1px solid var(--color-border)">
           {images.length === 1 ? (
             <LazyImage
               src={images[0]}

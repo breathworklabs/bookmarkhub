@@ -27,9 +27,8 @@ const AdvancedFilters = () => {
     <AnimatePresence>
       {isFiltersPanelOpen && (
         <MotionBox
-          bg="#0f1419"
+          style={{background: 'var(--color-bg-primary)', borderColor: 'var(--color-border)' }}
           borderBottomWidth="1px"
-          borderColor="#2a2d35"
           px={6}
           py={0}
           initial={{
@@ -93,15 +92,15 @@ const AdvancedFilters = () => {
             {/* Filter Header */}
             <HStack justify="space-between" alignItems="center">
               <HStack gap={2} alignItems="center">
-                <Text fontSize="16px" fontWeight="600" color="#e1e5e9">
+                <Text fontSize="16px" fontWeight="600" style={{ color: 'var(--color-text-primary)' }}>
                   Advanced Filters
                 </Text>
               </HStack>
               <Button
                 size="sm"
                 variant="ghost"
-                color="#71767b"
-                _hover={{ color: '#e1e5e9', bg: '#2a2d35' }}
+                style={{ color: 'var(--color-text-tertiary)' }}
+                _hover={{ color: 'var(--color-text-primary)', bg: 'var(--color-border)' }}
                 onClick={() => setFiltersPanelOpen(false)}
               >
                 ×
@@ -122,8 +121,8 @@ const AdvancedFilters = () => {
               {/* Content Type Filter */}
               <VStack alignItems="start" gap={2} flex="1" minW="180px">
                 <HStack gap={2} alignItems="center">
-                  <LuTag size={14} color="#71767b" />
-                  <Text fontSize="13px" fontWeight="500" color="#e1e5e9">
+                  <LuTag size={14} style={{ color: 'var(--color-text-tertiary)' }} />
+                  <Text fontSize="13px" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
                     Content Type
                   </Text>
                 </HStack>
@@ -135,12 +134,10 @@ const AdvancedFilters = () => {
                     setContentTypeFilter(e.target.value)
                     resetFilters()
                   }}
-                  bg="#1a1d23"
-                  borderColor="#2a2d35"
-                  color="#e1e5e9"
-                  _placeholder={{ color: '#71767b' }}
-                  _hover={{ borderColor: '#3a3d45' }}
-                  _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
+                  style={{background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
+                  _placeholder={{ color: 'var(--color-text-tertiary)' }}
+                  _hover={{ borderColor: 'var(--color-border-hover)' }}
+                  _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
                   h="32px"
                   fontSize="12px"
                 />
@@ -149,7 +146,7 @@ const AdvancedFilters = () => {
 
             {/* Quick Filter Tags */}
             <VStack alignItems="start" gap={2}>
-              <Text fontSize="13px" fontWeight="500" color="#e1e5e9">
+              <Text fontSize="13px" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
                 Quick Filters
               </Text>
               <HStack gap={2} wrap="wrap">
@@ -166,18 +163,18 @@ const AdvancedFilters = () => {
                       key={filter.value}
                       size="xs"
                       variant="outline"
-                      bg={quickFilters.includes(filter.value) ? '#1d4ed8' : 'transparent'}
-                      border="1px solid #2a2d35"
-                      color={quickFilters.includes(filter.value) ? 'white' : '#71767b'}
+                      bg={quickFilters.includes(filter.value) ? 'var(--color-blue)' : 'transparent'}
+                      border="1px solid var(--color-border)"
+                      color={quickFilters.includes(filter.value) ? 'white' : 'var(--color-text-tertiary)'}
                       fontSize="11px"
                       fontWeight="500"
                       px={2}
                       h="24px"
                       borderRadius="12px"
                       _hover={{
-                        bg: quickFilters.includes(filter.value) ? '#1e40af' : '#1a1d23',
-                        color: quickFilters.includes(filter.value) ? 'white' : '#e1e5e9',
-                        borderColor: '#3a3d45'
+                        bg: quickFilters.includes(filter.value) ? 'var(--color-blue-hover)' : 'var(--color-bg-tertiary)',
+                        color: quickFilters.includes(filter.value) ? 'white' : 'var(--color-text-primary)',
+                        borderColor: 'var(--color-border-hover)'
                       }}
                       onClick={() => {
                         toggleQuickFilter(filter.value)
@@ -196,13 +193,11 @@ const AdvancedFilters = () => {
               <Button
                 size="sm"
                 variant="outline"
-                borderColor="#2a2d35"
-                color="#71767b"
-                bg="transparent"
+                style={{borderColor: 'var(--color-border)', color: 'var(--color-text-tertiary)', background: 'transparent' }}
                 fontSize="12px"
                 h="32px"
                 px={4}
-                _hover={{ borderColor: '#3a3d45', color: '#e1e5e9', bg: '#1a1d23' }}
+                _hover={{ borderColor: 'var(--color-border-hover)', color: 'var(--color-text-primary)', bg: 'var(--color-bg-tertiary)' }}
                 onClick={() => {
                   clearAdvancedFilters()
                   resetFilters()

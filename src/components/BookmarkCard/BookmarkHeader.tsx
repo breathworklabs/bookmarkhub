@@ -125,7 +125,7 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
         h={10}
         borderRadius="full"
         overflow="hidden"
-        bg="linear-gradient(135deg, #667eea, #764ba2)"
+        bg="var(--gradient-avatar)"
         display="flex"
         alignItems="center"
         justifyContent="center"
@@ -151,7 +151,7 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                bg="linear-gradient(135deg, #667eea, #764ba2)"
+                bg="var(--gradient-avatar)"
                 color="white"
                 fontSize="sm"
                 fontWeight="bold"
@@ -171,7 +171,7 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
       </Box>
       <VStack alignItems="start" gap={0} flex={1}>
         <HStack gap={2} alignItems="center">
-          <Text fontWeight="600" fontSize="sm" color="#e1e5e9">
+          <Text fontWeight="600" fontSize="sm" style={{ color: 'var(--color-text-primary)' }}>
             {getAuthorName()}
           </Text>
           {getBadgeImage() && (
@@ -180,9 +180,9 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
               h="16px"
               borderRadius="2px"
               overflow="hidden"
-              border="1px solid #1d4ed8"
+              border="1px solid var(--color-blue)"
               flexShrink={0}
-              bg="#1d4ed8"
+              style={{ background: 'var(--color-blue)' }}
               p="1px"
               title="Verified profile"
               display="flex"
@@ -205,7 +205,7 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
                     alignItems="center"
                     justifyContent="center"
                     fontSize="8px"
-                    color="#1d4ed8"
+                    style={{ color: 'var(--color-blue)' }}
                     borderRadius="1px"
                   >
                     ✓
@@ -215,7 +215,7 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
             </Box>
           )}
         </HStack>
-        <Text fontSize="xs" color="#71767b">
+        <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }}>
           {getAuthorUsername()} · {getTimestamp()}
         </Text>
       </VStack>
@@ -225,16 +225,16 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
             size="sm"
             variant="ghost"
             aria-label="Bookmark actions"
-            color="#71767b"
+            style={{ color: 'var(--color-text-tertiary)' }}
             borderRadius="full"
             w="32px"
             h="32px"
             minW="32px"
             border="1px solid #2f3336"
             _hover={{
-              bg: '#2a2d35',
-              color: '#e1e5e9',
-              borderColor: '#3a3d45',
+              bg: 'var(--color-border)',
+              color: 'var(--color-text-primary)',
+              borderColor: 'var(--color-border-hover)',
               transform: 'scale(1.1)',
               transition: 'all 0.2s'
             }}
@@ -247,8 +247,8 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
         <Portal>
           <Menu.Positioner>
             <Menu.Content
-              bg="#1a1d23"
-              border="1px solid #2a2d35"
+              style={{ background: 'var(--color-bg-tertiary)' }}
+              border="1px solid var(--color-border)"
               borderRadius="8px"
               boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
               py={1}
@@ -260,7 +260,7 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
                 onClick={handleToggleArchive}
               >
                 <HStack gap={2}>
-                  <LuArchive size={14} color={bookmark.is_archived ? '#f59e0b' : '#71767b'} />
+                  <LuArchive size={14} color={bookmark.is_archived ? 'var(--color-warning)' : 'var(--color-text-tertiary)'} />
                   <Text>{bookmark.is_archived ? 'Unarchive' : 'Archive'}</Text>
                 </HStack>
               </Menu.Item>
@@ -270,11 +270,11 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
                 onClick={handleEdit}
               >
                 <HStack gap={2}>
-                  <LuPencil size={14} color="#71767b" />
+                  <LuPencil size={14} style={{ color: 'var(--color-text-tertiary)' }} />
                   <Text>Edit</Text>
                 </HStack>
               </Menu.Item>
-              <Menu.Separator borderColor="#2a2d35" />
+              <Menu.Separator style={{ borderColor: 'var(--color-border)' }} />
               <Menu.Item
                 value="delete"
                 {...deleteMenuItemStyles}

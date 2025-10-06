@@ -21,7 +21,19 @@
       "WebFetch(domain:www.chakra-ui.com)",
       "Bash(npm ls:*)",
       "WebFetch(domain:chakra-ui.com)",
-      "WebFetch(domain:screvi.com)"
+      "WebFetch(domain:screvi.com)",
+      "Bash(find:*)",
+      "Bash(git checkout:*)",
+      "Bash(chmod:*)",
+      "Bash(python3:*)",
+      "Bash(/tmp/fix_colors.sh:*)",
+      "Bash(for file in src/components/*.tsx src/components/**/*.tsx)",
+      "Bash(do)",
+      "Bash([ -f \"$file\" ])",
+      "Bash(continue)",
+      "Bash(done)",
+      "Bash(for file in src/components/SidebarMenu.tsx src/components/UnifiedSidebar.tsx src/components/BookmarkCard/BookmarkActions.tsx)",
+      "Bash(for file in src/components/modals/ModalProvider.tsx src/components/collections/CollectionsActions.tsx src/components/tags/SmartTagSuggestions.tsx src/components/tags/TagManagerModal.tsx src/components/tags/TagMergeModal.tsx)"
     ],
     "deny": [],
     "ask": []

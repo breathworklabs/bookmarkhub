@@ -94,7 +94,7 @@ export const componentStyles = {
 
   card: {
     base: {
-      bg: 'linear-gradient(135deg, #16181c 0%, #1a1d23 100%)',
+      bg: colors.dark.cardBg,
       borderWidth: '1px',
       borderColor: colors.dark.border,
       borderRadius: '16px',
@@ -103,8 +103,8 @@ export const componentStyles = {
       _hover: {
         borderColor: colors.accent.blue,
         transform: 'translateY(-1px)',
-        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.4)',
-        bg: 'linear-gradient(135deg, #1a1d23 0%, #0f1419 100%)'
+        boxShadow: '0 8px 20px var(--color-card-shadow)',
+        bg: colors.dark.sidebarBg
       }
     },
 
@@ -273,7 +273,7 @@ export const componentStyles = {
 
   container: {
     background: {
-      bg: colors.dark.background,
+      bg: 'var(--color-bg-primary)',
       minH: '100vh'
     },
 
@@ -294,12 +294,12 @@ export const componentStyles = {
     },
 
     filterBar: {
-      bg: 'linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)',
+      bg: colors.dark.background,
       borderBottomWidth: '1px',
       borderColor: colors.dark.border,
       px: 6,
       py: 4,
-      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+      boxShadow: '0 2px 8px var(--color-card-shadow)'
     }
   }
 }

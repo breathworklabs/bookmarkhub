@@ -67,19 +67,19 @@ const BookmarkActions = memo(({ bookmark, isInBulkMode }: BookmarkActionsProps) 
           cursor={isInBulkMode ? 'default' : 'pointer'}
           _focus={{
             boxShadow: 'none !important',
-            borderColor: '#3a3d45 !important',
+            borderColor: 'var(--color-border-hover) !important',
             outline: 'none !important'
           }}
           _focusVisible={{
             boxShadow: 'none !important',
-            borderColor: '#3a3d45 !important',
+            borderColor: 'var(--color-border-hover) !important',
             outline: 'none !important'
           }}
           {...starButtonStyles}
           _hover={isInBulkMode ? {} : starButtonStyles._hover}
           _active={{
-            bg: '#2a2d35 !important',
-            borderColor: '#3a3d45 !important',
+            bg: 'var(--color-border) !important',
+            borderColor: 'var(--color-border-hover) !important',
             transform: 'scale(0.95)',
             boxShadow: 'none !important',
             outline: 'none !important'
@@ -101,26 +101,26 @@ const BookmarkActions = memo(({ bookmark, isInBulkMode }: BookmarkActionsProps) 
           bg={isCopied ? "rgba(34, 197, 94, 0.1)" : "transparent"}
           _focus={{
             boxShadow: 'none !important',
-            borderColor: isCopied ? "#22c55e !important" : '#3a3d45 !important',
+            borderColor: isCopied ? "var(--color-success) !important" : 'var(--color-border-hover) !important',
             outline: 'none !important'
           }}
           _focusVisible={{
             boxShadow: 'none !important',
-            borderColor: isCopied ? "#22c55e !important" : '#3a3d45 !important',
+            borderColor: isCopied ? "var(--color-success) !important" : 'var(--color-border-hover) !important',
             outline: 'none !important'
           }}
           {...shareButtonStyles}
-          border={isCopied ? "1px solid #22c55e" : "1px solid #2f3336"}
+          border={isCopied ? "1px solid var(--color-success)" : "1px solid var(--color-border)"}
           _hover={{
-            bg: isCopied ? "rgba(34, 197, 94, 0.2)" : '#2a2d35',
-            color: isCopied ? "#22c55e" : '#e1e5e9',
-            borderColor: isCopied ? "#22c55e" : '#3a3d45',
+            bg: isCopied ? "rgba(34, 197, 94, 0.2)" : 'var(--color-border)',
+            color: isCopied ? "var(--color-success)" : 'var(--color-text-primary)',
+            borderColor: isCopied ? "var(--color-success)" : 'var(--color-border-hover)',
             transform: 'scale(1.1)',
             transition: 'all 0.2s'
           }}
           _active={{
-            bg: isCopied ? "rgba(34, 197, 94, 0.2) !important" : '#2a2d35 !important',
-            borderColor: isCopied ? "#22c55e !important" : '#3a3d45 !important',
+            bg: isCopied ? "rgba(34, 197, 94, 0.2) !important" : 'var(--color-border) !important',
+            borderColor: isCopied ? "var(--color-success) !important" : 'var(--color-border-hover) !important',
             transform: 'scale(0.95)',
             boxShadow: 'none !important',
             outline: 'none !important'
@@ -135,34 +135,34 @@ const BookmarkActions = memo(({ bookmark, isInBulkMode }: BookmarkActionsProps) 
         variant="ghost"
         aria-label="View original tweet"
         title="View original tweet"
-        color="#71767b"
+        style={{ color: 'var(--color-text-tertiary)' }}
         borderRadius="full"
         w="32px"
         h="32px"
         minW="32px"
-        border="1px solid #2f3336"
+        border="1px solid var(--color-border)"
         _hover={{
-          bg: '#2a2d35',
-          color: '#e1e5e9',
-          borderColor: '#3a3d45',
+          bg: 'var(--color-border)',
+          color: 'var(--color-text-primary)',
+          borderColor: 'var(--color-border-hover)',
           transform: 'scale(1.1)',
           transition: 'all 0.2s'
         }}
         _focus={{
           boxShadow: 'none !important',
-          borderColor: '#3a3d45 !important',
+          borderColor: 'var(--color-border-hover) !important',
           outline: 'none !important'
         }}
         _active={{
-          bg: '#2a2d35 !important',
-          borderColor: '#3a3d45 !important',
+          bg: 'var(--color-border) !important',
+          borderColor: 'var(--color-border-hover) !important',
           transform: 'scale(0.95)',
           boxShadow: 'none !important',
           outline: 'none !important'
         }}
         _focusVisible={{
           boxShadow: 'none !important',
-          borderColor: '#3a3d45 !important',
+          borderColor: 'var(--color-border-hover) !important',
           outline: 'none !important'
         }}
         onClick={handleOpenUrl}

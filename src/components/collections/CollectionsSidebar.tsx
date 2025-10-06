@@ -55,17 +55,17 @@ const DroppableCollectionItem = ({
       cursor="pointer"
       bg={
         isDropZone
-          ? '#1d4ed8 !important'
+          ? 'var(--color-blue) !important'
           : isActive(collection.id)
-            ? '#1d4ed8'
+            ? 'var(--color-blue)'
             : 'transparent'
       }
-      color={isActive(collection.id) ? 'white' : '#e1e5e9'}
+      color={isActive(collection.id) ? 'white' : 'var(--color-text-primary)'}
       border={
         isDropZone
-          ? '3px dashed #3b82f6 !important'
+          ? '3px dashed var(--color-blue) !important'
           : isInvalidDrop
-            ? '3px dashed #ef4444 !important'
+            ? '3px dashed var(--color-error) !important'
             : '2px solid transparent'
       }
       boxShadow={
@@ -74,7 +74,7 @@ const DroppableCollectionItem = ({
           : undefined
       }
       _hover={{
-        bg: isActive(collection.id) ? '#1e40af' : '#2a2d35'
+        bg: isActive(collection.id) ? 'var(--color-blue-hover)' : 'var(--color-border)'
       }}
       onClick={() => handleCollectionClick(collection.id)}
       transition="all 0.2s ease"
@@ -96,8 +96,8 @@ const DroppableCollectionItem = ({
         <HStack gap={1}>
           <Badge
             size="sm"
-            bg={isActive(collection.id) ? 'rgba(255,255,255,0.2)' : (isUserCollection ? '#2a2d35' : '#1a1d23')}
-            color={isActive(collection.id) ? 'white' : '#71767b'}
+            bg={isActive(collection.id) ? 'rgba(255,255,255,0.2)' : (isUserCollection ? 'var(--color-border)' : 'var(--color-bg-tertiary)')}
+            color={isActive(collection.id) ? 'white' : 'var(--color-text-tertiary)'}
             fontSize="xs"
             px={2}
             py={1}
@@ -111,9 +111,9 @@ const DroppableCollectionItem = ({
               size="xs"
               variant="ghost"
               aria-label="Collection options"
-              color={isActive(collection.id) ? 'white' : '#71767b'}
+              color={isActive(collection.id) ? 'white' : 'var(--color-text-tertiary)'}
               _hover={{
-                color: isActive(collection.id) ? 'white' : '#e1e5e9',
+                color: isActive(collection.id) ? 'white' : 'var(--color-text-primary)',
                 bg: isActive(collection.id) ? 'rgba(255,255,255,0.1)' : '#3a3d45'
               }}
               onClick={(e) => {
@@ -171,14 +171,14 @@ const CollectionsSidebar = () => {
         case 'starred':
           return '#ffd700'
         case 'recent':
-          return '#3b82f6'
+          return 'var(--color-blue)'
         case 'archived':
-          return '#6b7280'
+          return 'var(--color-text-tertiary)'
         default:
-          return '#71767b'
+          return 'var(--color-text-tertiary)'
       }
     }
-    return collection.color || '#71767b'
+    return collection.color || 'var(--color-text-tertiary)'
   }
 
   const isActive = (collectionId: string) => {
@@ -216,8 +216,8 @@ const CollectionsSidebar = () => {
 
   if (error) {
     return (
-      <Box p={4} bg="#0f1419" borderRight="1px solid #2a2d35" h="100%" w="280px">
-        <Text color="#ef4444" fontSize="sm">
+      <Box p={4} style={{ background: 'var(--color-bg-primary)' }} borderRight="1px solid #2a2d35" h="100%" w="280px">
+        <Text color="var(--color-error)" fontSize="sm">
           Error loading collections: {error}
         </Text>
       </Box>
@@ -228,9 +228,9 @@ const CollectionsSidebar = () => {
     <Box {...componentStyles.container.sidebar} h="100%" overflow="hidden">
       <VStack align="stretch" gap={0} h="100%">
         {/* Header */}
-        <Box p={4} borderBottom="1px solid #2a2d35">
+        <Box p={4} borderBottom="1px solid var(--color-border)">
           <HStack justify="space-between" align="center">
-            <Text fontWeight="600" fontSize="md" color="#e1e5e9">
+            <Text fontWeight="600" fontSize="md" style={{ color: 'var(--color-text-primary)' }}>
               Collections
             </Text>
             <IconButton
@@ -254,16 +254,16 @@ const CollectionsSidebar = () => {
               py={2}
               borderRadius="md"
               cursor="pointer"
-              bg={isActive('all-bookmarks') ? '#1d4ed8' : 'transparent'}
-              color={isActive('all-bookmarks') ? 'white' : '#e1e5e9'}
+              bg={isActive('all-bookmarks') ? 'var(--color-blue)' : 'transparent'}
+              color={isActive('all-bookmarks') ? 'white' : 'var(--color-text-primary)'}
               _hover={{
-                bg: isActive('all-bookmarks') ? '#1e40af' : '#2a2d35'
+                bg: isActive('all-bookmarks') ? 'var(--color-blue-hover)' : 'var(--color-border)'
               }}
               onClick={() => handleCollectionClick('all-bookmarks')}
             >
               <HStack justify="space-between">
                 <HStack gap={3}>
-                  <Box color="#71767b">
+                  <Box style={{ color: 'var(--color-text-tertiary)' }}>
                     <LuFolder size={16} />
                   </Box>
                   <Text fontSize="sm" fontWeight="500">
@@ -272,8 +272,8 @@ const CollectionsSidebar = () => {
                 </HStack>
                 <Badge
                   size="sm"
-                  bg={isActive('all-bookmarks') ? 'rgba(255,255,255,0.2)' : '#2a2d35'}
-                  color={isActive('all-bookmarks') ? 'white' : '#71767b'}
+                  bg={isActive('all-bookmarks') ? 'rgba(255,255,255,0.2)' : 'var(--color-border)'}
+                  color={isActive('all-bookmarks') ? 'white' : 'var(--color-text-tertiary)'}
                   fontSize="xs"
                   px={2}
                   py={1}
@@ -302,7 +302,7 @@ const CollectionsSidebar = () => {
                 </For>
 
                 {userCollections.length > 0 && (
-                  <Separator borderColor="#2a2d35" my={2} />
+                  <Separator style={{ borderColor: 'var(--color-border)' }} my={2} />
                 )}
               </>
             )}
@@ -333,27 +333,27 @@ const CollectionsSidebar = () => {
                 justify="center"
                 p={6}
                 textAlign="center"
-                color="#71767b"
+                style={{ color: 'var(--color-text-tertiary)' }}
                 borderRadius="md"
                 mt={3}
                 gap={3}
               >
-                <Box color="#3b82f6" fontSize="2xl">
+                <Box style={{ color: 'var(--color-blue)' }} fontSize="2xl">
                   <LuFolderOpen />
                 </Box>
                 <VStack gap={1}>
-                  <Text fontSize="sm" fontWeight="500" color="#e1e5e9">
+                  <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
                     No custom collections
                   </Text>
-                  <Text fontSize="xs" color="#71767b" lineHeight="1.4">
+                  <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4">
                     Organize your bookmarks by creating custom collections
                   </Text>
                 </VStack>
                 <Button
                   size="sm"
-                  bg="#1d4ed8"
+                  style={{ background: 'var(--color-blue)' }}
                   color="white"
-                  _hover={{ bg: '#1e40af' }}
+                  _hover={{ bg: 'var(--color-blue-hover)' }}
                   onClick={() => setCreatingCollection(true)}
                   fontSize="xs"
                   px={3}
@@ -373,7 +373,7 @@ const CollectionsSidebar = () => {
         {/* Loading State */}
         {isLoading && (
           <Box p={4} textAlign="center">
-            <Text color="#71767b" fontSize="sm">
+            <Text style={{ color: 'var(--color-text-tertiary)' }} fontSize="sm">
               Loading collections...
             </Text>
           </Box>

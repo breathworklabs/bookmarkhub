@@ -73,7 +73,7 @@ const InfiniteBookmarkGrid = memo(() => {
         left={0}
         right={0}
       >
-        <Text color="#71767b" fontSize="lg">
+        <Text style={{ color: 'var(--color-text-tertiary)' }} fontSize="lg">
           No bookmarks found matching your filters
         </Text>
       </Box>
@@ -111,7 +111,7 @@ const InfiniteBookmarkGrid = memo(() => {
           }}
         >
           {isLoading && (
-            <HStack gap={2} color="#71767b">
+            <HStack gap={2} style={{ color: 'var(--color-text-tertiary)' }}>
               <Spinner size="sm" />
               <Text fontSize="sm">Loading more bookmarks...</Text>
             </HStack>
@@ -122,7 +122,7 @@ const InfiniteBookmarkGrid = memo(() => {
       {/* Status Information */}
       {bookmarks.length > 0 && (
         <Box pt={4} textAlign="center">
-          <Text color="#71767b" fontSize="sm">
+          <Text style={{ color: 'var(--color-text-tertiary)' }} fontSize="sm">
             Showing {bookmarks.length} of {totalItems} bookmarks
             {currentPage > 1 && ` (Page ${currentPage})`}
           </Text>
@@ -132,7 +132,7 @@ const InfiniteBookmarkGrid = memo(() => {
       {/* End of Results */}
       {!hasMore && bookmarks.length > 0 && (
         <Box textAlign="center" pb={4}>
-          <Text color="#71767b" fontSize="sm">
+          <Text style={{ color: 'var(--color-text-tertiary)' }} fontSize="sm">
             You've reached the end of your bookmarks
           </Text>
         </Box>

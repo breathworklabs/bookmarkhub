@@ -181,8 +181,8 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
         <Dialog.Backdrop bg="rgba(0, 0, 0, 0.85)" backdropFilter="blur(4px)" />
         <Dialog.Positioner display="flex" alignItems="center" justifyContent="center">
           <Dialog.Content
-            bg="#0f1419"
-            border="1px solid #2a2d35"
+            bg="var(--color-bg-primary)"
+            border="1px solid var(--color-border)"
             borderRadius="16px"
             boxShadow="0 25px 50px rgba(0, 0, 0, 0.6)"
             maxW="700px"
@@ -191,9 +191,9 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
             overflow="hidden"
           >
             <Dialog.Header
-              bg="linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)"
+              bg="var(--gradient-modal)"
               borderBottomWidth="1px"
-              borderColor="#2a2d35"
+              borderColor="var(--color-border)"
               p={6}
             >
               <Dialog.Title>
@@ -202,17 +202,17 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
                     <HStack gap={2} align="center">
                       <Box
                         p={2}
-                        bg="#1d4ed8"
+                        bg="var(--color-blue)"
                         borderRadius="8px"
                         color="white"
                       >
                         <LuMerge size={16} />
                       </Box>
-                      <Text fontSize="xl" fontWeight="700" color="#e1e5e9">
+                      <Text fontSize="xl" fontWeight="700" color="var(--color-text-primary)">
                         Merge Tags
                       </Text>
                     </HStack>
-                    <Text fontSize="sm" color="#71767b" ml={10}>
+                    <Text fontSize="sm" color="var(--color-text-tertiary)" ml={10}>
                       Combine multiple tags into a single tag
                     </Text>
                   </VStack>
@@ -220,9 +220,9 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
                     <IconButton
                       variant="ghost"
                       size="sm"
-                      color="#71767b"
+                      color="var(--color-text-tertiary)"
                       borderRadius="8px"
-                      _hover={{ color: '#e1e5e9', bg: 'rgba(42, 45, 53, 0.5)' }}
+                      _hover={{ color: 'var(--color-text-primary)', bg: 'rgba(42, 45, 53, 0.5)' }}
                     >
                       <LuX size={18} />
                     </IconButton>
@@ -236,15 +236,15 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
                 {/* Source Tags Selection */}
                 <VStack align="stretch" gap={3}>
                   <HStack justify="space-between" align="center">
-                    <Text fontSize="md" fontWeight="500" color="#e1e5e9">
+                    <Text fontSize="md" fontWeight="500" color="var(--color-text-primary)">
                       Source Tags (to be merged)
                     </Text>
                     {sourceTags.length > 0 && (
                       <Button
                         size="xs"
                         variant="ghost"
-                        color="#71767b"
-                        _hover={{ color: '#e1e5e9' }}
+                        color="var(--color-text-tertiary)"
+                        _hover={{ color: 'var(--color-text-primary)' }}
                         onClick={() => setSourceTags([])}
                       >
                         Clear All
@@ -254,7 +254,7 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
 
                   {/* Selected Source Tags */}
                   {sourceTags.length > 0 && (
-                    <Box p={3} bg="#1a1d23" borderRadius="8px" border="1px solid #2a2d35">
+                    <Box p={3} bg="var(--color-bg-tertiary)" borderRadius="8px" border="1px solid var(--color-border)">
                       <HStack gap={2} flexWrap="wrap">
                         <For each={sourceTags}>
                           {(tag) => {
@@ -269,8 +269,8 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
                                   onRemove={handleRemoveSourceTag}
                                 />
                                 <Badge
-                                  bg="#2a2d35"
-                                  color="#71767b"
+                                  bg="var(--color-border)"
+                                  color="var(--color-text-tertiary)"
                                   fontSize="xs"
                                   px={2}
                                   py={0.5}
@@ -293,14 +293,14 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search tags to merge..."
-                        bg="#1a1d23"
-                        border="1px solid #2a2d35"
+                        bg="var(--color-bg-tertiary)"
+                        border="1px solid var(--color-border)"
                         borderRadius="8px"
-                        color="#e1e5e9"
-                        _placeholder={{ color: '#71767b' }}
+                        color="var(--color-text-primary)"
+                        _placeholder={{ color: 'var(--color-text-tertiary)' }}
                         _focus={{
-                          borderColor: '#1d4ed8',
-                          boxShadow: '0 0 0 1px #1d4ed8'
+                          borderColor: 'var(--color-blue)',
+                          boxShadow: '0 0 0 1px var(--color-blue)'
                         }}
                         pl={10}
                       />
@@ -309,7 +309,7 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
                         left={3}
                         top="50%"
                         transform="translateY(-50%)"
-                        color="#71767b"
+                        color="var(--color-text-tertiary)"
                         pointerEvents="none"
                       >
                         <LuSearch size={16} />
@@ -320,13 +320,13 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
                     <Box
                       maxH="150px"
                       overflowY="auto"
-                      border="1px solid #2a2d35"
+                      border="1px solid var(--color-border)"
                       borderRadius="8px"
-                      bg="#0f1419"
+                      bg="var(--color-bg-primary)"
                     >
                       {availableTags.length === 0 ? (
                         <Box p={4} textAlign="center">
-                          <Text color="#71767b" fontSize="sm">
+                          <Text color="var(--color-text-tertiary)" fontSize="sm">
                             {searchQuery ? 'No tags found matching your search.' : 'No available tags to merge.'}
                           </Text>
                         </Box>
@@ -342,7 +342,7 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
                                   p={3}
                                   justify="space-between"
                                   align="center"
-                                  _hover={{ bg: '#1a1d23' }}
+                                  _hover={{ bg: 'var(--color-bg-tertiary)' }}
                                   cursor="pointer"
                                   onClick={() => handleAddSourceTag(tag.name)}
                                 >
@@ -353,8 +353,8 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
                                       size="sm"
                                     />
                                     <Badge
-                                      bg="#2a2d35"
-                                      color="#71767b"
+                                      bg="var(--color-border)"
+                                      color="var(--color-text-tertiary)"
                                       fontSize="xs"
                                       px={2}
                                       py={0.5}
@@ -382,10 +382,10 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
                       justifyContent="center"
                       w="40px"
                       h="40px"
-                      bg="#1a1d23"
-                      border="1px solid #2a2d35"
+                      bg="var(--color-bg-tertiary)"
+                      border="1px solid var(--color-border)"
                       borderRadius="20px"
-                      color="#71767b"
+                      color="var(--color-text-tertiary)"
                     >
                       <LuArrowRight size={20} />
                     </Box>
@@ -395,21 +395,21 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
                 {/* Target Tag */}
                 {sourceTags.length > 0 && (
                   <VStack align="stretch" gap={3}>
-                    <Text fontSize="md" fontWeight="500" color="#e1e5e9">
+                    <Text fontSize="md" fontWeight="500" color="var(--color-text-primary)">
                       Target Tag (result)
                     </Text>
                     <Input
                       value={targetTag}
                       onChange={(e) => setTargetTag(e.target.value)}
                       placeholder="Enter the target tag name..."
-                      bg="#1a1d23"
-                      border="1px solid #2a2d35"
+                      bg="var(--color-bg-tertiary)"
+                      border="1px solid var(--color-border)"
                       borderRadius="8px"
-                      color="#e1e5e9"
-                      _placeholder={{ color: '#71767b' }}
+                      color="var(--color-text-primary)"
+                      _placeholder={{ color: 'var(--color-text-tertiary)' }}
                       _focus={{
-                        borderColor: '#1d4ed8',
-                        boxShadow: '0 0 0 1px #1d4ed8'
+                        borderColor: 'var(--color-blue)',
+                        boxShadow: '0 0 0 1px var(--color-blue)'
                       }}
                     />
                   </VStack>
@@ -417,32 +417,32 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
 
                 {/* Merge Stats */}
                 {mergeStats && targetTag && (
-                  <Box p={4} bg="#1a1d23" border="1px solid #2a2d35" borderRadius="8px">
+                  <Box p={4} bg="var(--color-bg-tertiary)" border="1px solid var(--color-border)" borderRadius="8px">
                     <VStack align="stretch" gap={2}>
-                      <Text fontSize="sm" fontWeight="500" color="#e1e5e9">
+                      <Text fontSize="sm" fontWeight="500" color="var(--color-text-primary)">
                         Merge Preview
                       </Text>
                       <HStack justify="space-between">
-                        <Text fontSize="sm" color="#71767b">
+                        <Text fontSize="sm" color="var(--color-text-tertiary)">
                           Source tags to merge:
                         </Text>
-                        <Text fontSize="sm" color="#e1e5e9" fontWeight="500">
+                        <Text fontSize="sm" color="var(--color-text-primary)" fontWeight="500">
                           {sourceTags.length} tag{sourceTags.length !== 1 ? 's' : ''}
                         </Text>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text fontSize="sm" color="#71767b">
+                        <Text fontSize="sm" color="var(--color-text-tertiary)">
                           Affected bookmarks:
                         </Text>
-                        <Text fontSize="sm" color="#e1e5e9" fontWeight="500">
+                        <Text fontSize="sm" color="var(--color-text-primary)" fontWeight="500">
                           {mergeStats.affectedBookmarkCount}
                         </Text>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text fontSize="sm" color="#71767b">
+                        <Text fontSize="sm" color="var(--color-text-tertiary)">
                           Total tag usages:
                         </Text>
-                        <Text fontSize="sm" color="#e1e5e9" fontWeight="500">
+                        <Text fontSize="sm" color="var(--color-text-primary)" fontWeight="500">
                           {mergeStats.totalUsageCount}
                         </Text>
                       </HStack>
@@ -453,31 +453,31 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
             </Dialog.Body>
 
             <Dialog.Footer
-              bg="linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)"
+              bg="var(--gradient-modal)"
               borderTopWidth="1px"
-              borderColor="#2a2d35"
+              borderColor="var(--color-border)"
               p={6}
             >
               <HStack justify="space-between" w="100%">
-                <Text fontSize="sm" color="#71767b">
+                <Text fontSize="sm" color="var(--color-text-tertiary)">
                   This action cannot be undone
                 </Text>
                 <HStack gap={2}>
                   <Button
                     variant="ghost"
-                    color="#71767b"
+                    color="var(--color-text-tertiary)"
                     borderRadius="10px"
-                    _hover={{ color: '#e1e5e9', bg: 'rgba(42, 45, 53, 0.5)' }}
+                    _hover={{ color: 'var(--color-text-primary)', bg: 'rgba(42, 45, 53, 0.5)' }}
                     onClick={onClose}
                     disabled={isLoading}
                   >
                     Cancel
                   </Button>
                   <Button
-                    bg="#1d4ed8"
+                    bg="var(--color-blue)"
                     color="white"
                     borderRadius="10px"
-                    _hover={{ bg: '#1e40af' }}
+                    _hover={{ bg: 'var(--color-blue-hover)' }}
                     onClick={handleMergeTags}
                     disabled={!canMerge || isLoading}
                     loading={isLoading}

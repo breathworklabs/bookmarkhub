@@ -69,12 +69,12 @@ const DroppableCollectionItem = ({
       cursor="pointer"
       bg={
         isDropZone
-          ? '#1d4ed8 !important'
+          ? 'var(--color-blue) !important'
           : isActive(collection.id)
-            ? '#1d4ed8'
+            ? 'var(--color-blue)'
             : 'transparent'
       }
-      color={isActive(collection.id) ? 'white' : '#e1e5e9'}
+      color={isActive(collection.id) ? 'white' : 'var(--color-text-primary)'}
       border={
         isDropZone
           ? '3px dashed #3b82f6 !important'
@@ -90,7 +90,7 @@ const DroppableCollectionItem = ({
           : undefined
       }
       _hover={{
-        bg: isActive(collection.id) ? '#1e40af' : '#2a2d35'
+        bg: isActive(collection.id) ? 'var(--color-blue-hover)' : 'var(--color-border)'
       }}
       onClick={() => handleCollectionClick(collection.id)}
       transition="all 0.2s ease"
@@ -111,8 +111,8 @@ const DroppableCollectionItem = ({
         </HStack>
         <HStack gap={1} flexShrink={0}>
           <Badge
-            bg={isActive(collection.id) ? 'rgba(255,255,255,0.2)' : '#2a2d35'}
-            color={isActive(collection.id) ? 'white' : '#9ca3af'}
+            bg={isActive(collection.id) ? 'rgba(255,255,255,0.2)' : 'var(--color-border)'}
+            color={isActive(collection.id) ? 'white' : 'var(--color-text-secondary)'}
             fontSize="11px"
             px={2}
             py={1}
@@ -184,14 +184,14 @@ const CollectionsList = memo(() => {
         case 'starred':
           return '#ffd700'
         case 'recent':
-          return '#3b82f6'
+          return 'var(--color-blue)'
         case 'archived':
-          return '#6b7280'
+          return 'var(--color-text-tertiary)'
         default:
-          return '#71767b'
+          return 'var(--color-text-tertiary)'
       }
     }
-    return collection.color || '#71767b'
+    return collection.color || 'var(--color-text-tertiary)'
   }, [])
 
   const isActive = useCallback((collectionId: string) => {
@@ -235,7 +235,7 @@ const CollectionsList = memo(() => {
   if (error) {
     return (
       <Box p={3}>
-        <Text color="#ef4444" fontSize="sm">
+        <Text color="var(--color-error)" fontSize="sm">
           Error: {error}
         </Text>
       </Box>
@@ -245,7 +245,7 @@ const CollectionsList = memo(() => {
   if (isLoading) {
     return (
       <Box p={3} textAlign="center">
-        <Text color="#71767b" fontSize="sm">
+        <Text style={{ color: 'var(--color-text-tertiary)' }} fontSize="sm">
           Loading...
         </Text>
       </Box>
@@ -277,7 +277,7 @@ const CollectionsList = memo(() => {
       {userCollections.length > 0 && (
         <>
           {defaultCollections.length > 0 && (
-            <Box h="1px" bg="#2a2d35" my={2} />
+            <Box h="1px" style={{ background: 'var(--color-border)' }} my={2} />
           )}
           <For each={userCollections}>
             {(collection) => (
@@ -300,7 +300,7 @@ const CollectionsList = memo(() => {
         <Box
           p={3}
           textAlign="center"
-          color="#71767b"
+          style={{ color: 'var(--color-text-tertiary)' }}
           fontSize="sm"
           border="1px dashed #2a2d35"
           borderRadius="md"
@@ -310,8 +310,8 @@ const CollectionsList = memo(() => {
           <Button
             size="sm"
             variant="ghost"
-            color="#1d4ed8"
-            _hover={{ bg: '#2a2d35' }}
+            color="var(--color-blue)"
+            _hover={{ bg: 'var(--color-bg-hover)' }}
             onClick={() => showCreateCollection({
               onCreate: async (collectionData) => {
                 try {

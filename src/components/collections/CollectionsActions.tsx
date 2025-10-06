@@ -183,16 +183,16 @@ const CollectionsActions = memo(() => {
 
   return (
     <Box
-      bg="linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)"
+      bg="var(--gradient-modal)"
       borderBottomWidth="1px"
-      borderColor="#2a2d35"
+      style={{ borderColor: 'var(--color-border)' }}
       boxShadow="0 2px 8px rgba(0, 0, 0, 0.1)"
     >
       {showBulkActions && showTagInput ? (
         // Bulk Tag Input Mode
         <Box>
           <HStack justify="space-between" alignItems="center" w="100%" px={6} py={3}>
-            <Text fontSize="sm" color="#e1e5e9" fontWeight="500">
+            <Text fontSize="sm" style={{ color: 'var(--color-text-primary)' }} fontWeight="500">
               Manage tags for {selectedCount} bookmark{selectedCount > 1 ? 's' : ''}
             </Text>
             <HStack gap={2}>
@@ -208,8 +208,8 @@ const CollectionsActions = memo(() => {
               <Button
                 size="sm"
                 variant="ghost"
-                color="#71767b"
-                _hover={{ color: '#e1e5e9', bg: '#2a2d35' }}
+                style={{ color: 'var(--color-text-tertiary)' }}
+                _hover={{ color: 'var(--color-text-primary)', bg: 'var(--color-border)' }}
                 onClick={handleCancelTagInput}
                 fontSize="sm"
               >
@@ -235,7 +235,7 @@ const CollectionsActions = memo(() => {
             <>
               {/* Selection Info */}
               <HStack gap={2} alignItems="center">
-                <Text fontSize="sm" color="#e1e5e9" fontWeight="500">
+                <Text fontSize="sm" style={{ color: 'var(--color-text-primary)' }} fontWeight="500">
                   {selectedCount} bookmark{selectedCount > 1 ? 's' : ''} selected
                 </Text>
               </HStack>
@@ -245,8 +245,8 @@ const CollectionsActions = memo(() => {
                 <Button
                   size="sm"
                   variant="ghost"
-                  color="#22c55e"
-                  _hover={{ color: '#4ade80', bg: '#2a2d35' }}
+                  color="var(--color-success)"
+                  _hover={{ color: 'var(--color-accent)', bg: 'var(--color-border)' }}
                   onClick={handleShowTagInput}
                   fontSize="sm"
                 >
@@ -259,8 +259,8 @@ const CollectionsActions = memo(() => {
                 <Button
                   size="sm"
                   variant="ghost"
-                  color="#71767b"
-                  _hover={{ color: '#e1e5e9', bg: '#2a2d35' }}
+                  style={{ color: 'var(--color-text-tertiary)' }}
+                  _hover={{ color: 'var(--color-text-primary)', bg: 'var(--color-border)' }}
                   onClick={handleBulkArchive}
                   fontSize="sm"
                 >
@@ -273,8 +273,8 @@ const CollectionsActions = memo(() => {
                 <Button
                   size="sm"
                   variant="ghost"
-                  color="#ef4444"
-                  _hover={{ color: '#fca5a5', bg: '#2a2d35' }}
+                  color="var(--color-error)"
+                  _hover={{ color: '#fca5a5', bg: 'var(--color-border)' }}
                   onClick={handleBulkDelete}
                   fontSize="sm"
                 >
@@ -287,8 +287,8 @@ const CollectionsActions = memo(() => {
                 <Button
                   size="sm"
                   variant="ghost"
-                  color="#71767b"
-                  _hover={{ color: '#e1e5e9', bg: '#2a2d35' }}
+                  style={{ color: 'var(--color-text-tertiary)' }}
+                  _hover={{ color: 'var(--color-text-primary)', bg: 'var(--color-border)' }}
                   onClick={handleClearSelection}
                   fontSize="sm"
                 >
@@ -304,15 +304,15 @@ const CollectionsActions = memo(() => {
           <>
             {/* Custom Breadcrumb */}
             <HStack gap={2} alignItems="center">
-              <Text fontSize="sm" color="#71767b">
+              <Text fontSize="sm" style={{ color: 'var(--color-text-tertiary)' }}>
                 Collections
               </Text>
               {activeCollection && (
                 <>
-                  <Text fontSize="sm" color="#71767b">
+                  <Text fontSize="sm" style={{ color: 'var(--color-text-tertiary)' }}>
                     /
                   </Text>
-                  <Text fontSize="sm" color="#e1e5e9" fontWeight="500">
+                  <Text fontSize="sm" style={{ color: 'var(--color-text-primary)' }} fontWeight="500">
                     {activeCollection.name}
                   </Text>
                 </>
@@ -325,8 +325,8 @@ const CollectionsActions = memo(() => {
                 <Button
                   size="sm"
                   variant="ghost"
-                  color="#71767b"
-                  _hover={{ color: '#e1e5e9', bg: '#2a2d35' }}
+                  style={{ color: 'var(--color-text-tertiary)' }}
+                  _hover={{ color: 'var(--color-text-primary)', bg: 'var(--color-border)' }}
                   onClick={handleCreateCollection}
                   fontSize="sm"
                 >
@@ -342,8 +342,8 @@ const CollectionsActions = memo(() => {
                   <Button
                     size="sm"
                     variant="ghost"
-                    color="#71767b"
-                    _hover={{ color: '#e1e5e9', bg: '#2a2d35' }}
+                    style={{ color: 'var(--color-text-tertiary)' }}
+                    _hover={{ color: 'var(--color-text-primary)', bg: 'var(--color-border)' }}
                     onClick={handleEditCollection}
                     fontSize="sm"
                   >
@@ -356,8 +356,8 @@ const CollectionsActions = memo(() => {
                   <Button
                     size="sm"
                     variant="ghost"
-                    color="#ef4444"
-                    _hover={{ color: '#fca5a5', bg: '#2a2d35' }}
+                    color="var(--color-error)"
+                    _hover={{ color: '#fca5a5', bg: 'var(--color-border)' }}
                     onClick={handleDeleteCollection}
                     fontSize="sm"
                   >

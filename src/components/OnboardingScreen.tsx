@@ -43,13 +43,13 @@ const OnboardingScreen = () => {
         justify="center"
         textAlign="center"
         gap={8}
-        color="#71767b"
+        style={{ color: 'var(--color-text-tertiary)' }}
       >
-        <Box color="#3b82f6" fontSize="6xl">
+        <Box style={{ color: 'var(--color-blue)' }} fontSize="6xl">
           <LuFolderOpen />
         </Box>
         <VStack gap={3}>
-          <Text fontSize="2xl" fontWeight="600" color="#e1e5e9">
+          <Text fontSize="2xl" fontWeight="600" style={{ color: 'var(--color-text-primary)' }}>
             No bookmarks yet
           </Text>
           <Text fontSize="lg" maxW="500px">
@@ -59,9 +59,9 @@ const OnboardingScreen = () => {
         <HStack gap={4}>
           <Button
             size="lg"
-            bg="#1d4ed8"
+            style={{ background: 'var(--color-blue)' }}
             color="white"
-            _hover={{ bg: "#1e40af" }}
+            _hover={{ bg: "var(--color-blue-hover)" }}
             onClick={() => {
               const input = document.querySelector('input[data-testid="import-input"]') as HTMLInputElement | null
               input?.click()
@@ -75,9 +75,8 @@ const OnboardingScreen = () => {
           <Button
             size="lg"
             variant="outline"
-            borderColor="#2a2d35"
-            color="#e1e5e9"
-            _hover={{ bg: "#2a2d35", borderColor: "#3a3d45" }}
+            style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+            _hover={{ bg: "var(--color-border)", borderColor: "var(--color-border-hover)" }}
           >
             <HStack gap={2}>
               <LuBookmarkPlus />

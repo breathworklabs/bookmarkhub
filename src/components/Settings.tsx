@@ -25,33 +25,35 @@ const Settings = () => {
   }
 
   return (
-    <Box minH="100vh" bg="#0a0e1a" p={8}>
+    <Box minH="100vh" style={{ background: 'var(--color-bg-primary)' }} p={8}>
       <Box maxW="800px" mx="auto">
         {/* Back Button */}
         <Button
           onClick={() => navigate('/')}
           variant="ghost"
-          color="#71767b"
-          _hover={{ color: '#e1e5e9', bg: '#1c1f26' }}
+          style={{ color: 'var(--color-text-tertiary)' }}
+          _hover={{ color: 'var(--color-text-primary)', bg: '#1c1f26' }}
           mb={6}
-          leftIcon={<LuArrowLeft size={18} />}
           fontSize="14px"
         >
-          Back to Bookmarks
+          <HStack gap={2}>
+            <LuArrowLeft size={18} />
+            <Text>Back to Bookmarks</Text>
+          </HStack>
         </Button>
 
         {/* Settings Card */}
         <Box
-          bg="#1c1f26"
+          style={{ background: 'var(--color-bg-tertiary)' }}
           borderRadius="12px"
-          border="1px solid #2a2d35"
+          border="1px solid var(--color-border)"
           overflow="hidden"
           boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
         >
           {/* Header */}
-          <HStack p={6} borderBottomWidth="1px" borderColor="#2a2d35">
+          <HStack p={6} borderBottomWidth="1px" style={{ borderColor: 'var(--color-border)' }}>
             <Text fontSize="16px">⚙️</Text>
-            <Text fontSize="xl" fontWeight="600" color="#e1e5e9">
+            <Text fontSize="xl" fontWeight="600" style={{ color: 'var(--color-text-primary)' }}>
               Settings
             </Text>
           </HStack>
@@ -60,17 +62,17 @@ const Settings = () => {
           <VStack alignItems="stretch" p={6} gap={6}>
             {/* Data Management Section */}
             <Box>
-              <Text fontSize="sm" fontWeight="600" color="#e1e5e9" mb={4}>
+              <Text fontSize="sm" fontWeight="600" style={{ color: 'var(--color-text-primary)' }} mb={4}>
                 Data Management
               </Text>
 
-              <Box p={4} bg="#15171c" borderRadius="8px" border="1px solid #2a2d35">
+              <Box p={4} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
                 <VStack alignItems="stretch" gap={3}>
                   <VStack alignItems="flex-start" gap={1}>
-                    <Text fontSize="sm" fontWeight="500" color="#e1e5e9">
+                    <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
                       Clear All Data
                     </Text>
-                    <Text fontSize="xs" color="#71767b" lineHeight="1.4">
+                    <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4">
                       Delete all bookmarks, collections, and settings. This action cannot be undone.
                     </Text>
                   </VStack>
@@ -78,24 +80,26 @@ const Settings = () => {
                   <Button
                     onClick={handleClearAllData}
                     size="sm"
-                    bg="#dc2626"
+                    style={{ background: 'var(--color-error)' }}
                     color="white"
-                    _hover={{ bg: '#b91c1c' }}
-                    leftIcon={<LuTrash2 size={16} />}
+                    _hover={{ bg: 'var(--color-error-hover)' }}
                     fontWeight="500"
                     fontSize="13px"
                     h="36px"
                   >
-                    Clear All Data
+                    <HStack gap={2}>
+                      <LuTrash2 size={16} />
+                      <Text>Clear All Data</Text>
+                    </HStack>
                   </Button>
                 </VStack>
               </Box>
             </Box>
 
             {/* Info Section */}
-            <Box p={3} bg="#15171c" borderRadius="8px" border="1px solid #2a2d35">
-              <Text fontSize="xs" color="#71767b" lineHeight="1.6">
-                💡 <strong style={{ color: '#9ca3af' }}>Tip:</strong> After clearing data, you can
+            <Box p={3} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
+              <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.6">
+                💡 <strong style={{ color: 'var(--color-text-secondary)' }}>Tip:</strong> After clearing data, you can
                 re-import your bookmarks using the Chrome extension.
               </Text>
             </Box>

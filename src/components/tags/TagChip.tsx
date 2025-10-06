@@ -67,44 +67,44 @@ const TagChip = memo(({
 
   const getVariantStyles = () => {
     // Use category color if available, otherwise use variant defaults
-    const baseBg = categoryColor || '#2a2d35'
-    const hoverBg = categoryColor ? categoryColor + '80' : '#3a3d45' // Add transparency for hover
+    const baseBg = categoryColor || 'var(--color-border)'
+    const hoverBg = categoryColor ? categoryColor + '80' : 'var(--color-border-hover)' // Add transparency for hover
 
     switch (variant) {
       case 'filter':
         return {
           ...getTagStyle('filter'),
-          bg: isActive ? (categoryColor || '#1d4ed8') : baseBg,
-          color: isActive ? 'white' : (categoryColor ? 'white' : '#71767b'),
-          borderColor: isActive ? (categoryColor || '#1d4ed8') : (categoryColor || 'transparent'),
+          bg: isActive ? (categoryColor || 'var(--color-blue)') : baseBg,
+          color: isActive ? 'white' : (categoryColor ? 'white' : 'var(--color-text-tertiary)'),
+          borderColor: isActive ? (categoryColor || 'var(--color-blue)') : (categoryColor || 'transparent'),
           _hover: {
-            bg: isActive ? hoverBg : '#3a3d45',
-            color: isActive ? 'white' : '#e1e5e9',
-            borderColor: isActive ? hoverBg : '#4a5568'
+            bg: isActive ? hoverBg : 'var(--color-border-hover)',
+            color: isActive ? 'white' : 'var(--color-text-primary)',
+            borderColor: isActive ? hoverBg : 'var(--color-border-hover)'
           }
         }
       case 'editable':
         return {
           ...getTagStyle('base'),
-          bg: categoryColor || '#2a2d35',
-          color: categoryColor ? 'white' : '#e1e5e9',
-          borderColor: categoryColor || '#3a3d45',
+          bg: categoryColor || 'var(--color-border)',
+          color: categoryColor ? 'white' : 'var(--color-text-primary)',
+          borderColor: categoryColor || 'var(--color-border-hover)',
           _hover: {
             bg: hoverBg,
             color: 'white',
-            borderColor: categoryColor || '#4a5568'
+            borderColor: categoryColor || 'var(--color-border-hover)'
           }
         }
       case 'default':
       default:
         return {
           ...getTagStyle('base'),
-          bg: categoryColor || '#2a2d35',
-          color: categoryColor ? 'white' : '#71767b',
+          bg: categoryColor || 'var(--color-border)',
+          color: categoryColor ? 'white' : 'var(--color-text-tertiary)',
           borderColor: categoryColor || 'transparent',
           _hover: {
             bg: hoverBg,
-            color: '#e1e5e9'
+            color: 'var(--color-text-primary)'
           }
         }
     }

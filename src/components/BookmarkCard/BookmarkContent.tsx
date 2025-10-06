@@ -1,4 +1,4 @@
-import { Box, Text } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import { memo, useMemo } from 'react'
 import { type Bookmark } from '../../types/bookmark'
 
@@ -14,26 +14,26 @@ const BookmarkContent = memo(({ bookmark, hasMedia }: BookmarkContentProps) => {
 
   return (
     <Box flex={1}>
-      <Text
+      <Box
         fontSize="sm"
         lineHeight="1.4"
-        color="#e1e5e9"
+        style={{ color: 'var(--color-text-primary)' }}
         mb={hasMedia ? 3 : 0}
         whiteSpace="pre-line"
         dangerouslySetInnerHTML={{ __html: getContent }}
-        sx={{
+        css={{
           '& a': {
-            color: '#1da1f2',
+            color: 'var(--color-accent)',
             textDecoration: 'none',
             '&:hover': {
               textDecoration: 'underline'
             }
           },
           '& .tweet-hashtag': {
-            color: '#1da1f2'
+            color: 'var(--color-accent)'
           },
           '& .tweet-mention': {
-            color: '#1da1f2'
+            color: 'var(--color-accent)'
           }
         }}
       />

@@ -124,7 +124,7 @@ const SearchHeader = memo(() => {
         {/* Search Area */}
         <Box position="relative" maxW="400px" flex={1}>
           <HStack {...theme.styles.searchContainer} gap={2}>
-            <Box w="16px" h="16px" color="#71767b">
+            <Box w="16px" h="16px" style={{ color: 'var(--color-text-tertiary)' }}>
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -144,13 +144,15 @@ const SearchHeader = memo(() => {
         <HStack gap={3}>
           <Button
             {...useButtonStyles('secondary')}
-            bg={filterData.isFiltersPanelOpen ? '#1d4ed8' : 'transparent'}
-            color={filterData.isFiltersPanelOpen ? 'white' : '#71767b'}
-            borderColor={filterData.isFiltersPanelOpen ? '#1d4ed8' : '#2a2d35'}
+            style={{
+              background: filterData.isFiltersPanelOpen ? 'var(--color-blue)' : 'transparent',
+              color: filterData.isFiltersPanelOpen ? 'white' : 'var(--color-text-tertiary)',
+              borderColor: filterData.isFiltersPanelOpen ? 'var(--color-blue)' : 'var(--color-border)'
+            }}
             _hover={{
-              bg: filterData.isFiltersPanelOpen ? '#1e40af' : '#1a1d23',
-              color: filterData.isFiltersPanelOpen ? 'white' : '#e1e5e9',
-              borderColor: filterData.isFiltersPanelOpen ? '#1e40af' : '#3a3d45'
+              bg: filterData.isFiltersPanelOpen ? 'var(--color-blue-hover)' : 'var(--color-bg-tertiary)',
+              color: filterData.isFiltersPanelOpen ? 'white' : 'var(--color-text-primary)',
+              borderColor: filterData.isFiltersPanelOpen ? 'var(--color-blue-hover)' : 'var(--color-border-hover)'
             }}
             onClick={handleToggleFilters}
             position="relative"
@@ -160,7 +162,7 @@ const SearchHeader = memo(() => {
             {activeFilterCount > 0 && (
               <Badge
                 size="sm"
-                bg="#dc2626"
+                style={{ background: 'var(--color-error)' }}
                 color="white"
                 borderRadius="full"
                 fontSize="11px"

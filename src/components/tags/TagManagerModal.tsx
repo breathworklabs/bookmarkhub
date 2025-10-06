@@ -171,8 +171,8 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
         <Dialog.Backdrop bg="rgba(0, 0, 0, 0.85)" backdropFilter="blur(4px)" />
         <Dialog.Positioner display="flex" alignItems="center" justifyContent="center">
           <Dialog.Content
-            bg="#0f1419"
-            border="1px solid #2a2d35"
+            bg="var(--color-bg-primary)"
+            border="1px solid var(--color-border)"
             borderRadius="16px"
             boxShadow="0 25px 50px rgba(0, 0, 0, 0.6)"
             maxW="700px"
@@ -182,17 +182,17 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
           >
             {/* Header */}
             <Dialog.Header
-              bg="linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)"
+              bg="var(--gradient-modal)"
               borderBottomWidth="1px"
-              borderColor="#2a2d35"
+              borderColor="var(--color-border)"
               p={6}
             >
               <Dialog.Title>
                 <VStack align="start" gap={1}>
-                  <Text fontSize="xl" fontWeight="700" color="#e1e5e9">
+                  <Text fontSize="xl" fontWeight="700" color="var(--color-text-primary)">
                     Tag Manager
                   </Text>
-                  <Text fontSize="sm" color="#71767b">
+                  <Text fontSize="sm" color="var(--color-text-tertiary)">
                     Organize and manage your bookmark tags
                   </Text>
                 </VStack>
@@ -200,9 +200,9 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
             </Dialog.Header>
 
             {/* Navigation Tabs */}
-            <Box bg="#0f1419" px={6} py={4}>
+            <Box bg="var(--color-bg-primary)" px={6} py={4}>
               <Tabs.Root defaultValue="tags" variant="plain">
-                <Box position="relative" borderBottom="1px solid #2a2d35">
+                <Box position="relative" borderBottom="1px solid var(--color-border)">
                   <Tabs.List gap={0}>
                     <Tabs.Trigger
                       value="tags"
@@ -214,16 +214,16 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                       _selected={{
                         bg: "transparent",
                         borderBottom: "2px solid",
-                        borderColor: "#1d4ed8",
-                        color: "#e1e5e9",
+                        borderColor: "var(--color-blue)",
+                        color: "var(--color-text-primary)",
                         outline: "none"
                       }}
                       _hover={{
                         bg: "transparent",
-                        color: "#e1e5e9",
+                        color: "var(--color-text-primary)",
                         outline: "none"
                       }}
-                      color="#71767b"
+                      color="var(--color-text-tertiary)"
                       px={4}
                       py={3}
                     >
@@ -240,16 +240,16 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                       _selected={{
                         bg: "transparent",
                         borderBottom: "2px solid",
-                        borderColor: "#1d4ed8",
-                        color: "#e1e5e9",
+                        borderColor: "var(--color-blue)",
+                        color: "var(--color-text-primary)",
                         outline: "none"
                       }}
                       _hover={{
                         bg: "transparent",
-                        color: "#e1e5e9",
+                        color: "var(--color-text-primary)",
                         outline: "none"
                       }}
-                      color="#71767b"
+                      color="var(--color-text-tertiary)"
                       px={4}
                       py={3}
                     >
@@ -270,15 +270,15 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search tags..."
-                            bg="#1a1d23"
-                            border="1px solid #2a2d35"
+                            bg="var(--color-bg-tertiary)"
+                            border="1px solid var(--color-border)"
                             borderRadius="12px"
-                            color="#e1e5e9"
+                            color="var(--color-text-primary)"
                             h="44px"
                             fontSize="14px"
-                            _placeholder={{ color: '#71767b' }}
+                            _placeholder={{ color: 'var(--color-text-tertiary)' }}
                             _focus={{
-                              borderColor: '#1d4ed8',
+                              borderColor: 'var(--color-blue)',
                               boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)'
                             }}
                             pl={12}
@@ -288,7 +288,7 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                             left={4}
                             top="50%"
                             transform="translateY(-50%)"
-                            color="#71767b"
+                            color="var(--color-text-tertiary)"
                             pointerEvents="none"
                           >
                             <LuSearch size={16} />
@@ -297,16 +297,16 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
 
                         {selectedTags.length > 0 && (
                           <HStack gap={2}>
-                            <Text fontSize="sm" color="#71767b" fontWeight="500">
+                            <Text fontSize="sm" color="var(--color-text-tertiary)" fontWeight="500">
                               {selectedTags.length} selected
                             </Text>
                             {selectedTags.length > 1 && (
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                color="#22c55e"
+                                color="var(--color-success)"
                                 borderRadius="10px"
-                                _hover={{ bg: 'rgba(34, 197, 94, 0.15)', color: '#4ade80' }}
+                                _hover={{ bg: 'rgba(34, 197, 94, 0.15)', color: 'var(--color-accent)' }}
                                 onClick={() => showTagMerge({ initialSourceTags: selectedTags })}
                               >
                                 <HStack gap={1}>
@@ -318,9 +318,9 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                             <Button
                               size="sm"
                               variant="ghost"
-                              color="#ef4444"
+                              color="var(--color-error)"
                               borderRadius="10px"
-                              _hover={{ bg: 'rgba(239, 68, 68, 0.15)', color: '#f87171' }}
+                              _hover={{ bg: 'rgba(239, 68, 68, 0.15)', color: 'var(--color-error)' }}
                               onClick={handleBulkDelete}
                             >
                               <HStack gap={1}>
@@ -335,26 +335,26 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                       {/* Stats Card */}
                       <Box
                         p={4}
-                        bg="linear-gradient(135deg, #1a1d23 0%, #0f1419 100%)"
-                        border="1px solid #2a2d35"
+                        bg="var(--gradient-card)"
+                        border="1px solid var(--color-border)"
                         borderRadius="12px"
                         boxShadow="0 2px 8px rgba(0, 0, 0, 0.1)"
                       >
                         <HStack justify="space-between" align="center">
                           <HStack gap={6}>
                             <VStack align="start" gap={1}>
-                              <Text fontSize="sm" color="#71767b" fontWeight="500">
+                              <Text fontSize="sm" color="var(--color-text-tertiary)" fontWeight="500">
                                 Total Tags
                               </Text>
-                              <Text fontSize="lg" color="#e1e5e9" fontWeight="600">
+                              <Text fontSize="lg" color="var(--color-text-primary)" fontWeight="600">
                                 {tagStats.length}
                               </Text>
                             </VStack>
                             <VStack align="start" gap={1}>
-                              <Text fontSize="sm" color="#71767b" fontWeight="500">
+                              <Text fontSize="sm" color="var(--color-text-tertiary)" fontWeight="500">
                                 Total Usage
                               </Text>
-                              <Text fontSize="lg" color="#e1e5e9" fontWeight="600">
+                              <Text fontSize="lg" color="var(--color-text-primary)" fontWeight="600">
                                 {tagStats.reduce((sum, tag) => sum + tag.count, 0)}
                               </Text>
                             </VStack>
@@ -362,9 +362,9 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                           <Button
                             size="sm"
                             variant="ghost"
-                            color="#71767b"
+                            color="var(--color-text-tertiary)"
                             borderRadius="10px"
-                            _hover={{ color: '#e1e5e9', bg: '#2a2d35' }}
+                            _hover={{ color: 'var(--color-text-primary)', bg: 'var(--color-border)' }}
                             onClick={handleSelectAll}
                             fontSize="sm"
                           >
@@ -377,22 +377,22 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                       <Box
                         maxH="350px"
                         overflowY="auto"
-                        border="1px solid #2a2d35"
+                        border="1px solid var(--color-border)"
                         borderRadius="12px"
-                        bg="#1a1d23"
+                        bg="var(--color-bg-tertiary)"
                         boxShadow="inset 0 2px 4px rgba(0, 0, 0, 0.1)"
                       >
                         {filteredTags.length === 0 ? (
                           <Box p={12} textAlign="center">
                             <VStack gap={3}>
-                              <Box color="#71767b" fontSize="48px">
+                              <Box color="var(--color-text-tertiary)" fontSize="48px">
                                 🏷️
                               </Box>
-                              <Text color="#71767b" fontSize="md" fontWeight="500">
+                              <Text color="var(--color-text-tertiary)" fontSize="md" fontWeight="500">
                                 {searchQuery ? 'No tags found matching your search' : 'No tags found'}
                               </Text>
                               {!searchQuery && (
-                                <Text color="#71767b" fontSize="sm">
+                                <Text color="var(--color-text-tertiary)" fontSize="sm">
                                   Tags will appear here as you add them to bookmarks
                                 </Text>
                               )}
@@ -421,8 +421,8 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                                         h="20px"
                                         borderRadius="6px"
                                         border="2px solid"
-                                        borderColor={selectedTags.includes(tag.name) ? '#1d4ed8' : '#3a3d45'}
-                                        bg={selectedTags.includes(tag.name) ? '#1d4ed8' : 'transparent'}
+                                        borderColor={selectedTags.includes(tag.name) ? 'var(--color-blue)' : 'var(--color-border-hover)'}
+                                        bg={selectedTags.includes(tag.name) ? 'var(--color-blue)' : 'transparent'}
                                         display="flex"
                                         alignItems="center"
                                         justifyContent="center"
@@ -444,10 +444,10 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                                           }}
                                           onBlur={handleSaveEdit}
                                           size="sm"
-                                          bg="#2a2d35"
-                                          border="1px solid #3a3d45"
+                                          bg="var(--color-border)"
+                                          border="1px solid var(--color-border-hover)"
                                           borderRadius="8px"
-                                          _focus={{ borderColor: '#1d4ed8' }}
+                                          _focus={{ borderColor: 'var(--color-blue)' }}
                                           autoFocus
                                           onClick={(e) => e.stopPropagation()}
                                         />
@@ -460,7 +460,7 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                                           />
                                           <Badge
                                             bg="rgba(42, 45, 53, 0.8)"
-                                            color="#71767b"
+                                            color="var(--color-text-tertiary)"
                                             fontSize="xs"
                                             px={2.5}
                                             py={1}
@@ -477,9 +477,9 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                                       <IconButton
                                         size="sm"
                                         variant="ghost"
-                                        color="#71767b"
+                                        color="var(--color-text-tertiary)"
                                         borderRadius="8px"
-                                        _hover={{ color: '#e1e5e9', bg: 'rgba(42, 45, 53, 0.8)' }}
+                                        _hover={{ color: 'var(--color-text-primary)', bg: 'rgba(42, 45, 53, 0.8)' }}
                                         onClick={(e) => {
                                           e.stopPropagation()
                                           handleStartEdit(tag.name)
@@ -490,9 +490,9 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                                       <IconButton
                                         size="sm"
                                         variant="ghost"
-                                        color="#ef4444"
+                                        color="var(--color-error)"
                                         borderRadius="8px"
-                                        _hover={{ color: '#f87171', bg: 'rgba(239, 68, 68, 0.15)' }}
+                                        _hover={{ color: 'var(--color-error)', bg: 'rgba(239, 68, 68, 0.15)' }}
                                         onClick={(e) => {
                                           e.stopPropagation()
                                           handleDeleteTag(tag.name)
@@ -523,20 +523,20 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
 
             {/* Footer */}
             <Dialog.Footer
-              bg="linear-gradient(135deg, #0f1419 0%, #1a1d23 100%)"
+              bg="var(--gradient-modal)"
               borderTopWidth="1px"
-              borderColor="#2a2d35"
+              borderColor="var(--color-border)"
               p={6}
             >
               <HStack justify="space-between" w="100%">
-                <Text fontSize="sm" color="#71767b">
+                <Text fontSize="sm" color="var(--color-text-tertiary)">
                   Organize your tags and create categories for better bookmark management
                 </Text>
                 <Button
                   variant="ghost"
-                  color="#71767b"
+                  color="var(--color-text-tertiary)"
                   borderRadius="10px"
-                  _hover={{ color: '#e1e5e9', bg: 'rgba(42, 45, 53, 0.5)' }}
+                  _hover={{ color: 'var(--color-text-primary)', bg: 'rgba(42, 45, 53, 0.5)' }}
                   onClick={onClose}
                 >
                   Close

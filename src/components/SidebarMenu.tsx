@@ -57,11 +57,11 @@ const SidebarMenu = () => {
     <Box {...theme.styles.container.sidebar}>
       <VStack alignItems="stretch" gap={6} h="full">
         {/* Logo */}
-        <HStack gap={3} pb={4} borderBottomWidth="1px" borderColor="#2a2d35">
+        <HStack gap={3} pb={4} borderBottomWidth="1px" style={{ borderColor: 'var(--color-border)' }}>
           <Box
             w={8}
             h={8}
-            bg="linear-gradient(135deg, #1DA1F2, #8B5CF6)"
+            bg="var(--gradient-brand)"
             borderRadius="lg"
             display="flex"
             alignItems="center"
@@ -71,7 +71,7 @@ const SidebarMenu = () => {
           >
             X
           </Box>
-          <Text fontSize="lg" fontWeight="bold" color="#e1e5e9">
+          <Text fontSize="lg" fontWeight="bold" style={{ color: 'var(--color-text-primary)' }}>
             BookmarkX
           </Text>
         </HStack>
@@ -87,13 +87,13 @@ const SidebarMenu = () => {
                   p={3}
                   borderRadius="12px"
                   cursor="pointer"
-                  bg={isActive ? '#1d4ed8' : 'transparent'}
-                  color={isActive ? 'white' : '#71767b'}
+                  bg={isActive ? 'var(--color-blue)' : 'transparent'}
+                  color={isActive ? 'white' : 'var(--color-text-tertiary)'}
                   fontSize="14px"
                   fontWeight={isActive ? '600' : '500'}
                   _hover={{
-                    bg: isActive ? '#1e40af' : '#2a2d35',
-                    color: isActive ? 'white' : '#e1e5e9'
+                    bg: isActive ? 'var(--color-blue-hover)' : 'var(--color-border)',
+                    color: isActive ? 'white' : 'var(--color-text-primary)'
                   }}
                   transition="all 0.2s"
                   onClick={() => handleItemClick(item)}
@@ -104,8 +104,8 @@ const SidebarMenu = () => {
                 <Text flex={1}>{item.label}</Text>
                 {item.count && (
                   <Badge
-                    bg={isActive ? 'rgba(255,255,255,0.2)' : '#2a2d35'}
-                    color={isActive ? 'white' : '#9ca3af'}
+                    bg={isActive ? 'rgba(255,255,255,0.2)' : 'var(--color-border)'}
+                    color={isActive ? 'white' : 'var(--color-text-secondary)'}
                     fontSize="11px"
                     px={2}
                     py={1}
@@ -116,7 +116,7 @@ const SidebarMenu = () => {
                 )}
                 {item.badge && (
                   <Badge
-                    bg="#dc2626"
+                    style={{ background: 'var(--color-error)' }}
                     color="white"
                     fontSize="10px"
                     px={2}
@@ -133,17 +133,17 @@ const SidebarMenu = () => {
         </VStack>
 
         {/* Settings */}
-        <VStack alignItems="stretch" borderTopWidth="1px" borderColor="#2a2d35" pt={4} mt="auto">
+        <VStack alignItems="stretch" borderTopWidth="1px" style={{ borderColor: 'var(--color-border)' }} pt={4} mt="auto">
           <HStack
             p={3}
             borderRadius="12px"
             cursor="pointer"
-            color="#71767b"
+            style={{ color: 'var(--color-text-tertiary)' }}
             fontSize="14px"
             fontWeight="500"
             _hover={{
-              bg: '#2a2d35',
-              color: '#e1e5e9'
+              bg: 'var(--color-border)',
+              color: 'var(--color-text-primary)'
             }}
             transition="all 0.2s"
             onClick={() => {

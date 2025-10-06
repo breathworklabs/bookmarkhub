@@ -134,11 +134,10 @@ const ImageModal = ({ isOpen, onClose, images, initialIndex = 0, title }: ImageM
               <Box
                 minW="300px"
                 minH="200px"
-                bg="#0f1419"
+                style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-tertiary)' }}
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                color="#71767b"
                 borderRadius="8px"
               >
                 Failed to load image

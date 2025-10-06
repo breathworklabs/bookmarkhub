@@ -91,8 +91,8 @@ const DateRangeFilterComponent = () => {
     <>
       <VStack alignItems="start" gap={2} flex="1" minW="220px">
         <HStack gap={2} alignItems="center">
-          <LuCalendar size={14} color="#71767b" />
-          <Text fontSize="13px" fontWeight="500" color="#e1e5e9">
+          <LuCalendar size={14} style={{ color: 'var(--color-text-tertiary)' }} />
+          <Text fontSize="13px" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
             Date Range
           </Text>
         </HStack>
@@ -110,20 +110,18 @@ const DateRangeFilterComponent = () => {
               minH="32px"
               maxH="32px"
               fontSize="12px"
-              bg="#1a1d23"
-              borderColor="#2a2d35"
-              color="#e1e5e9"
+              style={{background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
               border="1px solid"
               borderRadius="6px"
               px={3}
               py={0}
-              _hover={{ borderColor: '#3a3d45', bg: '#252932' }}
-              _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
-              _open={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
+              _hover={{ borderColor: 'var(--color-border-hover)', bg: 'var(--color-bg-hover)' }}
+              _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
+              _open={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
             >
               <Select.ValueText
                 placeholder="Select date range"
-                color="#e1e5e9"
+                style={{ color: 'var(--color-text-primary)' }}
                 fontSize="12px"
               >
                 {dateRangeFilter.type === 'custom' && dateRangeFilter.customStart
@@ -133,14 +131,14 @@ const DateRangeFilterComponent = () => {
               </Select.ValueText>
             </Select.Trigger>
             <Select.IndicatorGroup>
-              <Select.Indicator color="#71767b" />
+              <Select.Indicator style={{ color: 'var(--color-text-tertiary)' }} />
             </Select.IndicatorGroup>
           </Select.Control>
           <Portal>
             <Select.Positioner>
               <Select.Content
-                bg="#1a1d23"
-                border="1px solid #2a2d35"
+                style={{ background: 'var(--color-bg-tertiary)' }}
+                border="1px solid var(--color-border)"
                 borderRadius="6px"
                 boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
                 maxH="240px"
@@ -150,24 +148,24 @@ const DateRangeFilterComponent = () => {
                   <Select.Item
                     item={option}
                     key={option.value}
-                    color="#e1e5e9"
+                    style={{ color: 'var(--color-text-primary)' }}
                     fontSize="12px"
                     bg="transparent"
                     _hover={{
-                      bg: '#2a2d35',
-                      color: '#e1e5e9'
+                      bg: 'var(--color-border)',
+                      color: 'var(--color-text-primary)'
                     }}
                     _focus={{
-                      bg: '#2a2d35',
-                      color: '#e1e5e9'
+                      bg: 'var(--color-border)',
+                      color: 'var(--color-text-primary)'
                     }}
                     _selected={{
-                      bg: '#1d4ed8 !important',
+                      bg: 'var(--color-blue) !important',
                       color: 'white !important'
                     }}
                     _highlighted={{
-                      bg: '#2a2d35',
-                      color: '#e1e5e9'
+                      bg: 'var(--color-border)',
+                      color: 'var(--color-text-primary)'
                     }}
                     px={3}
                     py={2}
@@ -199,8 +197,8 @@ const DateRangeFilterComponent = () => {
           onClick={() => setShowCustomPicker(false)}
         >
           <Box
-            bg="#1a1d23"
-            border="1px solid #2a2d35"
+            style={{ background: 'var(--color-bg-tertiary)' }}
+            border="1px solid var(--color-border)"
             borderRadius="8px"
             p={6}
             w="400px"
@@ -208,13 +206,13 @@ const DateRangeFilterComponent = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <VStack gap={4} alignItems="stretch">
-              <Text fontSize="16px" fontWeight="600" color="#e1e5e9">
+              <Text fontSize="16px" fontWeight="600" style={{ color: 'var(--color-text-primary)' }}>
                 Select Custom Date Range
               </Text>
 
               <VStack gap={3} alignItems="stretch">
                 <Box>
-                  <Text fontSize="12px" color="#71767b" mb={2}>
+                  <Text fontSize="12px" style={{ color: 'var(--color-text-tertiary)' }} mb={2}>
                     Start Date
                   </Text>
                   <Box className="custom-datepicker" w="100%">
@@ -227,12 +225,10 @@ const DateRangeFilterComponent = () => {
                         <Input
                           size="sm"
                           w="100%"
-                          bg="#1a1d23"
-                          borderColor="#2a2d35"
-                          color="#e1e5e9"
-                          _placeholder={{ color: '#71767b' }}
-                          _hover={{ borderColor: '#3a3d45' }}
-                          _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
+                          style={{background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
+                          _placeholder={{ color: 'var(--color-text-tertiary)' }}
+                          _hover={{ borderColor: 'var(--color-border-hover)' }}
+                          _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
                           h="32px"
                           fontSize="12px"
                           placeholder="Select start date"
@@ -243,7 +239,7 @@ const DateRangeFilterComponent = () => {
                 </Box>
 
                 <Box>
-                  <Text fontSize="12px" color="#71767b" mb={2}>
+                  <Text fontSize="12px" style={{ color: 'var(--color-text-tertiary)' }} mb={2}>
                     End Date (Optional)
                   </Text>
                   <Box className="custom-datepicker" w="100%">
@@ -257,12 +253,10 @@ const DateRangeFilterComponent = () => {
                         <Input
                           size="sm"
                           w="100%"
-                          bg="#1a1d23"
-                          borderColor="#2a2d35"
-                          color="#e1e5e9"
-                          _placeholder={{ color: '#71767b' }}
-                          _hover={{ borderColor: '#3a3d45' }}
-                          _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
+                          style={{background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
+                          _placeholder={{ color: 'var(--color-text-tertiary)' }}
+                          _hover={{ borderColor: 'var(--color-border-hover)' }}
+                          _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
                           h="32px"
                           fontSize="12px"
                           placeholder="Select end date"
@@ -278,21 +272,19 @@ const DateRangeFilterComponent = () => {
                 <Button
                   size="sm"
                   variant="outline"
-                  borderColor="#2a2d35"
-                  color="#71767b"
-                  bg="transparent"
+                  style={{borderColor: 'var(--color-border)', color: 'var(--color-text-tertiary)', background: 'transparent' }}
                   fontSize="12px"
-                  _hover={{ color: '#e1e5e9', bg: '#2a2d35' }}
+                  _hover={{ color: 'var(--color-text-primary)', bg: 'var(--color-border)' }}
                   onClick={handleCustomRangeCancel}
                 >
                   Cancel
                 </Button>
                 <Button
                   size="sm"
-                  bg="#1d4ed8"
+                  style={{ background: 'var(--color-blue)' }}
                   color="white"
                   fontSize="12px"
-                  _hover={{ bg: '#1e40af' }}
+                  _hover={{ bg: 'var(--color-blue-hover)' }}
                   onClick={handleCustomRangeApply}
                   disabled={!tempStartDate}
                 >
@@ -317,47 +309,47 @@ const DateRangeFilterComponent = () => {
           }
 
           .custom-datepicker .react-datepicker {
-            background-color: #1a1d23 !important;
-            border: 1px solid #2a2d35 !important;
+            background-color: var(--color-bg-tertiary) !important;
+            border: 1px solid var(--color-border) !important;
             border-radius: 6px !important;
-            color: #e1e5e9 !important;
+            color: var(--color-text-primary) !important;
             font-family: inherit !important;
             font-size: 12px !important;
           }
 
           .custom-datepicker .react-datepicker__header {
-            background-color: #2a2d35 !important;
-            border-bottom: 1px solid #3a3d45 !important;
+            background-color: var(--color-border) !important;
+            border-bottom: 1px solid var(--color-border-hover) !important;
             border-radius: 6px 6px 0 0 !important;
           }
 
           .custom-datepicker .react-datepicker__current-month {
-            color: #e1e5e9 !important;
+            color: var(--color-text-primary) !important;
             font-weight: 600 !important;
           }
 
           .custom-datepicker .react-datepicker__day-name {
-            color: #71767b !important;
+            color: var(--color-text-tertiary) !important;
             font-weight: 500 !important;
           }
 
           .custom-datepicker .react-datepicker__day {
-            color: #e1e5e9 !important;
+            color: var(--color-text-primary) !important;
           }
 
           .custom-datepicker .react-datepicker__day:hover {
-            background-color: #3a3d45 !important;
+            background-color: var(--color-border-hover) !important;
             border-radius: 4px !important;
           }
 
           .custom-datepicker .react-datepicker__day--selected {
-            background-color: #1d4ed8 !important;
+            background-color: var(--color-blue) !important;
             color: white !important;
             border-radius: 4px !important;
           }
 
           .custom-datepicker .react-datepicker__day--today {
-            background-color: #2a2d35 !important;
+            background-color: var(--color-border) !important;
             border-radius: 4px !important;
           }
 
@@ -366,15 +358,15 @@ const DateRangeFilterComponent = () => {
           }
 
           .custom-datepicker .react-datepicker__navigation--previous {
-            border-right-color: #71767b !important;
+            border-right-color: var(--color-text-tertiary) !important;
           }
 
           .custom-datepicker .react-datepicker__navigation--next {
-            border-left-color: #71767b !important;
+            border-left-color: var(--color-text-tertiary) !important;
           }
 
           .custom-datepicker .react-datepicker__navigation:hover span::before {
-            border-color: #e1e5e9 !important;
+            border-color: var(--color-text-primary) !important;
           }
         `}
       </style>

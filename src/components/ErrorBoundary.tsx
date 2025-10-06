@@ -64,25 +64,25 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <Box
           p={8}
-          bg="#1a1d23"
-          border="1px solid #dc2626"
+          style={{ background: 'var(--color-bg-tertiary)' }}
+          border="1px solid var(--color-error)"
           borderRadius="8px"
           maxW="500px"
           mx="auto"
           mt={8}
         >
           <VStack gap={4} alignItems="center" textAlign="center">
-            <Box color="#dc2626">
+            <Box color="var(--color-error)">
               <LuTriangleAlert size={48} />
             </Box>
 
             <VStack gap={2}>
-              <Text fontSize="18px" fontWeight="600" color="#e1e5e9">
+              <Text fontSize="18px" fontWeight="600" style={{ color: 'var(--color-text-primary)' }}>
                 Something went wrong
               </Text>
 
               {this.state.error && (
-                <Text fontSize="14px" color="#71767b" maxW="400px">
+                <Text fontSize="14px" style={{ color: 'var(--color-text-tertiary)' }} maxW="400px">
                   {createUserFriendlyMessage(this.state.error)}
                 </Text>
               )}
@@ -91,9 +91,9 @@ export class ErrorBoundary extends Component<Props, State> {
             <HStack gap={3}>
               <Button
                 size="sm"
-                bg="#1d4ed8"
+                style={{ background: 'var(--color-blue)' }}
                 color="white"
-                _hover={{ bg: '#1e40af' }}
+                _hover={{ bg: 'var(--color-blue-hover)' }}
                 onClick={this.handleRetry}
               >
                 <LuRefreshCw size={16} style={{ marginRight: '8px' }} />
@@ -103,9 +103,8 @@ export class ErrorBoundary extends Component<Props, State> {
               <Button
                 size="sm"
                 variant="outline"
-                borderColor="#2a2d35"
-                color="#71767b"
-                _hover={{ borderColor: '#3a3d45', color: '#e1e5e9' }}
+                style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-tertiary)' }}
+                _hover={{ borderColor: 'var(--color-border-hover)', color: 'var(--color-text-primary)' }}
                 onClick={() => window.location.reload()}
               >
                 Reload Page
@@ -116,12 +115,12 @@ export class ErrorBoundary extends Component<Props, State> {
               <Box
                 mt={4}
                 p={3}
-                bg="#0f1419"
-                border="1px solid #2a2d35"
+                style={{ background: 'var(--color-bg-primary)' }}
+                border="1px solid var(--color-border)"
                 borderRadius="4px"
                 w="100%"
               >
-                <Text fontSize="12px" color="#71767b" fontFamily="mono">
+                <Text fontSize="12px" style={{ color: 'var(--color-text-tertiary)' }} fontFamily="mono">
                   <strong>Error Details:</strong><br />
                   {this.state.error.message}<br />
                   {this.state.error.context?.component && (

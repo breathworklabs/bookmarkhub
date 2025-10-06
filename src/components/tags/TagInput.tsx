@@ -210,17 +210,17 @@ const TagInput = memo(({
         onFocus={handleFocus}
         onBlur={handleBlur}
         placeholder={placeholder}
-        bg="#1a1d23"
-        border="1px solid #2a2d35"
+        bg="var(--color-bg-tertiary)"
+        border="1px solid var(--color-border)"
         borderRadius="8px"
-        color="#e1e5e9"
-        _placeholder={{ color: '#71767b' }}
+        color="var(--color-text-primary)"
+        _placeholder={{ color: 'var(--color-text-tertiary)' }}
         _hover={{
-          borderColor: '#3a3d45'
+          borderColor: 'var(--color-border-hover)'
         }}
         _focus={{
-          borderColor: '#1d4ed8',
-          boxShadow: '0 0 0 1px #1d4ed8'
+          borderColor: 'var(--color-blue)',
+          boxShadow: '0 0 0 1px var(--color-blue)'
         }}
         {...sizeStyles.input}
       />
@@ -233,8 +233,8 @@ const TagInput = memo(({
           left={0}
           right={0}
           mt={1}
-          bg="#1a1d23"
-          border="1px solid #2a2d35"
+          bg="var(--color-bg-tertiary)"
+          border="1px solid var(--color-border)"
           borderRadius="8px"
           boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
           zIndex={1000}
@@ -250,11 +250,11 @@ const TagInput = memo(({
                     key={suggestion.tag}
                     px={3}
                     cursor="pointer"
-                    bg={focusedIndex === index ? '#2a2d35' : 'transparent'}
-                    color={focusedIndex === index ? '#e1e5e9' : '#9ca3af'}
+                    bg={focusedIndex === index ? 'var(--color-border)' : 'transparent'}
+                    color={focusedIndex === index ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'}
                     _hover={{
-                      bg: '#2a2d35',
-                      color: '#e1e5e9'
+                      bg: 'var(--color-border)',
+                      color: 'var(--color-text-primary)'
                     }}
                     onClick={() => handleAddTag(suggestion.tag)}
                     transition="all 0.15s ease"
@@ -266,7 +266,7 @@ const TagInput = memo(({
                         {suggestion.type === 'category' && (
                           <Badge
                             bg="rgba(29, 78, 216, 0.2)"
-                            color="#60a5fa"
+                            color="var(--color-blue)"
                             fontSize="xs"
                             px={2}
                             py={0.5}
@@ -278,7 +278,7 @@ const TagInput = memo(({
                         {suggestion.type === 'hierarchical' && (
                           <Badge
                             bg="rgba(34, 197, 94, 0.2)"
-                            color="#4ade80"
+                            color="var(--color-accent)"
                             fontSize="xs"
                             px={2}
                             py={0.5}
@@ -311,12 +311,12 @@ const TagInput = memo(({
               <Box
                 px={3}
                 cursor="pointer"
-                bg={focusedIndex === suggestions.length ? '#2a2d35' : 'transparent'}
-                color={focusedIndex === suggestions.length ? '#e1e5e9' : '#71767b'}
-                borderTop="1px solid #2a2d35"
+                bg={focusedIndex === suggestions.length ? 'var(--color-border)' : 'transparent'}
+                color={focusedIndex === suggestions.length ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)'}
+                borderTop="1px solid var(--color-border)"
                 _hover={{
-                  bg: '#2a2d35',
-                  color: '#e1e5e9'
+                  bg: 'var(--color-border)',
+                  color: 'var(--color-text-primary)'
                 }}
                 onClick={() => handleAddTag(inputValue.trim())}
                 transition="all 0.15s ease"

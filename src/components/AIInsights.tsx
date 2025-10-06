@@ -35,9 +35,9 @@ const AIInsights = () => {
           top={0}
           right={0}
           w="320px"
-          bg="#16181c"
+          bg="var(--color-bg-secondary)"
           borderLeftWidth="1px"
-          borderColor="#2a2d35"
+          style={{ borderColor: 'var(--color-border)' }}
           p={5}
           overflowY="auto"
           h="100vh"
@@ -54,12 +54,12 @@ const AIInsights = () => {
           }}
         >
       <VStack alignItems="stretch" gap={6}>
-        <Text fontWeight="600" color="#e1e5e9" fontSize="18px">
+        <Text fontWeight="600" style={{ color: 'var(--color-text-primary)' }} fontSize="18px">
           AI Insights
         </Text>
 
         <VStack alignItems="stretch" gap={4}>
-          <Text fontWeight="600" color="#e1e5e9" fontSize="14px">Trending Topics</Text>
+          <Text fontWeight="600" style={{ color: 'var(--color-text-primary)' }} fontSize="14px">Trending Topics</Text>
           <VStack alignItems="stretch" gap={2} w="full">
             <For each={['AI & Machine Learning', 'Web Development', 'Tesla & EVs', 'Crypto & Blockchain']}>
               {(topic, index) => (
@@ -68,18 +68,18 @@ const AIInsights = () => {
                   justify="space-between"
                   p={3}
                   w="full"
-                  bg="#1a1d23"
-                  border="1px solid #2a2d35"
+                  style={{ background: 'var(--color-bg-tertiary)' }}
+                  border="1px solid var(--color-border)"
                   borderRadius="12px"
                   cursor="pointer"
                   _hover={{
-                    bg: '#252932',
-                    borderColor: '#3a3d45'
+                    bg: 'var(--color-bg-hover)',
+                    borderColor: 'var(--color-border-hover)'
                   }}
                   transition="all 0.2s"
                 >
-                  <Text fontSize="13px" color="#e1e5e9" fontWeight="500" flex={1}>{topic}</Text>
-                  <Text fontSize="11px" color="#71767b">{Math.floor(Math.random() * 50 + 10)}</Text>
+                  <Text fontSize="13px" style={{ color: 'var(--color-text-primary)' }} fontWeight="500" flex={1}>{topic}</Text>
+                  <Text fontSize="11px" style={{ color: 'var(--color-text-tertiary)' }}>{Math.floor(Math.random() * 50 + 10)}</Text>
                 </HStack>
               )}
             </For>
@@ -87,29 +87,29 @@ const AIInsights = () => {
         </VStack>
 
         <VStack alignItems="stretch" gap={4}>
-          <Text fontWeight="600" color="#e1e5e9" fontSize="14px">Smart Suggestions</Text>
+          <Text fontWeight="600" style={{ color: 'var(--color-text-primary)' }} fontSize="14px">Smart Suggestions</Text>
           <VStack alignItems="stretch" gap={3} w="full">
             <Box
               w="full"
               p={4}
-              bg="#1a1d23"
-              border="1px solid #1d4ed8"
+              style={{ background: 'var(--color-bg-tertiary)' }}
+              border="1px solid var(--color-blue)"
               borderRadius="12px"
               borderLeftWidth="4px"
-              borderLeftColor="#1d4ed8"
+              borderLeftColor="var(--color-blue)"
             >
-              <Text fontSize="13px" color="#a5b4fc" lineHeight="1.4" mb={3}>
+              <Text fontSize="13px" color="var(--color-blue)" lineHeight="1.4" mb={3}>
                 You have 12 bookmarks about AI that could be organized into a collection.
               </Text>
               <Button
                 size="xs"
-                bg="#1d4ed8"
+                style={{ background: 'var(--color-blue)' }}
                 color="white"
                 fontSize="11px"
                 px={3}
                 py={1}
                 borderRadius="8px"
-                _hover={{ bg: '#1e40af' }}
+                _hover={{ bg: 'var(--color-blue-hover)' }}
               >
                 Create Collection
               </Button>
@@ -118,24 +118,24 @@ const AIInsights = () => {
             <Box
               w="full"
               p={4}
-              bg="#1a1d23"
-              border="1px solid #059669"
+              style={{ background: 'var(--color-bg-tertiary)' }}
+              border="1px solid var(--color-success)"
               borderRadius="12px"
               borderLeftWidth="4px"
-              borderLeftColor="#059669"
+              borderLeftColor="var(--color-success)"
             >
-              <Text fontSize="13px" color="#86efac" lineHeight="1.4" mb={3}>
+              <Text fontSize="13px" color="var(--color-accent)" lineHeight="1.4" mb={3}>
                 3 of your bookmarked links are no longer available.
               </Text>
               <Button
                 size="xs"
-                bg="#059669"
+                bg="var(--color-success)"
                 color="white"
                 fontSize="11px"
                 px={3}
                 py={1}
                 borderRadius="8px"
-                _hover={{ bg: '#047857' }}
+                _hover={{ bg: 'var(--color-success)' }}
               >
                 Review Links
               </Button>
@@ -144,7 +144,7 @@ const AIInsights = () => {
         </VStack>
 
         <VStack alignItems="stretch" gap={3}>
-          <Text fontWeight="600" color="#e1e5e9" fontSize="14px">Recent Activity</Text>
+          <Text fontWeight="600" style={{ color: 'var(--color-text-primary)' }} fontSize="14px">Recent Activity</Text>
           <VStack alignItems="stretch" gap={2}>
             <For each={[
               { action: 'Added 5 new bookmarks', time: '2 hours ago' },
@@ -153,10 +153,10 @@ const AIInsights = () => {
             ]}>
               {(activity, index) => (
                 <VStack key={index} alignItems="start" gap={1} py={2}>
-                  <Text fontSize="13px" color="#e1e5e9" fontWeight="400">
+                  <Text fontSize="13px" style={{ color: 'var(--color-text-primary)' }} fontWeight="400">
                     {activity.action}
                   </Text>
-                  <Text fontSize="12px" color="#71767b">
+                  <Text fontSize="12px" style={{ color: 'var(--color-text-tertiary)' }}>
                     {activity.time}
                   </Text>
                 </VStack>

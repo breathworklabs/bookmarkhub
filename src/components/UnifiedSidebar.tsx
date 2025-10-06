@@ -58,11 +58,11 @@ const UnifiedSidebar = memo(() => {
     <Box {...componentStyles.container.sidebar}>
       <VStack alignItems="stretch" gap={6} h="full">
         {/* Logo */}
-        <HStack gap={3} pb={4} borderBottomWidth="1px" borderColor="#2a2d35">
+        <HStack gap={3} pb={4} borderBottomWidth="1px" style={{ borderColor: 'var(--color-border)' }}>
           <Box
             w={8}
             h={8}
-            bg="linear-gradient(135deg, #1DA1F2, #8B5CF6)"
+            bg="var(--gradient-brand)"
             borderRadius="lg"
             display="flex"
             alignItems="center"
@@ -72,7 +72,7 @@ const UnifiedSidebar = memo(() => {
           >
             X
           </Box>
-          <Text fontSize="lg" fontWeight="bold" color="#e1e5e9">
+          <Text fontSize="lg" fontWeight="bold" style={{ color: 'var(--color-text-primary)' }}>
             BookmarkX
           </Text>
         </HStack>
@@ -92,8 +92,8 @@ const UnifiedSidebar = memo(() => {
             </Box>
             <Text flex={1}>All Bookmarks</Text>
             <Badge
-              bg={isActive('All Bookmarks') ? 'rgba(255,255,255,0.2)' : '#2a2d35'}
-              color={isActive('All Bookmarks') ? 'white' : '#9ca3af'}
+              bg={isActive('All Bookmarks') ? 'rgba(255,255,255,0.2)' : 'var(--color-border)'}
+              color={isActive('All Bookmarks') ? 'white' : 'var(--color-text-secondary)'}
               fontSize="11px"
               px={2}
               py={1}
@@ -107,7 +107,7 @@ const UnifiedSidebar = memo(() => {
         {/* Collections Section */}
         <VStack alignItems="stretch" gap={0} flex={1}>
           <HStack justify="space-between" align="center" px={3} py={2}>
-            <Text fontWeight="600" fontSize="14px" color="#e1e5e9">
+            <Text fontWeight="600" fontSize="14px" style={{ color: 'var(--color-text-primary)' }}>
               Collections
             </Text>
             <IconButton
@@ -136,7 +136,7 @@ const UnifiedSidebar = memo(() => {
 
         {/* Bottom Navigation */}
         <VStack alignItems="stretch" gap={2}>
-          <Separator borderColor="#2a2d35" />
+          <Separator style={{ borderColor: 'var(--color-border)' }} />
 
           <HStack
             {...useNavigationStyles(isActive('AI Insights'))}
@@ -151,7 +151,7 @@ const UnifiedSidebar = memo(() => {
             </Box>
             <Text flex={1}>AI Insights</Text>
             <Badge
-              bg="#dc2626"
+              style={{ background: 'var(--color-error)' }}
               color="white"
               fontSize="10px"
               px={2}
@@ -167,13 +167,13 @@ const UnifiedSidebar = memo(() => {
             p={3}
             borderRadius="12px"
             cursor="pointer"
-            bg={isActive('Shared') ? '#1d4ed8' : 'transparent'}
-            color={isActive('Shared') ? 'white' : '#71767b'}
+            bg={isActive('Shared') ? 'var(--color-blue)' : 'transparent'}
+            color={isActive('Shared') ? 'white' : 'var(--color-text-tertiary)'}
             fontSize="14px"
             fontWeight={isActive('Shared') ? '600' : '500'}
             _hover={{
-              bg: isActive('Shared') ? '#1e40af' : '#2a2d35',
-              color: isActive('Shared') ? 'white' : '#e1e5e9'
+              bg: isActive('Shared') ? 'var(--color-blue-hover)' : 'var(--color-border)',
+              color: isActive('Shared') ? 'white' : 'var(--color-text-primary)'
             }}
             transition="all 0.2s"
             onClick={() => handleNavItemClick('Shared')}
@@ -185,17 +185,17 @@ const UnifiedSidebar = memo(() => {
           </HStack>
 
           {/* Settings */}
-          <VStack alignItems="stretch" borderTopWidth="1px" borderColor="#2a2d35" pt={4}>
+          <VStack alignItems="stretch" borderTopWidth="1px" style={{ borderColor: 'var(--color-border)' }} pt={4}>
             <HStack
               p={3}
               borderRadius="12px"
               cursor="pointer"
-              color="#71767b"
+              style={{ color: 'var(--color-text-tertiary)' }}
               fontSize="14px"
               fontWeight="500"
               _hover={{
-                bg: '#2a2d35',
-                color: '#e1e5e9'
+                bg: 'var(--color-border)',
+                color: 'var(--color-text-primary)'
               }}
               transition="all 0.2s"
               onClick={() => {

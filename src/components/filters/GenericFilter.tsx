@@ -65,8 +65,8 @@ export const GenericFilter: React.FC<GenericFilterProps> = ({
   return (
     <VStack alignItems="start" gap={2} flex="1" minW="220px" maxW="25%">
       <HStack gap={2} alignItems="center">
-        <Icon size={14} color="#71767b" />
-        <Text fontSize="13px" fontWeight="500" color="#e1e5e9">
+        <Icon size={14} color="var(--color-text-tertiary)" />
+        <Text fontSize="13px" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
           {label}
         </Text>
       </HStack>
@@ -86,21 +86,18 @@ export const GenericFilter: React.FC<GenericFilterProps> = ({
             minH="32px"
             maxH="32px"
             fontSize="12px"
-            bg="#1a1d23"
-            borderColor="#2a2d35"
-            color="#e1e5e9"
+            style={{background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
             border="1px solid"
             borderRadius="6px"
             px={3}
             py={0}
-            _placeholder={{ color: '#71767b' }}
-            _hover={{ borderColor: '#3a3d45' }}
-            _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
+            _placeholder={{ color: 'var(--color-text-tertiary)' }}
+            _hover={{ borderColor: 'var(--color-border-hover)' }}
+            _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
           />
           <Combobox.IndicatorGroup>
             <Combobox.ClearTrigger
-              color="#71767b"
-              bg="#1a1d23"
+              style={{color: 'var(--color-text-tertiary)', background: 'var(--color-bg-tertiary)'}}
               border="0"
               h="30px"
               mr="-7px"
@@ -110,8 +107,7 @@ export const GenericFilter: React.FC<GenericFilterProps> = ({
               p="0"
             />
             <Combobox.Trigger
-              color="#71767b"
-              bg="#1a1d23"
+              style={{color: 'var(--color-text-tertiary)', background: 'var(--color-bg-tertiary)'}}
               border="0"
               h="30px"
               mr="-7px"
@@ -127,15 +123,15 @@ export const GenericFilter: React.FC<GenericFilterProps> = ({
         <Portal>
           <Combobox.Positioner>
             <Combobox.Content
-              bg="#1a1d23"
-              border="1px solid #2a2d35"
+              style={{ background: 'var(--color-bg-tertiary)' }}
+              border="1px solid var(--color-border)"
               borderRadius="6px"
               boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
               maxH="240px"
               overflowY="auto"
             >
               <Combobox.Empty
-                color="#71767b"
+                style={{ color: 'var(--color-text-tertiary)' }}
                 fontSize="12px"
                 px={3}
                 py={2}
@@ -146,24 +142,24 @@ export const GenericFilter: React.FC<GenericFilterProps> = ({
                 <Combobox.Item
                   item={item}
                   key={item.value}
-                  color="#e1e5e9"
+                  style={{ color: 'var(--color-text-primary)' }}
                   fontSize="12px"
                   bg="transparent"
                   _hover={{
-                    bg: '#2a2d35',
-                    color: '#e1e5e9'
+                    bg: 'var(--color-border)',
+                    color: 'var(--color-text-primary)'
                   }}
                   _focus={{
-                    bg: '#2a2d35',
-                    color: '#e1e5e9'
+                    bg: 'var(--color-border)',
+                    color: 'var(--color-text-primary)'
                   }}
                   _selected={{
-                    bg: '#1d4ed8 !important',
+                    bg: 'var(--color-blue) !important',
                     color: 'white !important'
                   }}
                   _highlighted={{
-                    bg: '#2a2d35',
-                    color: '#e1e5e9'
+                    bg: 'var(--color-border)',
+                    color: 'var(--color-text-primary)'
                   }}
                   px={3}
                   py={2}

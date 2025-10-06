@@ -275,33 +275,33 @@ const SmartTagSuggestions = memo(({
   return (
     <Box
       p={4}
-      bg="linear-gradient(135deg, #1a1d23 0%, #0f1419 100%)"
-      border="1px solid #2a2d35"
+      bg="var(--gradient-card)"
+      border="1px solid var(--color-border)"
       borderRadius="12px"
       boxShadow="0 2px 8px rgba(0, 0, 0, 0.1)"
     >
       <VStack align="stretch" gap={3}>
         <HStack justify="space-between" align="center">
           <HStack gap={2}>
-            <LuSparkles size={16} color="#fbbf24" />
-            <Text fontSize="sm" fontWeight="500" color="#e1e5e9">
+            <LuSparkles size={16} color="var(--color-warning)" />
+            <Text fontSize="sm" fontWeight="500" color="var(--color-text-primary)">
               Smart Tag Suggestions
             </Text>
             {isLoading && (
-              <Text fontSize="xs" color="#71767b">
+              <Text fontSize="xs" color="var(--color-text-tertiary)">
                 Analyzing...
               </Text>
             )}
           </HStack>
           {suggestions.length > 0 && (
-            <Text fontSize="xs" color="#71767b">
+            <Text fontSize="xs" color="var(--color-text-tertiary)">
               {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''}
             </Text>
           )}
         </HStack>
 
         {suggestions.length === 0 && !isLoading && (
-          <Text fontSize="sm" color="#71767b" textAlign="center" py={2}>
+          <Text fontSize="sm" color="var(--color-text-tertiary)" textAlign="center" py={2}>
             No smart suggestions available for the selected bookmarks
           </Text>
         )}
@@ -316,7 +316,7 @@ const SmartTagSuggestions = memo(({
                   align="center"
                   p={2}
                   borderRadius="6px"
-                  _hover={{ bg: '#2a2d35' }}
+                  _hover={{ bg: 'var(--color-border)' }}
                 >
                   <HStack gap={2} flex={1}>
                     <TagChip
@@ -335,8 +335,8 @@ const SmartTagSuggestions = memo(({
                       {getReasonLabel(suggestion.reason)}
                     </Badge>
                     <Badge
-                      bg="#2a2d35"
-                      color="#71767b"
+                      bg="var(--color-border)"
+                      color="var(--color-text-tertiary)"
                       fontSize="xs"
                       px={2}
                       py={0.5}
@@ -348,8 +348,8 @@ const SmartTagSuggestions = memo(({
                   <Button
                     size="xs"
                     variant="ghost"
-                    color="#22c55e"
-                    _hover={{ color: '#4ade80', bg: 'rgba(34, 197, 94, 0.1)' }}
+                    color="var(--color-success)"
+                    _hover={{ color: 'var(--color-accent)', bg: 'rgba(34, 197, 94, 0.1)' }}
                     onClick={() => onTagAdd(suggestion.tag)}
                   >
                     <LuPlus size={12} />

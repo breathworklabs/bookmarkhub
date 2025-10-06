@@ -27,6 +27,10 @@ const SettingsPage = () => {
   const setImportDuplicates = useSettingsStore((state) => state.setImportDuplicates)
   const setAutoOpenApp = useSettingsStore((state) => state.setAutoOpenApp)
 
+  // Display settings
+  const displaySettings = useSettingsStore((state) => state.display)
+  const setTheme = useSettingsStore((state) => state.setTheme)
+
   const handleClearAllData = async () => {
     if (!confirm('Clear all bookmarks and data? This cannot be undone.\n\nYou can re-import bookmarks from the Chrome extension.')) {
       return
@@ -71,6 +75,14 @@ const SettingsPage = () => {
     ],
   })
 
+  const themeOptions = createListCollection({
+    items: [
+      { label: 'Dark', value: 'dark' },
+      { label: 'Light', value: 'light' },
+      { label: 'Auto (System)', value: 'auto' },
+    ],
+  })
+
   return (
     <DndProvider backend={HTML5Backend}>
       <Flex h="100vh" w="100vw">
@@ -78,14 +90,14 @@ const SettingsPage = () => {
         <UnifiedSidebar />
 
       {/* Main Content */}
-      <Flex flex={1} direction="column" w="100%" overflowY="auto" p={8} bg="#0a0e1a">
+      <Flex flex={1} direction="column" w="100%" overflowY="auto" p={8} style={{ background: 'var(--color-bg-primary)' }}>
         <Box maxW="800px" mx="auto" w="100%">
           {/* Back Button */}
           <Button
             onClick={() => navigate('/')}
             variant="ghost"
-            color="#71767b"
-            _hover={{ color: '#e1e5e9', bg: '#1c1f26' }}
+            style={{ color: 'var(--color-text-tertiary)' }}
+            _hover={{ color: 'var(--color-text-primary)', bg: '#1c1f26' }}
             mb={6}
             size="sm"
           >
@@ -95,16 +107,16 @@ const SettingsPage = () => {
 
           {/* Settings Card */}
           <Box
-            bg="#1c1f26"
+            style={{ background: 'var(--color-bg-tertiary)' }}
             borderRadius="12px"
-            border="1px solid #2a2d35"
+            border="1px solid var(--color-border)"
             overflow="hidden"
             boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
           >
             {/* Header */}
-            <HStack p={6} borderBottomWidth="1px" borderColor="#2a2d35">
+            <HStack p={6} borderBottomWidth="1px" style={{ borderColor: 'var(--color-border)' }}>
               <Text fontSize="16px">⚙️</Text>
-              <Text fontSize="xl" fontWeight="600" color="#e1e5e9">
+              <Text fontSize="xl" fontWeight="600" style={{ color: 'var(--color-text-primary)' }}>
                 Settings
               </Text>
             </HStack>
@@ -114,20 +126,20 @@ const SettingsPage = () => {
               {/* Extension Integration Section */}
               <Box>
                 <HStack mb={4} gap={2}>
-                  <LuRefreshCw size={16} color="#e1e5e9" />
-                  <Text fontSize="sm" fontWeight="600" color="#e1e5e9">
+                  <LuRefreshCw size={16} style={{ color: 'var(--color-text-primary)' }} />
+                  <Text fontSize="sm" fontWeight="600" style={{ color: 'var(--color-text-primary)' }}>
                     Extension Integration
                   </Text>
                 </HStack>
 
-                <Box p={4} bg="#15171c" borderRadius="8px" border="1px solid #2a2d35">
+                <Box p={4} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
                   <VStack alignItems="stretch" gap={4}>
                     {/* Auto-Sync Interval */}
                     <VStack alignItems="stretch" gap={2}>
-                      <Text fontSize="sm" fontWeight="500" color="#e1e5e9">
+                      <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
                         Auto-Sync Interval
                       </Text>
-                      <Text fontSize="xs" color="#71767b" lineHeight="1.4" mb={1}>
+                      <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4" mb={1}>
                         Automatically sync bookmarks from the extension at regular intervals
                       </Text>
                       <SelectRoot
@@ -137,21 +149,19 @@ const SettingsPage = () => {
                         size="sm"
                       >
                         <SelectTrigger
-                          bg="#1c1f26"
-                          borderColor="#2a2d35"
-                          color="#e1e5e9"
+                          style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}
                           fontSize="13px"
-                          _hover={{ borderColor: '#3a3d45' }}
+                          _hover={{ borderColor: 'var(--color-border-hover)' }}
                         >
                           <SelectValueText placeholder="Select interval" />
                         </SelectTrigger>
-                        <SelectContent bg="#1c1f26" borderColor="#2a2d35">
+                        <SelectContent style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)' }}>
                           {syncIntervalOptions.items.map((option) => (
                             <SelectItem
                               key={option.value}
                               item={option.value}
-                              color="#e1e5e9"
-                              _hover={{ bg: '#2a2d35' }}
+                              style={{ color: 'var(--color-text-primary)' }}
+                              _hover={{ bg: 'var(--color-bg-hover)' }}
                             >
                               {option.label}
                             </SelectItem>
@@ -161,15 +171,15 @@ const SettingsPage = () => {
                     </VStack>
 
                     {/* Divider */}
-                    <Box h="1px" bg="#2a2d35" />
+                    <Box h="1px" style={{ background: 'var(--color-border)' }} />
 
                     {/* Sync Notifications */}
                     <HStack justifyContent="space-between">
                       <VStack alignItems="flex-start" gap={1} flex={1}>
-                        <Text fontSize="sm" fontWeight="500" color="#e1e5e9">
+                        <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
                           Sync Notifications
                         </Text>
-                        <Text fontSize="xs" color="#71767b" lineHeight="1.4">
+                        <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4">
                           Show notifications when bookmarks are imported from the extension
                         </Text>
                       </VStack>
@@ -197,7 +207,7 @@ const SettingsPage = () => {
                           left={0}
                           right={0}
                           bottom={0}
-                          bg={extensionSettings.syncNotifications ? '#1d4ed8' : '#2a2d35'}
+                          style={{ background: extensionSettings.syncNotifications ? 'var(--color-blue)' : 'var(--color-border)' }}
                           borderRadius="12px"
                           transition="all 0.2s"
                           _before={{
@@ -216,14 +226,14 @@ const SettingsPage = () => {
                     </HStack>
 
                     {/* Divider */}
-                    <Box h="1px" bg="#2a2d35" />
+                    <Box h="1px" style={{ background: 'var(--color-border)' }} />
 
                     {/* Default Tags */}
                     <VStack alignItems="stretch" gap={2}>
-                      <Text fontSize="sm" fontWeight="500" color="#e1e5e9">
+                      <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
                         Default Tags
                       </Text>
-                      <Text fontSize="xs" color="#71767b" lineHeight="1.4" mb={1}>
+                      <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4" mb={1}>
                         Automatically add these tags to all imported bookmarks (comma-separated)
                       </Text>
                       <Input
@@ -231,25 +241,23 @@ const SettingsPage = () => {
                         onChange={handleDefaultTagsChange}
                         placeholder="e.g. imported, twitter, reading-list"
                         size="sm"
-                        bg="#1c1f26"
-                        borderColor="#2a2d35"
-                        color="#e1e5e9"
+                        style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}
                         fontSize="13px"
-                        _placeholder={{ color: '#71767b' }}
-                        _hover={{ borderColor: '#3a3d45' }}
-                        _focus={{ borderColor: '#1d4ed8', boxShadow: '0 0 0 1px #1d4ed8' }}
+                        _placeholder={{ color: 'var(--color-text-tertiary)' }}
+                        _hover={{ borderColor: 'var(--color-border-hover)' }}
+                        _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
                       />
                     </VStack>
 
                     {/* Divider */}
-                    <Box h="1px" bg="#2a2d35" />
+                    <Box h="1px" style={{ background: 'var(--color-border)' }} />
 
                     {/* Import Duplicates Handling */}
                     <VStack alignItems="stretch" gap={2}>
-                      <Text fontSize="sm" fontWeight="500" color="#e1e5e9">
+                      <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
                         Handle Duplicate Bookmarks
                       </Text>
-                      <Text fontSize="xs" color="#71767b" lineHeight="1.4" mb={1}>
+                      <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4" mb={1}>
                         What to do when importing a bookmark that already exists
                       </Text>
                       <SelectRoot
@@ -259,21 +267,19 @@ const SettingsPage = () => {
                         size="sm"
                       >
                         <SelectTrigger
-                          bg="#1c1f26"
-                          borderColor="#2a2d35"
-                          color="#e1e5e9"
+                          style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}
                           fontSize="13px"
-                          _hover={{ borderColor: '#3a3d45' }}
+                          _hover={{ borderColor: 'var(--color-border-hover)' }}
                         >
                           <SelectValueText placeholder="Select handling" />
                         </SelectTrigger>
-                        <SelectContent bg="#1c1f26" borderColor="#2a2d35">
+                        <SelectContent style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)' }}>
                           {duplicateHandlingOptions.items.map((option) => (
                             <SelectItem
                               key={option.value}
                               item={option.value}
-                              color="#e1e5e9"
-                              _hover={{ bg: '#2a2d35' }}
+                              style={{ color: 'var(--color-text-primary)' }}
+                              _hover={{ bg: 'var(--color-bg-hover)' }}
                             >
                               {option.label}
                             </SelectItem>
@@ -283,15 +289,15 @@ const SettingsPage = () => {
                     </VStack>
 
                     {/* Divider */}
-                    <Box h="1px" bg="#2a2d35" />
+                    <Box h="1px" style={{ background: 'var(--color-border)' }} />
 
                     {/* Auto-Open App */}
                     <HStack justifyContent="space-between">
                       <VStack alignItems="flex-start" gap={1} flex={1}>
-                        <Text fontSize="sm" fontWeight="500" color="#e1e5e9">
+                        <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
                           Auto-Open App After Import
                         </Text>
-                        <Text fontSize="xs" color="#71767b" lineHeight="1.4">
+                        <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4">
                           Automatically open the app when bookmarks are imported via extension
                         </Text>
                       </VStack>
@@ -319,7 +325,7 @@ const SettingsPage = () => {
                           left={0}
                           right={0}
                           bottom={0}
-                          bg={extensionSettings.autoOpenApp ? '#1d4ed8' : '#2a2d35'}
+                          style={{ background: extensionSettings.autoOpenApp ? 'var(--color-blue)' : 'var(--color-border)' }}
                           borderRadius="12px"
                           transition="all 0.2s"
                           _before={{
@@ -340,19 +346,63 @@ const SettingsPage = () => {
                 </Box>
               </Box>
 
+              {/* Display & View Settings Section */}
+              <Box>
+                <Text fontSize="sm" fontWeight="600" style={{ color: 'var(--color-text-primary)' }} mb={4}>
+                  Display & View
+                </Text>
+
+                <Box p={4} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
+                  <VStack alignItems="stretch" gap={2}>
+                    <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
+                      Theme
+                    </Text>
+                    <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4" mb={1}>
+                      Choose your preferred color theme
+                    </Text>
+                    <SelectRoot
+                      collection={themeOptions}
+                      value={[displaySettings.theme]}
+                      onValueChange={(e: any) => setTheme(e.value[0] as any)}
+                      size="sm"
+                    >
+                      <SelectTrigger
+                        style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                        fontSize="13px"
+                        _hover={{ borderColor: 'var(--color-border-hover)' }}
+                      >
+                        <SelectValueText placeholder="Select theme" />
+                      </SelectTrigger>
+                      <SelectContent style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)' }}>
+                        {themeOptions.items.map((option) => (
+                          <SelectItem
+                            key={option.value}
+                            item={option.value}
+                            style={{ color: 'var(--color-text-primary)' }}
+                            _hover={{ bg: 'var(--color-bg-hover)' }}
+                          >
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </SelectRoot>
+                  </VStack>
+                </Box>
+              </Box>
+
               {/* Data Management Section */}
               <Box>
-                <Text fontSize="sm" fontWeight="600" color="#e1e5e9" mb={4}>
+                <Text fontSize="sm" fontWeight="600" style={{ color: 'var(--color-text-primary)' }} mb={4}>
                   Data Management
                 </Text>
 
-                <Box p={4} bg="#15171c" borderRadius="8px" border="1px solid #2a2d35">
+                <Box p={4} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
                   <VStack alignItems="stretch" gap={3}>
                     <VStack alignItems="flex-start" gap={1}>
-                      <Text fontSize="sm" fontWeight="500" color="#e1e5e9">
+                      <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
                         Clear All Data
                       </Text>
-                      <Text fontSize="xs" color="#71767b" lineHeight="1.4">
+                      <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4">
                         Delete all bookmarks, collections, and settings. This action cannot be undone.
                       </Text>
                     </VStack>
@@ -360,9 +410,9 @@ const SettingsPage = () => {
                     <Button
                       onClick={handleClearAllData}
                       size="sm"
-                      bg="#dc2626"
+                      style={{ background: 'var(--color-error)' }}
                       color="white"
-                      _hover={{ bg: '#b91c1c' }}
+                      _hover={{ bg: 'var(--color-error-hover)' }}
                       fontWeight="500"
                       fontSize="13px"
                       h="36px"
@@ -375,9 +425,9 @@ const SettingsPage = () => {
               </Box>
 
               {/* Info Section */}
-              <Box p={3} bg="#15171c" borderRadius="8px" border="1px solid #2a2d35">
-                <Text fontSize="xs" color="#71767b" lineHeight="1.6">
-                  💡 <strong style={{ color: '#9ca3af' }}>Tip:</strong> After clearing data, you can
+              <Box p={3} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
+                <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.6">
+                  💡 <strong style={{ color: 'var(--color-text-secondary)' }}>Tip:</strong> After clearing data, you can
                   re-import your bookmarks using the Chrome extension.
                 </Text>
               </Box>

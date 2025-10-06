@@ -89,19 +89,19 @@ const LazyImage = ({
       display="flex"
       alignItems="center"
       justifyContent="center"
-      bg="#0f1419"
+      style={{ background: 'var(--color-bg-primary)' }}
     >
       {!isVisible ? (
         // Placeholder while not in viewport
         <Box
           w="100%"
           h="100%"
-          bg="#1a1d23"
+          style={{ background: 'var(--color-bg-tertiary)' }}
           display="flex"
           alignItems="center"
           justifyContent="center"
         >
-          <Box w="20px" h="20px" bg="#2a2d35" borderRadius="2px" />
+          <Box w="20px" h="20px" style={{ background: 'var(--color-border)' }} borderRadius="2px" />
         </Box>
       ) : hasError ? (
         // Error fallback
@@ -112,7 +112,7 @@ const LazyImage = ({
             display="flex"
             alignItems="center"
             justifyContent="center"
-            color="#71767b"
+            style={{ color: 'var(--color-text-tertiary)' }}
             fontSize="xs"
           >
             📷
@@ -129,7 +129,7 @@ const LazyImage = ({
               transform="translate(-50%, -50%)"
               zIndex={1}
             >
-              <Spinner size="sm" color="#71767b" />
+              <Spinner size="sm" style={{ color: 'var(--color-text-tertiary)' }} />
             </Box>
           )}
 

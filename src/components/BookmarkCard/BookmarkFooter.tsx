@@ -68,11 +68,11 @@ const BookmarkFooter = memo(({ bookmark, isInBulkMode }: BookmarkFooterProps) =>
   return (
     <Box mt={4}>
       {/* Metrics */}
-      <HStack gap="24px" color="#71767b" fontSize="sm" mb={3}>
+      <HStack gap="24px" style={{ color: 'var(--color-text-tertiary)' }} fontSize="sm" mb={3}>
         <HStack
           gap={2}
           cursor={isInBulkMode ? 'default' : 'pointer'}
-          _hover={isInBulkMode ? {} : { color: '#9ca3af' }}
+          _hover={isInBulkMode ? {} : { color: 'var(--color-text-secondary)' }}
           onClick={(e) => {
             if (isInBulkMode) {
               e.preventDefault()
@@ -90,7 +90,7 @@ const BookmarkFooter = memo(({ bookmark, isInBulkMode }: BookmarkFooterProps) =>
         <HStack
           gap={2}
           cursor={isInBulkMode ? 'default' : 'pointer'}
-          _hover={isInBulkMode ? {} : { color: '#9ca3af' }}
+          _hover={isInBulkMode ? {} : { color: 'var(--color-text-secondary)' }}
           onClick={(e) => {
             if (isInBulkMode) {
               e.preventDefault()
@@ -108,7 +108,7 @@ const BookmarkFooter = memo(({ bookmark, isInBulkMode }: BookmarkFooterProps) =>
         <HStack
           gap={2}
           cursor={isInBulkMode ? 'default' : 'pointer'}
-          _hover={isInBulkMode ? {} : { color: '#9ca3af' }}
+          _hover={isInBulkMode ? {} : { color: 'var(--color-text-secondary)' }}
           onClick={(e) => {
             if (isInBulkMode) {
               e.preventDefault()
@@ -125,7 +125,7 @@ const BookmarkFooter = memo(({ bookmark, isInBulkMode }: BookmarkFooterProps) =>
         </HStack>
       </HStack>
 
-      <Separator borderColor="#2a2d35" mb={3} />
+      <Separator style={{ borderColor: 'var(--color-border)' }} mb={3} />
 
       {/* Actions and Tags */}
       <VStack alignItems="stretch" gap={2}>

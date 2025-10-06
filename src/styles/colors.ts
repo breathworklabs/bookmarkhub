@@ -55,16 +55,16 @@ export const colors = {
     950: '#030712',
   },
 
-  // Dark theme specific colors (current implementation)
+  // Dark theme specific colors (now using CSS variables)
   dark: {
-    background: '#0f1419',
-    sidebarBg: '#16181c',
-    cardBg: '#1a1d23',
-    border: '#2a2d35',
-    borderHover: '#3a3d45',
-    textPrimary: '#e1e5e9',
-    textSecondary: '#71767b',
-    textMuted: '#9ca3af',
+    background: 'var(--color-bg-primary)',
+    sidebarBg: 'var(--color-bg-secondary)',
+    cardBg: 'var(--color-bg-tertiary)',
+    border: 'var(--color-border)',
+    borderHover: 'var(--color-border-hover)',
+    textPrimary: 'var(--color-text-primary)',
+    textSecondary: 'var(--color-text-tertiary)',
+    textMuted: 'var(--color-text-secondary)',
   },
 
   // Light theme colors (for future theme switching)
