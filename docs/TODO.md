@@ -253,7 +253,7 @@
 - [ ] Storage usage statistics
 
 #### 9.2 **Display & View Settings**
-- [ ] Theme selection (Dark, Light, Auto)
+- [x] Theme selection (Dark, Light, Auto) ✅ COMPLETED
 - [ ] Color scheme customization
 - [ ] Font size adjustment (Small, Medium, Large)
 - [ ] View mode preference (Grid/List default)
