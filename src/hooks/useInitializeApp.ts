@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 
@@ -42,6 +43,44 @@ export const useInitializeApp = () => {
     }
 
     checkExistingBookmarks()
+  }, [])
+
+  // Phase 1: Listen for bookmark updates from Chrome extension
+  useEffect(() => {
+    const handleExtensionMessage = (event: MessageEvent) => {
+      // Validate message source and type
+      if (
+        event.data?.type === 'X_BOOKMARKS_UPDATED' &&
+        event.data?.source === 'x-bookmark-manager-extension'
+      ) {
+        console.log('📦 Extension bookmark update received:', event.data)
+
+        const { count, total } = event.data
+
+        // Reload bookmarks from localStorage without page reload
+        Promise.all([
+          useBookmarkStore.getState().initialize(),
+          useCollectionsStore.getState().initialize()
+        ]).then(() => {
+          console.log(`✓ Reloaded stores: ${count} new bookmarks (${total} total)`)
+
+          // Phase 4: Show success toast notification
+          const message = count === 1
+            ? 'Imported 1 new bookmark from X/Twitter'
+            : `Imported ${count} new bookmarks from X/Twitter`
+
+          toast.success(message)
+        }).catch((error) => {
+          console.error('Error reloading stores after extension update:', error)
+
+          // Show error toast if reload fails
+          toast.error('Failed to load imported bookmarks. Please refresh the page.')
+        })
+      }
+    }
+
+    window.addEventListener('message', handleExtensionMessage)
+    return () => window.removeEventListener('message', handleExtensionMessage)
   }, [])
 
   // Only show loading when we're actually loading and have existing bookmarks

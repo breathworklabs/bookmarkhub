@@ -1,6 +1,7 @@
 import { Box, VStack, HStack, Text, Badge, Separator, IconButton } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuExternalLink, LuFolderPlus } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { useModal } from './modals/ModalProvider'
@@ -29,6 +30,7 @@ const useBookmarkCounts = () => {
 }
 
 const UnifiedSidebar = memo(() => {
+  const navigate = useNavigate()
   const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
   const toggleAIPanel = useBookmarkStore((state) => state.toggleAIPanel)
@@ -196,6 +198,10 @@ const UnifiedSidebar = memo(() => {
                 color: '#e1e5e9'
               }}
               transition="all 0.2s"
+              onClick={() => {
+                console.log('Settings clicked in UnifiedSidebar, navigating to /settings')
+                navigate('/settings')
+              }}
             >
               <Text fontSize="16px" mr={2}>⚙️</Text>
               <Text>Settings</Text>

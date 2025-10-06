@@ -1,4 +1,4 @@
-/* Simple X Bookmark Manager Extension Popup Styles */
+/* X Bookmark Manager Extension Popup - Dark Theme */
 
 * {
   margin: 0;
@@ -7,11 +7,11 @@
 }
 
 body {
-  width: 300px;
-  min-height: 200px;
+  width: 320px;
+  min-height: 240px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #f8fafc;
-  color: #1a202c;
+  background: #15171c;
+  color: #e1e5e9;
 }
 
 .popup-container {
@@ -26,8 +26,9 @@ body {
   align-items: center;
   gap: 12px;
   padding: 16px;
-  background: #1a202c;
-  color: white;
+  background: #1c1f26;
+  border-bottom: 1px solid #2a2d35;
+  color: #e1e5e9;
 }
 
 .logo {
@@ -36,7 +37,7 @@ body {
   justify-content: center;
   width: 32px;
   height: 32px;
-  background: #1da1f2;
+  background: linear-gradient(135deg, #1DA1F2, #8B5CF6);
   border-radius: 8px;
   color: white;
 }
@@ -45,39 +46,45 @@ body {
   font-size: 16px;
   font-weight: 600;
   margin: 0;
+  color: #e1e5e9;
 }
 
 /* Main Content */
 .main-content {
   flex: 1;
-  padding: 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 /* Status Section */
 .status-section {
   text-align: center;
+  background: #1c1f26;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #2a2d35;
 }
 
 .status-text {
-  font-size: 14px;
-  color: #4a5568;
+  font-size: 13px;
+  color: #9ca3af;
   margin-bottom: 10px;
+  line-height: 1.4;
 }
 
 .progress-bar {
   width: 100%;
-  height: 4px;
-  background: #e2e8f0;
+  height: 3px;
+  background: #2a2d35;
   border-radius: 2px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: #1da1f2;
+  background: linear-gradient(90deg, #1da1f2, #8B5CF6);
   border-radius: 2px;
   animation: progress 2s ease-in-out infinite;
 }
@@ -92,7 +99,7 @@ body {
 .buttons-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .btn {
@@ -100,10 +107,10 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 11px 16px;
   border: none;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
@@ -111,41 +118,46 @@ body {
 }
 
 .btn-primary {
-  background: #1da1f2;
+  background: #1d4ed8;
   color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .btn-primary:hover {
-  background: #1a91da;
+  background: #1e40af;
   transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .btn-primary:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
   transform: none;
 }
 
 .btn-secondary {
-  background: #e2e8f0;
-  color: #4a5568;
+  background: #2a2d35;
+  color: #e1e5e9;
+  border: 1px solid #3a3d45;
 }
 
 .btn-secondary:hover {
-  background: #cbd5e0;
+  background: #3a3d45;
+  border-color: #4a4d55;
 }
 
 .btn-tertiary {
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  color: #495057;
-  border: 1px solid #dee2e6;
+  background: transparent;
+  color: #71767b;
+  border: 1px solid #2a2d35;
   font-size: 12px;
   padding: 8px 12px;
 }
 
 .btn-tertiary:hover {
-  background: linear-gradient(135deg, #e9ecef, #dee2e6);
-  transform: translateY(-1px);
+  background: #2a2d35;
+  color: #9ca3af;
+  border-color: #3a3d45;
 }
 
 .btn-icon {
@@ -157,11 +169,11 @@ body {
 }
 
 .debug-section {
-  margin-top: 15px;
+  margin-top: 12px;
   padding: 10px;
-  background: #f8f9fa;
+  background: #1c1f26;
   border-radius: 8px;
-  border: 1px solid #dee2e6;
+  border: 1px solid #2a2d35;
   max-height: 150px;
   overflow-y: auto;
 }
@@ -169,14 +181,33 @@ body {
 .debug-title {
   font-size: 12px;
   font-weight: 600;
-  color: #495057;
+  color: #9ca3af;
   margin-bottom: 5px;
 }
 
 .debug-content {
   font-size: 11px;
   font-family: 'Courier New', monospace;
-  color: #6c757d;
+  color: #71767b;
   white-space: pre-wrap;
   line-height: 1.3;
+}
+
+/* Scrollbar styling */
+.debug-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.debug-section::-webkit-scrollbar-track {
+  background: #2a2d35;
+  border-radius: 3px;
+}
+
+.debug-section::-webkit-scrollbar-thumb {
+  background: #3a3d45;
+  border-radius: 3px;
+}
+
+.debug-section::-webkit-scrollbar-thumb:hover {
+  background: #4a4d55;
 }

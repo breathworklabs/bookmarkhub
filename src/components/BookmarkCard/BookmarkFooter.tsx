@@ -14,8 +14,34 @@ const BookmarkFooter = memo(({ bookmark, isInBulkMode }: BookmarkFooterProps) =>
   const selectedTags = useBookmarkStore((state) => state.selectedTags)
   const addTag = useBookmarkStore((state) => state.addTag)
 
+  const formatCount = (count: number | string): string => {
+    const num = typeof count === 'string' ? parseInt(count, 10) : count
+    if (isNaN(num)) return '0'
+
+    if (num < 1000) return num.toString()
+    if (num < 10000) {
+      // 1.1k, 1.2k, etc.
+      const formatted = (num / 1000).toFixed(1)
+      return formatted.endsWith('.0') ? `${Math.floor(num / 1000)}K` : `${formatted}K`
+    }
+    // 10k, 100k, etc.
+    return `${Math.floor(num / 1000)}K`
+  }
+
   const getMetrics = () => {
-    return (bookmark as any).metrics || { likes: '0', retweets: '0', replies: '0' }
+    // Check metadata.engagement first (from extension), fallback to metrics (old format)
+    const engagement = (bookmark as any).metadata?.engagement
+    const metrics = (bookmark as any).metrics
+
+    if (engagement) {
+      return {
+        likes: formatCount(engagement.likes || 0),
+        retweets: formatCount(engagement.retweets || 0),
+        replies: formatCount(engagement.replies || 0)
+      }
+    }
+
+    return metrics || { likes: '0', retweets: '0', replies: '0' }
   }
 
   const getTags = (): string[] => {

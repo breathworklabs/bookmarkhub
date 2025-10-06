@@ -486,11 +486,29 @@ class BookmarkExtractor {
   }
 
   /**
-   * Extract hashtags from tweet
+   * Extract tags from tweet (hashtags + professional category)
    */
   extractHashtags(tweet) {
+    const tags = [];
+
+    // Add hashtags from tweet content
     const hashtags = tweet.entities?.hashtags || [];
-    return ['twitter', ...hashtags.map(h => h.text.toLowerCase())];
+    hashtags.forEach(h => {
+      tags.push(h.text.toLowerCase());
+    });
+
+    // Add professional category if available
+    const professional = tweet._raw?.core?.user_results?.result?.professional;
+    if (professional?.category && professional.category.length > 0) {
+      professional.category.forEach(cat => {
+        // Add category name as tag (e.g., "Financial Tech Company" -> "financial-tech-company")
+        const categoryTag = cat.name.toLowerCase().replace(/\s+/g, '-');
+        tags.push(categoryTag);
+      });
+    }
+
+    // Return unique tags only (no duplicates, no default "twitter" tag)
+    return [...new Set(tags)];
   }
 
   /**

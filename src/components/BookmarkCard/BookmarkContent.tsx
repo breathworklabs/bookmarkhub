@@ -20,9 +20,23 @@ const BookmarkContent = memo(({ bookmark, hasMedia }: BookmarkContentProps) => {
         color="#e1e5e9"
         mb={hasMedia ? 3 : 0}
         whiteSpace="pre-line"
-      >
-        {getContent}
-      </Text>
+        dangerouslySetInnerHTML={{ __html: getContent }}
+        sx={{
+          '& a': {
+            color: '#1da1f2',
+            textDecoration: 'none',
+            '&:hover': {
+              textDecoration: 'underline'
+            }
+          },
+          '& .tweet-hashtag': {
+            color: '#1da1f2'
+          },
+          '& .tweet-mention': {
+            color: '#1da1f2'
+          }
+        }}
+      />
     </Box>
   )
 })
