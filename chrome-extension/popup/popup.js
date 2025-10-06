@@ -431,6 +431,7 @@ class SimplePopupManager {
       this.updateStatus('Error checking page');
     }
   }
+
 }
 
 // Initialize popup when DOM is loaded

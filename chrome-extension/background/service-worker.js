@@ -23,6 +23,10 @@ class BookmarkExtractor {
         throw new Error('Not logged into X/Twitter. Please log in first.');
       }
 
+      // Clear old extension storage before fresh extraction
+      console.log('Clearing old bookmark cache...');
+      await chrome.storage.local.clear();
+
       let allBookmarks = [];
       let cursor = null;
       let hasMore = true;
@@ -75,6 +79,17 @@ class BookmarkExtractor {
 
       // Transform to bookmark format
       const bookmarks = allBookmarks.map(tweet => this.transformToBookmark(tweet));
+
+      // Debug: Log first bookmark to see structure
+      if (bookmarks.length > 0) {
+        console.log('📊 Sample bookmark data:', {
+          title: bookmarks[0].title,
+          author: bookmarks[0].author,
+          favicon_url: bookmarks[0].favicon_url,
+          user_data: bookmarks[0].metadata?.user,
+          engagement: bookmarks[0].metadata?.engagement
+        });
+      }
 
       // Save to storage
       const saveResult = await this.saveBookmarks(bookmarks);
@@ -304,29 +319,51 @@ class BookmarkExtractor {
   }
 
   /**
-   * Parse tweet object
+   * Parse tweet object with complete user and engagement data
    */
   parseTweet(tweet) {
-    if (!tweet || !tweet.legacy) return null;
+    if (!tweet || !tweet.legacy) {
+      console.warn('Invalid tweet structure:', tweet);
+      return null;
+    }
 
     const legacy = tweet.legacy;
-    const user = tweet.core?.user_results?.result?.legacy;
+    const userResult = tweet.core?.user_results?.result;
 
-    return {
+    // Twitter API has changed structure - user data is now split between core and legacy
+    const userCore = userResult?.core;
+    const userLegacy = userResult?.legacy;
+    const userAvatar = userResult?.avatar;
+
+    const parsedTweet = {
       id: tweet.rest_id,
       text: legacy.full_text || '',
       created_at: legacy.created_at,
       user: {
-        screen_name: user?.screen_name || 'unknown',
-        name: user?.name || 'Unknown User',
-        profile_image_url: user?.profile_image_url_https
+        id: userResult?.rest_id,
+        // Name and screen_name are now in userResult.core
+        screen_name: userCore?.screen_name || userLegacy?.screen_name || 'unknown',
+        name: userCore?.name || userLegacy?.name || 'Unknown User',
+        // Profile image is now in userResult.avatar.image_url
+        profile_image_url: (userAvatar?.image_url || userLegacy?.profile_image_url_https || '')
+          .replace('_normal', '_400x400'),
+        verified: userResult?.is_blue_verified || userLegacy?.verified || false,
+        followers_count: userLegacy?.followers_count || 0,
+        description: userLegacy?.description || ''
       },
       favorite_count: legacy.favorite_count || 0,
       retweet_count: legacy.retweet_count || 0,
       reply_count: legacy.reply_count || 0,
+      quote_count: legacy.quote_count || 0,
+      bookmark_count: legacy.bookmark_count || 0,
+      view_count: tweet.views?.count || 0,
       entities: legacy.entities || {},
-      extended_entities: legacy.extended_entities || {}
+      extended_entities: legacy.extended_entities || {},
+      // Store full tweet object for reference
+      _raw: tweet
     };
+
+    return parsedTweet;
   }
 
   /**
@@ -362,39 +399,75 @@ class BookmarkExtractor {
   }
 
   /**
-   * Transform tweet to bookmark format
+   * Transform tweet to bookmark format with enhanced data
    */
   transformToBookmark(tweet) {
     const tweetUrl = `https://x.com/${tweet.user.screen_name}/status/${tweet.id}`;
 
+    // Convert text to HTML with proper links
+    const htmlContent = this.convertTextToHTML(tweet);
+
+    // Clean text for title/description (remove URLs)
+    let cleanText = tweet.text;
+    if (tweet.entities?.urls) {
+      tweet.entities.urls.forEach(url => {
+        cleanText = cleanText.replace(url.url, '');
+      });
+    }
+    if (tweet.entities?.media) {
+      tweet.entities.media.forEach(media => {
+        cleanText = cleanText.replace(media.url, '');
+      });
+    }
+    cleanText = cleanText.trim();
+
     return {
       id: Date.now() + Math.random(),
       user_id: 'chrome-extension',
-      title: tweet.text.substring(0, 100) || 'Untitled',
+      title: cleanText.substring(0, 100) || `Tweet by ${tweet.user.name}`,
       url: tweetUrl,
-      description: tweet.text.substring(0, 200),
-      content: tweet.text,
+      description: cleanText.substring(0, 200),
+      content: htmlContent, // HTML formatted content with links
       thumbnail_url: this.extractThumbnail(tweet),
-      favicon_url: 'https://abs.twimg.com/favicons/twitter.3.ico',
-      author: tweet.user.name,
+      favicon_url: tweet.user.profile_image_url, // Use user's profile image as favicon
+      author: `${tweet.user.name} (@${tweet.user.screen_name})`, // Full author with handle
       domain: 'x.com',
       source_platform: 'twitter',
       source_id: tweet.id,
-      engagement_score: (tweet.favorite_count || 0) + (tweet.retweet_count || 0) * 2,
+      engagement_score: (tweet.favorite_count || 0) + (tweet.retweet_count || 0) * 2 + (tweet.reply_count || 0),
       is_starred: false,
       is_read: false,
       is_archived: false,
       tags: this.extractHashtags(tweet),
       collections: ['Imported from X'],
       metadata: {
-        original_twitter_data: tweet,
+        // Store complete user data
+        user: {
+          id: tweet.user.id,
+          name: tweet.user.name,
+          screen_name: tweet.user.screen_name,
+          profile_image_url: tweet.user.profile_image_url,
+          verified: tweet.user.verified,
+          followers_count: tweet.user.followers_count,
+          description: tweet.user.description
+        },
+        // Complete engagement metrics
+        engagement: {
+          likes: tweet.favorite_count || 0,
+          retweets: tweet.retweet_count || 0,
+          replies: tweet.reply_count || 0,
+          quotes: tweet.quote_count || 0,
+          bookmarks: tweet.bookmark_count || 0,
+          views: tweet.view_count || 0
+        },
+        // Import metadata
         import_date: new Date().toISOString(),
         import_source: 'chrome-extension-api',
-        engagement: {
-          likes: tweet.favorite_count,
-          retweets: tweet.retweet_count,
-          replies: tweet.reply_count
-        }
+        // Store plain text version
+        plain_text: tweet.text,
+        // Media information
+        has_media: !!(tweet.extended_entities?.media || tweet.entities?.media),
+        media_count: (tweet.extended_entities?.media || tweet.entities?.media || []).length
       },
       created_at: new Date(tweet.created_at).toISOString(),
       updated_at: new Date().toISOString()
@@ -421,30 +494,127 @@ class BookmarkExtractor {
   }
 
   /**
+   * Convert tweet text to HTML with proper links
+   */
+  convertTextToHTML(tweet) {
+    let html = tweet.text;
+    const entities = tweet.entities;
+
+    if (!entities) return this.escapeHtml(html);
+
+    // Collect all entities with their indices
+    const allEntities = [];
+
+    // URLs
+    if (entities.urls) {
+      entities.urls.forEach(url => {
+        allEntities.push({
+          start: url.indices[0],
+          end: url.indices[1],
+          type: 'url',
+          display: url.display_url || url.url,
+          expanded: url.expanded_url || url.url
+        });
+      });
+    }
+
+    // Hashtags
+    if (entities.hashtags) {
+      entities.hashtags.forEach(hashtag => {
+        allEntities.push({
+          start: hashtag.indices[0],
+          end: hashtag.indices[1],
+          type: 'hashtag',
+          text: hashtag.text
+        });
+      });
+    }
+
+    // Mentions
+    if (entities.user_mentions) {
+      entities.user_mentions.forEach(mention => {
+        allEntities.push({
+          start: mention.indices[0],
+          end: mention.indices[1],
+          type: 'mention',
+          screen_name: mention.screen_name
+        });
+      });
+    }
+
+    // Media (remove from text)
+    if (entities.media) {
+      entities.media.forEach(media => {
+        allEntities.push({
+          start: media.indices[0],
+          end: media.indices[1],
+          type: 'media',
+          url: media.media_url_https
+        });
+      });
+    }
+
+    // Sort by start index in reverse order to replace from end to start
+    allEntities.sort((a, b) => b.start - a.start);
+
+    // Replace entities with HTML
+    allEntities.forEach(entity => {
+      const before = html.substring(0, entity.start);
+      const after = html.substring(entity.end);
+      let replacement = '';
+
+      switch (entity.type) {
+        case 'url':
+          replacement = `<a href="${this.escapeHtml(entity.expanded)}" target="_blank" rel="noopener noreferrer" class="tweet-link">${this.escapeHtml(entity.display)}</a>`;
+          break;
+        case 'hashtag':
+          replacement = `<a href="https://x.com/hashtag/${entity.text}" target="_blank" rel="noopener noreferrer" class="tweet-hashtag">#${this.escapeHtml(entity.text)}</a>`;
+          break;
+        case 'mention':
+          replacement = `<a href="https://x.com/${entity.screen_name}" target="_blank" rel="noopener noreferrer" class="tweet-mention">@${this.escapeHtml(entity.screen_name)}</a>`;
+          break;
+        case 'media':
+          // Remove media URLs from text (they'll be shown as thumbnails)
+          replacement = '';
+          break;
+      }
+
+      html = before + replacement + after;
+    });
+
+    // Convert newlines to <br>
+    html = html.replace(/\n/g, '<br>');
+
+    return html;
+  }
+
+  /**
+   * Escape HTML special characters
+   */
+  escapeHtml(text) {
+    const map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+  }
+
+  /**
    * Save bookmarks to chrome.storage.local
-   * Note: These will be transferred to browser localStorage when user clicks "Go to Manager"
+   * Note: Storage is cleared before each extraction, so these are always fresh
    */
   async saveBookmarks(newBookmarks) {
     try {
-      // Save to chrome.storage.local
-      const result = await chrome.storage.local.get(['bookmarks']);
-      const existingBookmarks = result.bookmarks || [];
-
-      const uniqueBookmarks = newBookmarks.filter(newBookmark =>
-        !existingBookmarks.some(existing => existing.url === newBookmark.url)
-      );
-
-      if (uniqueBookmarks.length === 0) {
-        return { saved: 0, duplicates: newBookmarks.length };
-      }
-
-      const allBookmarks = [...existingBookmarks, ...uniqueBookmarks];
-      await chrome.storage.local.set({ bookmarks: allBookmarks });
+      // Storage is already cleared, just save the new bookmarks
+      await chrome.storage.local.set({ bookmarks: newBookmarks });
 
       return {
-        saved: uniqueBookmarks.length,
-        duplicates: newBookmarks.length - uniqueBookmarks.length,
-        total: allBookmarks.length
+        saved: newBookmarks.length,
+        duplicates: 0,
+        total: newBookmarks.length
       };
 
     } catch (error) {

@@ -8,6 +8,12 @@ console.log('🔗 X Bookmark Manager: Auto-sync bridge loaded on', window.locati
 // Auto-sync bookmarks from extension storage to localStorage
 async function syncBookmarksToLocalStorage() {
   try {
+    // Check if extension context is still valid
+    if (!chrome.runtime?.id) {
+      console.log('⚠️ Extension context invalidated, skipping sync');
+      return;
+    }
+
     // Get bookmarks from extension storage
     const result = await chrome.storage.local.get(['bookmarks']);
     const extensionBookmarks = result.bookmarks || [];
@@ -21,18 +27,44 @@ async function syncBookmarksToLocalStorage() {
     const existingDataStr = localStorage.getItem(storageKey);
     const existingBookmarks = existingDataStr ? JSON.parse(existingDataStr) : [];
 
-    // Filter out duplicates
-    const newBookmarks = extensionBookmarks.filter(extBookmark =>
-      !existingBookmarks.some(existing => existing.url === extBookmark.url)
-    );
+    // Phase 2: Improved duplicate detection
+    // Check both URL and source_id (Twitter tweet ID) to prevent duplicates
+    const newBookmarks = extensionBookmarks.filter(extBookmark => {
+      const isDuplicate = existingBookmarks.some(existing => {
+        // Check URL match
+        if (existing.url === extBookmark.url) return true;
+
+        // Check source_id match for Twitter bookmarks
+        if (
+          extBookmark.source_id &&
+          existing.source_id === extBookmark.source_id &&
+          existing.source_platform === extBookmark.source_platform
+        ) {
+          return true;
+        }
+
+        return false;
+      });
+
+      return !isDuplicate;
+    });
 
     if (newBookmarks.length === 0) {
-      console.log('📊 All extension bookmarks already in localStorage');
+      console.log('📊 All extension bookmarks already in localStorage (checked URL & source_id)');
       return;
     }
 
-    // Merge bookmarks
-    const allBookmarks = [...existingBookmarks, ...newBookmarks];
+    // Phase 3: Fix collection assignment to use 'uncategorized'
+    const bookmarksWithCorrectCollections = newBookmarks.map(bookmark => ({
+      ...bookmark,
+      collections: ['uncategorized'],  // Set as uncategorized instead of 'Imported from X'
+      primaryCollection: 'uncategorized'
+    }));
+
+    console.log(`✓ Prepared ${bookmarksWithCorrectCollections.length} bookmarks with 'uncategorized' collection`);
+
+    // Merge bookmarks with corrected collections
+    const allBookmarks = [...existingBookmarks, ...bookmarksWithCorrectCollections];
 
     // Save to localStorage
     localStorage.setItem(storageKey, JSON.stringify(allBookmarks));
@@ -46,52 +78,51 @@ async function syncBookmarksToLocalStorage() {
     };
     localStorage.setItem('x-bookmark-manager-metadata', JSON.stringify(metadata));
 
-    console.log(`✅ Auto-synced ${newBookmarks.length} new bookmarks to localStorage`);
+    console.log(`✅ Auto-synced ${bookmarksWithCorrectCollections.length} new bookmarks to localStorage`);
     console.log(`📊 Total bookmarks: ${allBookmarks.length}`);
 
-    // Notify the page to reload data
+    // Phase 1 & 4: Notify React app to reload bookmarks and show toast
+    // App will handle state updates without page reload
     window.postMessage({
       type: 'X_BOOKMARKS_UPDATED',
       source: 'x-bookmark-manager-extension',
-      count: newBookmarks.length,
+      count: bookmarksWithCorrectCollections.length,
       total: allBookmarks.length
     }, '*');
 
-    // Trigger storage event so React app detects the change
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: storageKey,
-      newValue: JSON.stringify(allBookmarks),
-      oldValue: existingDataStr,
-      url: window.location.href,
-      storageArea: localStorage
-    }));
+    console.log('📢 Notified React app - will update without page reload');
 
   } catch (error) {
+    // Silently ignore extension context invalidation errors
+    if (error.message?.includes('Extension context invalidated')) {
+      console.log('⚠️ Extension was reloaded, please refresh this page');
+      return;
+    }
     console.error('❌ Error syncing bookmarks:', error);
   }
 }
 
 // Listen for messages from extension to sync immediately
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime?.onMessage?.addListener((request, sender, sendResponse) => {
   if (request.action === 'SYNC_NOW') {
     console.log('📢 Received SYNC_NOW command from extension');
     syncBookmarksToLocalStorage().then(() => {
       sendResponse({ success: true });
-      // Reload the page to show new bookmarks
-      window.location.reload();
+      // No page reload needed - React app will handle updates
+    }).catch(error => {
+      console.error('Sync error:', error);
+      sendResponse({ success: false, error: error.message });
     });
     return true; // Keep channel open for async response
   }
 });
 
 // Listen for storage changes in chrome.storage.local
-chrome.storage.onChanged.addListener((changes, areaName) => {
+chrome.storage?.onChanged?.addListener((changes, areaName) => {
   if (areaName === 'local' && changes.bookmarks) {
     console.log('📦 Extension bookmarks updated, auto-syncing to localStorage...');
-    syncBookmarksToLocalStorage().then(() => {
-      // Reload page after sync
-      setTimeout(() => window.location.reload(), 500);
-    });
+    syncBookmarksToLocalStorage();
+    // No page reload needed - React app will handle updates via window message
   }
 });
 
