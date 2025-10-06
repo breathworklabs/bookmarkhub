@@ -1,5 +1,5 @@
 import { Box, VStack, HStack, Text, Badge, For } from '@chakra-ui/react'
-import { LuMenu, LuStar, LuExternalLink } from 'react-icons/lu'
+import { LuMenu, LuStar, LuExternalLink, LuSettings } from 'react-icons/lu'
 import { useNavigate } from 'react-router-dom'
 import { theme } from '../styles/theme'
 import { useBookmarkStore } from '../store/bookmarkStore'
@@ -133,7 +133,7 @@ const SidebarMenu = () => {
         </VStack>
 
         {/* Settings */}
-        <VStack alignItems="stretch" borderTopWidth="1px" style={{ borderColor: 'var(--color-border)' }} pt={4} mt="auto">
+        <VStack alignItems="stretch" borderTopWidth="1px" style={{ borderColor: 'var(--color-border)' }} pt={4} mt="auto" gap={2}>
           <HStack
             p={3}
             borderRadius="12px"
@@ -151,7 +151,9 @@ const SidebarMenu = () => {
               navigate('/settings')
             }}
           >
-            <Text fontSize="16px" mr={2}>⚙️</Text>
+            <Box w="18px" h="18px">
+              <LuSettings size={18} />
+            </Box>
             <Text>Settings</Text>
           </HStack>
         </VStack>

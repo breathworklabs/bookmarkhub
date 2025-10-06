@@ -141,7 +141,9 @@ export const useBookmarkStore = create<BookmarkState>()(
         showMetrics: true,
         compactMode: false,
         autoBackup: true,
-        exportFormat: 'json'
+        exportFormat: 'json',
+        defaultCollection: null,
+        duplicateHandling: 'skip'
       },
 
       // Pagination initial state
@@ -516,7 +518,9 @@ export const useBookmarkStore = create<BookmarkState>()(
               showMetrics: true,
               compactMode: false,
               autoBackup: true,
-              exportFormat: 'json'
+              exportFormat: 'json',
+              defaultCollection: null,
+              duplicateHandling: 'skip'
             }
           }, false, 'clearAllData:success')
 

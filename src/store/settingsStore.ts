@@ -7,6 +7,7 @@ export interface ExtensionSettings {
   defaultTags: string[]
   importDuplicates: 'skip' | 'replace' | 'keep-both'
   autoOpenApp: boolean
+  defaultCollection: string | null  // Default collection ID for new bookmarks
 }
 
 export interface DisplaySettings {
@@ -17,6 +18,8 @@ export interface DisplaySettings {
   compactView: boolean
   mediaPreview: 'auto' | 'click' | 'off'
   animationsEnabled: boolean
+  sortBy: 'date' | 'title' | 'author' | 'domain'  // Sorting preference
+  sortOrder: 'asc' | 'desc'  // Sort direction
 }
 
 export interface PrivacySettings {
@@ -36,12 +39,15 @@ export interface SettingsState {
   setDefaultTags: (tags: string[]) => void
   setImportDuplicates: (handling: ExtensionSettings['importDuplicates']) => void
   setAutoOpenApp: (enabled: boolean) => void
+  setDefaultCollection: (collectionId: string | null) => void
 
   // Display settings actions
   updateDisplaySettings: (settings: Partial<DisplaySettings>) => void
   setTheme: (theme: DisplaySettings['theme']) => void
   setFontSize: (size: DisplaySettings['fontSize']) => void
   setViewMode: (mode: DisplaySettings['viewMode']) => void
+  setSortBy: (sortBy: DisplaySettings['sortBy']) => void
+  setSortOrder: (sortOrder: DisplaySettings['sortOrder']) => void
 
   // Privacy settings actions
   updatePrivacySettings: (settings: Partial<PrivacySettings>) => void
@@ -57,6 +63,7 @@ const defaultExtensionSettings: ExtensionSettings = {
   defaultTags: [],
   importDuplicates: 'skip',
   autoOpenApp: false,
+  defaultCollection: null,
 }
 
 const defaultDisplaySettings: DisplaySettings = {
@@ -67,6 +74,8 @@ const defaultDisplaySettings: DisplaySettings = {
   compactView: false,
   mediaPreview: 'auto',
   animationsEnabled: true,
+  sortBy: 'date',
+  sortOrder: 'desc',
 }
 
 const defaultPrivacySettings: PrivacySettings = {
@@ -112,6 +121,11 @@ export const useSettingsStore = create<SettingsState>()(
           extension: { ...state.extension, autoOpenApp: enabled },
         })),
 
+      setDefaultCollection: (collectionId) =>
+        set((state) => ({
+          extension: { ...state.extension, defaultCollection: collectionId },
+        })),
+
       // Display settings actions
       updateDisplaySettings: (settings) =>
         set((state) => ({
@@ -131,6 +145,16 @@ export const useSettingsStore = create<SettingsState>()(
       setViewMode: (mode) =>
         set((state) => ({
           display: { ...state.display, viewMode: mode },
+        })),
+
+      setSortBy: (sortBy) =>
+        set((state) => ({
+          display: { ...state.display, sortBy },
+        })),
+
+      setSortOrder: (sortOrder) =>
+        set((state) => ({
+          display: { ...state.display, sortOrder },
         })),
 
       // Privacy settings actions

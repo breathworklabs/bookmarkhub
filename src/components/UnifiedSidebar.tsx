@@ -1,5 +1,5 @@
 import { Box, VStack, HStack, Text, Badge, Separator, IconButton } from '@chakra-ui/react'
-import { LuMenu, LuStar, LuExternalLink, LuFolderPlus } from 'react-icons/lu'
+import { LuMenu, LuStar, LuExternalLink, LuFolderPlus, LuSettings } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBookmarkStore } from '../store/bookmarkStore'
@@ -185,7 +185,7 @@ const UnifiedSidebar = memo(() => {
           </HStack>
 
           {/* Settings */}
-          <VStack alignItems="stretch" borderTopWidth="1px" style={{ borderColor: 'var(--color-border)' }} pt={4}>
+          <VStack alignItems="stretch" borderTopWidth="1px" style={{ borderColor: 'var(--color-border)' }} pt={4} gap={2}>
             <HStack
               p={3}
               borderRadius="12px"
@@ -203,7 +203,9 @@ const UnifiedSidebar = memo(() => {
                 navigate('/settings')
               }}
             >
-              <Text fontSize="16px" mr={2}>⚙️</Text>
+              <Box w="18px" h="18px">
+                <LuSettings size={18} />
+              </Box>
               <Text>Settings</Text>
             </HStack>
           </VStack>

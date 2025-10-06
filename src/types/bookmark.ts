@@ -70,13 +70,15 @@ export interface SearchOptions {
 export interface AppSettings {
   theme: 'dark' | 'light'
   viewMode: 'grid' | 'list'
-  defaultSort: 'newest' | 'oldest' | 'title' | 'domain'
+  defaultSort: 'newest' | 'oldest' | 'title' | 'author' | 'domain'
   showMetrics: boolean
   compactMode: boolean
   autoBackup: boolean
   exportFormat: 'json' | 'csv' | 'html'
   maxBookmarks?: number
   autoTagging?: boolean
+  defaultCollection?: string | null  // Default collection ID for new bookmarks
+  duplicateHandling: 'skip' | 'replace' | 'keepBoth'  // How to handle duplicate URLs
 }
 
 // Application metadata

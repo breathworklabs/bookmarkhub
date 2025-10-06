@@ -458,7 +458,7 @@ describe('LocalStorageService', () => {
 
       const importData = {
         bookmarks: [{ id: 1, ...sampleBookmark, created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' }],
-        settings: { theme: 'light' as const, viewMode: 'list' as const, defaultSort: 'title' as const, showMetrics: false, compactMode: true, autoBackup: false, exportFormat: 'csv' as const }
+        settings: { theme: 'light' as const, viewMode: 'list' as const, defaultSort: 'title' as const, showMetrics: false, compactMode: true, autoBackup: false, exportFormat: 'csv' as const, defaultCollection: null, duplicateHandling: 'skip' as const }
       }
 
       await service.importData(importData)

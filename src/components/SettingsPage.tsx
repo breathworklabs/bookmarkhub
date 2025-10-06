@@ -13,6 +13,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import toast from 'react-hot-toast'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useSettingsStore } from '../store/settingsStore'
+import { useCollectionsStore } from '../store/collectionsStore'
 import UnifiedSidebar from './UnifiedSidebar'
 
 const SettingsPage = () => {
@@ -26,10 +27,15 @@ const SettingsPage = () => {
   const setDefaultTags = useSettingsStore((state) => state.setDefaultTags)
   const setImportDuplicates = useSettingsStore((state) => state.setImportDuplicates)
   const setAutoOpenApp = useSettingsStore((state) => state.setAutoOpenApp)
+  const setDefaultCollection = useSettingsStore((state) => state.setDefaultCollection)
 
   // Display settings
   const displaySettings = useSettingsStore((state) => state.display)
   const setTheme = useSettingsStore((state) => state.setTheme)
+  const setSortBy = useSettingsStore((state) => state.setSortBy)
+
+  // Collections
+  const collections = useCollectionsStore((state) => state.collections)
 
   const handleClearAllData = async () => {
     if (!confirm('Clear all bookmarks and data? This cannot be undone.\n\nYou can re-import bookmarks from the Chrome extension.')) {
@@ -80,6 +86,25 @@ const SettingsPage = () => {
       { label: 'Dark', value: 'dark' },
       { label: 'Light', value: 'light' },
       { label: 'Auto (System)', value: 'auto' },
+    ],
+  })
+
+  const collectionOptions = createListCollection({
+    items: [
+      { label: 'None (no default collection)', value: 'none' },
+      ...collections.map(collection => ({
+        label: collection.name,
+        value: collection.id
+      }))
+    ],
+  })
+
+  const sortByOptions = createListCollection({
+    items: [
+      { label: 'Date (Newest first)', value: 'date' },
+      { label: 'Title (A-Z)', value: 'title' },
+      { label: 'Author (A-Z)', value: 'author' },
+      { label: 'Domain (A-Z)', value: 'domain' },
     ],
   })
 
@@ -342,6 +367,45 @@ const SettingsPage = () => {
                         />
                       </Box>
                     </HStack>
+
+                    {/* Divider */}
+                    <Box h="1px" style={{ background: 'var(--color-border)' }} />
+
+                    {/* Default Collection */}
+                    <VStack alignItems="stretch" gap={2}>
+                      <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
+                        Default Collection for New Bookmarks
+                      </Text>
+                      <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4" mb={1}>
+                        Automatically add new bookmarks to this collection
+                      </Text>
+                      <SelectRoot
+                        collection={collectionOptions}
+                        value={[extensionSettings.defaultCollection || 'none']}
+                        onValueChange={(e: any) => setDefaultCollection(e.value[0] === 'none' ? null : e.value[0])}
+                        size="sm"
+                      >
+                        <SelectTrigger
+                          style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                          fontSize="13px"
+                          _hover={{ borderColor: 'var(--color-border-hover)' }}
+                        >
+                          <SelectValueText placeholder="Select collection" />
+                        </SelectTrigger>
+                        <SelectContent style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)' }}>
+                          {collectionOptions.items.map((option) => (
+                            <SelectItem
+                              key={option.value}
+                              item={option.value}
+                              style={{ color: 'var(--color-text-primary)' }}
+                              _hover={{ bg: 'var(--color-bg-hover)' }}
+                            >
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </SelectRoot>
+                    </VStack>
                   </VStack>
                 </Box>
               </Box>
@@ -386,6 +450,45 @@ const SettingsPage = () => {
                         ))}
                       </SelectContent>
                     </SelectRoot>
+
+                    {/* Divider */}
+                    <Box h="1px" style={{ background: 'var(--color-border)' }} />
+
+                    {/* Sort By */}
+                    <VStack alignItems="stretch" gap={2}>
+                      <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
+                        Default Sorting
+                      </Text>
+                      <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4" mb={1}>
+                        How bookmarks should be sorted by default
+                      </Text>
+                      <SelectRoot
+                        collection={sortByOptions}
+                        value={[displaySettings.sortBy]}
+                        onValueChange={(e: any) => setSortBy(e.value[0] as any)}
+                        size="sm"
+                      >
+                        <SelectTrigger
+                          style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                          fontSize="13px"
+                          _hover={{ borderColor: 'var(--color-border-hover)' }}
+                        >
+                          <SelectValueText placeholder="Select sorting" />
+                        </SelectTrigger>
+                        <SelectContent style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)' }}>
+                          {sortByOptions.items.map((option) => (
+                            <SelectItem
+                              key={option.value}
+                              item={option.value}
+                              style={{ color: 'var(--color-text-primary)' }}
+                              _hover={{ bg: 'var(--color-bg-hover)' }}
+                            >
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </SelectRoot>
+                    </VStack>
                   </VStack>
                 </Box>
               </Box>

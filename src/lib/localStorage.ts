@@ -78,11 +78,15 @@ export interface StoredBookmarkCollection {
 export interface AppSettings {
   theme: 'dark' | 'light'
   viewMode: 'grid' | 'list'
-  defaultSort: 'newest' | 'oldest' | 'title' | 'domain'
+  defaultSort: 'newest' | 'oldest' | 'title' | 'author' | 'domain'
   showMetrics: boolean
   compactMode: boolean
   autoBackup: boolean
   exportFormat: 'json' | 'csv' | 'html'
+  maxBookmarks?: number
+  autoTagging?: boolean
+  defaultCollection?: string | null
+  duplicateHandling: 'skip' | 'replace' | 'keepBoth'
 }
 
 export interface AppMetadata {
@@ -575,7 +579,9 @@ class LocalStorageService {
       showMetrics: true,
       compactMode: false,
       autoBackup: true,
-      exportFormat: 'json'
+      exportFormat: 'json',
+      defaultCollection: null,
+      duplicateHandling: 'skip'
     })
   }
 

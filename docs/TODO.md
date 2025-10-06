@@ -254,8 +254,6 @@
 
 #### 9.2 **Display & View Settings**
 - [x] Theme selection (Dark, Light, Auto) ✅ COMPLETED
-- [ ] Color scheme customization
-- [ ] Font size adjustment (Small, Medium, Large)
 - [ ] View mode preference (Grid/List default)
 - [ ] Cards per page setting
 - [ ] Compact/Detailed view toggle
