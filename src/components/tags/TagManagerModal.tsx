@@ -18,16 +18,11 @@ import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useModal } from '../modals/ModalProvider'
 import TagChip from './TagChip'
 import TagCategoriesManager from './TagCategoriesManager'
+import type { TagStats } from '../../types/tags'
 
 interface TagManagerModalProps {
   isOpen: boolean
   onClose: () => void
-}
-
-interface TagStats {
-  name: string
-  count: number
-  bookmarkIds: number[]
 }
 
 const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {

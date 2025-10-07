@@ -12,6 +12,12 @@ export interface TagWithCategory {
   lastUsed: Date
 }
 
+export interface TagStats {
+  name: string
+  count: number
+  bookmarkIds: number[]
+}
+
 export interface TagHierarchy {
   parent: string
   children: string[]

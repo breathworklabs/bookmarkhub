@@ -29,6 +29,7 @@ export interface BookmarkCollection {
 }
 
 export interface CollectionInsert {
+  id?: string  // Optional - will be auto-generated if not provided
   name: string
   description?: string
   parentId?: string | null
@@ -38,7 +39,7 @@ export interface CollectionInsert {
   isDefault?: boolean
   isSmartCollection?: boolean
   smartCriteria?: SmartCollectionCriteria
-  userId: string
+  userId?: string  // Optional - defaults to 'local-user'
 }
 
 export interface CollectionsState {

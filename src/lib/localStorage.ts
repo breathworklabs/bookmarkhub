@@ -3,6 +3,19 @@
  * Privacy-focused bookmark storage using browser localStorage
  */
 
+import type {
+  Bookmark,
+  BookmarkInsert as BookmarkInsertType,
+  AppSettings,
+  AppMetadata
+} from '../types/bookmark'
+
+import type {
+  Collection,
+  BookmarkCollection,
+  CollectionInsert as CollectionInsertType
+} from '../types/collections'
+
 // Storage keys
 const STORAGE_KEYS = {
   BOOKMARKS: 'x-bookmark-manager-bookmarks',
@@ -13,89 +26,21 @@ const STORAGE_KEYS = {
 } as const
 
 // Types for localStorage data
-export interface StoredBookmark {
-  id: number
-  user_id: string
-  title: string
-  url: string
-  description: string
-  content: string
-  thumbnail_url?: string
-  favicon_url?: string
-  author: string
-  domain: string
-  source_platform: string
-  source_id?: string
-  engagement_score: number
-  is_starred: boolean
-  is_read: boolean
-  is_archived: boolean
-  tags: string[]
-  collections: string[]  // Array of collection IDs
-  primaryCollection?: string  // Main collection
-  metadata?: any
-  created_at: string
-  updated_at: string
-}
+// Use imported types from src/types for single source of truth
+export type StoredBookmark = Bookmark
 
-export interface BookmarkInsert extends Omit<StoredBookmark, 'id' | 'created_at' | 'updated_at'> {
-  id?: number
-}
+export type BookmarkInsert = BookmarkInsertType
 
 // Collection storage types
-export interface StoredCollection {
-  id: string
-  name: string
-  description?: string
-  parentId?: string | null
-  color?: string
-  icon?: string
-  isPrivate: boolean
-  isDefault: boolean
-  isSmartCollection: boolean
-  smartCriteria?: {
-    type: 'starred' | 'recent' | 'archived' | 'tag' | 'domain' | 'date_range'
-    value?: string
-    days?: number
-  }
-  createdAt: string
-  updatedAt: string
-  bookmarkCount: number
-  userId: string
-}
+// Use imported types from src/types for single source of truth
+export type StoredCollection = Collection
 
-export interface CollectionInsert extends Omit<StoredCollection, 'id' | 'createdAt' | 'updatedAt' | 'bookmarkCount'> {
-  id?: string
-}
+export type CollectionInsert = CollectionInsertType
 
-export interface StoredBookmarkCollection {
-  bookmarkId: number
-  collectionId: string
-  addedAt: string
-  order?: number
-}
+export type StoredBookmarkCollection = BookmarkCollection
 
-export interface AppSettings {
-  theme: 'dark' | 'light'
-  viewMode: 'grid' | 'list'
-  defaultSort: 'newest' | 'oldest' | 'title' | 'author' | 'domain'
-  showMetrics: boolean
-  compactMode: boolean
-  autoBackup: boolean
-  exportFormat: 'json' | 'csv' | 'html'
-  maxBookmarks?: number
-  autoTagging?: boolean
-  defaultCollection?: string | null
-  duplicateHandling: 'skip' | 'replace' | 'keepBoth'
-}
-
-export interface AppMetadata {
-  version: string
-  lastBackup?: string
-  totalBookmarks: number
-  createdAt: string
-  lastUpdate: string
-}
+// Settings and Metadata types are imported from src/types/bookmark.ts
+// Using imported AppSettings and AppMetadata from '../types/bookmark'
 
 class LocalStorageService {
   private isAvailable(): boolean {
@@ -378,7 +323,10 @@ class LocalStorageService {
       createdAt: now,
       updatedAt: now,
       bookmarkCount: 0,
-      userId: collection.userId || 'local-user'
+      userId: collection.userId || 'local-user',
+      isPrivate: collection.isPrivate ?? false,
+      isDefault: collection.isDefault ?? false,
+      isSmartCollection: collection.isSmartCollection ?? false
     }
 
     const updatedCollections = [newCollection, ...collections]

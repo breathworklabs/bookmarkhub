@@ -15,17 +15,12 @@ import { LuX, LuMerge, LuArrowRight, LuSearch } from 'react-icons/lu'
 import { useState, useCallback, useMemo, memo, useEffect } from 'react'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import TagChip from './TagChip'
+import type { TagStats } from '../../types/tags'
 
 interface TagMergeModalProps {
   isOpen: boolean
   onClose: () => void
   initialSourceTags?: string[]
-}
-
-interface TagStats {
-  name: string
-  count: number
-  bookmarkIds: number[]
 }
 
 const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMergeModalProps) => {
