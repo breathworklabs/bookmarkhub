@@ -6,6 +6,7 @@ import { DataProcessingService } from '../../services/dataProcessingService'
 import ImageModal from './ImageModal'
 import TagManagerModal from '../tags/TagManagerModal'
 import TagMergeModal from '../tags/TagMergeModal'
+import DuplicateBookmarkDialog from './DuplicateBookmarkDialog'
 
 interface TagMergeOptions {
   initialSourceTags?: string[]
@@ -913,6 +914,9 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
         onClose={closeTagMerge}
         initialSourceTags={tagMergeState.initialSourceTags}
       />
+
+      {/* Duplicate Bookmark Dialog */}
+      <DuplicateBookmarkDialog />
     </ModalContext.Provider>
   )
 }

@@ -5,6 +5,7 @@ import { sanitizeBookmark, validateImportData } from '../lib/dataValidation'
 import { transformXBookmarks, validateXBookmarkData } from '../lib/xBookmarkTransform'
 import { mockBookmarks } from '../data/mockBookmarks'
 import { createErrorHandler } from '../utils/errorHandling'
+import { detectDuplicate, type DuplicateMatch } from '../lib/duplicateDetection'
 import type { Bookmark, BookmarkInsert, AppSettings } from '../types/bookmark'
 
 export interface DateRangeFilter {
@@ -36,6 +37,11 @@ interface BookmarkState {
   activeSidebarItem: string
   error: string | null
   settings: AppSettings
+
+  // Duplicate detection state
+  duplicateMatches: DuplicateMatch[]
+  pendingBookmark: BookmarkInsert | null
+  showDuplicateDialog: boolean
 
   // Pagination
   pagination: PaginationState
@@ -93,6 +99,13 @@ interface BookmarkState {
   loadSettings: () => Promise<void>
   updateSettings: (settings: Partial<AppSettings>) => Promise<void>
 
+  // Duplicate detection actions
+  setDuplicateMatches: (matches: DuplicateMatch[]) => void
+  setPendingBookmark: (bookmark: BookmarkInsert | null) => void
+  setShowDuplicateDialog: (show: boolean) => void
+  confirmAddDuplicate: () => Promise<void>
+  cancelAddDuplicate: () => void
+
   // Advanced filter actions
   setAuthorFilter: (filter: string) => void
   setDomainFilter: (filter: string) => void
@@ -145,6 +158,11 @@ export const useBookmarkStore = create<BookmarkState>()(
         defaultCollection: null,
         duplicateHandling: 'skip'
       },
+
+      // Duplicate detection initial state
+      duplicateMatches: [],
+      pendingBookmark: null,
+      showDuplicateDialog: false,
 
       // Pagination initial state
       pagination: {
@@ -262,6 +280,38 @@ export const useBookmarkStore = create<BookmarkState>()(
             throw new Error('Invalid bookmark data')
           }
 
+          // Check for duplicates
+          const { settings, bookmarks } = get()
+          const duplicateResult = detectDuplicate(sanitizedBookmark, bookmarks)
+
+          if (duplicateResult.isDuplicate) {
+            // Handle based on user settings
+            if (settings.duplicateHandling === 'skip') {
+              // Skip adding duplicate - show notification
+              set({
+                error: 'This bookmark already exists',
+                isLoading: false
+              }, false, 'addBookmark:duplicate-skipped')
+              return
+            } else if (settings.duplicateHandling === 'replace') {
+              // Replace existing bookmark
+              const existingBookmark = duplicateResult.matches[0].bookmark
+              await get().updateBookmark(existingBookmark.id, sanitizedBookmark)
+              set({ isLoading: false }, false, 'addBookmark:duplicate-replaced')
+              return
+            } else {
+              // Show dialog for manual decision (keepBoth or manual choice)
+              set({
+                duplicateMatches: duplicateResult.matches,
+                pendingBookmark: sanitizedBookmark,
+                showDuplicateDialog: true,
+                isLoading: false
+              }, false, 'addBookmark:duplicate-found')
+              return
+            }
+          }
+
+          // No duplicates, proceed with adding
           const newBookmark = await localStorageService.createBookmark(sanitizedBookmark)
           set(
             (state) => ({ bookmarks: [newBookmark, ...state.bookmarks] }),
@@ -405,6 +455,53 @@ export const useBookmarkStore = create<BookmarkState>()(
           console.error('Error updating settings:', error)
           set({ error: error instanceof Error ? error.message : 'Failed to update settings' }, false, 'updateSettings:error')
         }
+      },
+
+      // Duplicate detection actions
+      setDuplicateMatches: (matches) => {
+        set({ duplicateMatches: matches }, false, 'setDuplicateMatches')
+      },
+
+      setPendingBookmark: (bookmark) => {
+        set({ pendingBookmark: bookmark }, false, 'setPendingBookmark')
+      },
+
+      setShowDuplicateDialog: (show) => {
+        set({ showDuplicateDialog: show }, false, 'setShowDuplicateDialog')
+      },
+
+      confirmAddDuplicate: async () => {
+        const { pendingBookmark } = get()
+        if (!pendingBookmark) return
+
+        try {
+          set({ isLoading: true }, false, 'confirmAddDuplicate:start')
+
+          const newBookmark = await localStorageService.createBookmark(pendingBookmark)
+          set(
+            (state) => ({
+              bookmarks: [newBookmark, ...state.bookmarks],
+              duplicateMatches: [],
+              pendingBookmark: null,
+              showDuplicateDialog: false,
+              isLoading: false
+            }),
+            false,
+            'confirmAddDuplicate:success'
+          )
+        } catch (error) {
+          const errorHandler = createErrorHandler('BookmarkStore.confirmAddDuplicate')
+          const appError = errorHandler(error)
+          set({ error: appError.toUserMessage(), isLoading: false }, false, 'confirmAddDuplicate:error')
+        }
+      },
+
+      cancelAddDuplicate: () => {
+        set({
+          duplicateMatches: [],
+          pendingBookmark: null,
+          showDuplicateDialog: false
+        }, false, 'cancelAddDuplicate')
       },
 
       // Data management
