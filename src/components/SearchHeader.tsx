@@ -1,5 +1,5 @@
 import { Box, HStack, Input, Button, Spacer, Badge } from '@chakra-ui/react'
-import { LuMenu } from 'react-icons/lu'
+import { LuMenu, LuLayoutGrid, LuLayoutList } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
 import { theme } from '../styles/theme'
 import { useBookmarkStore } from '../store/bookmarkStore'
@@ -34,6 +34,8 @@ const SearchHeader = memo(() => {
   const setSearchQuery = useBookmarkStore((state) => state.setSearchQuery)
   const addBookmark = useBookmarkStore((state) => state.addBookmark)
   const toggleFiltersPanel = useBookmarkStore((state) => state.toggleFiltersPanel)
+  const viewMode = useBookmarkStore((state) => state.viewMode)
+  const setViewMode = useBookmarkStore((state) => state.setViewMode)
   const { showAddBookmark } = useModal()
 
   // Memoized active filter count calculation
@@ -142,6 +144,50 @@ const SearchHeader = memo(() => {
 
         {/* Action Buttons */}
         <HStack gap={3}>
+          {/* View Toggle */}
+          <HStack gap={0} bg="var(--color-bg-secondary)" borderRadius="8px" p="2px">
+            <Button
+              {...useButtonStyles('secondary')}
+              size="sm"
+              px={3}
+              py={2}
+              minW="auto"
+              style={{
+                background: viewMode === 'grid' ? 'var(--color-bg-tertiary)' : 'transparent',
+                color: viewMode === 'grid' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                border: 'none'
+              }}
+              _hover={{
+                bg: viewMode === 'grid' ? 'var(--color-bg-tertiary)' : 'var(--color-bg-hover)',
+                color: 'var(--color-text-primary)'
+              }}
+              onClick={() => setViewMode('grid')}
+              title="Grid View"
+            >
+              <LuLayoutGrid size={16} />
+            </Button>
+            <Button
+              {...useButtonStyles('secondary')}
+              size="sm"
+              px={3}
+              py={2}
+              minW="auto"
+              style={{
+                background: viewMode === 'list' ? 'var(--color-bg-tertiary)' : 'transparent',
+                color: viewMode === 'list' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                border: 'none'
+              }}
+              _hover={{
+                bg: viewMode === 'list' ? 'var(--color-bg-tertiary)' : 'var(--color-bg-hover)',
+                color: 'var(--color-text-primary)'
+              }}
+              onClick={() => setViewMode('list')}
+              title="List View"
+            >
+              <LuLayoutList size={16} />
+            </Button>
+          </HStack>
+
           <Button
             {...useButtonStyles('secondary')}
             style={{

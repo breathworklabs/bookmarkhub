@@ -4,6 +4,7 @@ import { usePaginatedBookmarksOptimized } from '../hooks/composite/usePaginatedB
 import { useInfiniteScrollObserver } from '../hooks/useIntersectionObserver'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import BookmarkCard from './BookmarkCard'
+import BookmarkList from './BookmarkList'
 
 const InfiniteBookmarkGrid = memo(() => {
   const {
@@ -14,6 +15,9 @@ const InfiniteBookmarkGrid = memo(() => {
     totalItems,
     currentPage
   } = usePaginatedBookmarksOptimized()
+
+  // View mode
+  const viewMode = useBookmarkStore((state) => state.viewMode)
 
   // Selection management
   useBookmarkStore((state) => state.selectedBookmarks)
@@ -81,20 +85,24 @@ const InfiniteBookmarkGrid = memo(() => {
   }
 
   return (
-    <Box flex={1} p={4} overflowY="auto">
-      {/* Bookmarks Grid */}
-      <SimpleGrid
-        columns={{ base: 1, md: 2, lg: 3, xl: 4, "2xl": 5 }}
-        gap={4}
-        w="full"
-        mb={4}
-      >
-        <For each={bookmarks}>
-          {(bookmark) => (
-            <BookmarkCard key={bookmark.id} bookmark={bookmark} />
-          )}
-        </For>
-      </SimpleGrid>
+    <Box flex={1} p={viewMode === 'list' ? 0 : 4} overflowY="auto">
+      {/* Bookmarks Display - Grid or List */}
+      {viewMode === 'grid' ? (
+        <SimpleGrid
+          columns={{ base: 1, md: 2, lg: 3, xl: 4, "2xl": 5 }}
+          gap={4}
+          w="full"
+          mb={4}
+        >
+          <For each={bookmarks}>
+            {(bookmark) => (
+              <BookmarkCard key={bookmark.id} bookmark={bookmark} />
+            )}
+          </For>
+        </SimpleGrid>
+      ) : (
+        <BookmarkList bookmarks={bookmarks} />
+      )}
 
 
 
