@@ -184,7 +184,7 @@ const TagCategoriesManager = memo(() => {
                       bg={color}
                       borderRadius="4px"
                       cursor="pointer"
-                      border={newCategory.color === color ? '2px solid white' : '1px solid #2a2d35'}
+                      border={newCategory.color === color ? '2px solid var(--color-text-primary)' : '1px solid var(--color-border)'}
                       onClick={() => setNewCategory(prev => ({ ...prev, color }))}
                     />
                   )}
@@ -273,7 +273,7 @@ const TagCategoriesManager = memo(() => {
                               bg={color}
                               borderRadius="4px"
                               cursor="pointer"
-                              border={editingCategory.color === color ? '2px solid white' : '1px solid #2a2d35'}
+                              border={editingCategory.color === color ? '2px solid var(--color-text-primary)' : '1px solid var(--color-border)'}
                               onClick={() => setEditingCategory(prev => prev ? ({ ...prev, color }) : null)}
                             />
                           )}
@@ -382,7 +382,7 @@ const TagCategoriesManager = memo(() => {
                         variant="ghost"
                         aria-label="Delete category"
                         color="var(--color-error)"
-                        _hover={{ color: '#fca5a5', bg: 'var(--color-border)' }}
+                        _hover={{ color: 'var(--color-error-hover)', bg: 'var(--color-border)' }}
                         onClick={() => handleDeleteCategory(category.id)}
                       >
                         <LuTrash2 size={14} />
@@ -393,7 +393,7 @@ const TagCategoriesManager = memo(() => {
 
                 {/* Tag Assignment Section */}
                 {managingTagsFor === category.id && (
-                  <VStack align="stretch" gap={3} mt={3} pt={3} borderTop="1px solid #2a2d35">
+                  <VStack align="stretch" gap={3} mt={3} pt={3} borderTop="1px solid var(--color-border)">
                     <Text fontSize="sm" fontWeight="500" color="var(--color-text-primary)">
                       Assign Tags to Category
                     </Text>
@@ -462,7 +462,7 @@ const TagCategoriesManager = memo(() => {
           p={6}
           textAlign="center"
           color="var(--color-text-tertiary)"
-          border="1px dashed #2a2d35"
+          border="1px dashed var(--color-border)"
           borderRadius="8px"
         >
           <Text fontSize="sm">No categories defined</Text>

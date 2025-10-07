@@ -274,7 +274,7 @@ const CollectionsActions = memo(() => {
                   size="sm"
                   variant="ghost"
                   color="var(--color-error)"
-                  _hover={{ color: '#fca5a5', bg: 'var(--color-border)' }}
+                  _hover={{ color: 'var(--color-error-hover)', bg: 'var(--color-border)' }}
                   onClick={handleBulkDelete}
                   fontSize="sm"
                 >
@@ -357,7 +357,7 @@ const CollectionsActions = memo(() => {
                     size="sm"
                     variant="ghost"
                     color="var(--color-error)"
-                    _hover={{ color: '#fca5a5', bg: 'var(--color-border)' }}
+                    _hover={{ color: 'var(--color-error-hover)', bg: 'var(--color-border)' }}
                     onClick={handleDeleteCollection}
                     fontSize="sm"
                   >

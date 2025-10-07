@@ -307,7 +307,7 @@ const CollectionsList = memo(() => {
           textAlign="center"
           style={{ color: 'var(--color-text-tertiary)' }}
           fontSize="sm"
-          border="1px dashed #2a2d35"
+          border="1px dashed var(--color-border)"
           borderRadius="md"
           mt={2}
         >

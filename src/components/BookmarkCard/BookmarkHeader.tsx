@@ -230,7 +230,7 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
             w="32px"
             h="32px"
             minW="32px"
-            border="1px solid #2f3336"
+            border="1px solid var(--color-border)"
             _hover={{
               bg: 'var(--color-border)',
               color: 'var(--color-text-primary)',

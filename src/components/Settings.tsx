@@ -31,8 +31,9 @@ const Settings = () => {
         <Button
           onClick={() => navigate('/')}
           variant="ghost"
-          style={{ color: 'var(--color-text-tertiary)' }}
-          _hover={{ color: 'var(--color-text-primary)', bg: '#1c1f26' }}
+          style={{ color: 'var(--color-text-secondary)' }}
+          _hover={{ color: 'var(--color-blue)', bg: 'var(--color-bg-hover)' }}
+          _focus={{ boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.2)', outline: 'none' }}
           mb={6}
           fontSize="14px"
         >

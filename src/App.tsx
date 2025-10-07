@@ -67,7 +67,7 @@ function AppContent() {
         justifyContent="center"
         bg="var(--color-bg-primary)"
       >
-        <Spinner size="lg" color="#1d4ed8" />
+        <Spinner size="lg" style={{ color: 'var(--color-blue)' }} />
       </Box>
     )
   }

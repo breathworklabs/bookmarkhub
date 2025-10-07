@@ -331,7 +331,7 @@ const TagMergeModal = memo(({ isOpen, onClose, initialSourceTags = [] }: TagMerg
                             {(tag, index) => (
                               <Box
                                 key={tag.name}
-                                borderBottom={index < availableTags.length - 1 ? "1px solid #2a2d35" : "none"}
+                                borderBottom={index < availableTags.length - 1 ? "1px solid var(--color-border)" : "none"}
                               >
                                 <HStack
                                   p={3}
