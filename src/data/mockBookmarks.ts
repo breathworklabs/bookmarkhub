@@ -15,6 +15,7 @@ export const mockBookmarks: Bookmark[] = [
     is_starred: false,
     is_read: false,
     is_archived: false,
+    is_deleted: false,
     tags: ['tech', 'tesla', 'electric'],
     thumbnail_url: 'https://via.placeholder.com/400x200',
     created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
@@ -35,6 +36,7 @@ export const mockBookmarks: Bookmark[] = [
     is_starred: true,
     is_read: false,
     is_archived: false,
+    is_deleted: false,
     tags: ['AI', 'GPT', 'technology'],
     created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
     updated_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
@@ -54,6 +56,7 @@ export const mockBookmarks: Bookmark[] = [
     is_starred: false,
     is_read: false,
     is_archived: false,
+    is_deleted: false,
     tags: ['nextjs', 'react', 'development'],
     thumbnail_url: 'https://via.placeholder.com/400x200',
     created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago

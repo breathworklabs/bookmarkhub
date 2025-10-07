@@ -1,7 +1,7 @@
 import { Box, VStack, HStack, Text, Badge, Separator, IconButton } from '@chakra-ui/react'
-import { LuMenu, LuStar, LuExternalLink, LuFolderPlus, LuSettings } from 'react-icons/lu'
+import { LuMenu, LuStar, LuExternalLink, LuFolderPlus, LuSettings, LuTrash2 } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { useModal } from './modals/ModalProvider'
@@ -18,12 +18,13 @@ const useBookmarkCounts = () => {
     weekAgo.setDate(weekAgo.getDate() - 7)
 
     return {
-      total: bookmarks.length,
-      starred: bookmarks.filter(b => b.is_starred).length,
-      archived: bookmarks.filter(b => b.is_archived).length,
+      total: bookmarks.filter(b => !b.is_deleted).length,
+      starred: bookmarks.filter(b => b.is_starred && !b.is_deleted).length,
+      archived: bookmarks.filter(b => b.is_archived && !b.is_deleted).length,
+      deleted: bookmarks.filter(b => b.is_deleted).length,
       recent: bookmarks.filter(b => {
         const date = new Date(b.created_at)
-        return date >= weekAgo
+        return date >= weekAgo && !b.is_deleted
       }).length
     }
   }, [bookmarks])
@@ -31,6 +32,7 @@ const useBookmarkCounts = () => {
 
 const UnifiedSidebar = memo(() => {
   const navigate = useNavigate()
+  const location = useLocation()
   const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
   const toggleAIPanel = useBookmarkStore((state) => state.toggleAIPanel)
@@ -47,12 +49,24 @@ const UnifiedSidebar = memo(() => {
 
     if (label === 'AI Insights') {
       toggleAIPanel()
+    } else if (label === 'All Bookmarks') {
+      navigate('/')
     }
-  }, [setActiveSidebarItem, setActiveCollection, toggleAIPanel])
+  }, [setActiveSidebarItem, setActiveCollection, toggleAIPanel, navigate])
 
   // create handler inline where used; remove unused local
 
-  const isActive = useCallback((label: string) => activeSidebarItem === label, [activeSidebarItem])
+  const isActive = useCallback((label: string) => {
+    // Check route-based active state first
+    if (location.pathname === '/trash') {
+      return label === 'Trash'
+    }
+    if (location.pathname === '/settings') {
+      return label === 'Settings'
+    }
+    // Otherwise use the store's activeSidebarItem
+    return activeSidebarItem === label
+  }, [activeSidebarItem, location.pathname])
 
   return (
     <Box {...componentStyles.container.sidebar}>
@@ -105,29 +119,46 @@ const UnifiedSidebar = memo(() => {
         </VStack>
 
         {/* Collections Section */}
-        <VStack alignItems="stretch" gap={0} flex={1}>
-          <HStack justify="space-between" align="center" px={3} py={2}>
-            <Text fontWeight="600" fontSize="14px" style={{ color: 'var(--color-text-primary)' }}>
-              Collections
-            </Text>
-            <IconButton
-              {...useIconButtonStyles()}
-              size="sm"
-              variant="ghost"
-              aria-label="Create collection"
-              onClick={() => showCreateCollection({
-                onCreate: async (collectionData) => {
-                  try {
-                    await createCollection(collectionData)
-                  } catch (error) {
-                    console.error('Failed to create collection:', error)
+        <VStack alignItems="stretch" gap={0} flex={1} minH={0}>
+          <Box
+            borderTopWidth="1px"
+            borderBottomWidth="1px"
+            style={{ borderColor: 'var(--color-border)' }}
+            mb={2}
+          >
+            <HStack justify="space-between" align="center" px={3} py={3}>
+              <Text
+                fontWeight="600"
+                fontSize="11px"
+                letterSpacing="0.8px"
+                textTransform="uppercase"
+                style={{ color: 'var(--color-text-tertiary)' }}
+              >
+                Collections
+              </Text>
+              <IconButton
+                size="xs"
+                variant="ghost"
+                aria-label="Create collection"
+                style={{ color: 'var(--color-text-tertiary)' }}
+                _hover={{ bg: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                _focus={{ boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)', outline: 'none' }}
+                minW="24px"
+                h="24px"
+                onClick={() => showCreateCollection({
+                  onCreate: async (collectionData) => {
+                    try {
+                      await createCollection(collectionData)
+                    } catch (error) {
+                      console.error('Failed to create collection:', error)
+                    }
                   }
-                }
-              })}
-            >
-              <LuFolderPlus size={16} />
-            </IconButton>
-          </HStack>
+                })}
+              >
+                <LuFolderPlus size={14} />
+              </IconButton>
+            </HStack>
+          </Box>
 
           <Box flex={1} overflowY="auto">
             <CollectionsList />
@@ -184,21 +215,61 @@ const UnifiedSidebar = memo(() => {
             <Text flex={1}>Shared</Text>
           </HStack>
 
+          <HStack
+            p={3}
+            borderRadius="12px"
+            cursor="pointer"
+            bg={isActive('Trash') ? 'var(--color-blue)' : 'transparent'}
+            color={isActive('Trash') ? 'white' : 'var(--color-text-tertiary)'}
+            fontSize="14px"
+            fontWeight={isActive('Trash') ? '600' : '500'}
+            _hover={{
+              bg: isActive('Trash') ? 'var(--color-blue-hover)' : 'var(--color-border)',
+              color: isActive('Trash') ? 'white' : 'var(--color-text-primary)'
+            }}
+            transition="all 0.2s"
+            onClick={() => {
+              setActiveCollection(null)
+              navigate('/trash')
+            }}
+          >
+            <Box w="18px" h="18px">
+              <LuTrash2 size={18} />
+            </Box>
+            <Text flex={1}>Trash</Text>
+            {bookmarkCounts.deleted > 0 && (
+              <Badge
+                bg={isActive('Trash') ? 'rgba(255,255,255,0.2)' : 'var(--color-border)'}
+                color={isActive('Trash') ? 'white' : 'var(--color-text-secondary)'}
+                fontSize="11px"
+                px={2}
+                py={1}
+                borderRadius="6px"
+              >
+                {bookmarkCounts.deleted}
+              </Badge>
+            )}
+          </HStack>
+
           {/* Settings */}
           <VStack alignItems="stretch" borderTopWidth="1px" style={{ borderColor: 'var(--color-border)' }} pt={4} gap={2}>
             <HStack
               p={3}
               borderRadius="12px"
               cursor="pointer"
-              style={{ color: 'var(--color-text-tertiary)' }}
+              bg={isActive('Settings') ? 'var(--color-blue)' : 'transparent'}
+              color={isActive('Settings') ? 'white' : 'var(--color-text-tertiary)'}
               fontSize="14px"
-              fontWeight="500"
+              fontWeight={isActive('Settings') ? '600' : '500'}
               _hover={{
-                bg: 'var(--color-border)',
-                color: 'var(--color-text-primary)'
+                bg: isActive('Settings') ? 'var(--color-blue-hover)' : 'var(--color-border)',
+                color: isActive('Settings') ? 'white' : 'var(--color-text-primary)'
               }}
               transition="all 0.2s"
-              onClick={() => navigate('/settings')}
+              onClick={() => {
+                setActiveCollection(null)
+                navigate('/settings')
+              }}
             >
               <Box w="18px" h="18px">
                 <LuSettings size={18} />

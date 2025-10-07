@@ -21,6 +21,8 @@ export interface Bookmark {
   is_starred: boolean
   is_read: boolean
   is_archived: boolean
+  is_deleted: boolean
+  deleted_at?: string
   tags: string[]
   collections: string[]  // Array of collection IDs
   primaryCollection?: string  // Main collection
@@ -37,7 +39,7 @@ export interface BookmarkMetrics {
 }
 
 // For creating new bookmarks
-export interface BookmarkInsert extends Omit<Bookmark, 'id' | 'created_at' | 'updated_at'> {
+export interface BookmarkInsert extends Omit<Bookmark, 'id' | 'created_at' | 'updated_at' | 'is_deleted' | 'deleted_at'> {
   id?: number
 }
 

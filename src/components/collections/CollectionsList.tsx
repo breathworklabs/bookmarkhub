@@ -2,6 +2,7 @@ import { Box, VStack, HStack, Text, Button, Badge, For } from '@chakra-ui/react'
 import { LuFolder, LuStar, LuClock, LuArchive } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
 import { useDrop } from 'react-dnd'
+import { useNavigate } from 'react-router-dom'
 import { useCollectionsStore } from '../../store/collectionsStore'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useModal } from '../modals/ModalProvider'
@@ -137,6 +138,7 @@ const CollectionsList = memo(() => {
     createCollection
   } = useCollectionsStore()
 
+  const navigate = useNavigate()
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
   const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
@@ -202,13 +204,16 @@ const CollectionsList = memo(() => {
     const newActiveId = isActive(collectionId) ? null : collectionId
     setActiveCollection(newActiveId)
 
+    // Navigate to home page when clicking collections
+    navigate('/')
+
     // Also update the main sidebar state to show we're in collections mode
     if (newActiveId) {
       setActiveSidebarItem('Collections')
     } else {
       setActiveSidebarItem('All Bookmarks')
     }
-  }, [isActive, setActiveCollection, setActiveSidebarItem])
+  }, [isActive, setActiveCollection, setActiveSidebarItem, navigate])
 
   const getBookmarkCount = useCallback((collectionId: string) => {
     // Handle smart collections with pre-calculated counts

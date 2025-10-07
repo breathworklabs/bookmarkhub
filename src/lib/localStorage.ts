@@ -110,7 +110,8 @@ class LocalStorageService {
       const needsBooleanNormalization =
         typeof bookmark.is_starred === 'string' ||
         typeof bookmark.is_read === 'string' ||
-        typeof bookmark.is_archived === 'string'
+        typeof bookmark.is_archived === 'string' ||
+        typeof bookmark.is_deleted === 'string'
 
       if (needsBooleanNormalization) {
         needsUpdate = true
@@ -118,7 +119,17 @@ class LocalStorageService {
           ...updated,
           is_starred: bookmark.is_starred === true || (bookmark.is_starred as any) === 'true',
           is_read: bookmark.is_read === true || (bookmark.is_read as any) === 'true',
-          is_archived: bookmark.is_archived === true || (bookmark.is_archived as any) === 'true'
+          is_archived: bookmark.is_archived === true || (bookmark.is_archived as any) === 'true',
+          is_deleted: bookmark.is_deleted === true || (bookmark.is_deleted as any) === 'true'
+        }
+      }
+
+      // Ensure is_deleted exists
+      if (typeof bookmark.is_deleted === 'undefined') {
+        needsUpdate = true
+        updated = {
+          ...updated,
+          is_deleted: false
         }
       }
 
@@ -142,6 +153,7 @@ class LocalStorageService {
       id: bookmark.id || newId,
       collections: bookmark.collections || ['uncategorized'],
       primaryCollection: bookmark.primaryCollection || 'uncategorized',
+      is_deleted: false,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }
@@ -236,6 +248,87 @@ class LocalStorageService {
   async getStarredBookmarks(): Promise<StoredBookmark[]> {
     const bookmarks = await this.getBookmarks()
     return bookmarks.filter(bookmark => bookmark.is_starred)
+  }
+
+  // Trash operations (soft delete)
+  async moveToTrash(id: number): Promise<StoredBookmark> {
+    return this.updateBookmark(id, {
+      is_deleted: true,
+      deleted_at: new Date().toISOString()
+    })
+  }
+
+  async restoreFromTrash(id: number): Promise<StoredBookmark> {
+    return this.updateBookmark(id, {
+      is_deleted: false,
+      deleted_at: undefined
+    })
+  }
+
+  async getDeletedBookmarks(): Promise<StoredBookmark[]> {
+    const bookmarks = await this.getBookmarks()
+    return bookmarks
+      .filter(bookmark => bookmark.is_deleted)
+      .sort((a, b) => {
+        const aTime = a.deleted_at ? new Date(a.deleted_at).getTime() : 0
+        const bTime = b.deleted_at ? new Date(b.deleted_at).getTime() : 0
+        return bTime - aTime // Most recently deleted first
+      })
+  }
+
+  async permanentlyDeleteBookmark(id: number): Promise<void> {
+    const bookmarks = await this.getBookmarks()
+    const filteredBookmarks = bookmarks.filter(b => b.id !== id)
+
+    if (filteredBookmarks.length === bookmarks.length) {
+      throw new Error(`Bookmark with id ${id} not found`)
+    }
+
+    if (this.safeSet(STORAGE_KEYS.BOOKMARKS, filteredBookmarks)) {
+      await this.updateMetadata()
+      return
+    }
+
+    throw new Error('Failed to permanently delete bookmark from localStorage')
+  }
+
+  async emptyTrash(): Promise<void> {
+    const bookmarks = await this.getBookmarks()
+    const activeBookmarks = bookmarks.filter(b => !b.is_deleted)
+
+    if (this.safeSet(STORAGE_KEYS.BOOKMARKS, activeBookmarks)) {
+      await this.updateMetadata()
+      return
+    }
+
+    throw new Error('Failed to empty trash')
+  }
+
+  async cleanupOldTrash(daysOld: number = 30): Promise<number> {
+    const bookmarks = await this.getBookmarks()
+    const cutoffDate = new Date()
+    cutoffDate.setDate(cutoffDate.getDate() - daysOld)
+    const cutoffTime = cutoffDate.getTime()
+
+    let deletedCount = 0
+    const filteredBookmarks = bookmarks.filter(bookmark => {
+      if (bookmark.is_deleted && bookmark.deleted_at) {
+        const deletedTime = new Date(bookmark.deleted_at).getTime()
+        if (deletedTime < cutoffTime) {
+          deletedCount++
+          return false // Remove old deleted bookmarks
+        }
+      }
+      return true // Keep everything else
+    })
+
+    if (deletedCount > 0) {
+      if (this.safeSet(STORAGE_KEYS.BOOKMARKS, filteredBookmarks)) {
+        await this.updateMetadata()
+      }
+    }
+
+    return deletedCount
   }
 
   // Collection operations

@@ -20,6 +20,10 @@ export const componentStyles = {
         bg: colors.primary[700],
         transform: 'translateY(0)'
       },
+      _focus: {
+        boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.3)',
+        outline: 'none'
+      },
       transition: 'all 0.2s ease',
       gap: 2
     },
@@ -45,6 +49,10 @@ export const componentStyles = {
         bg: colors.dark.border,
         transform: 'translateY(0)'
       },
+      _focus: {
+        boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.2)',
+        outline: 'none'
+      },
       transition: 'all 0.2s ease',
       gap: 2
     },
@@ -64,6 +72,10 @@ export const componentStyles = {
       },
       _active: {
         bg: colors.dark.borderHover
+      },
+      _focus: {
+        boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.2)',
+        outline: 'none'
       },
       transition: 'all 0.2s ease'
     },
@@ -87,6 +99,10 @@ export const componentStyles = {
       _active: {
         bg: colors.dark.borderHover,
         transform: 'scale(0.95)'
+      },
+      _focus: {
+        boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.2)',
+        outline: 'none'
       },
       transition: 'all 0.2s ease'
     }

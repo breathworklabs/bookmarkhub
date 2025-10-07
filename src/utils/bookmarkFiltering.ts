@@ -34,7 +34,8 @@ export const filterBookmarks = ({
   activeCollectionId,
   collectionBookmarks
 }: FilterParams): Bookmark[] => {
-  let filtered = bookmarks
+  // First filter out deleted bookmarks (unless we're in a trash view)
+  let filtered = bookmarks.filter(bookmark => !bookmark.is_deleted)
 
   // Filter by sidebar selection first
   switch (activeSidebarItem) {

@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast'
 import XBookmarkManager from './components/XBookmarkManager'
 import OnboardingScreen from './components/OnboardingScreen'
 import SettingsPage from './components/SettingsPage'
+import TrashView from './components/TrashView'
 import { useInitializeApp } from './hooks/useInitializeApp'
 import { ModalProvider } from './components/modals/ModalProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -42,6 +43,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<AppContent />} />
                 <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/trash" element={<TrashView />} />
               </Routes>
             </ModalProvider>
           </ErrorBoundary>

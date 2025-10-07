@@ -208,6 +208,14 @@ export const useBookmarkStore = create<BookmarkState>()(
       // Initialize store
       initialize: async () => {
         try {
+          // Clean up old trash items (30+ days old)
+          try {
+            await localStorageService.cleanupOldTrash(30)
+          } catch (error) {
+            console.warn('Failed to cleanup old trash:', error)
+            // Don't fail initialization if cleanup fails
+          }
+
           // First, try to load bookmarks immediately (synchronous for better UX)
           const bookmarks = await localStorageService.getBookmarks()
 
@@ -370,9 +378,12 @@ export const useBookmarkStore = create<BookmarkState>()(
       removeBookmark: async (id) => {
         try {
           set({ isLoading: true, error: null }, false, 'removeBookmark:start')
-          await localStorageService.deleteBookmark(id)
+          // Soft delete - move to trash instead of permanent deletion
+          const updatedBookmark = await localStorageService.moveToTrash(id)
           set(
-            (state) => ({ bookmarks: state.bookmarks.filter(b => b.id !== id) }),
+            (state) => ({
+              bookmarks: state.bookmarks.map(b => b.id === id ? updatedBookmark : b)
+            }),
             false,
             'removeBookmark:success'
           )
