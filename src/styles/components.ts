@@ -193,21 +193,29 @@ export const componentStyles = {
       cursor: 'pointer',
       fontSize: '14px',
       fontWeight: '500',
-      color: colors.dark.textSecondary,
+      color: 'var(--color-text-secondary)',
       transition: 'all 0.2s ease',
       _hover: {
-        bg: colors.dark.border,
-        color: colors.dark.textPrimary
+        bg: 'var(--color-bg-hover)',
+        color: 'var(--color-blue)'
+      },
+      _focus: {
+        boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.2)',
+        outline: 'none'
       }
     },
 
     active: {
-      bg: colors.primary[500],
+      bg: 'var(--color-blue)',
       color: 'white',
       fontWeight: '600',
       _hover: {
-        bg: colors.primary[600],
+        bg: 'var(--color-blue-hover)',
         color: 'white'
+      },
+      _focus: {
+        boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.4)',
+        outline: 'none'
       }
     }
   },
