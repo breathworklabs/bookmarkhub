@@ -6,6 +6,7 @@ import { transformXBookmarks, validateXBookmarkData } from '../lib/xBookmarkTran
 import { mockBookmarks } from '../data/mockBookmarks'
 import { createErrorHandler } from '../utils/errorHandling'
 import { detectDuplicate, type DuplicateMatch } from '../lib/duplicateDetection'
+import { exportAsCSV, exportAsHTML, downloadFile } from '../lib/exportFormats'
 import type { Bookmark, BookmarkInsert, AppSettings } from '../types/bookmark'
 
 export interface DateRangeFilter {
@@ -520,18 +521,31 @@ export const useBookmarkStore = create<BookmarkState>()(
       // Data management
       exportBookmarks: async () => {
         try {
-          const data = await localStorageService.exportData()
+          const { settings, bookmarks } = get()
+          const format = settings.exportFormat || 'json'
+          const date = new Date().toISOString().split('T')[0]
 
-          // Create and download file
-          const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-          const url = URL.createObjectURL(blob)
-          const link = document.createElement('a')
-          link.href = url
-          link.download = `x-bookmarks-${new Date().toISOString().split('T')[0]}.json`
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link)
-          URL.revokeObjectURL(url)
+          switch (format) {
+            case 'csv': {
+              const csvContent = exportAsCSV(bookmarks)
+              downloadFile(csvContent, `x-bookmarks-${date}.csv`, 'text/csv;charset=utf-8;')
+              break
+            }
+
+            case 'html': {
+              const htmlContent = exportAsHTML(bookmarks)
+              downloadFile(htmlContent, `x-bookmarks-${date}.html`, 'text/html;charset=utf-8;')
+              break
+            }
+
+            case 'json':
+            default: {
+              const data = await localStorageService.exportData()
+              const jsonContent = JSON.stringify(data, null, 2)
+              downloadFile(jsonContent, `x-bookmarks-${date}.json`, 'application/json')
+              break
+            }
+          }
 
         } catch (error) {
           console.error('Error exporting bookmarks:', error)

@@ -621,10 +621,11 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                         onChange={(e) => handleBookmarkFormChange('title', e.target.value)}
                         placeholder="Enter bookmark title"
                         required
-                        style={{ background: 'var(--color-border)' }}
+                        style={{ background: 'var(--color-border)', color: 'var(--color-text-primary)' }}
                         border="1px solid var(--color-border-hover)"
                         _hover={{ borderColor: 'var(--color-border-hover)' }}
                         _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
+                        _placeholder={{ color: 'var(--color-text-tertiary)' }}
                       />
                     </VStack>
 
@@ -636,10 +637,11 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                         onChange={(e) => handleBookmarkFormChange('url', e.target.value)}
                         placeholder="https://example.com"
                         required
-                        style={{ background: 'var(--color-border)' }}
+                        style={{ background: 'var(--color-border)', color: 'var(--color-text-primary)' }}
                         border="1px solid var(--color-border-hover)"
                         _hover={{ borderColor: 'var(--color-border-hover)' }}
                         _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
+                        _placeholder={{ color: 'var(--color-text-tertiary)' }}
                       />
                     </VStack>
 
@@ -649,10 +651,11 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                         value={bookmarkFormData.author}
                         onChange={(e) => handleBookmarkFormChange('author', e.target.value)}
                         placeholder="Author name"
-                        style={{ background: 'var(--color-border)' }}
+                        style={{ background: 'var(--color-border)', color: 'var(--color-text-primary)' }}
                         border="1px solid var(--color-border-hover)"
                         _hover={{ borderColor: 'var(--color-border-hover)' }}
                         _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
+                        _placeholder={{ color: 'var(--color-text-tertiary)' }}
                       />
                     </VStack>
 
@@ -663,10 +666,11 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                         onChange={(e) => handleBookmarkFormChange('content', e.target.value)}
                         placeholder="Bookmark description or content preview"
                         rows={3}
-                        style={{ background: 'var(--color-border)' }}
+                        style={{ background: 'var(--color-border)', color: 'var(--color-text-primary)' }}
                         border="1px solid var(--color-border-hover)"
                         _hover={{ borderColor: 'var(--color-border-hover)' }}
                         _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
+                        _placeholder={{ color: 'var(--color-text-tertiary)' }}
                       />
                     </VStack>
 
@@ -716,10 +720,11 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                             onKeyDown={handleNewTagKeyDown}
                             placeholder="Enter tag name..."
                             size="sm"
-                            style={{ background: 'var(--color-border)' }}
+                            style={{ background: 'var(--color-border)', color: 'var(--color-text-primary)' }}
                             border="1px solid var(--color-border-hover)"
                             _hover={{ borderColor: 'var(--color-border-hover)' }}
                             _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
+                            _placeholder={{ color: 'var(--color-text-tertiary)' }}
                             autoFocus
                           />
                           <Button
@@ -829,11 +834,12 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                         onChange={(e) => handleCollectionFormChange('name', e.target.value)}
                         placeholder="Collection name"
                         required
-                        style={{ background: 'var(--color-bg-tertiary)' }}
+                        style={{ background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
                         border="1px solid var(--color-border)"
                         borderRadius="12px"
                         _hover={{ borderColor: 'var(--color-border-hover)' }}
                         _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)' }}
+                        _placeholder={{ color: 'var(--color-text-tertiary)' }}
                       />
                     </VStack>
 
@@ -844,11 +850,12 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                         onChange={(e) => handleCollectionFormChange('description', e.target.value)}
                         placeholder="Collection description (optional)"
                         rows={2}
-                        style={{ background: 'var(--color-bg-tertiary)' }}
+                        style={{ background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
                         border="1px solid var(--color-border)"
                         borderRadius="12px"
                         _hover={{ borderColor: 'var(--color-border-hover)' }}
                         _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)' }}
+                        _placeholder={{ color: 'var(--color-text-tertiary)' }}
                       />
                     </VStack>
                   </VStack>

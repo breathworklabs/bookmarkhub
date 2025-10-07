@@ -1,6 +1,6 @@
-import { Box, VStack, HStack, Text, Button, Input, For } from '@chakra-ui/react'
+import { Box, VStack, HStack, Text, Button, Input, For, IconButton } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LuTag } from 'react-icons/lu'
+import { LuTag, LuX } from 'react-icons/lu'
 import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
 import { useFilterReset } from '../utils/filterUtils'
 import DateRangeFilter from './DateRangeFilter'
@@ -96,15 +96,16 @@ const AdvancedFilters = () => {
                   Advanced Filters
                 </Text>
               </HStack>
-              <Button
+              <IconButton
                 size="sm"
                 variant="ghost"
+                aria-label="Close filters"
                 style={{ color: 'var(--color-text-tertiary)' }}
                 _hover={{ color: 'var(--color-text-primary)', bg: 'var(--color-border)' }}
                 onClick={() => setFiltersPanelOpen(false)}
               >
-                ×
-              </Button>
+                <LuX size={18} />
+              </IconButton>
             </HStack>
 
             {/* Filter Controls */}

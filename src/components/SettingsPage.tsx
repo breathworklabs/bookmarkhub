@@ -6,19 +6,35 @@ import {
   SelectTrigger,
   SelectValueText,
 } from '@chakra-ui/react/select'
-import { LuTrash2, LuArrowLeft, LuRefreshCw } from 'react-icons/lu'
+import { LuTrash2, LuArrowLeft, LuRefreshCw, LuDownload, LuChevronDown, LuChevronUp, LuSettings } from 'react-icons/lu'
 import { useNavigate } from 'react-router-dom'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import toast from 'react-hot-toast'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useSettingsStore } from '../store/settingsStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import UnifiedSidebar from './UnifiedSidebar'
 
+const MotionBox = motion.create(Box)
+
 const SettingsPage = () => {
   const navigate = useNavigate()
   const clearAllData = useBookmarkStore((state) => state.clearAllData)
+  const exportBookmarks = useBookmarkStore((state) => state.exportBookmarks)
+
+  // Collapsible sections state
+  const [expandedSections, setExpandedSections] = useState({
+    extension: true,
+    display: true,
+    data: true,
+  })
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
+  }
 
   // Extension settings
   const extensionSettings = useSettingsStore((state) => state.extension)
@@ -59,6 +75,16 @@ const SettingsPage = () => {
       .map(tag => tag.trim())
       .filter(tag => tag.length > 0)
     setDefaultTags(tags)
+  }
+
+  const handleExportBookmarks = async () => {
+    try {
+      await exportBookmarks()
+      toast.success('Bookmarks exported successfully')
+    } catch (error) {
+      console.error('Failed to export bookmarks:', error)
+      toast.error('Failed to export bookmarks')
+    }
   }
 
   // Create list collections for selects
@@ -108,6 +134,14 @@ const SettingsPage = () => {
     ],
   })
 
+  const exportFormatOptions = createListCollection({
+    items: [
+      { label: 'JSON (Full data with all fields)', value: 'json' },
+      { label: 'CSV (Spreadsheet format)', value: 'csv' },
+      { label: 'HTML (Viewable webpage)', value: 'html' },
+    ],
+  })
+
   return (
     <DndProvider backend={HTML5Backend}>
       <Flex h="100vh" w="100vw">
@@ -140,7 +174,7 @@ const SettingsPage = () => {
           >
             {/* Header */}
             <HStack p={6} borderBottomWidth="1px" style={{ borderColor: 'var(--color-border)' }}>
-              <Text fontSize="16px">⚙️</Text>
+              <LuSettings size={20} style={{ color: 'var(--color-text-primary)' }} />
               <Text fontSize="xl" fontWeight="600" style={{ color: 'var(--color-text-primary)' }}>
                 Settings
               </Text>
@@ -150,15 +184,52 @@ const SettingsPage = () => {
             <VStack alignItems="stretch" p={6} gap={6}>
               {/* Extension Integration Section */}
               <Box>
-                <HStack mb={4} gap={2}>
+                <HStack
+                  mb={4}
+                  gap={2}
+                  cursor="pointer"
+                  onClick={() => toggleSection('extension')}
+                  _hover={{ opacity: 0.8 }}
+                >
                   <LuRefreshCw size={16} style={{ color: 'var(--color-text-primary)' }} />
-                  <Text fontSize="sm" fontWeight="600" style={{ color: 'var(--color-text-primary)' }}>
+                  <Text fontSize="sm" fontWeight="600" style={{ color: 'var(--color-text-primary)' }} flex={1}>
                     Extension Integration
                   </Text>
+                  {expandedSections.extension ? (
+                    <LuChevronUp size={16} style={{ color: 'var(--color-text-tertiary)' }} />
+                  ) : (
+                    <LuChevronDown size={16} style={{ color: 'var(--color-text-tertiary)' }} />
+                  )}
                 </HStack>
 
-                <Box p={4} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
-                  <VStack alignItems="stretch" gap={4}>
+                <AnimatePresence>
+                  {expandedSections.extension && (
+                    <MotionBox
+                      initial={{ height: 0, opacity: 0, scale: 0.98 }}
+                      animate={{
+                        height: "auto",
+                        opacity: 1,
+                        scale: 1,
+                        transition: {
+                          height: { type: "spring", stiffness: 400, damping: 40, mass: 0.8 },
+                          opacity: { duration: 0.3, ease: "easeOut" },
+                          scale: { type: "spring", stiffness: 500, damping: 50, mass: 0.6 }
+                        }
+                      }}
+                      exit={{
+                        height: 0,
+                        opacity: 0,
+                        scale: 0.98,
+                        transition: {
+                          height: { duration: 0.25, ease: [0.4, 0, 1, 1] },
+                          opacity: { duration: 0.2, ease: "easeIn" },
+                          scale: { duration: 0.2, ease: "easeIn" }
+                        }
+                      }}
+                      overflow="hidden"
+                    >
+                      <Box p={4} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
+                        <VStack alignItems="stretch" gap={4}>
                     {/* Auto-Sync Interval */}
                     <VStack alignItems="stretch" gap={2}>
                       <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
@@ -406,18 +477,60 @@ const SettingsPage = () => {
                         </SelectContent>
                       </SelectRoot>
                     </VStack>
-                  </VStack>
-                </Box>
+                        </VStack>
+                      </Box>
+                    </MotionBox>
+                  )}
+                </AnimatePresence>
               </Box>
 
               {/* Display & View Settings Section */}
               <Box>
-                <Text fontSize="sm" fontWeight="600" style={{ color: 'var(--color-text-primary)' }} mb={4}>
-                  Display & View
-                </Text>
+                <HStack
+                  mb={4}
+                  gap={2}
+                  cursor="pointer"
+                  onClick={() => toggleSection('display')}
+                  _hover={{ opacity: 0.8 }}
+                >
+                  <Text fontSize="sm" fontWeight="600" style={{ color: 'var(--color-text-primary)' }} flex={1}>
+                    Display & View
+                  </Text>
+                  {expandedSections.display ? (
+                    <LuChevronUp size={16} style={{ color: 'var(--color-text-tertiary)' }} />
+                  ) : (
+                    <LuChevronDown size={16} style={{ color: 'var(--color-text-tertiary)' }} />
+                  )}
+                </HStack>
 
-                <Box p={4} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
-                  <VStack alignItems="stretch" gap={2}>
+                <AnimatePresence>
+                  {expandedSections.display && (
+                    <MotionBox
+                      initial={{ height: 0, opacity: 0, scale: 0.98 }}
+                      animate={{
+                        height: "auto",
+                        opacity: 1,
+                        scale: 1,
+                        transition: {
+                          height: { type: "spring", stiffness: 400, damping: 40, mass: 0.8 },
+                          opacity: { duration: 0.3, ease: "easeOut" },
+                          scale: { type: "spring", stiffness: 500, damping: 50, mass: 0.6 }
+                        }
+                      }}
+                      exit={{
+                        height: 0,
+                        opacity: 0,
+                        scale: 0.98,
+                        transition: {
+                          height: { duration: 0.25, ease: [0.4, 0, 1, 1] },
+                          opacity: { duration: 0.2, ease: "easeIn" },
+                          scale: { duration: 0.2, ease: "easeIn" }
+                        }
+                      }}
+                      overflow="hidden"
+                    >
+                      <Box p={4} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
+                        <VStack alignItems="stretch" gap={2}>
                     <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
                       Theme
                     </Text>
@@ -488,43 +601,149 @@ const SettingsPage = () => {
                           ))}
                         </SelectContent>
                       </SelectRoot>
-                    </VStack>
-                  </VStack>
-                </Box>
+                        </VStack>
+                        </VStack>
+                      </Box>
+                    </MotionBox>
+                  )}
+                </AnimatePresence>
               </Box>
 
               {/* Data Management Section */}
               <Box>
-                <Text fontSize="sm" fontWeight="600" style={{ color: 'var(--color-text-primary)' }} mb={4}>
-                  Data Management
-                </Text>
+                <HStack
+                  mb={4}
+                  gap={2}
+                  cursor="pointer"
+                  onClick={() => toggleSection('data')}
+                  _hover={{ opacity: 0.8 }}
+                >
+                  <Text fontSize="sm" fontWeight="600" style={{ color: 'var(--color-text-primary)' }} flex={1}>
+                    Data Management
+                  </Text>
+                  {expandedSections.data ? (
+                    <LuChevronUp size={16} style={{ color: 'var(--color-text-tertiary)' }} />
+                  ) : (
+                    <LuChevronDown size={16} style={{ color: 'var(--color-text-tertiary)' }} />
+                  )}
+                </HStack>
 
-                <Box p={4} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
-                  <VStack alignItems="stretch" gap={3}>
-                    <VStack alignItems="flex-start" gap={1}>
-                      <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
-                        Clear All Data
-                      </Text>
-                      <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4">
-                        Delete all bookmarks, collections, and settings. This action cannot be undone.
-                      </Text>
-                    </VStack>
-
-                    <Button
-                      onClick={handleClearAllData}
-                      size="sm"
-                      style={{ background: 'var(--color-error)' }}
-                      color="white"
-                      _hover={{ bg: 'var(--color-error-hover)' }}
-                      fontWeight="500"
-                      fontSize="13px"
-                      h="36px"
+                <AnimatePresence>
+                  {expandedSections.data && (
+                    <MotionBox
+                      initial={{ height: 0, opacity: 0, scale: 0.98 }}
+                      animate={{
+                        height: "auto",
+                        opacity: 1,
+                        scale: 1,
+                        transition: {
+                          height: { type: "spring", stiffness: 400, damping: 40, mass: 0.8 },
+                          opacity: { duration: 0.3, ease: "easeOut" },
+                          scale: { type: "spring", stiffness: 500, damping: 50, mass: 0.6 }
+                        }
+                      }}
+                      exit={{
+                        height: 0,
+                        opacity: 0,
+                        scale: 0.98,
+                        transition: {
+                          height: { duration: 0.25, ease: [0.4, 0, 1, 1] },
+                          opacity: { duration: 0.2, ease: "easeIn" },
+                          scale: { duration: 0.2, ease: "easeIn" }
+                        }
+                      }}
+                      overflow="hidden"
                     >
-                      <LuTrash2 size={16} style={{ marginRight: '8px' }} />
-                      Clear All Data
-                    </Button>
-                  </VStack>
-                </Box>
+                      <VStack alignItems="stretch" gap={3}>
+                  {/* Export Format */}
+                  <Box p={4} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
+                    <VStack alignItems="stretch" gap={3}>
+                      <VStack alignItems="flex-start" gap={1}>
+                        <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
+                          Export Bookmarks
+                        </Text>
+                        <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4">
+                          Choose the format and download your bookmarks
+                        </Text>
+                      </VStack>
+
+                      <SelectRoot
+                        collection={exportFormatOptions}
+                        value={[useBookmarkStore.getState().settings.exportFormat]}
+                        onValueChange={(e: any) => {
+                          const format = e.value[0] as 'json' | 'csv' | 'html'
+                          useBookmarkStore.getState().updateSettings({ exportFormat: format })
+                        }}
+                        size="sm"
+                      >
+                        <SelectTrigger
+                          style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                          fontSize="13px"
+                          _hover={{ borderColor: 'var(--color-border-hover)' }}
+                        >
+                          <SelectValueText placeholder="Select format" />
+                        </SelectTrigger>
+                        <SelectContent style={{ background: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border)' }}>
+                          {exportFormatOptions.items.map((option) => (
+                            <SelectItem
+                              key={option.value}
+                              item={option.value}
+                              style={{ color: 'var(--color-text-primary)' }}
+                              _hover={{ bg: 'var(--color-bg-hover)' }}
+                            >
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </SelectRoot>
+
+                      <Button
+                        onClick={handleExportBookmarks}
+                        size="sm"
+                        style={{ background: 'var(--color-blue)' }}
+                        color="white"
+                        _hover={{ bg: 'var(--color-blue-hover)' }}
+                        fontWeight="500"
+                        fontSize="13px"
+                        h="36px"
+                      >
+                        <LuDownload size={16} style={{ marginRight: '8px' }} />
+                        Export Bookmarks
+                      </Button>
+                    </VStack>
+                  </Box>
+
+                  {/* Clear All Data */}
+                  <Box p={4} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
+                    <VStack alignItems="stretch" gap={3}>
+                      <VStack alignItems="flex-start" gap={1}>
+                        <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
+                          Clear All Data
+                        </Text>
+                        <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4">
+                          Delete all bookmarks, collections, and settings. This action cannot be undone.
+                        </Text>
+                      </VStack>
+
+                      <Button
+                        onClick={handleClearAllData}
+                        size="sm"
+                        style={{ background: 'var(--color-error)' }}
+                        color="white"
+                        _hover={{ bg: 'var(--color-error-hover)' }}
+                        fontWeight="500"
+                        fontSize="13px"
+                        h="36px"
+                      >
+                        <LuTrash2 size={16} style={{ marginRight: '8px' }} />
+                        Clear All Data
+                      </Button>
+                        </VStack>
+                      </Box>
+                      </VStack>
+                    </MotionBox>
+                  )}
+                </AnimatePresence>
               </Box>
 
               {/* Info Section */}
