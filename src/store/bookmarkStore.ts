@@ -131,6 +131,19 @@ interface BookmarkState {
   initialize: () => Promise<void>
 }
 
+// Helper to get initial view mode from localStorage
+const getInitialViewMode = (): 'grid' | 'list' => {
+  try {
+    const saved = localStorage.getItem('bookmark-view-mode')
+    if (saved === 'grid' || saved === 'list') {
+      return saved
+    }
+  } catch (error) {
+    console.error('Failed to load view mode:', error)
+  }
+  return 'grid'
+}
+
 export const useBookmarkStore = create<BookmarkState>()(
   devtools(
     (set, get) => ({
@@ -140,7 +153,7 @@ export const useBookmarkStore = create<BookmarkState>()(
       selectedTags: [],
       searchQuery: '',
       activeTab: 0,
-      viewMode: 'grid',
+      viewMode: getInitialViewMode(),
       selectedBookmarks: [],
       isLoading: false,
       isAIPanelOpen: false,
@@ -578,8 +591,6 @@ export const useBookmarkStore = create<BookmarkState>()(
             }
           }
 
-          console.log(`Successfully imported ${successCount} of ${transformedBookmarks.length} X bookmarks`)
-
           // Reload bookmarks to show imported data
           await get().loadBookmarks()
 
@@ -645,7 +656,15 @@ export const useBookmarkStore = create<BookmarkState>()(
       clearTags: () => set({ selectedTags: [] }, false, 'clearTags'),
       setSearchQuery: (query) => set({ searchQuery: query }, false, 'setSearchQuery'),
       setActiveTab: (tab) => set({ activeTab: tab }, false, 'setActiveTab'),
-      setViewMode: (mode) => set({ viewMode: mode }, false, 'setViewMode'),
+      setViewMode: (mode) => {
+        set({ viewMode: mode }, false, 'setViewMode')
+        // Persist view mode to localStorage
+        try {
+          localStorage.setItem('bookmark-view-mode', mode)
+        } catch (error) {
+          console.error('Failed to save view mode:', error)
+        }
+      },
       setSelectedBookmarks: (bookmarks) => set({ selectedBookmarks: bookmarks }, false, 'setSelectedBookmarks'),
       selectBookmark: (id) => set(
         (state) => ({ selectedBookmarks: [...new Set([...state.selectedBookmarks, id])] }),

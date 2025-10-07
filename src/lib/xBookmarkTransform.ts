@@ -43,13 +43,6 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
   // Separate different types of images
   const { normalProfileImages, biggerProfileImages, contentImages } = DataProcessingService.processImages(xBookmark.images || [])
 
-  console.log('Processing bookmark:', xBookmark.display_name)
-  console.log('All images:', xBookmark.images)
-  console.log('Normal images:', normalProfileImages)
-  console.log('Bigger images:', biggerProfileImages)
-  console.log('Content images:', contentImages)
-
-
   // Calculate engagement score
   const engagementScore = DataProcessingService.calculateEngagementScore({
     content: text,

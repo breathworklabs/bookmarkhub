@@ -74,28 +74,19 @@ const SearchHeader = memo(() => {
       const file = (e.target as HTMLInputElement).files?.[0]
       if (file) {
         try {
-          console.log('File selected:', file.name)
           const text = await file.text()
           const data = JSON.parse(text)
 
-          console.log('Parsed JSON data, found', data.length, 'items')
-
           // Check if this looks like X bookmark data (array with tweet-like structure)
           if (Array.isArray(data) && data.length > 0 && data[0].tweet_id && data[0].username) {
-            console.log('Detected X bookmark format, importing as X bookmarks...')
             await importXBookmarks(data) // Import all bookmarks
-            console.log('X bookmarks import completed successfully')
-
           } else {
-            console.log('Detected standard bookmark format, using regular import...')
             // Fall back to regular import
             const importBookmarks = useBookmarkStore.getState().importBookmarks
             await importBookmarks(file)
-            console.log('Standard bookmarks import completed successfully')
           }
 
           // Only refresh on successful import
-          console.log('Import successful, refreshing UI...')
           window.location.reload()
         } catch (error) {
           console.error('Import failed:', error)

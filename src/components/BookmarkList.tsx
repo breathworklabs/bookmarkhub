@@ -1,4 +1,4 @@
-import { memo, useState } from 'react'
+import { memo, useState, useRef, useCallback, useEffect } from 'react'
 import { Box, HStack, VStack, Text } from '@chakra-ui/react'
 import { LuStar, LuExternalLink, LuGripVertical } from 'react-icons/lu'
 import { useDrag } from 'react-dnd'
@@ -15,9 +15,17 @@ interface BookmarkListProps {
 
 interface BookmarkListItemProps {
   bookmark: Bookmark
+  columnWidths: ColumnWidths
 }
 
-const BookmarkListItem = memo(({ bookmark }: BookmarkListItemProps) => {
+interface ColumnWidths {
+  author: number
+  domain: number
+  tags: number
+  date: number
+}
+
+const BookmarkListItem = memo(({ bookmark, columnWidths }: BookmarkListItemProps) => {
   const [isHovered, setIsHovered] = useState(false)
   const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
   const toggleBookmarkSelection = useBookmarkStore((state) => state.toggleBookmarkSelection)
@@ -173,8 +181,8 @@ const BookmarkListItem = memo(({ bookmark }: BookmarkListItemProps) => {
           </HStack>
         </VStack>
 
-        {/* Author - medium width */}
-        <HStack w="150px" gap={2} display={{ base: 'none', md: 'flex' }}>
+        {/* Author - resizable width */}
+        <HStack w={`${columnWidths.author}px`} gap={2} display={{ base: 'none', md: 'flex' }} minW="100px">
           <Box
             w="24px"
             h="24px"
@@ -227,15 +235,15 @@ const BookmarkListItem = memo(({ bookmark }: BookmarkListItemProps) => {
           </Text>
         </HStack>
 
-        {/* Domain - small width */}
-        <Box w="120px" display={{ base: 'none', lg: 'block' }}>
+        {/* Domain - resizable width */}
+        <Box w={`${columnWidths.domain}px`} display={{ base: 'none', lg: 'block' }} minW="80px">
           <Text fontSize="sm" color="var(--color-text-tertiary)" truncate>
             {bookmark.domain}
           </Text>
         </Box>
 
-        {/* Tags - medium width */}
-        <HStack gap={1} w="200px" display={{ base: 'none', xl: 'flex' }} flexWrap="wrap">
+        {/* Tags - resizable width */}
+        <HStack gap={1} w={`${columnWidths.tags}px`} display={{ base: 'none', xl: 'flex' }} flexWrap="wrap" minW="120px">
           {bookmark.tags.slice(0, 2).map((tag) => (
             <Box
               key={tag}
@@ -254,8 +262,8 @@ const BookmarkListItem = memo(({ bookmark }: BookmarkListItemProps) => {
           )}
         </HStack>
 
-        {/* Date - small width */}
-        <Box w="100px" display={{ base: 'none', lg: 'block' }}>
+        {/* Date - resizable width */}
+        <Box w={`${columnWidths.date}px`} display={{ base: 'none', lg: 'block' }} minW="80px">
           <Text fontSize="xs" color="var(--color-text-tertiary)">
             {formatDistanceToNow(new Date(bookmark.created_at), { addSuffix: true })}
           </Text>
@@ -267,7 +275,70 @@ const BookmarkListItem = memo(({ bookmark }: BookmarkListItemProps) => {
 
 BookmarkListItem.displayName = 'BookmarkListItem'
 
+const STORAGE_KEY = 'bookmark-list-column-widths'
+
+const getInitialColumnWidths = (): ColumnWidths => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) {
+      return JSON.parse(saved)
+    }
+  } catch (error) {
+    console.error('Failed to load column widths:', error)
+  }
+  return {
+    author: 150,
+    domain: 120,
+    tags: 200,
+    date: 100
+  }
+}
+
 const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
+  const [columnWidths, setColumnWidths] = useState<ColumnWidths>(getInitialColumnWidths)
+  const [resizing, setResizing] = useState<keyof ColumnWidths | null>(null)
+  const startXRef = useRef<number>(0)
+  const startWidthRef = useRef<number>(0)
+
+  // Save column widths to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(columnWidths))
+    } catch (error) {
+      console.error('Failed to save column widths:', error)
+    }
+  }, [columnWidths])
+
+  const handleResizeStart = useCallback((column: keyof ColumnWidths, e: React.MouseEvent) => {
+    e.preventDefault()
+    setResizing(column)
+    startXRef.current = e.clientX
+    startWidthRef.current = columnWidths[column]
+  }, [columnWidths])
+
+  const handleResizeMove = useCallback((e: MouseEvent) => {
+    if (!resizing) return
+    const diff = e.clientX - startXRef.current
+    const newWidth = Math.max(80, startWidthRef.current + diff) // Min 80px
+    setColumnWidths(prev => ({ ...prev, [resizing]: newWidth }))
+  }, [resizing])
+
+  const handleResizeEnd = useCallback(() => {
+    setResizing(null)
+  }, [])
+
+  // Add/remove mouse event listeners for resizing
+  useEffect(() => {
+    if (resizing) {
+      document.addEventListener('mousemove', handleResizeMove)
+      document.addEventListener('mouseup', handleResizeEnd)
+      return () => {
+        document.removeEventListener('mousemove', handleResizeMove)
+        document.removeEventListener('mouseup', handleResizeEnd)
+      }
+    }
+  }, [resizing, handleResizeMove, handleResizeEnd])
+
   return (
     <Box>
       {/* Table Header */}
@@ -287,28 +358,144 @@ const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
             Title
           </Text>
 
-          <Text w="150px" fontSize="xs" fontWeight="bold" color="var(--color-text-secondary)" textTransform="uppercase" display={{ base: 'none', md: 'block' }}>
-            Author
-          </Text>
+          {/* Author column with resize handle */}
+          <Box w={`${columnWidths.author}px`} position="relative" display={{ base: 'none', md: 'block' }} minW="100px">
+            <Text fontSize="xs" fontWeight="bold" color="var(--color-text-secondary)" textTransform="uppercase">
+              Author
+            </Text>
+            <Box
+              position="absolute"
+              right="-6px"
+              top={0}
+              bottom={0}
+              w="12px"
+              cursor="col-resize"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              _hover={{
+                '& > div': {
+                  bg: 'var(--color-accent)',
+                  opacity: 1
+                }
+              }}
+              onMouseDown={(e) => handleResizeStart('author', e)}
+            >
+              <Box
+                w="2px"
+                h="60%"
+                bg="var(--color-border)"
+                opacity={0.3}
+                transition="all 0.2s"
+              />
+            </Box>
+          </Box>
 
-          <Text w="120px" fontSize="xs" fontWeight="bold" color="var(--color-text-secondary)" textTransform="uppercase" display={{ base: 'none', lg: 'block' }}>
-            Domain
-          </Text>
+          {/* Domain column with resize handle */}
+          <Box w={`${columnWidths.domain}px`} position="relative" display={{ base: 'none', lg: 'block' }} minW="80px">
+            <Text fontSize="xs" fontWeight="bold" color="var(--color-text-secondary)" textTransform="uppercase">
+              Domain
+            </Text>
+            <Box
+              position="absolute"
+              right="-6px"
+              top={0}
+              bottom={0}
+              w="12px"
+              cursor="col-resize"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              _hover={{
+                '& > div': {
+                  bg: 'var(--color-accent)',
+                  opacity: 1
+                }
+              }}
+              onMouseDown={(e) => handleResizeStart('domain', e)}
+            >
+              <Box
+                w="2px"
+                h="60%"
+                bg="var(--color-border)"
+                opacity={0.3}
+                transition="all 0.2s"
+              />
+            </Box>
+          </Box>
 
-          <Text w="200px" fontSize="xs" fontWeight="bold" color="var(--color-text-secondary)" textTransform="uppercase" display={{ base: 'none', xl: 'block' }}>
-            Tags
-          </Text>
+          {/* Tags column with resize handle */}
+          <Box w={`${columnWidths.tags}px`} position="relative" display={{ base: 'none', xl: 'block' }} minW="120px">
+            <Text fontSize="xs" fontWeight="bold" color="var(--color-text-secondary)" textTransform="uppercase">
+              Tags
+            </Text>
+            <Box
+              position="absolute"
+              right="-6px"
+              top={0}
+              bottom={0}
+              w="12px"
+              cursor="col-resize"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              _hover={{
+                '& > div': {
+                  bg: 'var(--color-accent)',
+                  opacity: 1
+                }
+              }}
+              onMouseDown={(e) => handleResizeStart('tags', e)}
+            >
+              <Box
+                w="2px"
+                h="60%"
+                bg="var(--color-border)"
+                opacity={0.3}
+                transition="all 0.2s"
+              />
+            </Box>
+          </Box>
 
-          <Text w="100px" fontSize="xs" fontWeight="bold" color="var(--color-text-secondary)" textTransform="uppercase" display={{ base: 'none', lg: 'block' }}>
-            Date
-          </Text>
+          {/* Date column with resize handle */}
+          <Box w={`${columnWidths.date}px`} position="relative" display={{ base: 'none', lg: 'block' }} minW="80px">
+            <Text fontSize="xs" fontWeight="bold" color="var(--color-text-secondary)" textTransform="uppercase">
+              Date
+            </Text>
+            <Box
+              position="absolute"
+              right="-6px"
+              top={0}
+              bottom={0}
+              w="12px"
+              cursor="col-resize"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              _hover={{
+                '& > div': {
+                  bg: 'var(--color-accent)',
+                  opacity: 1
+                }
+              }}
+              onMouseDown={(e) => handleResizeStart('date', e)}
+            >
+              <Box
+                w="2px"
+                h="60%"
+                bg="var(--color-border)"
+                opacity={0.3}
+                transition="all 0.2s"
+              />
+            </Box>
+          </Box>
         </HStack>
       </Box>
 
       {/* Table Body */}
       <VStack gap={0} align="stretch">
         {bookmarks.map((bookmark) => (
-          <BookmarkListItem key={bookmark.id} bookmark={bookmark} />
+          <BookmarkListItem key={bookmark.id} bookmark={bookmark} columnWidths={columnWidths} />
         ))}
       </VStack>
 

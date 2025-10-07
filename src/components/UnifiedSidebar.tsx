@@ -198,10 +198,7 @@ const UnifiedSidebar = memo(() => {
                 color: 'var(--color-text-primary)'
               }}
               transition="all 0.2s"
-              onClick={() => {
-                console.log('Settings clicked in UnifiedSidebar, navigating to /settings')
-                navigate('/settings')
-              }}
+              onClick={() => navigate('/settings')}
             >
               <Box w="18px" h="18px">
                 <LuSettings size={18} />

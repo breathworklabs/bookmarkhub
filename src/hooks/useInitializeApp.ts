@@ -53,17 +53,13 @@ export const useInitializeApp = () => {
         event.data?.type === 'X_BOOKMARKS_UPDATED' &&
         event.data?.source === 'x-bookmark-manager-extension'
       ) {
-        console.log('📦 Extension bookmark update received:', event.data)
-
-        const { count, total, showNotification = true } = event.data
+        const { count, showNotification = true } = event.data
 
         // Reload bookmarks from localStorage without page reload
         Promise.all([
           useBookmarkStore.getState().initialize(),
           useCollectionsStore.getState().initialize()
         ]).then(() => {
-          console.log(`✓ Reloaded stores: ${count} new bookmarks (${total} total)`)
-
           // Phase 4: Show success toast notification (if enabled in settings)
           if (showNotification) {
             const message = count === 1

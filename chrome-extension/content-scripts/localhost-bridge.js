@@ -3,8 +3,6 @@
  * Automatically syncs extension bookmarks to page localStorage
  */
 
-console.log('🔗 X Bookmark Manager: Auto-sync bridge loaded on', window.location.href);
-
 // Get settings from localStorage
 function getSettings() {
   try {
@@ -83,7 +81,6 @@ async function syncBookmarksToLocalStorage() {
     });
 
     if (newBookmarks.length === 0 && bookmarksToReplace.length === 0) {
-      console.log('📊 All extension bookmarks already in localStorage (checked URL & source_id)');
       return;
     }
 
@@ -98,10 +95,6 @@ async function syncBookmarksToLocalStorage() {
       tags: [...(bookmark.tags || []), ...defaultTags].filter((tag, index, self) => self.indexOf(tag) === index) // Merge and dedupe tags
     }));
 
-    console.log(`✓ Prepared ${bookmarksWithCorrectCollections.length} bookmarks with 'uncategorized' collection`);
-    if (defaultTags.length > 0) {
-      console.log(`✓ Applied default tags: ${defaultTags.join(', ')}`);
-    }
 
     // Replace duplicates if needed
     let workingBookmarks = [...existingBookmarks];
@@ -130,8 +123,6 @@ async function syncBookmarksToLocalStorage() {
     localStorage.setItem('x-bookmark-manager-metadata', JSON.stringify(metadata));
 
     const totalImported = bookmarksWithCorrectCollections.length + bookmarksToReplace.length;
-    console.log(`✅ Auto-synced ${totalImported} bookmarks to localStorage (${bookmarksWithCorrectCollections.length} new, ${bookmarksToReplace.length} replaced)`);
-    console.log(`📊 Total bookmarks: ${allBookmarks.length}`);
 
     // Phase 1 & 4: Notify React app to reload bookmarks and show toast
     // App will handle state updates without page reload
@@ -146,12 +137,9 @@ async function syncBookmarksToLocalStorage() {
       showNotification: showNotification
     }, '*');
 
-    console.log('📢 Notified React app - will update without page reload');
-
   } catch (error) {
     // Silently ignore extension context invalidation errors
     if (error.message?.includes('Extension context invalidated')) {
-      console.log('⚠️ Extension was reloaded, please refresh this page');
       return;
     }
     console.error('❌ Error syncing bookmarks:', error);
@@ -176,7 +164,6 @@ chrome.runtime?.onMessage?.addListener((request, sender, sendResponse) => {
 // Listen for storage changes in chrome.storage.local
 chrome.storage?.onChanged?.addListener((changes, areaName) => {
   if (areaName === 'local' && changes.bookmarks) {
-    console.log('📦 Extension bookmarks updated, auto-syncing to localStorage...');
     syncBookmarksToLocalStorage();
     // No page reload needed - React app will handle updates via window message
   }
@@ -219,10 +206,6 @@ function setupPeriodicSync() {
 
   if (intervalMs > 0) {
     syncIntervalId = setInterval(syncBookmarksToLocalStorage, intervalMs);
-    const intervalText = intervalMs >= 60000 ? `${intervalMs / 60000} minutes` : `${intervalMs / 1000} seconds`;
-    console.log(`✅ X Bookmark Manager: Auto-sync enabled (checks every ${intervalText})`);
-  } else {
-    console.log('✅ X Bookmark Manager: Manual sync mode (auto-sync disabled)');
   }
 }
 
@@ -231,7 +214,6 @@ setupPeriodicSync();
 // Listen for settings changes and update interval
 window.addEventListener('storage', (e) => {
   if (e.key === 'x-bookmark-settings') {
-    console.log('⚙️ Settings changed, updating sync interval...');
     setupPeriodicSync();
   }
 });

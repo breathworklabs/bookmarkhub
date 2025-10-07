@@ -40,11 +40,6 @@ const DroppableCollectionItem = ({
   const isDropZone = isOver && canDrop
   const isInvalidDrop = isOver && !canDrop
 
-  // Debug logging
-  if (isOver) {
-    console.log(`Drop zone debug - Collection: ${collection.name}, isOver: ${isOver}, canDrop: ${canDrop}`)
-  }
-
   return (
     <Box
       ref={drop}

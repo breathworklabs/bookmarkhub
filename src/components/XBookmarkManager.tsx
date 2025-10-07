@@ -24,27 +24,15 @@ const XBookmarkManager = () => {
       const file = (e.target as HTMLInputElement).files?.[0]
       if (file) {
         try {
-          console.log('File selected:', file.name)
           const text = await file.text()
           const data = JSON.parse(text)
 
-          console.log('Parsed JSON data:', data)
-
           // Check if this looks like X bookmark data (array with tweet-like structure)
           if (Array.isArray(data) && data.length > 0 && data[0].tweet_id && data[0].username) {
-            console.log('Detected X bookmark format, importing as X bookmarks...')
             await useBookmarkStore.getState().importXBookmarks(data) // Import all bookmarks
-            console.log('X bookmarks import completed successfully')
-
           } else {
-            console.log('Detected standard bookmark format, using regular import...')
             await useBookmarkStore.getState().importBookmarks(file)
-            console.log('Standard bookmarks import completed successfully')
           }
-
-          // Only refresh on successful import
-          console.log('Import successful, refreshing UI...')
-          // window.location.reload()
         } catch (error) {
           console.error('Import failed:', error)
           alert(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
