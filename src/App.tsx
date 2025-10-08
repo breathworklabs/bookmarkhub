@@ -5,6 +5,10 @@ import XBookmarkManager from './components/XBookmarkManager'
 import OnboardingScreen from './components/OnboardingScreen'
 import SettingsPage from './components/SettingsPage'
 import TrashView from './components/TrashView'
+import TermsOfService from './components/legal/TermsOfService'
+import PrivacyPolicy from './components/legal/PrivacyPolicy'
+import CookiePolicy from './components/legal/CookiePolicy'
+import CookieConsentBanner from './components/consent/CookieConsentBanner'
 import { useInitializeApp } from './hooks/useInitializeApp'
 import { ModalProvider } from './components/modals/ModalProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -44,7 +48,11 @@ function App() {
                 <Route path="/" element={<AppContent />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/trash" element={<TrashView />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/cookies" element={<CookiePolicy />} />
               </Routes>
+              {/* <CookieConsentBanner /> */}
             </ModalProvider>
           </ErrorBoundary>
         </BrowserRouter>

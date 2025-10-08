@@ -754,6 +754,53 @@ const SettingsPage = () => {
                   re-import your bookmarks using the Chrome extension.
                 </Text>
               </Box>
+
+              {/* Legal Links */}
+              <Box p={4} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
+                <VStack alignItems="stretch" gap={3}>
+                  <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
+                    Legal Information
+                  </Text>
+                  <HStack gap={4} flexWrap="wrap">
+                    <Button
+                      onClick={() => navigate('/terms')}
+                      variant="ghost"
+                      size="sm"
+                      style={{ color: 'var(--color-text-secondary)' }}
+                      _hover={{ color: 'var(--color-blue)', bg: 'var(--color-bg-hover)' }}
+                      _focus={{ boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.2)', outline: 'none' }}
+                      fontSize="13px"
+                    >
+                      Terms of Service
+                    </Button>
+                    <Button
+                      onClick={() => navigate('/privacy')}
+                      variant="ghost"
+                      size="sm"
+                      style={{ color: 'var(--color-text-secondary)' }}
+                      _hover={{ color: 'var(--color-blue)', bg: 'var(--color-bg-hover)' }}
+                      _focus={{ boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.2)', outline: 'none' }}
+                      fontSize="13px"
+                    >
+                      Privacy Policy
+                    </Button>
+                    <Button
+                      onClick={() => navigate('/cookies')}
+                      variant="ghost"
+                      size="sm"
+                      style={{ color: 'var(--color-text-secondary)' }}
+                      _hover={{ color: 'var(--color-blue)', bg: 'var(--color-bg-hover)' }}
+                      _focus={{ boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.2)', outline: 'none' }}
+                      fontSize="13px"
+                    >
+                      Cookie Policy
+                    </Button>
+                  </HStack>
+                  <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4">
+                    X Bookmark Manager is designed with privacy as a core principle. Your data stays on your device.
+                  </Text>
+                </VStack>
+              </Box>
             </VStack>
           </Box>
         </Box>

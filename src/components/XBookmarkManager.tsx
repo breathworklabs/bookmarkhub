@@ -135,6 +135,7 @@ const XBookmarkManager = () => {
               <AIInsights />
             </ErrorBoundary>
           </Flex>
+
         </DndProvider>
       )}
     </Box>
