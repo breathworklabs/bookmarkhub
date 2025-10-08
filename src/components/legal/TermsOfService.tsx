@@ -19,7 +19,7 @@ const TermsOfService = () => {
           <Box maxW="800px" mx="auto" w="100%">
             {/* Back Button */}
             <Button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/settings')}
               variant="ghost"
               style={{ color: 'var(--color-text-secondary)' }}
               _hover={{ color: 'var(--color-blue)', bg: 'var(--color-bg-hover)' }}
@@ -28,7 +28,7 @@ const TermsOfService = () => {
               size="sm"
             >
               <LuArrowLeft size={18} style={{ marginRight: '8px' }} />
-              Back to Bookmarks
+              Back to Settings
             </Button>
 
           {/* Terms of Service Card */}

@@ -156,6 +156,10 @@ export const useCollectionsStore = create<CollectionsStore>()(
             false,
             'collections:create:success'
           )
+
+          // Log activity
+          const { useBookmarkStore } = await import('./bookmarkStore')
+          useBookmarkStore.getState().addActivityLog('Created collection', newCollection.name)
         } catch (error) {
           console.error('Error creating collection:', error)
           set({
@@ -197,6 +201,10 @@ export const useCollectionsStore = create<CollectionsStore>()(
         try {
           set({ isLoading: true, error: null }, false, 'collections:delete:start')
 
+          // Get collection name before deleting
+          const collection = get().collections.find(c => c.id === id)
+          const collectionName = collection?.name || 'collection'
+
           await localStorageService.deleteCollection(id)
 
           set(
@@ -210,6 +218,10 @@ export const useCollectionsStore = create<CollectionsStore>()(
             false,
             'collections:delete:success'
           )
+
+          // Log activity
+          const { useBookmarkStore } = await import('./bookmarkStore')
+          useBookmarkStore.getState().addActivityLog('Deleted collection', collectionName)
         } catch (error) {
           console.error('Error deleting collection:', error)
           set({
@@ -239,6 +251,11 @@ export const useCollectionsStore = create<CollectionsStore>()(
           // Reload bookmarks to refresh their collections data
           const { useBookmarkStore } = await import('./bookmarkStore')
           await useBookmarkStore.getState().loadBookmarks()
+
+          // Log activity
+          const collection = get().collections.find(c => c.id === collectionId)
+          const collectionName = collection?.name || 'collection'
+          useBookmarkStore.getState().addActivityLog('Added to collection', collectionName)
         } catch (error) {
           console.error('Error adding bookmark to collection:', error)
           set({
@@ -266,6 +283,11 @@ export const useCollectionsStore = create<CollectionsStore>()(
           // Reload bookmarks to refresh their collections data
           const { useBookmarkStore } = await import('./bookmarkStore')
           await useBookmarkStore.getState().loadBookmarks()
+
+          // Log activity
+          const collection = get().collections.find(c => c.id === collectionId)
+          const collectionName = collection?.name || 'collection'
+          useBookmarkStore.getState().addActivityLog('Removed from collection', collectionName)
         } catch (error) {
           console.error('Error removing bookmark from collection:', error)
           set({
@@ -309,6 +331,15 @@ export const useCollectionsStore = create<CollectionsStore>()(
 
           // Reload collections to get updated state
           await get().loadCollections()
+
+          // Log activity
+          const collection = get().collections.find(c => c.id === toCollectionId)
+          const collectionName = collection?.name || 'collection'
+          const { useBookmarkStore } = await import('./bookmarkStore')
+          useBookmarkStore.getState().addActivityLog(
+            `Moved ${bookmarkIds.length} bookmark${bookmarkIds.length > 1 ? 's' : ''}`,
+            `to ${collectionName}`
+          )
         } catch (error) {
           console.error('Error moving bookmarks:', error)
           set({

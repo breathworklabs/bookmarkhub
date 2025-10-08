@@ -23,6 +23,13 @@ export interface PaginationState {
   isLoading: boolean
 }
 
+export interface ActivityLog {
+  id: string
+  action: string
+  timestamp: Date
+  details?: string
+}
+
 interface BookmarkState {
   // State
   bookmarks: Bookmark[]
@@ -65,7 +72,12 @@ interface BookmarkState {
   // Performance optimization - track when filter options need recalculation
   filterOptionsHash: string
 
+  // Activity tracking
+  recentActivity: ActivityLog[]
+
   // Actions
+  addActivityLog: (action: string, details?: string) => void
+  getRecentActivity: (limit?: number) => ActivityLog[]
   setBookmarks: (bookmarks: Bookmark[]) => void
   loadBookmarks: () => Promise<void>
   addBookmark: (bookmark: BookmarkInsert) => Promise<void>
@@ -209,6 +221,9 @@ export const useBookmarkStore = create<BookmarkState>()(
       // Performance tracking for filter options
       filterOptionsHash: '',
 
+      // Activity tracking initial state
+      recentActivity: [],
+
       // Initialize store
       initialize: async () => {
         try {
@@ -344,6 +359,9 @@ export const useBookmarkStore = create<BookmarkState>()(
             false,
             'addBookmark:success'
           )
+
+          // Log activity
+          get().addActivityLog('Added bookmark', sanitizedBookmark.title)
         } catch (error) {
           const errorHandler = createErrorHandler('BookmarkStore.addBookmark')
           const appError = errorHandler(error)
@@ -371,6 +389,9 @@ export const useBookmarkStore = create<BookmarkState>()(
             false,
             'updateBookmark:success'
           )
+
+          // Log activity
+          get().addActivityLog('Updated bookmark', sanitizedBookmark.title)
         } catch (error) {
           console.error('Error updating bookmark:', error)
           set({ error: error instanceof Error ? error.message : 'Failed to update bookmark' }, false, 'updateBookmark:error')
@@ -391,6 +412,9 @@ export const useBookmarkStore = create<BookmarkState>()(
             false,
             'removeBookmark:success'
           )
+
+          // Log activity
+          get().addActivityLog('Moved to trash', updatedBookmark.title)
         } catch (error) {
           console.error('Error removing bookmark:', error)
           set({ error: error instanceof Error ? error.message : 'Failed to remove bookmark' }, false, 'removeBookmark:error')
@@ -411,6 +435,11 @@ export const useBookmarkStore = create<BookmarkState>()(
             false,
             'toggleStarBookmark:success'
           )
+
+          // Log activity
+          if (updatedBookmark.is_starred) {
+            get().addActivityLog('Starred bookmark', updatedBookmark.title)
+          }
         } catch (error) {
           console.error('Error toggling bookmark star:', error)
           set({ error: error instanceof Error ? error.message : 'Failed to toggle star' }, false, 'toggleStarBookmark:error')
@@ -436,6 +465,11 @@ export const useBookmarkStore = create<BookmarkState>()(
             false,
             'toggleArchiveBookmark:success'
           )
+
+          // Log activity
+          if (updatedBookmark.is_archived) {
+            get().addActivityLog('Archived bookmark', updatedBookmark.title)
+          }
         } catch (error) {
           console.error('Error toggling bookmark archive:', error)
           set({ error: error instanceof Error ? error.message : 'Failed to toggle archive' }, false, 'toggleArchiveBookmark:error')
@@ -862,6 +896,26 @@ export const useBookmarkStore = create<BookmarkState>()(
             isLoading: false
           }
         }, false, 'updateDisplayedBookmarks')
+      },
+
+      // Activity tracking actions
+      addActivityLog: (action: string, details?: string) => {
+        const state = get()
+        const newActivity: ActivityLog = {
+          id: `${Date.now()}-${Math.random()}`,
+          action,
+          timestamp: new Date(),
+          details
+        }
+
+        // Keep only the last 50 activities
+        const updatedActivity = [newActivity, ...state.recentActivity].slice(0, 50)
+        set({ recentActivity: updatedActivity }, false, 'addActivityLog')
+      },
+
+      getRecentActivity: (limit = 10) => {
+        const state = get()
+        return state.recentActivity.slice(0, limit)
       }
     }),
     {

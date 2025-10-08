@@ -21,6 +21,8 @@ export interface Bookmark {
   is_starred: boolean
   is_read: boolean
   is_archived: boolean
+  is_shared: boolean
+  shared_at?: string
   is_deleted: boolean
   deleted_at?: string
   tags: string[]

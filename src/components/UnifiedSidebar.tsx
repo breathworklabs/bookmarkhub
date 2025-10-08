@@ -21,6 +21,7 @@ const useBookmarkCounts = () => {
       total: bookmarks.filter(b => !b.is_deleted).length,
       starred: bookmarks.filter(b => b.is_starred && !b.is_deleted).length,
       archived: bookmarks.filter(b => b.is_archived && !b.is_deleted).length,
+      shared: bookmarks.filter(b => b.is_shared && !b.is_deleted).length,
       deleted: bookmarks.filter(b => b.is_deleted).length,
       recent: bookmarks.filter(b => {
         const date = new Date(b.created_at)
@@ -61,7 +62,13 @@ const UnifiedSidebar = memo(() => {
     if (location.pathname === '/trash') {
       return label === 'Trash'
     }
-    if (location.pathname === '/settings') {
+    if (location.pathname === '/shared') {
+      return label === 'Shared'
+    }
+    if (location.pathname === '/settings' ||
+        location.pathname === '/privacy' ||
+        location.pathname === '/terms' ||
+        location.pathname === '/cookies') {
       return label === 'Settings'
     }
     // Otherwise use the store's activeSidebarItem
@@ -207,12 +214,27 @@ const UnifiedSidebar = memo(() => {
               color: isActive('Shared') ? 'white' : 'var(--color-text-primary)'
             }}
             transition="all 0.2s"
-            onClick={() => handleNavItemClick('Shared')}
+            onClick={() => {
+              setActiveCollection(null)
+              navigate('/shared')
+            }}
           >
             <Box w="18px" h="18px">
               <LuExternalLink size={18} />
             </Box>
             <Text flex={1}>Shared</Text>
+            {bookmarkCounts.shared > 0 && (
+              <Badge
+                bg={isActive('Shared') ? 'rgba(255,255,255,0.2)' : 'var(--color-border)'}
+                color={isActive('Shared') ? 'white' : 'var(--color-text-secondary)'}
+                fontSize="11px"
+                px={2}
+                py={1}
+                borderRadius="6px"
+              >
+                {bookmarkCounts.shared}
+              </Badge>
+            )}
           </HStack>
 
           <HStack

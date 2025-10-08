@@ -6,6 +6,7 @@ import XBookmarkManager from './components/XBookmarkManager'
 import OnboardingScreen from './components/OnboardingScreen'
 import SettingsPage from './components/SettingsPage'
 import TrashView from './components/TrashView'
+import SharedView from './components/SharedView'
 import TermsOfService from './components/legal/TermsOfService'
 import PrivacyPolicy from './components/legal/PrivacyPolicy'
 import CookiePolicy from './components/legal/CookiePolicy'
@@ -70,6 +71,7 @@ function App() {
                 <Route path="/" element={<AppContent />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/trash" element={<TrashView />} />
+                <Route path="/shared" element={<SharedView />} />
                 <Route path="/terms" element={<TermsOfService />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/cookies" element={<CookiePolicy />} />

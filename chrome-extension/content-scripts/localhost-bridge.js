@@ -243,3 +243,18 @@ window.addEventListener('storage', (e) => {
     setupPeriodicSync();
   }
 });
+
+// Listen for sync requests from the React app
+window.addEventListener('message', (event) => {
+  // Only accept messages from same origin
+  if (event.source !== window) return;
+
+  // Check for sync request
+  if (
+    event.data?.type === 'X_REQUEST_SYNC' &&
+    event.data?.source === 'x-bookmark-manager-app'
+  ) {
+    console.log('📢 Received sync request from app, syncing bookmarks...');
+    syncBookmarksToLocalStorage();
+  }
+});

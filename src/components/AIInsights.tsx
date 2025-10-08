@@ -1,12 +1,32 @@
 import { Box, VStack, Text, Button, For, HStack } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { useMemo } from 'react'
 
 const MotionBox = motion.create(Box)
+
+// Helper function to format time ago
+const getTimeAgo = (timestamp: Date): string => {
+  const now = new Date()
+  const diffMs = now.getTime() - new Date(timestamp).getTime()
+  const diffSec = Math.floor(diffMs / 1000)
+  const diffMin = Math.floor(diffSec / 60)
+  const diffHour = Math.floor(diffMin / 60)
+  const diffDay = Math.floor(diffHour / 24)
+
+  if (diffSec < 60) return 'just now'
+  if (diffMin < 60) return `${diffMin} min${diffMin > 1 ? 's' : ''} ago`
+  if (diffHour < 24) return `${diffHour} hour${diffHour > 1 ? 's' : ''} ago`
+  if (diffDay < 7) return `${diffDay} day${diffDay > 1 ? 's' : ''} ago`
+  return new Date(timestamp).toLocaleDateString()
+}
 
 const AIInsights = () => {
   const isAIPanelOpen = useBookmarkStore((state) => state.isAIPanelOpen)
   const setAIPanelOpen = useBookmarkStore((state) => state.setAIPanelOpen)
+  const allActivity = useBookmarkStore((state) => state.recentActivity)
+
+  const recentActivity = useMemo(() => allActivity.slice(0, 5), [allActivity])
 
   return (
     <AnimatePresence mode="wait">
@@ -146,22 +166,28 @@ const AIInsights = () => {
         <VStack alignItems="stretch" gap={3}>
           <Text fontWeight="600" style={{ color: 'var(--color-text-primary)' }} fontSize="14px">Recent Activity</Text>
           <VStack alignItems="stretch" gap={2}>
-            <For each={[
-              { action: 'Added 5 new bookmarks', time: '2 hours ago' },
-              { action: 'Created "Web3 Research" collection', time: '1 day ago' },
-              { action: 'Starred 3 bookmarks', time: '2 days ago' }
-            ]}>
-              {(activity, index) => (
-                <VStack key={index} alignItems="start" gap={1} py={2}>
-                  <Text fontSize="13px" style={{ color: 'var(--color-text-primary)' }} fontWeight="400">
-                    {activity.action}
-                  </Text>
-                  <Text fontSize="12px" style={{ color: 'var(--color-text-tertiary)' }}>
-                    {activity.time}
-                  </Text>
-                </VStack>
-              )}
-            </For>
+            {recentActivity.length > 0 ? (
+              <For each={recentActivity}>
+                {(activity) => {
+                  const timeAgo = getTimeAgo(activity.timestamp)
+                  return (
+                    <VStack key={activity.id} alignItems="start" gap={1} py={2}>
+                      <Text fontSize="13px" style={{ color: 'var(--color-text-primary)' }} fontWeight="400">
+                        {activity.action}
+                        {activity.details && `: "${activity.details}"`}
+                      </Text>
+                      <Text fontSize="12px" style={{ color: 'var(--color-text-tertiary)' }}>
+                        {timeAgo}
+                      </Text>
+                    </VStack>
+                  )
+                }}
+              </For>
+            ) : (
+              <Text fontSize="13px" style={{ color: 'var(--color-text-tertiary)' }} py={2}>
+                No recent activity
+              </Text>
+            )}
           </VStack>
           </VStack>
         </VStack>

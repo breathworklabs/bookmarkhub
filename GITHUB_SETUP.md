@@ -1,0 +1,161 @@
+# GitHub Organization Setup
+
+## Step 1: Create Breathwork Labs Organization
+
+1. Go to [github.com/organizations/new](https://github.com/organizations/new)
+
+2. **Fill in organization details:**
+   - Organization account name: `breathworklabs`
+   - Contact email: `hello@breathworklabs.com`
+   - This organization belongs to: **My personal account**
+   - Plan: **Free** (unlimited private repos)
+
+3. Click **"Next"**
+
+4. **Skip team invitation** (you can add members later)
+
+5. Click **"Complete setup"**
+
+## Step 2: Configure Organization Profile
+
+1. Go to `github.com/breathworklabs`
+2. Click **"Edit profile"**
+3. Add:
+   - Display name: **Breathwork Labs**
+   - Description: *Building privacy-focused productivity tools*
+   - Website: `https://breathworklabs.com`
+   - Email: `hello@breathworklabs.com`
+4. Upload a logo/avatar (optional)
+5. Click **"Save"**
+
+## Step 3: Create Private Repository
+
+1. Go to `github.com/organizations/breathworklabs/repositories/new`
+   - Or click **"New repository"** from your organization page
+
+2. **Configure repository:**
+   - Owner: **breathworklabs**
+   - Repository name: `x-bookmark-manager`
+   - Description: `Privacy-focused bookmark manager for X/Twitter`
+   - Visibility: **Private** ✅
+   - **DO NOT** initialize with README (you already have files)
+   - **DO NOT** add .gitignore (you already have one)
+   - **DO NOT** choose a license yet (can add later)
+
+3. Click **"Create repository"**
+
+## Step 4: Push Your Code
+
+After creating the repository, GitHub will show you instructions. Run these commands in your project directory:
+
+```bash
+# Check current remote (if any)
+git remote -v
+
+# Remove existing remote if present
+git remote remove origin
+
+# Add new remote to Breathwork Labs organization
+git remote add origin https://github.com/breathworklabs/x-bookmark-manager.git
+
+# Ensure you're on main branch
+git branch -M main
+
+# Push your code
+git push -u origin main
+```
+
+## Step 5: Configure Repository Settings
+
+1. Go to `github.com/breathworklabs/x-bookmark-manager/settings`
+
+2. **General Settings:**
+   - Disable Wiki (unless you want it)
+   - Disable Projects (unless you want it)
+   - Enable Issues ✅
+   - Enable Discussions (optional)
+
+3. **Branches:**
+   - Set `main` as default branch
+   - Consider adding branch protection rules:
+     - Go to Settings → Branches → Add rule
+     - Branch name pattern: `main`
+     - Enable "Require status checks to pass before merging"
+
+4. **Secrets (for CI/CD later):**
+   - Settings → Secrets and variables → Actions
+   - Add secrets for environment variables (when needed)
+
+## Step 6: Connect to Vercel
+
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Click **"Import Git Repository"**
+3. Select **GitHub**
+4. Authorize Vercel to access **breathworklabs** organization
+5. Select `breathworklabs/x-bookmark-manager`
+6. Follow Vercel deployment steps from DEPLOYMENT.md
+
+## Optional: Add Collaborators
+
+If you want to add team members later:
+
+1. Go to `github.com/orgs/breathworklabs/people`
+2. Click **"Invite member"**
+3. Enter their GitHub username or email
+4. Set their role (Member, Billing manager, or Owner)
+
+## Optional: GitHub Actions (CI/CD)
+
+Create `.github/workflows/ci.yml` for automated testing:
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run typecheck
+    - run: npm run lint
+    - run: npm run test -- --run
+```
+
+---
+
+## Quick Command Reference
+
+```bash
+# Clone repo (after setup)
+git clone https://github.com/breathworklabs/x-bookmark-manager.git
+
+# Check remote
+git remote -v
+
+# Push changes
+git add .
+git commit -m "Your message"
+git push origin main
+
+# Create new branch
+git checkout -b feature-name
+git push -u origin feature-name
+```
+
+---
+
+**Your organization URL:** `github.com/breathworklabs`
+
+**Your repository URL:** `github.com/breathworklabs/x-bookmark-manager`

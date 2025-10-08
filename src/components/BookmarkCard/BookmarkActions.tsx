@@ -4,6 +4,7 @@ import { memo, useCallback, useState } from 'react'
 import { type Bookmark } from '../../types/bookmark'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useIconButtonStyles, useColor } from '../../hooks/useStyles'
+import { localStorageService } from '../../lib/localStorage'
 
 interface BookmarkActionsProps {
   bookmark: Bookmark
@@ -12,6 +13,9 @@ interface BookmarkActionsProps {
 
 const BookmarkActions = memo(({ bookmark, isInBulkMode }: BookmarkActionsProps) => {
   const toggleStarBookmark = useBookmarkStore((state) => state.toggleStarBookmark)
+  const bookmarks = useBookmarkStore((state) => state.bookmarks)
+  const setBookmarks = useBookmarkStore((state) => state.setBookmarks)
+  const addActivityLog = useBookmarkStore((state) => state.addActivityLog)
   const [isCopied, setIsCopied] = useState(false)
 
   const isStarred = () => {
@@ -23,11 +27,34 @@ const BookmarkActions = memo(({ bookmark, isInBulkMode }: BookmarkActionsProps) 
 
   const handleShare = useCallback(async () => {
     try {
+      // Copy to clipboard first
       await navigator.clipboard.writeText(bookmark.url)
       setIsCopied(true)
       setTimeout(() => setIsCopied(false), 2000)
+
+      // Mark bookmark as shared directly in localStorage (lightweight update)
+      if (!bookmark.is_shared) {
+        const sharedAt = new Date().toISOString()
+
+        // Update localStorage
+        localStorageService.updateBookmark(bookmark.id, {
+          is_shared: true,
+          shared_at: sharedAt
+        }).then(() => {
+          // Update store state directly without triggering loading
+          setBookmarks(
+            bookmarks.map(b =>
+              b.id === bookmark.id
+                ? { ...b, is_shared: true, shared_at: sharedAt }
+                : b
+            )
+          )
+          // Log activity
+          addActivityLog('Shared bookmark', bookmark.title)
+        }).catch(err => console.error('Failed to mark as shared:', err))
+      }
     } catch (err) {
-      console.error('Failed to copy URL to clipboard:', err)
+      console.error('Failed to copy URL:', err)
       // Fallback for older browsers
       try {
         const textArea = document.createElement('textarea')
@@ -38,11 +65,31 @@ const BookmarkActions = memo(({ bookmark, isInBulkMode }: BookmarkActionsProps) 
         document.body.removeChild(textArea)
         setIsCopied(true)
         setTimeout(() => setIsCopied(false), 2000)
+
+        // Mark bookmark as shared
+        if (!bookmark.is_shared) {
+          const sharedAt = new Date().toISOString()
+
+          localStorageService.updateBookmark(bookmark.id, {
+            is_shared: true,
+            shared_at: sharedAt
+          }).then(() => {
+            setBookmarks(
+              bookmarks.map(b =>
+                b.id === bookmark.id
+                  ? { ...b, is_shared: true, shared_at: sharedAt }
+                  : b
+              )
+            )
+            // Log activity
+            addActivityLog('Shared bookmark', bookmark.title)
+          }).catch(err => console.error('Failed to mark as shared:', err))
+        }
       } catch (fallbackErr) {
         console.error('Fallback copy also failed:', fallbackErr)
       }
     }
-  }, [bookmark.url])
+  }, [bookmark, bookmarks, setBookmarks, addActivityLog])
 
   const handleToggleStar = useCallback(async () => {
     try {

@@ -64,10 +64,15 @@ export const useInitializeApp = () => {
           // Phase 4: Show success toast notification (if enabled in settings)
           if (showNotification) {
             const message = count === 1
-              ? 'Imported 1 new bookmark from X/Twitter'
-              : `Imported ${count} new bookmarks from X/Twitter`
+              ? 'Imported 1 new bookmark from X/Twitter. Refreshing...'
+              : `Imported ${count} new bookmarks from X/Twitter. Refreshing...`
 
-            toast.success(message)
+            toast.success(message, { duration: 2000 })
+
+            // Auto-refresh the page after a short delay to show the toast
+            setTimeout(() => {
+              window.location.reload()
+            }, 2000)
           }
         }).catch((error) => {
           console.error('Error reloading stores after extension update:', error)
@@ -80,6 +85,23 @@ export const useInitializeApp = () => {
 
     window.addEventListener('message', handleExtensionMessage)
     return () => window.removeEventListener('message', handleExtensionMessage)
+  }, [])
+
+  // Auto-sync: Request bookmarks from extension when app opens
+  useEffect(() => {
+    // Small delay to ensure extension is ready
+    const timer = setTimeout(() => {
+      window.postMessage(
+        {
+          type: 'X_REQUEST_SYNC',
+          source: 'x-bookmark-manager-app'
+        },
+        '*'
+      )
+      console.log('Auto-sync: Requested bookmarks from extension')
+    }, 500)
+
+    return () => clearTimeout(timer)
   }, [])
 
   // Only show loading when we're actually loading and have existing bookmarks
