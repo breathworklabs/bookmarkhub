@@ -5,6 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { theme } from '../styles/theme';
 import { useBookmarkStore } from '../store/bookmarkStore';
 import { ErrorBoundary } from './ErrorBoundary';
+import { DragPreview } from './DragPreview';
 import AIInsights from './AIInsights';
 import UnifiedSidebar from './UnifiedSidebar';
 import SearchHeader from './SearchHeader';
@@ -96,6 +97,7 @@ const XBookmarkManager = () => {
       ) : (
         // Normal layout with bookmarks - wrapped with DndProvider
         <DndProvider backend={HTML5Backend}>
+          <DragPreview />
           <Flex h="100vh" w="100vw">
             {/* Sidebar */}
             <ErrorBoundary context="UnifiedSidebar">

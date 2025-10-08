@@ -1,8 +1,9 @@
 import { Box, VStack, HStack, Text, Button, Badge, For } from '@chakra-ui/react'
 import { LuFolder, LuStar, LuClock, LuArchive } from 'react-icons/lu'
-import { useMemo, useCallback, memo } from 'react'
+import { useMemo, useCallback, memo, useRef, useEffect } from 'react'
 import { useDrop } from 'react-dnd'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { useCollectionsStore } from '../../store/collectionsStore'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useModal } from '../modals/ModalProvider'
@@ -17,7 +18,9 @@ const DroppableCollectionItem = ({
   getBookmarkCount,
   handleCollectionClick
 }: any) => {
-  const [{ isOver, canDrop }, drop] = useDrop(() => ({
+  const hasShownToastRef = useRef(false)
+
+  const [{ isOver, canDrop, dragItem }, drop] = useDrop(() => ({
     accept: ItemTypes.BOOKMARK,
     drop: (): DropResult => ({
       collectionId: collection.id,
@@ -30,9 +33,12 @@ const DroppableCollectionItem = ({
       }
 
       // Prevent duplicate: check if bookmark is already in this collection
-      const bookmarkCollections = (item.bookmark as any).collections || []
-      if (bookmarkCollections.includes(collection.id)) {
-        return false
+      // Safety check: item.bookmark might be undefined during drag initialization
+      if (item.bookmark) {
+        const bookmarkCollections = (item.bookmark as any).collections || []
+        if (bookmarkCollections.includes(collection.id)) {
+          return false
+        }
       }
 
       return true
@@ -40,11 +46,44 @@ const DroppableCollectionItem = ({
     collect: (monitor) => ({
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),
+      dragItem: monitor.getItem() as DragItem,
     }),
   }), [collection.id, collection.isSmartCollection])
 
   const isDropZone = isOver && canDrop
   const isInvalidDrop = isOver && !canDrop
+
+  // Show toast feedback for invalid drops
+  useEffect(() => {
+    if (isInvalidDrop && !hasShownToastRef.current) {
+      hasShownToastRef.current = true
+
+      // Determine why the drop is invalid
+      if (collection.isSmartCollection && collection.id !== 'uncategorized') {
+        toast.error(`Cannot move to "${collection.name}" - it's a smart collection`, {
+          duration: 2000,
+          id: `invalid-drop-${collection.id}`, // Prevent duplicate toasts
+        })
+      } else if (dragItem?.bookmark) {
+        const bookmarkCollections = (dragItem.bookmark as any).collections || []
+        if (bookmarkCollections.includes(collection.id)) {
+          const count = dragItem.selectedIds?.length || 1
+          const message = count > 1
+            ? `${count} bookmarks already in "${collection.name}"`
+            : `Already in "${collection.name}"`
+          toast.error(message, {
+            duration: 2000,
+            id: `invalid-drop-${collection.id}`, // Prevent duplicate toasts
+          })
+        }
+      }
+    }
+
+    // Reset toast flag when no longer hovering
+    if (!isOver) {
+      hasShownToastRef.current = false
+    }
+  }, [isInvalidDrop, isOver, collection.id, collection.name, collection.isSmartCollection, dragItem])
 
   // Determine the type of invalid drop for better visual feedback
   const getInvalidDropType = () => {
@@ -64,6 +103,7 @@ const DroppableCollectionItem = ({
     <Box
       ref={drop}
       key={collection.id}
+      data-testid={`collection-${collection.id}`}
       px={3}
       py={2}
       borderRadius="md"

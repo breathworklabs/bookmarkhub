@@ -137,12 +137,6 @@ export const componentStyles = {
         transform: 'translateY(-1px)',
         boxShadow: '0 8px 20px rgba(0, 0, 0, 0.4)'
       }
-    },
-
-    dragging: {
-      opacity: 0.5,
-      cursor: 'grabbing',
-      transform: 'rotate(2deg)'
     }
   },
 
@@ -334,7 +328,7 @@ export const getButtonStyle = (variant: 'primary' | 'secondary' | 'ghost' | 'ico
 }
 
 export const getCardStyle = (isSelected?: boolean, isDragging?: boolean) => {
-  if (isDragging) return componentStyles.card.dragging
+  // Return base or selected styles - dragging state is handled separately via opacity prop
   if (isSelected) return componentStyles.card.selected
   return componentStyles.card.base
 }

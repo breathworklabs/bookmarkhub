@@ -1,6 +1,7 @@
 import { Card, Box } from '@chakra-ui/react'
-import { memo, useCallback, useMemo, useState } from 'react'
+import { memo, useCallback, useMemo, useState, useEffect } from 'react'
 import { useDrag } from 'react-dnd'
+import { getEmptyImage } from 'react-dnd-html5-backend'
 import toast from 'react-hot-toast'
 import { type Bookmark } from '../../types/bookmark'
 import { ItemTypes, type DropResult } from '../../types/dnd'
@@ -38,7 +39,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   const isInBulkMode = selectedBookmarks.length > 0
 
   // Drag and drop functionality
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: ItemTypes.BOOKMARK,
     item: () => {
       // If this bookmark is selected and there are multiple selected, include all selected IDs
@@ -106,6 +107,11 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
       isDragging: monitor.isDragging(),
     }),
   }), [bookmark.id, bookmark, addBookmarkToCollection, removeBookmarkFromCollection, bookmarks, selectedBookmarks, isSelected, clearBookmarkSelection])
+
+  // Hide default drag preview
+  useEffect(() => {
+    preview(getEmptyImage(), { captureDraggingState: true })
+  }, [preview])
 
   // Style hooks
   const cardStyles = useCardStyles(isSelected, isDragging)

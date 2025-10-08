@@ -2,9 +2,12 @@ import { memo, useState, useRef, useCallback, useEffect } from 'react'
 import { Box, HStack, VStack, Text } from '@chakra-ui/react'
 import { LuStar, LuExternalLink, LuGripVertical } from 'react-icons/lu'
 import { useDrag } from 'react-dnd'
+import { getEmptyImage } from 'react-dnd-html5-backend'
+import toast from 'react-hot-toast'
 import type { Bookmark } from '../types/bookmark'
 import { useBookmarkStore } from '../store/bookmarkStore'
-import { ItemTypes } from '../types/dnd'
+import { useCollectionsStore } from '../store/collectionsStore'
+import { ItemTypes, type DropResult } from '../types/dnd'
 import TagChip from './tags/TagChip'
 import LazyImage from './LazyImage'
 import { formatDistanceToNow } from 'date-fns'
@@ -27,10 +30,14 @@ interface ColumnWidths {
 
 const BookmarkListItem = memo(({ bookmark, columnWidths }: BookmarkListItemProps) => {
   const [isHovered, setIsHovered] = useState(false)
+  const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
   const toggleBookmarkSelection = useBookmarkStore((state) => state.toggleBookmarkSelection)
+  const clearBookmarkSelection = useBookmarkStore((state) => state.clearBookmarkSelection)
   const toggleStarBookmark = useBookmarkStore((state) => state.toggleStarBookmark)
   const setSelectedTags = useBookmarkStore((state) => state.setSelectedTags)
+  const addBookmarkToCollection = useCollectionsStore((state) => state.addBookmarkToCollection)
+  const removeBookmarkFromCollection = useCollectionsStore((state) => state.removeBookmarkFromCollection)
 
   const isSelected = selectedBookmarks.includes(bookmark.id)
   const isInBulkMode = selectedBookmarks.length > 0
@@ -60,19 +67,77 @@ const BookmarkListItem = memo(({ bookmark, columnWidths }: BookmarkListItemProps
   }
 
   // Drag and drop functionality
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: ItemTypes.BOOKMARK,
     item: () => {
       // If this bookmark is selected and there are multiple selected, include all selected IDs
-      if (isSelected && selectedBookmarks.length > 1) {
-        return { bookmarkIds: selectedBookmarks, isMultiple: true }
+      const selectedIds = isSelected && selectedBookmarks.length > 1
+        ? selectedBookmarks
+        : [bookmark.id]
+
+      return {
+        id: bookmark.id,
+        bookmark,
+        selectedIds // Include all selected bookmark IDs for bulk operations
       }
-      return { bookmarkIds: [bookmark.id], isMultiple: false }
+    },
+    end: async (item, monitor) => {
+      const dropResult = monitor.getDropResult<DropResult>()
+      if (dropResult) {
+        try {
+          const bookmarkIds = item.selectedIds || [item.id]
+          const moveCount = bookmarkIds.length
+
+          // Process all selected bookmarks
+          for (const bookmarkId of bookmarkIds) {
+            // Get current bookmark state to avoid stale data
+            const currentBookmark = bookmarks.find(b => b.id === bookmarkId)
+            const currentCollections = (currentBookmark as any)?.collections || ['uncategorized']
+
+            // If moving TO uncategorized, remove from all other collections first
+            if (dropResult.collectionId === 'uncategorized') {
+              // Remove from all non-uncategorized collections
+              for (const collectionId of currentCollections) {
+                if (collectionId !== 'uncategorized') {
+                  await removeBookmarkFromCollection(bookmarkId, collectionId)
+                }
+              }
+            } else {
+              // If moving FROM uncategorized TO another collection, remove from uncategorized
+              if (currentCollections.includes('uncategorized')) {
+                await removeBookmarkFromCollection(bookmarkId, 'uncategorized')
+              }
+            }
+
+            // Add to the new collection
+            await addBookmarkToCollection(bookmarkId, dropResult.collectionId)
+          }
+
+          // Clear selection after successful bulk move
+          if (moveCount > 1) {
+            clearBookmarkSelection()
+          }
+
+          // Show success toast with count
+          const message = moveCount > 1
+            ? `Moved ${moveCount} bookmarks to "${dropResult.collectionName}"`
+            : `Moved to "${dropResult.collectionName}"`
+          toast.success(message)
+        } catch (error) {
+          console.error('Failed to move bookmark(s) to collection:', error)
+          toast.error('Failed to move bookmark(s)')
+        }
+      }
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  }), [bookmark.id, selectedBookmarks, isSelected])
+  }), [bookmark.id, selectedBookmarks, isSelected, bookmarks, addBookmarkToCollection, removeBookmarkFromCollection, clearBookmarkSelection])
+
+  // Hide default drag preview
+  useEffect(() => {
+    preview(getEmptyImage(), { captureDraggingState: true })
+  }, [preview])
 
   const handleRowClick = (e: React.MouseEvent) => {
     // In bulk mode, clicking the row toggles selection

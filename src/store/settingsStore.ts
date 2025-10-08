@@ -90,7 +90,16 @@ const consolidatedStorage = {
       const data = localStorage.getItem('x-bookmark-manager-data')
       if (data) {
         const parsed = JSON.parse(data)
-        return parsed.extensionSettings ? JSON.stringify(parsed.extensionSettings) : null
+        if (parsed.extensionSettings) {
+          const settings = parsed.extensionSettings
+          // Merge saved settings with defaults to handle new properties
+          const fullState = {
+            extension: { ...defaultExtensionSettings, ...settings.extension },
+            display: { ...defaultDisplaySettings, ...settings.display },
+            privacy: { ...defaultPrivacySettings, ...settings.privacy },
+          }
+          return JSON.stringify(fullState)
+        }
       }
     } catch (error) {
       console.error('Failed to get settings from consolidated storage:', error)

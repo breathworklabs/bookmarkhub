@@ -143,6 +143,7 @@ const SearchHeader = memo(() => {
               px={3}
               py={2}
               minW="auto"
+              data-testid="view-toggle-grid"
               style={{
                 background: viewMode === 'grid' ? 'var(--color-bg-tertiary)' : 'transparent',
                 color: viewMode === 'grid' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
@@ -163,6 +164,7 @@ const SearchHeader = memo(() => {
               px={3}
               py={2}
               minW="auto"
+              data-testid="view-toggle-list"
               style={{
                 background: viewMode === 'list' ? 'var(--color-bg-tertiary)' : 'transparent',
                 color: viewMode === 'list' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
