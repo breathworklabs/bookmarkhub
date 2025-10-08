@@ -41,7 +41,8 @@ const createRealImportData = (): Bookmark[] => [
     is_archived: false, // NOT archived
     tags: ['react', 'javascript'],
     collections: ['uncategorized'],
-    created_at: '2025-09-21T02:22:53.277Z',
+    is_deleted: false,
+    created_at: new Date().toISOString(),
     updated_at: '2025-09-21T02:22:53.277Z'
   },
   {
@@ -60,7 +61,8 @@ const createRealImportData = (): Bookmark[] => [
     is_archived: false, // NOT archived
     tags: ['typescript', 'javascript'],
     collections: ['uncategorized'],
-    created_at: '2025-09-21T02:22:53.277Z',
+    is_deleted: false,
+    created_at: new Date().toISOString(),
     updated_at: '2025-09-21T02:22:53.277Z'
   },
   {
@@ -79,7 +81,8 @@ const createRealImportData = (): Bookmark[] => [
     is_archived: false, // NOT archived
     tags: ['nextjs', 'react'],
     collections: ['uncategorized'],
-    created_at: '2025-09-21T02:22:53.277Z',
+    is_deleted: false,
+    created_at: new Date().toISOString(),
     updated_at: '2025-09-21T02:22:53.277Z'
   },
   {
@@ -98,7 +101,8 @@ const createRealImportData = (): Bookmark[] => [
     is_archived: true, // THIS ONE IS archived (matches console output)
     tags: ['supabase', 'firebase'],
     collections: ['uncategorized'],
-    created_at: '2025-09-21T02:22:53.277Z',
+    is_deleted: false,
+    created_at: new Date().toISOString(),
     updated_at: '2025-09-21T02:22:53.277Z'
   },
   {
@@ -117,7 +121,8 @@ const createRealImportData = (): Bookmark[] => [
     is_archived: false, // NOT archived
     tags: ['react', 'state-management'],
     collections: ['uncategorized'],
-    created_at: '2025-09-21T02:22:53.277Z',
+    is_deleted: false,
+    created_at: new Date().toISOString(),
     updated_at: '2025-09-21T02:22:53.277Z'
   },
   {
@@ -136,7 +141,8 @@ const createRealImportData = (): Bookmark[] => [
     is_archived: false, // NOT archived
     tags: ['css', 'grid', 'flexbox'],
     collections: ['uncategorized'],
-    created_at: '2025-09-21T02:22:53.277Z',
+    is_deleted: false,
+    created_at: new Date().toISOString(),
     updated_at: '2025-09-21T02:22:53.277Z'
   }
 ]

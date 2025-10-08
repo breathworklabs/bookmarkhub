@@ -1,15 +1,38 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 import BookmarkCard from '../components/BookmarkCard'
 import { ModalProvider } from '../components/modals/ModalProvider'
 
 // Mock the bookmark store
 vi.mock('../store/bookmarkStore', () => ({
-  useBookmarkStore: vi.fn(() => ({
-    toggleStarBookmark: vi.fn(),
-    removeBookmark: vi.fn()
-  }))
+  useBookmarkStore: vi.fn((selector) => {
+    const state = {
+      bookmarks: [],
+      selectedBookmarks: [],
+      selectedTags: [],
+      toggleBookmarkSelection: vi.fn(),
+      clearBookmarkSelection: vi.fn(),
+      toggleStarBookmark: vi.fn(),
+      removeBookmark: vi.fn(),
+      addTag: vi.fn()
+    }
+    return selector ? selector(state) : state
+  })
+}))
+
+// Mock the collections store
+vi.mock('../store/collectionsStore', () => ({
+  useCollectionsStore: vi.fn((selector) => {
+    const state = {
+      collections: [],
+      addBookmarkToCollection: vi.fn(),
+      removeBookmarkFromCollection: vi.fn()
+    }
+    return selector ? selector(state) : state
+  })
 }))
 
 // Type for testing - allows both mock and database formats
@@ -40,20 +63,30 @@ const databaseBookmarkFormat: TestBookmark = {
   title: 'Database Bookmark Title',
   url: 'https://example.com',
   description: 'This is a test bookmark with database format',
+  content: 'Database content',
   author: 'Jane Smith',
   domain: 'example.com',
+  source_platform: 'manual',
+  engagement_score: 0,
   created_at: '2024-01-02T00:00:00Z',
+  updated_at: '2024-01-02T00:00:00Z',
   thumbnail_url: 'https://example.com/thumb.jpg',
   is_starred: false,
+  is_read: false,
+  is_archived: false,
+  is_deleted: false,
   tags: ['typescript', 'database'],
+  collections: ['uncategorized'],
   user_id: 'test-user'
 }
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <ChakraProvider value={defaultSystem}>
-    <ModalProvider>
-      {children}
-    </ModalProvider>
+    <DndProvider backend={HTML5Backend}>
+      <ModalProvider>
+        {children}
+      </ModalProvider>
+    </DndProvider>
   </ChakraProvider>
 )
 
@@ -105,8 +138,8 @@ describe('BookmarkCard Compatibility', () => {
     expect(screen.getByText(/example\.com/)).toBeInTheDocument()
     expect(screen.getByText(/1\/2\/2024/)).toBeInTheDocument()
 
-    // Check description (database uses description instead of content)
-    expect(screen.getByText('This is a test bookmark with database format')).toBeInTheDocument()
+    // Check content (content takes priority over description in the component)
+    expect(screen.getByText('Database content')).toBeInTheDocument()
 
     // Check default metrics (database bookmarks don't have metrics)
     const zeroElements = screen.getAllByText('0')

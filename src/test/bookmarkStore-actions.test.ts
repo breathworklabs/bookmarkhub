@@ -16,6 +16,7 @@ const makeStored = (overrides: Partial<StoredBookmark> = {}): StoredBookmark => 
   is_starred: false,
   is_read: false,
   is_archived: false,
+    is_deleted: false,
   tags: [],
   collections: ['uncategorized'],
   created_at: new Date().toISOString(),
@@ -25,8 +26,7 @@ const makeStored = (overrides: Partial<StoredBookmark> = {}): StoredBookmark => 
 
 describe('bookmarkStore actions', () => {
   beforeEach(() => {
-    const { setState } = useBookmarkStore.getState() as any
-    setState({ bookmarks: [], error: null, isLoading: false })
+    useBookmarkStore.setState({ bookmarks: [], error: null, isLoading: false })
     vi.restoreAllMocks()
   })
 
@@ -58,16 +58,20 @@ describe('bookmarkStore actions', () => {
     expect(state.bookmarks.find(b => b.id === 1)?.title).toBe('Updated')
   })
 
-  it('removeBookmark removes a bookmark', async () => {
+  it('removeBookmark removes a bookmark (soft delete)', async () => {
     const a = makeStored({ id: 1 })
     const b = makeStored({ id: 2 })
     useBookmarkStore.setState({ bookmarks: [a, b] })
-    vi.spyOn(localStorageService, 'deleteBookmark').mockResolvedValueOnce()
+
+    const deletedA = { ...a, is_deleted: true, deleted_at: new Date().toISOString() }
+    vi.spyOn(localStorageService, 'moveToTrash').mockResolvedValueOnce(deletedA)
 
     await useBookmarkStore.getState().removeBookmark(1)
 
-    const ids = useBookmarkStore.getState().bookmarks.map(bm => bm.id)
-    expect(ids).toEqual([2])
+    const state = useBookmarkStore.getState()
+    const bookmark1 = state.bookmarks.find(bm => bm.id === 1)
+    expect(bookmark1?.is_deleted).toBe(true)
+    expect(bookmark1?.deleted_at).toBeDefined()
   })
 
   it('toggleStarBookmark flips is_starred and updates state', async () => {

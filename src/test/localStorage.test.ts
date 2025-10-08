@@ -112,6 +112,7 @@ describe('LocalStorageService', () => {
         {
           id: 1,
           ...sampleBookmark,
+          is_deleted: false,
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-01T00:00:00Z'
         },
@@ -119,6 +120,7 @@ describe('LocalStorageService', () => {
           id: 2,
           ...sampleBookmark,
           title: 'Second Bookmark',
+          is_deleted: false,
           created_at: '2024-01-02T00:00:00Z',
           updated_at: '2024-01-02T00:00:00Z'
         }
@@ -457,16 +459,20 @@ describe('LocalStorageService', () => {
       localStorageMock.getItem.mockReturnValue(null) // No existing metadata
 
       const importData = {
-        bookmarks: [{ id: 1, ...sampleBookmark, created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' }],
+        bookmarks: [{ id: 1, ...sampleBookmark, is_deleted: false, created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' }],
         settings: { theme: 'light' as const, viewMode: 'list' as const, defaultSort: 'title' as const, showMetrics: false, compactMode: true, autoBackup: false, exportFormat: 'csv' as const, defaultCollection: null, duplicateHandling: 'skip' as const }
       }
 
       await service.importData(importData)
 
-      // Verify bookmarks and settings are saved
+      // Verify bookmarks are saved (with primaryCollection added during import)
+      const expectedBookmarks = importData.bookmarks.map(b => ({
+        ...b,
+        primaryCollection: b.primaryCollection || 'uncategorized'
+      }))
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'x-bookmark-manager-bookmarks',
-        JSON.stringify(importData.bookmarks)
+        JSON.stringify(expectedBookmarks)
       )
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'x-bookmark-manager-settings',

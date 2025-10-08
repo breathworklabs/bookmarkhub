@@ -135,7 +135,8 @@ export const migrateBookmarkData = (data: any[]): Bookmark[] => {
         ...sanitized,
         id: item.id || migrated.length + 1,
         created_at: item.created_at || item.timestamp || new Date().toISOString(),
-        updated_at: item.updated_at || new Date().toISOString()
+        updated_at: item.updated_at || new Date().toISOString(),
+        is_deleted: item.is_deleted || false
       })
     }
   }
