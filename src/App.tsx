@@ -1,16 +1,16 @@
 import { ChakraProvider, defaultSystem, Box, Spinner, Text, VStack } from '@chakra-ui/react'
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useEffect } from 'react'
 import XBookmarkManager from './components/XBookmarkManager'
 import OnboardingScreen from './components/OnboardingScreen'
+import SplashPage from './components/SplashPage'
 import SettingsPage from './components/SettingsPage'
 import TrashView from './components/TrashView'
 import SharedView from './components/SharedView'
 import TermsOfService from './components/legal/TermsOfService'
 import PrivacyPolicy from './components/legal/PrivacyPolicy'
 import CookiePolicy from './components/legal/CookiePolicy'
-import CookieConsentBanner from './components/consent/CookieConsentBanner'
 import { useInitializeApp } from './hooks/useInitializeApp'
 import { ModalProvider } from './components/modals/ModalProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -69,6 +69,7 @@ function App() {
             <ModalProvider>
               <SentryRoutes>
                 <Route path="/" element={<AppContent />} />
+                <Route path="/welcome" element={<SplashPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/trash" element={<TrashView />} />
                 <Route path="/shared" element={<SharedView />} />
@@ -87,6 +88,15 @@ function App() {
 
 function AppContent() {
   const { isLoading, error, hasExistingBookmarks } = useInitializeApp()
+  const navigate = useNavigate()
+
+  // Check if user has seen splash page on first visit
+  useEffect(() => {
+    const hasSeenSplash = localStorage.getItem('hasSeenSplash')
+    if (!hasSeenSplash && hasExistingBookmarks !== null && !isLoading) {
+      navigate('/welcome')
+    }
+  }, [hasExistingBookmarks, isLoading, navigate])
 
   // Still checking localStorage - show minimal loading
   if (hasExistingBookmarks === null) {

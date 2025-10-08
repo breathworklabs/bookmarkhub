@@ -1,0 +1,110 @@
+{
+  "hero": {
+    "title": "Your Bookmarks, Supercharged",
+    "subtitle": "The most powerful bookmark manager with AI-powered organization, advanced filtering, and seamless sync across all your devices.",
+    "ctaText": "Start Free Trial",
+    "ctaSecondary": "Learn More"
+  },
+  "stats": [
+    {
+      "number": "50K+",
+      "label": "Active Users"
+    },
+    {
+      "number": "2M+",
+      "label": "Bookmarks Organized"
+    },
+    {
+      "number": "4.9★",
+      "label": "User Rating"
+    }
+  ],
+  "featuresSection": {
+    "title": "Powerful Features",
+    "subtitle": "Everything you need to master your bookmarks"
+  },
+  "features": [
+    {
+      "badge": "Smart Organization",
+      "title": "Smart Collections",
+      "description": "Let AI do the heavy lifting. Smart Collections automatically organize your bookmarks based on content, topics, and usage patterns. No more manual sorting—just save and let the magic happen.",
+      "highlights": [
+        "Automatic categorization by topic and content type",
+        "Dynamic collections that update as you save",
+        "Custom rules for personalized organization",
+        "Visual analytics of your browsing interests"
+      ]
+    },
+    {
+      "badge": "Power Search",
+      "title": "Advanced Filtering",
+      "description": "Find exactly what you need in seconds. Filter by tags, dates, domains, authors, and more. Combine multiple filters to create powerful search queries that surface the perfect bookmark every time.",
+      "highlights": [
+        "Multi-criteria filtering with AND/OR logic",
+        "Search by domain, author, or publication date",
+        "Save custom filter presets for quick access",
+        "Full-text search across bookmark content"
+      ]
+    },
+    {
+      "badge": "Seamless Import",
+      "title": "X/Twitter Import",
+      "description": "Bring all your Twitter/X bookmarks with you. Native import support means one-click migration of all your saved tweets, complete with metadata, images, and thread context. Your digital library, unified.",
+      "highlights": [
+        "One-click import from Twitter/X account",
+        "Preserves tweet threads and media",
+        "Automatic categorization of imported content",
+        "Scheduled sync to keep bookmarks updated"
+      ]
+    },
+    {
+      "badge": "Productivity Boost",
+      "title": "Bulk Actions",
+      "description": "Manage hundreds of bookmarks at once. Multi-select any number of items and apply tags, move to collections, export, or delete in one go. What used to take hours now takes seconds.",
+      "highlights": [
+        "Multi-select with keyboard shortcuts",
+        "Batch tagging and categorization",
+        "Mass export in multiple formats",
+        "Undo/redo for all bulk operations"
+      ]
+    },
+    {
+      "badge": "AI-Powered",
+      "title": "Smart Tags",
+      "description": "Never manually tag again. Our AI analyzes each bookmark's content and suggests relevant tags automatically. Accept, reject, or customize—you're always in control while AI does the grunt work.",
+      "highlights": [
+        "Intelligent tag suggestions based on content",
+        "Learn from your tagging patterns over time",
+        "Auto-tagging for bulk imports",
+        "Tag hierarchy and relationship mapping"
+      ]
+    },
+    {
+      "badge": "Beautiful UI",
+      "title": "Dark Mode",
+      "description": "Easy on the eyes, day or night. Switch seamlessly between light and dark themes, or let the app automatically adjust based on your system preferences. Every detail designed for maximum readability and style.",
+      "highlights": [
+        "True dark mode optimized for OLED screens",
+        "Automatic theme switching by time of day",
+        "Custom accent color options",
+        "Respects system preferences"
+      ]
+    },
+    {
+      "badge": "Always Available",
+      "title": "Offline-First",
+      "description": "Your bookmarks, always accessible. Everything stored locally for instant access, even without internet. Changes sync automatically when you're back online. No connection required, no compromises made.",
+      "highlights": [
+        "Full functionality without internet connection",
+        "Lightning-fast local-first architecture",
+        "Automatic cloud sync when online",
+        "Conflict resolution for multi-device editing"
+      ]
+    }
+  ],
+  "cta": {
+    "title": "Ready to Transform Your Bookmarks?",
+    "subtitle": "Join thousands of users who've already made the switch",
+    "primaryButton": "Start Free Trial"
+  }
+}

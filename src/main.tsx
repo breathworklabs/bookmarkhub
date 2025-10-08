@@ -3,8 +3,8 @@ import * as Sentry from '@sentry/react'
 import './index.less'
 import App from './App.tsx'
 
-// Initialize Sentry
-if (import.meta.env.VITE_SENTRY_DSN) {
+// Initialize Sentry (only in production)
+if (import.meta.env.VITE_SENTRY_DSN && import.meta.env.MODE !== 'development') {
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
     integrations: [
@@ -15,7 +15,7 @@ if (import.meta.env.VITE_SENTRY_DSN) {
       }),
     ],
     // Performance Monitoring
-    tracesSampleRate: 1.0, // Capture 100% of transactions in dev, lower in production
+    tracesSampleRate: 1.0,
     // Session Replay
     replaysSessionSampleRate: 0.1, // 10% of sessions
     replaysOnErrorSampleRate: 1.0, // 100% of sessions with errors
