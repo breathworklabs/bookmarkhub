@@ -39,6 +39,7 @@ const createRealImportData = (): Bookmark[] => [
     is_starred: true,
     is_read: false,
     is_archived: false, // NOT archived
+    is_shared: false,
     tags: ['react', 'javascript'],
     collections: ['uncategorized'],
     is_deleted: false,
@@ -59,6 +60,7 @@ const createRealImportData = (): Bookmark[] => [
     is_starred: false,
     is_read: false,
     is_archived: false, // NOT archived
+    is_shared: false,
     tags: ['typescript', 'javascript'],
     collections: ['uncategorized'],
     is_deleted: false,
@@ -79,6 +81,7 @@ const createRealImportData = (): Bookmark[] => [
     is_starred: true,
     is_read: false,
     is_archived: false, // NOT archived
+    is_shared: false,
     tags: ['nextjs', 'react'],
     collections: ['uncategorized'],
     is_deleted: false,
@@ -99,6 +102,7 @@ const createRealImportData = (): Bookmark[] => [
     is_starred: false,
     is_read: false,
     is_archived: true, // THIS ONE IS archived (matches console output)
+    is_shared: false,
     tags: ['supabase', 'firebase'],
     collections: ['uncategorized'],
     is_deleted: false,
@@ -119,6 +123,7 @@ const createRealImportData = (): Bookmark[] => [
     is_starred: true,
     is_read: false,
     is_archived: false, // NOT archived
+    is_shared: false,
     tags: ['react', 'state-management'],
     collections: ['uncategorized'],
     is_deleted: false,
@@ -139,6 +144,7 @@ const createRealImportData = (): Bookmark[] => [
     is_starred: false,
     is_read: false,
     is_archived: false, // NOT archived
+    is_shared: false,
     tags: ['css', 'grid', 'flexbox'],
     collections: ['uncategorized'],
     is_deleted: false,

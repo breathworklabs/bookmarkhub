@@ -3,8 +3,12 @@ import { devtools } from 'zustand/middleware'
 import { localStorageService, type StoredCollection, type CollectionInsert } from '../lib/localStorage'
 import { createErrorHandler } from '../utils/errorHandling'
 import type {
-  CollectionsState
+  CollectionsState,
+  Collection
 } from '../types/collections'
+
+// Re-export Collection type for convenience
+export type { Collection }
 
 interface CollectionsActions {
   // Collection CRUD operations

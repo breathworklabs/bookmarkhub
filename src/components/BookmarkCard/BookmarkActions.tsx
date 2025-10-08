@@ -112,6 +112,8 @@ const BookmarkActions = memo(({ bookmark, isInBulkMode }: BookmarkActionsProps) 
           disabled={isInBulkMode}
           opacity={isInBulkMode ? 0.5 : 1}
           cursor={isInBulkMode ? 'default' : 'pointer'}
+          {...starButtonStyles}
+          _hover={isInBulkMode ? {} : starButtonStyles._hover}
           _focus={{
             boxShadow: 'none !important',
             borderColor: 'var(--color-border-hover) !important',
@@ -122,8 +124,6 @@ const BookmarkActions = memo(({ bookmark, isInBulkMode }: BookmarkActionsProps) 
             borderColor: 'var(--color-border-hover) !important',
             outline: 'none !important'
           }}
-          {...starButtonStyles}
-          _hover={isInBulkMode ? {} : starButtonStyles._hover}
           _active={{
             bg: 'var(--color-border) !important',
             borderColor: 'var(--color-border-hover) !important',
@@ -146,6 +146,7 @@ const BookmarkActions = memo(({ bookmark, isInBulkMode }: BookmarkActionsProps) 
           aria-label="Share bookmark"
           title={isCopied ? "Copied!" : "Copy URL to clipboard"}
           bg={isCopied ? "rgba(34, 197, 94, 0.1)" : "transparent"}
+          {...shareButtonStyles}
           _focus={{
             boxShadow: 'none !important',
             borderColor: isCopied ? "var(--color-success) !important" : 'var(--color-border-hover) !important',
@@ -156,7 +157,6 @@ const BookmarkActions = memo(({ bookmark, isInBulkMode }: BookmarkActionsProps) 
             borderColor: isCopied ? "var(--color-success) !important" : 'var(--color-border-hover) !important',
             outline: 'none !important'
           }}
-          {...shareButtonStyles}
           border={isCopied ? "1px solid var(--color-success)" : "1px solid var(--color-border)"}
           _hover={{
             bg: isCopied ? "rgba(34, 197, 94, 0.2)" : 'var(--color-border)',

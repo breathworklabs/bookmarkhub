@@ -129,6 +129,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     is_starred: false,
     is_read: false,
     is_archived: false,
+    is_shared: false,
     tags: [],
     collections: []
   })
@@ -169,6 +170,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       is_starred: false,
       is_read: false,
       is_archived: false,
+      is_shared: false,
       tags: [],
       collections: ['uncategorized'],
       primaryCollection: 'uncategorized'
@@ -192,6 +194,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       is_starred: options.bookmark.is_starred || false,
       is_read: options.bookmark.is_read || false,
       is_archived: options.bookmark.is_archived || false,
+      is_shared: options.bookmark.is_shared || false,
       tags: options.bookmark.tags || [],
       collections: options.bookmark.collections || []
     })
@@ -215,6 +218,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       is_starred: false,
       is_read: false,
       is_archived: false,
+      is_shared: false,
       tags: [],
       collections: ['uncategorized'],
       primaryCollection: 'uncategorized'

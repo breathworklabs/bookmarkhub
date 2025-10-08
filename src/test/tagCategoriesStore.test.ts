@@ -15,13 +15,12 @@ describe('TagCategoriesStore', () => {
     })
 
     it('should add a new category', () => {
-      const { addCategory, categories } = useTagCategoriesStore.getState()
+      const { addCategory } = useTagCategoriesStore.getState()
 
       addCategory({
         name: 'Custom Category',
         description: 'A custom test category',
         color: '#FF5733',
-        icon: '🎨'
       })
 
       const updatedCategories = useTagCategoriesStore.getState().categories
@@ -57,7 +56,6 @@ describe('TagCategoriesStore', () => {
         name: 'Test Category',
         description: 'Test',
         color: '#000000',
-        icon: '🧪'
       })
 
       const categoryId = 'test-category'
@@ -92,7 +90,6 @@ describe('TagCategoriesStore', () => {
         name: 'Custom',
         description: 'Test',
         color: '#000',
-        icon: '🎨'
       })
       assignTagToCategory('test-tag', 'custom')
 
@@ -216,7 +213,6 @@ describe('TagCategoriesStore', () => {
         name: '',
         description: 'Empty name category',
         color: '#000000',
-        icon: '❓'
       })
 
       const categories = useTagCategoriesStore.getState().categories
@@ -232,7 +228,6 @@ describe('TagCategoriesStore', () => {
         name: 'Special!@#$%Category',
         description: 'Test',
         color: '#000000',
-        icon: '🔥'
       })
 
       const categories = useTagCategoriesStore.getState().categories

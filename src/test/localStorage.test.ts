@@ -69,6 +69,7 @@ describe('LocalStorageService', () => {
       is_starred: false,
       is_read: false,
       is_archived: false,
+      is_shared: false,
       tags: ['test', 'bookmark'],
       collections: ['uncategorized']
     }
@@ -465,7 +466,7 @@ describe('LocalStorageService', () => {
       expect(result.bookmarks).toHaveLength(1)
       expect(result.collections).toHaveLength(1)
       expect(result.bookmarkCollections).toEqual([])
-      expect(result.settings).toMatchObject(settings)
+      // Settings are now managed by settingsStore, not in exported data
       expect(result.metadata).toMatchObject(metadata)
       expect(result.exportedAt).toBeDefined()
     })

@@ -1,5 +1,5 @@
-import { Box, Flex, VStack, HStack, Text, Button, Heading } from '@chakra-ui/react'
-import { useNavigate } from 'react-router-dom'
+import { Box, Flex, VStack, HStack, Text, Button, Heading, Link } from '@chakra-ui/react'
+import { useNavigate, Link as RouterLink } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { LuCheck } from 'react-icons/lu'
 import splashContent from '../data/splash-content.json'
@@ -428,41 +428,37 @@ const SplashPage = () => {
             justify="center"
             fontSize="0.9rem"
           >
-            <Text
-              as="a"
-              href="/terms"
+            <Link
+              asChild
               color="#888"
               transition="color 0.2s"
               _hover={{ color: '#667eea', textDecoration: 'none' }}
               cursor="pointer"
             >
-              Terms of Service
-            </Text>
+              <RouterLink to="/terms">Terms of Service</RouterLink>
+            </Link>
             <Text color="#444">•</Text>
-            <Text
-              as="a"
-              href="/privacy"
+            <Link
+              asChild
               color="#888"
               transition="color 0.2s"
               _hover={{ color: '#667eea', textDecoration: 'none' }}
               cursor="pointer"
             >
-              Privacy Policy
-            </Text>
+              <RouterLink to="/privacy">Privacy Policy</RouterLink>
+            </Link>
             <Text color="#444">•</Text>
-            <Text
-              as="a"
-              href="/cookies"
+            <Link
+              asChild
               color="#888"
               transition="color 0.2s"
               _hover={{ color: '#667eea', textDecoration: 'none' }}
               cursor="pointer"
             >
-              Cookie Policy
-            </Text>
+              <RouterLink to="/cookies">Cookie Policy</RouterLink>
+            </Link>
             <Text color="#444">•</Text>
-            <Text
-              as="a"
+            <Link
               href="mailto:hello@breathworklabs.com"
               color="#888"
               transition="color 0.2s"
@@ -470,7 +466,7 @@ const SplashPage = () => {
               cursor="pointer"
             >
               Contact Us
-            </Text>
+            </Link>
           </HStack>
 
           {/* Copyright */}

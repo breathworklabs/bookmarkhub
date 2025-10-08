@@ -14,8 +14,8 @@ export const useButtonStyles = (variant: 'primary' | 'secondary' | 'ghost' | 'ic
 /**
  * Hook for card styles with state management
  */
-export const useCardStyles = (isSelected?: boolean, isDragging?: boolean) => {
-  return useMemo(() => getCardStyle(isSelected, isDragging), [isSelected, isDragging])
+export const useCardStyles = (isSelected?: boolean) => {
+  return useMemo(() => getCardStyle(isSelected), [isSelected])
 }
 
 /**

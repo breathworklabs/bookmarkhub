@@ -65,6 +65,7 @@ export interface CreateBookmarkOptions {
   is_starred?: boolean
   is_read?: boolean
   is_archived?: boolean
+  is_shared?: boolean
   tags?: string[]
   created_at?: string
   updated_at?: string
@@ -94,6 +95,7 @@ export const createMockBookmark = (options: CreateBookmarkOptions = {}): Bookmar
     is_starred: options.is_starred ?? false,
     is_read: options.is_read ?? false,
     is_archived: options.is_archived ?? false,
+    is_shared: options.is_shared ?? false,
     tags: options.tags ?? [`tag${id}`],
     created_at: createdDate,
     is_deleted: false,

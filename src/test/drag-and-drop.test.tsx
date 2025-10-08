@@ -9,7 +9,7 @@ import { ModalProvider } from '../components/modals/ModalProvider'
 import BookmarkCard from '../components/BookmarkCard/BookmarkCard'
 import { createMockBookmark } from './test-utils'
 import type { Bookmark } from '../types/bookmark'
-import type { Collection } from '../types/collection'
+import type { Collection } from '../store/collectionsStore'
 
 // Mock toast
 vi.mock('react-hot-toast', () => ({

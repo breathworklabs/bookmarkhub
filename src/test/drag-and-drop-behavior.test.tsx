@@ -1,10 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { waitFor } from '@testing-library/react'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { createMockBookmark } from './test-utils'
 import type { Bookmark } from '../types/bookmark'
-import type { Collection } from '../types/collection'
+import type { Collection } from '../store/collectionsStore'
 import type { DropResult } from '../types/dnd'
 import toast from 'react-hot-toast'
 

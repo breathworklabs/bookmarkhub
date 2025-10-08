@@ -114,7 +114,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   }, [preview])
 
   // Style hooks
-  const cardStyles = useCardStyles(isSelected, isDragging)
+  const cardStyles = useCardStyles(isSelected)
 
   // Helper functions
   const hasMedia = () => {

@@ -99,6 +99,7 @@ export class DataProcessingService {
         is_starred: Boolean(bookmark.is_starred || bookmark.isStarred),
         is_read: Boolean(bookmark.is_read || false),
         is_archived: Boolean(bookmark.is_archived || false),
+        is_shared: Boolean(bookmark.is_shared || false),
         tags: Array.isArray(bookmark.tags)
           ? bookmark.tags.filter((tag: any) => typeof tag === 'string').map((tag: string) => tag.trim())
           : [],

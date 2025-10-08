@@ -22,6 +22,7 @@ const createMockBookmark = (overrides: Partial<Bookmark> = {}): Bookmark => ({
   is_starred: false,
   is_read: false,
   is_archived: false,
+  is_shared: false,
   is_deleted: false,
   tags: [],
   collections: [],

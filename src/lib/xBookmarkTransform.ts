@@ -66,6 +66,7 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
     is_starred: false,
     is_read: false,
     is_archived: false,
+    is_shared: false,
     tags: platformTags,
     collections: [],
     metadata: {
