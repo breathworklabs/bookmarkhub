@@ -33,6 +33,7 @@ const createTestBookmarks = (): Bookmark[] => [
     tags: ['react', 'javascript'],
     collections: ['uncategorized'],
     created_at: '2025-09-21T02:22:53.277Z',
+    is_deleted: false,
     updated_at: '2025-09-21T02:22:53.277Z'
   },
   {
@@ -52,6 +53,7 @@ const createTestBookmarks = (): Bookmark[] => [
     tags: ['typescript', 'javascript'],
     collections: ['uncategorized'],
     created_at: '2025-09-21T02:22:53.277Z',
+    is_deleted: false,
     updated_at: '2025-09-21T02:22:53.277Z'
   },
   {
@@ -71,6 +73,7 @@ const createTestBookmarks = (): Bookmark[] => [
     tags: ['supabase', 'firebase'],
     collections: ['uncategorized'],
     created_at: '2025-09-21T02:22:53.277Z',
+    is_deleted: false,
     updated_at: '2025-09-21T02:22:53.277Z'
   },
   {
@@ -90,6 +93,7 @@ const createTestBookmarks = (): Bookmark[] => [
     tags: ['react', 'state-management'],
     collections: ['uncategorized'],
     created_at: '2025-09-21T02:22:53.277Z',
+    is_deleted: false,
     updated_at: '2025-09-21T02:22:53.277Z'
   },
   {
@@ -109,6 +113,7 @@ const createTestBookmarks = (): Bookmark[] => [
     tags: ['css', 'grid', 'flexbox'],
     collections: ['uncategorized'],
     created_at: '2025-09-21T02:22:53.277Z',
+    is_deleted: false,
     updated_at: '2025-09-21T02:22:53.277Z'
   },
   {
@@ -128,6 +133,7 @@ const createTestBookmarks = (): Bookmark[] => [
     tags: ['example'],
     collections: ['uncategorized'],
     created_at: '2025-09-21T02:22:53.277Z',
+    is_deleted: false,
     updated_at: '2025-09-21T02:22:53.277Z'
   }
 ]

@@ -7,19 +7,20 @@ import {
   ThemeContextType
 } from '../styles/themes'
 
-// Theme storage key
-const THEME_STORAGE_KEY = 'bookmark-manager-theme'
-
 // Custom hook for theme management
 export const useTheme = (): ThemeContextType => {
-  // Get initial theme from localStorage or default to dark
+  // Get initial theme from consolidated localStorage or default to dark
   const getInitialTheme = (): ThemeMode => {
     if (typeof window === 'undefined') return 'dark'
 
     try {
-      const stored = localStorage.getItem(THEME_STORAGE_KEY)
-      if (stored && ['light', 'dark', 'system'].includes(stored)) {
-        return stored as ThemeMode
+      const data = localStorage.getItem('x-bookmark-manager-data')
+      if (data) {
+        const parsed = JSON.parse(data)
+        const theme = parsed?.settings?.theme
+        if (theme && ['light', 'dark', 'system'].includes(theme)) {
+          return theme as ThemeMode
+        }
       }
     } catch (error) {
       console.warn('Failed to read theme from localStorage:', error)
@@ -40,10 +41,15 @@ export const useTheme = (): ThemeContextType => {
     return unwatch
   }, [])
 
-  // Save theme to localStorage
+  // Save theme to consolidated localStorage
   const saveTheme = useCallback((newMode: ThemeMode) => {
     try {
-      localStorage.setItem(THEME_STORAGE_KEY, newMode)
+      const data = localStorage.getItem('x-bookmark-manager-data')
+      if (data) {
+        const parsed = JSON.parse(data)
+        parsed.settings.theme = newMode
+        localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
+      }
     } catch (error) {
       console.warn('Failed to save theme to localStorage:', error)
     }

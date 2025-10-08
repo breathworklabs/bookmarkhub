@@ -26,6 +26,7 @@ export const mockBookmarks = [
     is_archived: false,
     tags: ['react', 'javascript'],
     created_at: '2024-01-01T00:00:00Z',
+    is_deleted: false,
     updated_at: '2024-01-01T00:00:00Z'
   },
   {
@@ -44,6 +45,7 @@ export const mockBookmarks = [
     is_archived: false,
     tags: ['typescript'],
     created_at: '2024-01-02T00:00:00Z',
+    is_deleted: false,
     updated_at: '2024-01-02T00:00:00Z'
   }
 ]
@@ -94,6 +96,7 @@ export const createMockBookmark = (options: CreateBookmarkOptions = {}): Bookmar
     is_archived: options.is_archived ?? false,
     tags: options.tags ?? [`tag${id}`],
     created_at: createdDate,
+    is_deleted: false,
     updated_at: options.updated_at ?? createdDate,
     thumbnail_url: options.thumbnail_url,
     favicon_url: options.favicon_url,

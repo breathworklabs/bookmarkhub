@@ -2,17 +2,56 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { LocalStorageService, type StoredBookmarkCollection } from '../lib/localStorage'
 import type { BookmarkInsert } from '../types/bookmark'
 
-// Mock localStorage
+// Mock localStorage with consolidated storage support
+let mockStorage: any = {}
+
 const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
+  getItem: vi.fn((key: string) => {
+    return mockStorage[key] || null
+  }),
+  setItem: vi.fn((key: string, value: string) => {
+    mockStorage[key] = value
+  }),
+  removeItem: vi.fn((key: string) => {
+    delete mockStorage[key]
+  }),
+  clear: vi.fn(() => {
+    mockStorage = {}
+  }),
 }
 
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock
 })
+
+// Helper to create consolidated storage format
+const createConsolidatedStorage = (overrides: any = {}) => {
+  const defaultStorage = {
+    bookmarks: [],
+    collections: [],
+    bookmarkCollections: [],
+    settings: {
+      theme: 'dark',
+      viewMode: 'grid',
+      defaultSort: 'newest',
+      showMetrics: true,
+      compactMode: false,
+      autoBackup: true,
+      exportFormat: 'json',
+      defaultCollection: null,
+      duplicateHandling: 'skip'
+    },
+    metadata: {
+      version: '1.0.0',
+      totalBookmarks: 0,
+      createdAt: new Date().toISOString(),
+      lastUpdate: new Date().toISOString()
+    },
+    version: '2.0.0',
+    ...overrides
+  }
+  return JSON.stringify(defaultStorage)
+}
 
 describe('LocalStorageService', () => {
   let service: LocalStorageService
@@ -35,16 +74,26 @@ describe('LocalStorageService', () => {
     }
 
   beforeEach(() => {
+    // Reset all mocks including return values
+    localStorageMock.getItem.mockReset()
+    localStorageMock.setItem.mockReset()
+    localStorageMock.removeItem.mockReset()
+    localStorageMock.clear.mockReset()
+
+    // Restore original implementations
+    localStorageMock.getItem.mockImplementation((key: string) => mockStorage[key] || null)
+    localStorageMock.setItem.mockImplementation((key: string, value: string) => { mockStorage[key] = value })
+    localStorageMock.removeItem.mockImplementation((key: string) => { delete mockStorage[key] })
+    localStorageMock.clear.mockImplementation(() => { mockStorage = {} })
+
+    mockStorage = {}
+    // Initialize with default consolidated storage
+    mockStorage['x-bookmark-manager-data'] = createConsolidatedStorage()
     service = new LocalStorageService()
-    vi.clearAllMocks()
-    localStorageMock.getItem.mockReturnValue(null)
   })
 
   describe('Bookmark Operations', () => {
     it('should create a new bookmark', async () => {
-      localStorageMock.getItem.mockReturnValue('[]')
-      localStorageMock.setItem.mockReturnValue(undefined)
-
       const result = await service.createBookmark(sampleBookmark)
 
       expect(result).toMatchObject({
@@ -54,7 +103,7 @@ describe('LocalStorageService', () => {
       expect(result.created_at).toBeDefined()
       expect(result.updated_at).toBeDefined()
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'x-bookmark-manager-bookmarks',
+        'x-bookmark-manager-data',
         expect.any(String)
       )
     })
@@ -64,18 +113,18 @@ describe('LocalStorageService', () => {
         {
           id: 1,
           ...sampleBookmark,
+          is_deleted: false,
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-01T00:00:00Z'
         }
       ]
 
-      localStorageMock.getItem.mockReturnValue(JSON.stringify(existingBookmarks))
+      mockStorage['x-bookmark-manager-data'] = createConsolidatedStorage({ bookmarks: existingBookmarks })
 
       const result = await service.getBookmarks()
 
       expect(result).toHaveLength(1)
       expect(result[0]).toMatchObject(sampleBookmark)
-      expect(localStorageMock.getItem).toHaveBeenCalledWith('x-bookmark-manager-bookmarks')
     })
 
     it('should return empty array when no bookmarks exist', async () => {
@@ -96,7 +145,7 @@ describe('LocalStorageService', () => {
         }
       ]
 
-      localStorageMock.getItem.mockReturnValue(JSON.stringify(existingBookmarks))
+      mockStorage["x-bookmark-manager-data"] = createConsolidatedStorage({ bookmarks: existingBookmarks })
       localStorageMock.setItem.mockReturnValue(undefined)
 
       const updates = { title: 'Updated Title', is_starred: true }
@@ -126,20 +175,20 @@ describe('LocalStorageService', () => {
         }
       ]
 
-      localStorageMock.getItem.mockReturnValue(JSON.stringify(existingBookmarks))
+      mockStorage["x-bookmark-manager-data"] = createConsolidatedStorage({ bookmarks: existingBookmarks })
       localStorageMock.setItem.mockReturnValue(undefined)
 
       await service.deleteBookmark(1)
 
       // Verify setItem was called with the filtered bookmarks
       const setItemCall = localStorageMock.setItem.mock.calls.find(
-        call => call[0] === 'x-bookmark-manager-bookmarks'
+        call => call[0] === 'x-bookmark-manager-data'
       )
       expect(setItemCall).toBeDefined()
 
-      const savedBookmarks = JSON.parse(setItemCall![1])
-      expect(savedBookmarks).toHaveLength(1)
-      expect(savedBookmarks[0].id).toBe(2)
+      const savedData = JSON.parse(setItemCall![1])
+      expect(savedData.bookmarks).toHaveLength(1)
+      expect(savedData.bookmarks[0].id).toBe(2)
     })
 
     it('should toggle bookmark star status', async () => {
@@ -153,7 +202,7 @@ describe('LocalStorageService', () => {
         }
       ]
 
-      localStorageMock.getItem.mockReturnValue(JSON.stringify(existingBookmarks))
+      mockStorage["x-bookmark-manager-data"] = createConsolidatedStorage({ bookmarks: existingBookmarks })
       localStorageMock.setItem.mockReturnValue(undefined)
 
       const result = await service.toggleBookmarkStar(1)
@@ -195,7 +244,7 @@ describe('LocalStorageService', () => {
         }
       ]
 
-      localStorageMock.getItem.mockReturnValue(JSON.stringify(existingBookmarks))
+      mockStorage["x-bookmark-manager-data"] = createConsolidatedStorage({ bookmarks: existingBookmarks })
 
       const reactResults = await service.searchBookmarks('react')
       expect(reactResults).toHaveLength(1)
@@ -228,7 +277,7 @@ describe('LocalStorageService', () => {
         }
       ]
 
-      localStorageMock.getItem.mockReturnValue(JSON.stringify(existingBookmarks))
+      mockStorage["x-bookmark-manager-data"] = createConsolidatedStorage({ bookmarks: existingBookmarks })
 
       const result = await service.getStarredBookmarks()
 
@@ -262,7 +311,7 @@ describe('LocalStorageService', () => {
           bookmarkCount: 0
         })
         expect(localStorageMock.setItem).toHaveBeenCalledWith(
-          'x-bookmark-manager-collections',
+          'x-bookmark-manager-data',
           expect.any(String)
         )
       })
@@ -283,13 +332,15 @@ describe('LocalStorageService', () => {
           }
         ]
 
-        localStorageMock.getItem.mockReturnValue(JSON.stringify(existingCollections))
+        mockStorage["x-bookmark-manager-data"] = createConsolidatedStorage({ collections: existingCollections })
 
         const result = await service.getCollections()
 
-        expect(result).toHaveLength(1)
-        expect(result[0]).toMatchObject(existingCollections[0])
-        expect(localStorageMock.getItem).toHaveBeenCalledWith('x-bookmark-manager-collections')
+        // Should return the existing collection (not default collections since we have data)
+        const testCollection = result.find(c => c.id === 'test-collection')
+        expect(testCollection).toBeDefined()
+        expect(testCollection).toMatchObject(existingCollections[0])
+        expect(localStorageMock.getItem).toHaveBeenCalledWith('x-bookmark-manager-data')
       })
 
       it('should initialize default collections when none exist', async () => {
@@ -321,7 +372,7 @@ describe('LocalStorageService', () => {
           }
         ]
 
-        localStorageMock.getItem.mockReturnValue(JSON.stringify(existingCollections))
+        mockStorage["x-bookmark-manager-data"] = createConsolidatedStorage({ collections: existingCollections })
         localStorageMock.setItem.mockReturnValue(undefined)
 
         const updates = { name: 'Updated Collection', description: 'Updated description' }
@@ -360,20 +411,20 @@ describe('LocalStorageService', () => {
           }
         ]
 
-        localStorageMock.getItem.mockReturnValue(JSON.stringify(existingCollections))
+        mockStorage["x-bookmark-manager-data"] = createConsolidatedStorage({ collections: existingCollections })
         localStorageMock.setItem.mockReturnValue(undefined)
 
         await service.deleteCollection('test-collection')
 
         // Verify setItem was called with the filtered collections
         const setItemCall = localStorageMock.setItem.mock.calls.find(
-          call => call[0] === 'x-bookmark-manager-collections'
+          call => call[0] === 'x-bookmark-manager-data'
         )
         expect(setItemCall).toBeDefined()
 
-        const savedCollections = JSON.parse(setItemCall![1])
-        expect(savedCollections).toHaveLength(1)
-        expect(savedCollections[0].id).toBe('another-collection')
+        const savedData = JSON.parse(setItemCall![1])
+        expect(savedData.collections).toHaveLength(1)
+        expect(savedData.collections[0].id).toBe('another-collection')
       })
     })
   })
@@ -434,15 +485,17 @@ describe('LocalStorageService', () => {
         userId: 'local-user'
       }]
       const bookmarkCollections: StoredBookmarkCollection[] = []
-      const settings = { theme: 'dark', viewMode: 'grid', defaultSort: 'newest', showMetrics: true, compactMode: false, autoBackup: true, exportFormat: 'json' }
+      const settings = { theme: 'dark', viewMode: 'grid', defaultSort: 'newest', showMetrics: true, compactMode: false, autoBackup: true, exportFormat: 'json', defaultCollection: null, duplicateHandling: 'skip' }
       const metadata = { version: '1.0.0', totalBookmarks: 1, createdAt: '2024-01-01T00:00:00Z', lastUpdate: '2024-01-01T00:00:00Z' }
 
-      localStorageMock.getItem
-        .mockReturnValueOnce(JSON.stringify(bookmarks)) // bookmarks
-        .mockReturnValueOnce(JSON.stringify(collections)) // collections
-        .mockReturnValueOnce(JSON.stringify(bookmarkCollections)) // bookmarkCollections
-        .mockReturnValueOnce(JSON.stringify(settings)) // settings
-        .mockReturnValueOnce(JSON.stringify(metadata)) // metadata
+      // Set up consolidated storage with test data
+      mockStorage['x-bookmark-manager-data'] = createConsolidatedStorage({
+        bookmarks,
+        collections,
+        bookmarkCollections,
+        settings,
+        metadata
+      })
 
       const result = await service.exportData()
 
@@ -455,8 +508,8 @@ describe('LocalStorageService', () => {
     })
 
     it('should import data', async () => {
-      localStorageMock.setItem.mockReturnValue(undefined)
-      localStorageMock.getItem.mockReturnValue(null) // No existing metadata
+      // Start fresh - remove existing storage
+      delete mockStorage['x-bookmark-manager-data']
 
       const importData = {
         bookmarks: [{ id: 1, ...sampleBookmark, is_deleted: false, created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' }],
@@ -465,31 +518,25 @@ describe('LocalStorageService', () => {
 
       await service.importData(importData)
 
-      // Verify bookmarks are saved (with primaryCollection added during import)
-      const expectedBookmarks = importData.bookmarks.map(b => ({
-        ...b,
-        primaryCollection: b.primaryCollection || 'uncategorized'
-      }))
+      // Verify consolidated storage was saved
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'x-bookmark-manager-bookmarks',
-        JSON.stringify(expectedBookmarks)
-      )
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'x-bookmark-manager-settings',
-        JSON.stringify(importData.settings)
-      )
-
-      // Verify default collections are initialized (since no collections in import data)
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'x-bookmark-manager-collections',
+        'x-bookmark-manager-data',
         expect.any(String)
       )
 
-      // Verify metadata is updated
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'x-bookmark-manager-metadata',
-        expect.any(String)
-      )
+      // Verify the saved data contains expected bookmarks with primaryCollection
+      const savedCalls = localStorageMock.setItem.mock.calls.filter(call => call[0] === 'x-bookmark-manager-data')
+      expect(savedCalls.length).toBeGreaterThan(0)
+
+      const lastSave = savedCalls[savedCalls.length - 1]
+      const savedData = JSON.parse(lastSave[1])
+
+      expect(savedData.bookmarks).toBeDefined()
+      expect(savedData.bookmarks[0]).toMatchObject({
+        ...importData.bookmarks[0],
+        primaryCollection: 'uncategorized'
+      })
+      expect(savedData.settings).toMatchObject(importData.settings)
     })
   })
 

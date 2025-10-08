@@ -83,6 +83,51 @@ const defaultPrivacySettings: PrivacySettings = {
   searchHistoryEnabled: true,
 }
 
+// Custom storage that uses consolidated localStorage
+const consolidatedStorage = {
+  getItem: (_name: string) => {
+    try {
+      const data = localStorage.getItem('x-bookmark-manager-data')
+      if (data) {
+        const parsed = JSON.parse(data)
+        return parsed.extensionSettings ? JSON.stringify(parsed.extensionSettings) : null
+      }
+    } catch (error) {
+      console.error('Failed to get settings from consolidated storage:', error)
+    }
+    return null
+  },
+  setItem: (_name: string, value: string) => {
+    try {
+      const data = localStorage.getItem('x-bookmark-manager-data')
+      const parsed = data ? JSON.parse(data) : {
+        bookmarks: [],
+        collections: [],
+        bookmarkCollections: [],
+        settings: {},
+        metadata: {},
+        version: '2.0.0'
+      }
+      parsed.extensionSettings = JSON.parse(value)
+      localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
+    } catch (error) {
+      console.error('Failed to save settings to consolidated storage:', error)
+    }
+  },
+  removeItem: (_name: string) => {
+    try {
+      const data = localStorage.getItem('x-bookmark-manager-data')
+      if (data) {
+        const parsed = JSON.parse(data)
+        delete parsed.extensionSettings
+        localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
+      }
+    } catch (error) {
+      console.error('Failed to remove settings from consolidated storage:', error)
+    }
+  }
+} as any
+
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
@@ -175,7 +220,8 @@ export const useSettingsStore = create<SettingsState>()(
         }),
     }),
     {
-      name: 'x-bookmark-settings',
+      name: 'x-bookmark-settings', // Name is ignored since we use custom storage
+      storage: consolidatedStorage,
     }
   )
 )

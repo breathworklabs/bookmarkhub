@@ -275,13 +275,15 @@ const BookmarkListItem = memo(({ bookmark, columnWidths }: BookmarkListItemProps
 
 BookmarkListItem.displayName = 'BookmarkListItem'
 
-const STORAGE_KEY = 'bookmark-list-column-widths'
-
 const getInitialColumnWidths = (): ColumnWidths => {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved) {
-      return JSON.parse(saved)
+    const data = localStorage.getItem('x-bookmark-manager-data')
+    if (data) {
+      const parsed = JSON.parse(data)
+      const widths = parsed?.uiPreferences?.columnWidths
+      if (widths) {
+        return widths
+      }
     }
   } catch (error) {
     console.error('Failed to load column widths:', error)
@@ -300,10 +302,18 @@ const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
   const startXRef = useRef<number>(0)
   const startWidthRef = useRef<number>(0)
 
-  // Save column widths to localStorage whenever they change
+  // Save column widths to consolidated localStorage whenever they change
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(columnWidths))
+      const data = localStorage.getItem('x-bookmark-manager-data')
+      if (data) {
+        const parsed = JSON.parse(data)
+        if (!parsed.uiPreferences) {
+          parsed.uiPreferences = {}
+        }
+        parsed.uiPreferences.columnWidths = columnWidths
+        localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
+      }
     } catch (error) {
       console.error('Failed to save column widths:', error)
     }

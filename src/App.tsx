@@ -1,6 +1,7 @@
 import { ChakraProvider, defaultSystem, Box, Spinner, Text, VStack } from '@chakra-ui/react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { useEffect } from 'react'
 import XBookmarkManager from './components/XBookmarkManager'
 import OnboardingScreen from './components/OnboardingScreen'
 import SettingsPage from './components/SettingsPage'
@@ -12,14 +13,35 @@ import CookieConsentBanner from './components/consent/CookieConsentBanner'
 import { useInitializeApp } from './hooks/useInitializeApp'
 import { ModalProvider } from './components/modals/ModalProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import * as Sentry from '@sentry/react'
 import { ThemeProvider } from './contexts/ThemeContext'
+import { initGA, trackPageView } from './lib/analytics'
 // import { AuthDebug } from './components/debug/AuthDebug'
+
+// Component to track page views
+function AnalyticsTracker() {
+  const location = useLocation()
+
+  useEffect(() => {
+    initGA()
+  }, [])
+
+  useEffect(() => {
+    trackPageView(location.pathname + location.search)
+  }, [location])
+
+  return null
+}
+
+// Wrap Router with Sentry for better error tracking
+const SentryRoutes = Sentry.withSentryRouting(Routes)
 
 function App() {
   return (
     <ChakraProvider value={defaultSystem}>
       <ThemeProvider>
         <BrowserRouter>
+          <AnalyticsTracker />
           <Toaster
             position="top-right"
             toastOptions={{
@@ -44,14 +66,14 @@ function App() {
           />
           <ErrorBoundary context="App">
             <ModalProvider>
-              <Routes>
+              <SentryRoutes>
                 <Route path="/" element={<AppContent />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/trash" element={<TrashView />} />
                 <Route path="/terms" element={<TermsOfService />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/cookies" element={<CookiePolicy />} />
-              </Routes>
+              </SentryRoutes>
               {/* <CookieConsentBanner /> */}
             </ModalProvider>
           </ErrorBoundary>

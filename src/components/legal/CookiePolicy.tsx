@@ -46,7 +46,7 @@ const CookiePolicy = () => {
                   Cookie Policy
                 </Text>
                 <Text fontSize="sm" style={{ color: 'var(--color-text-tertiary)', marginLeft: 'auto' }}>
-                  Last updated: {new Date().toLocaleDateString()}
+                  Last updated: January 2025
                 </Text>
               </HStack>
 
@@ -106,7 +106,18 @@ const CookiePolicy = () => {
                     </Text>
                   </HStack>
                   <Text fontSize="sm" style={{ color: 'var(--color-text-secondary)', lineHeight: '1.6' }}>
-                    For any concerns regarding privacy or storage, contact us via Support from Settings.
+                    For any concerns regarding privacy or storage, contact us at{' '}
+                    <a href="mailto:hello@breathworklabs.com" style={{ color: 'var(--color-blue)', textDecoration: 'none' }}>
+                      hello@breathworklabs.com
+                    </a>
+                  </Text>
+                  <Text fontSize="sm" style={{ color: 'var(--color-text-secondary)', lineHeight: '1.6' }}>
+                    <strong>Breathwork Labs</strong>
+                    <br />
+                    Website:{' '}
+                    <a href="https://breathworklabs.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-blue)', textDecoration: 'none' }}>
+                      breathworklabs.com
+                    </a>
                   </Text>
                 </VStack>
               </VStack>

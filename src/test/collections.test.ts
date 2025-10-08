@@ -3,12 +3,51 @@ import { localStorageService } from '../lib/localStorage'
 import { useCollectionsStore } from '../store/collectionsStore'
 import type { CollectionInsert } from '../lib/localStorage'
 
-// Mock localStorage
+// Mock localStorage with consolidated storage support
+let mockStorage: any = {}
+
 const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
+  getItem: vi.fn((key: string) => {
+    return mockStorage[key] || null
+  }),
+  setItem: vi.fn((key: string, value: string) => {
+    mockStorage[key] = value
+  }),
+  removeItem: vi.fn((key: string) => {
+    delete mockStorage[key]
+  }),
+  clear: vi.fn(() => {
+    mockStorage = {}
+  }),
+}
+
+// Helper to create consolidated storage format
+const createConsolidatedStorage = (overrides: any = {}) => {
+  const defaultStorage = {
+    bookmarks: [],
+    collections: [],
+    bookmarkCollections: [],
+    settings: {
+      theme: 'dark',
+      viewMode: 'grid',
+      defaultSort: 'newest',
+      showMetrics: true,
+      compactMode: false,
+      autoBackup: true,
+      exportFormat: 'json',
+      defaultCollection: null,
+      duplicateHandling: 'skip'
+    },
+    metadata: {
+      version: '1.0.0',
+      totalBookmarks: 0,
+      createdAt: new Date().toISOString(),
+      lastUpdate: new Date().toISOString()
+    },
+    version: '2.0.0',
+    ...overrides
+  }
+  return JSON.stringify(defaultStorage)
 }
 
 // Mock the global localStorage object that the service actually uses
@@ -16,9 +55,21 @@ vi.stubGlobal('localStorage', localStorageMock)
 
 describe('Collections localStorage persistence', () => {
   beforeEach(async () => {
-    // Clear all mocks before each test
-    vi.clearAllMocks()
-    localStorageMock.getItem.mockReturnValue(null)
+    // Reset all mocks including return values
+    localStorageMock.getItem.mockReset()
+    localStorageMock.setItem.mockReset()
+    localStorageMock.removeItem.mockReset()
+    localStorageMock.clear.mockReset()
+
+    // Restore original implementations
+    localStorageMock.getItem.mockImplementation((key: string) => mockStorage[key] || null)
+    localStorageMock.setItem.mockImplementation((key: string, value: string) => { mockStorage[key] = value })
+    localStorageMock.removeItem.mockImplementation((key: string) => { delete mockStorage[key] })
+    localStorageMock.clear.mockImplementation(() => { mockStorage = {} })
+
+    mockStorage = {}
+    // Initialize with default consolidated storage
+    mockStorage['x-bookmark-manager-data'] = createConsolidatedStorage()
 
     // Reset store state to initial state and wait for any pending operations
     useCollectionsStore.setState({
@@ -38,8 +89,7 @@ describe('Collections localStorage persistence', () => {
 
   describe('localStorage service', () => {
     it('should create collection and save to localStorage', async () => {
-      // Mock existing collections as empty array
-      localStorageMock.getItem.mockReturnValue('[]')
+      // beforeEach already sets up empty consolidated storage
 
       const testCollection: CollectionInsert = {
         name: 'Test Collection',
@@ -69,9 +119,9 @@ describe('Collections localStorage persistence', () => {
       expect(result.updatedAt).toBeDefined()
       expect(result.bookmarkCount).toBe(0)
 
-      // Verify localStorage.setItem was called
+      // Verify localStorage.setItem was called with consolidated storage
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'x-bookmark-manager-collections',
+        'x-bookmark-manager-data',
         expect.stringContaining('Test Collection')
       )
     })
@@ -93,17 +143,18 @@ describe('Collections localStorage persistence', () => {
         }
       ]
 
-      localStorageMock.getItem.mockReturnValue(JSON.stringify(mockCollections))
+      mockStorage['x-bookmark-manager-data'] = createConsolidatedStorage({ collections: mockCollections })
 
       const result = await localStorageService.getCollections()
 
       expect(result).toHaveLength(1)
       expect(result[0]).toMatchObject(mockCollections[0])
-      expect(localStorageMock.getItem).toHaveBeenCalledWith('x-bookmark-manager-collections')
+      expect(localStorageMock.getItem).toHaveBeenCalledWith('x-bookmark-manager-data')
     })
 
     it('should initialize default collections when localStorage is empty', async () => {
-      localStorageMock.getItem.mockReturnValue(null)
+      // Start fresh without storage
+      delete mockStorage['x-bookmark-manager-data']
 
       const result = await localStorageService.getCollections()
 
@@ -116,9 +167,9 @@ describe('Collections localStorage persistence', () => {
       expect(defaultNames).toContain('Recent')
       expect(defaultNames).toContain('Archived')
 
-      // Should save default collections to localStorage
+      // Should save default collections to consolidated localStorage
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'x-bookmark-manager-collections',
+        'x-bookmark-manager-data',
         expect.any(String)
       )
     })
@@ -126,8 +177,7 @@ describe('Collections localStorage persistence', () => {
 
   describe('Collections store', () => {
     it('should create collection through store', async () => {
-      // Setup empty collections
-      localStorageMock.getItem.mockReturnValue('[]')
+      // beforeEach already sets up empty consolidated storage
 
       const store = useCollectionsStore.getState()
 
@@ -143,9 +193,9 @@ describe('Collections localStorage persistence', () => {
 
       await store.createCollection(testCollection)
 
-      // Verify localStorage was called
+      // Verify consolidated localStorage was called
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'x-bookmark-manager-collections',
+        'x-bookmark-manager-data',
         expect.stringContaining('Store Test Collection')
       )
     })
@@ -167,20 +217,11 @@ describe('Collections localStorage persistence', () => {
         }
       ]
 
-      // Mock the localStorage to return our collections
-      localStorageMock.getItem.mockImplementation((key: string) => {
-        if (key === 'x-bookmark-manager-collections') {
-          return JSON.stringify(mockCollections)
-        }
-        if (key === 'x-bookmark-manager-bookmark-collections') {
-          return '[]' // Empty bookmark-collection relationships
-        }
-        return null
+      // Set up consolidated storage with the test collection
+      mockStorage['x-bookmark-manager-data'] = createConsolidatedStorage({
+        collections: mockCollections,
+        bookmarkCollections: []
       })
-
-      // Verify the mock is working
-      const testResult = localStorageMock.getItem('x-bookmark-manager-collections')
-      expect(testResult).toBe(JSON.stringify(mockCollections))
 
       // Test the localStorage service directly first
       const directCollections = await localStorageService.getCollections()
@@ -207,8 +248,7 @@ describe('Collections localStorage persistence', () => {
     })
 
     it('should handle localStorage persistence across store operations', async () => {
-      // Start with empty localStorage
-      localStorageMock.getItem.mockReturnValue('[]')
+      // beforeEach already sets up empty consolidated storage
 
       const store = useCollectionsStore.getState()
 
@@ -223,29 +263,18 @@ describe('Collections localStorage persistence', () => {
         userId: 'local-user'
       })
 
-      // Simulate localStorage returning the saved collection
-      const savedCollection = {
-        id: 'test-1',
-        name: 'Collection 1',
-        description: 'First collection',
-        color: '#1d4ed8',
-        isPrivate: false,
-        isDefault: false,
-        isSmartCollection: false,
-        userId: 'local-user',
-        createdAt: '2023-01-01T00:00:00.000Z',
-        updatedAt: '2023-01-01T00:00:00.000Z',
-        bookmarkCount: 0
-      }
-      localStorageMock.getItem.mockReturnValue(JSON.stringify([savedCollection]))
-
+      // The collection should now be in mockStorage along with default collections
       // Initialize store (simulating page refresh)
       await store.initialize()
 
-      // Verify collection persisted
+      // Verify collections persisted (including defaults)
       const state = useCollectionsStore.getState()
-      expect(state.collections).toHaveLength(1)
-      expect(state.collections[0].name).toBe('Collection 1')
+      expect(state.collections.length).toBeGreaterThan(0)
+
+      // Verify our custom collection is there
+      const customCollection = state.collections.find(c => c.name === 'Collection 1')
+      expect(customCollection).toBeDefined()
+      expect(customCollection?.description).toBe('First collection')
     })
   })
 

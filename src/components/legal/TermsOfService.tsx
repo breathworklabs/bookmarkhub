@@ -46,7 +46,7 @@ const TermsOfService = () => {
                 Terms of Service
               </Text>
               <Text fontSize="sm" style={{ color: 'var(--color-text-tertiary)', marginLeft: 'auto' }}>
-                Last updated: {new Date().toLocaleDateString()}
+                Last updated: January 2025
               </Text>
             </HStack>
 
@@ -240,8 +240,18 @@ const TermsOfService = () => {
                   Contact Information
                 </Text>
                 <Text fontSize="sm" style={{ color: 'var(--color-text-secondary)', lineHeight: '1.6' }}>
-                  If you have any questions about these Terms of Service, please contact us through the
-                  application's feedback system or by creating an issue on our GitHub repository.
+                  If you have any questions about these Terms of Service, please contact us at{' '}
+                  <a href="mailto:hello@breathworklabs.com" style={{ color: 'var(--color-blue)', textDecoration: 'none' }}>
+                    hello@breathworklabs.com
+                  </a>
+                </Text>
+                <Text fontSize="sm" style={{ color: 'var(--color-text-secondary)', lineHeight: '1.6' }}>
+                  <strong>Breathwork Labs</strong>
+                  <br />
+                  Website:{' '}
+                  <a href="https://breathworklabs.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-blue)', textDecoration: 'none' }}>
+                    breathworklabs.com
+                  </a>
                 </Text>
               </VStack>
 
@@ -253,8 +263,8 @@ const TermsOfService = () => {
                   Effective Date
                 </Text>
                 <Text fontSize="sm" style={{ color: 'var(--color-text-secondary)', lineHeight: '1.6' }}>
-                  These Terms of Service are effective as of {new Date().toLocaleDateString()} and will
-                  remain in effect until modified or terminated.
+                  These Terms of Service are effective as of January 2025 and will remain in effect until
+                  modified or terminated.
                 </Text>
               </VStack>
             </VStack>

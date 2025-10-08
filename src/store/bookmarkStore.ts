@@ -132,12 +132,16 @@ interface BookmarkState {
   initialize: () => Promise<void>
 }
 
-// Helper to get initial view mode from localStorage
+// Helper to get initial view mode from consolidated localStorage
 const getInitialViewMode = (): 'grid' | 'list' => {
   try {
-    const saved = localStorage.getItem('bookmark-view-mode')
-    if (saved === 'grid' || saved === 'list') {
-      return saved
+    const data = localStorage.getItem('x-bookmark-manager-data')
+    if (data) {
+      const parsed = JSON.parse(data)
+      const viewMode = parsed?.settings?.viewMode
+      if (viewMode === 'grid' || viewMode === 'list') {
+        return viewMode
+      }
     }
   } catch (error) {
     console.error('Failed to load view mode:', error)
@@ -683,9 +687,14 @@ export const useBookmarkStore = create<BookmarkState>()(
       setActiveTab: (tab) => set({ activeTab: tab }, false, 'setActiveTab'),
       setViewMode: (mode) => {
         set({ viewMode: mode }, false, 'setViewMode')
-        // Persist view mode to localStorage
+        // Persist view mode to consolidated localStorage
         try {
-          localStorage.setItem('bookmark-view-mode', mode)
+          const data = localStorage.getItem('x-bookmark-manager-data')
+          if (data) {
+            const parsed = JSON.parse(data)
+            parsed.settings.viewMode = mode
+            localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
+          }
         } catch (error) {
           console.error('Failed to save view mode:', error)
         }

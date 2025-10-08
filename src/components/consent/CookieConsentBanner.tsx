@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Box, HStack, Text, Button } from '@chakra-ui/react'
 
-const CONSENT_KEY = 'xbm_cookie_consent'
-
 type ConsentValue = 'accepted' | 'rejected'
 
 const getStoredConsent = (): ConsentValue | null => {
   try {
-    const value = localStorage.getItem(CONSENT_KEY)
-    if (value === 'accepted' || value === 'rejected') return value
+    const data = localStorage.getItem('x-bookmark-manager-data')
+    if (data) {
+      const parsed = JSON.parse(data)
+      const consent = parsed?.consent
+      if (consent === 'accepted' || consent === 'rejected') return consent
+    }
     return null
   } catch {
     return null
@@ -27,7 +29,12 @@ const CookieConsentBanner = () => {
 
   const handleChoice = (value: ConsentValue) => {
     try {
-      localStorage.setItem(CONSENT_KEY, value)
+      const data = localStorage.getItem('x-bookmark-manager-data')
+      if (data) {
+        const parsed = JSON.parse(data)
+        parsed.consent = value
+        localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
+      }
       setConsent(value)
       setIsVisible(false)
     } catch {

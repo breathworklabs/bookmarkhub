@@ -23,9 +23,10 @@ export const useInitializeApp = () => {
     // First, synchronously check if we have existing bookmarks
     const checkExistingBookmarks = () => {
       try {
-        // Direct synchronous localStorage check
-        const stored = localStorage.getItem('x-bookmark-manager-bookmarks')
-        const bookmarks = stored ? JSON.parse(stored) : []
+        // Direct synchronous localStorage check from consolidated storage
+        const stored = localStorage.getItem('x-bookmark-manager-data')
+        const data = stored ? JSON.parse(stored) : null
+        const bookmarks = data?.bookmarks || []
         const hasBookmarks = Array.isArray(bookmarks) && bookmarks.length > 0
         setHasExistingBookmarks(hasBookmarks)
 

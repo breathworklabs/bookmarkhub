@@ -35,7 +35,8 @@
       "Bash(for file in src/components/SidebarMenu.tsx src/components/UnifiedSidebar.tsx src/components/BookmarkCard/BookmarkActions.tsx)",
       "Bash(for file in src/components/modals/ModalProvider.tsx src/components/collections/CollectionsActions.tsx src/components/tags/SmartTagSuggestions.tsx src/components/tags/TagManagerModal.tsx src/components/tags/TagMergeModal.tsx)",
       "Bash(xargs ls:*)",
-      "Bash(for file in src/test/archived-count-logic.test.ts src/test/bookmarkStore-actions.test.ts src/test/collections-sidebar-archived-count.test.tsx src/test/filters.test.ts)"
+      "Bash(for file in src/test/archived-count-logic.test.ts src/test/bookmarkStore-actions.test.ts src/test/collections-sidebar-archived-count.test.tsx src/test/filters.test.ts)",
+      "Bash(for file in src/test/collections-sidebar-archived-count.test.tsx src/test/test-utils.ts)"
     ],
     "deny": [],
     "ask": []

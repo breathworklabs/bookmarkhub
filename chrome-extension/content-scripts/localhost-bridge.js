@@ -3,14 +3,14 @@
  * Automatically syncs extension bookmarks to page localStorage
  */
 
-// Get settings from localStorage
+// Get settings from consolidated localStorage
 function getSettings() {
   try {
-    const settingsStr = localStorage.getItem('x-bookmark-settings');
-    if (!settingsStr) return null;
+    const data = localStorage.getItem('x-bookmark-manager-data');
+    if (!data) return null;
 
-    const settings = JSON.parse(settingsStr);
-    return settings.state?.extension || null;
+    const parsed = JSON.parse(data);
+    return parsed.extensionSettings?.extension || null;
   } catch (error) {
     console.error('Error loading settings:', error);
     return null;
@@ -37,10 +37,11 @@ async function syncBookmarksToLocalStorage() {
     // Get extension settings
     const extensionSettings = getSettings();
 
-    // Get existing bookmarks from page's localStorage
-    const storageKey = 'x-bookmark-manager-bookmarks';
+    // Get existing data from consolidated localStorage
+    const storageKey = 'x-bookmark-manager-data';
     const existingDataStr = localStorage.getItem(storageKey);
-    const existingBookmarks = existingDataStr ? JSON.parse(existingDataStr) : [];
+    const existingData = existingDataStr ? JSON.parse(existingDataStr) : null;
+    const existingBookmarks = existingData?.bookmarks || [];
 
     // Phase 2: Improved duplicate detection with settings
     // Apply duplicate handling setting (skip, replace, keep-both)
@@ -110,17 +111,42 @@ async function syncBookmarksToLocalStorage() {
     // Merge bookmarks with corrected collections
     const allBookmarks = [...workingBookmarks, ...bookmarksWithCorrectCollections];
 
-    // Save to localStorage
-    localStorage.setItem(storageKey, JSON.stringify(allBookmarks));
+    // Update consolidated storage
+    const updatedData = existingData || {
+      bookmarks: [],
+      collections: [],
+      bookmarkCollections: [],
+      settings: {
+        theme: 'dark',
+        viewMode: 'grid',
+        defaultSort: 'newest',
+        showMetrics: true,
+        compactMode: false,
+        autoBackup: false,
+        exportFormat: 'json',
+        defaultCollection: null,
+        duplicateHandling: 'skip'
+      },
+      metadata: {
+        version: '1.0.0',
+        totalBookmarks: 0,
+        createdAt: new Date().toISOString(),
+        lastUpdate: new Date().toISOString()
+      },
+      version: '2.0.0'
+    };
 
-    // Update metadata
-    const metadata = {
-      version: '1.0.0',
+    // Update bookmarks and metadata
+    updatedData.bookmarks = allBookmarks;
+    updatedData.metadata = {
+      ...updatedData.metadata,
       totalBookmarks: allBookmarks.length,
       lastUpdate: new Date().toISOString(),
       importSource: 'chrome-extension-api'
     };
-    localStorage.setItem('x-bookmark-manager-metadata', JSON.stringify(metadata));
+
+    // Save consolidated storage
+    localStorage.setItem(storageKey, JSON.stringify(updatedData));
 
     const totalImported = bookmarksWithCorrectCollections.length + bookmarksToReplace.length;
 
@@ -211,9 +237,9 @@ function setupPeriodicSync() {
 
 setupPeriodicSync();
 
-// Listen for settings changes and update interval
+// Listen for settings changes in consolidated storage and update interval
 window.addEventListener('storage', (e) => {
-  if (e.key === 'x-bookmark-settings') {
+  if (e.key === 'x-bookmark-manager-data') {
     setupPeriodicSync();
   }
 });

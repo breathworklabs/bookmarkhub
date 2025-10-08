@@ -16,14 +16,37 @@ import type {
   CollectionInsert as CollectionInsertType
 } from '../types/collections'
 
-// Storage keys
-const STORAGE_KEYS = {
+// Single storage key for consolidated structure
+const STORAGE_KEY = 'x-bookmark-manager-data'
+
+// Legacy keys for migration
+const LEGACY_STORAGE_KEYS = {
   BOOKMARKS: 'x-bookmark-manager-bookmarks',
   COLLECTIONS: 'x-bookmark-manager-collections',
   BOOKMARK_COLLECTIONS: 'x-bookmark-manager-bookmark-collections',
   SETTINGS: 'x-bookmark-manager-settings',
   METADATA: 'x-bookmark-manager-metadata'
 } as const
+
+// Consolidated storage structure
+interface ConsolidatedStorage {
+  bookmarks: StoredBookmark[]
+  collections: StoredCollection[]
+  bookmarkCollections: StoredBookmarkCollection[]
+  settings: AppSettings
+  metadata: AppMetadata
+  uiPreferences?: {
+    columnWidths?: {
+      author: number
+      domain: number
+      tags: number
+      date: number
+    }
+  }
+  consent?: 'accepted' | 'rejected' | null
+  extensionSettings?: any // Extension/display/privacy settings from settingsStore
+  version: string
+}
 
 // Types for localStorage data
 // Use imported types from src/types for single source of truth
@@ -54,42 +77,176 @@ class LocalStorageService {
     }
   }
 
-  private safeGet<T>(key: string, defaultValue: T): T {
+  // Get the entire consolidated storage
+  private getStorage(): ConsolidatedStorage {
     if (!this.isAvailable()) {
-      console.warn('localStorage is not available, using default value')
-      return defaultValue
+      return this.getDefaultStorage()
     }
 
     try {
-      const item = localStorage.getItem(key)
+      const item = localStorage.getItem(STORAGE_KEY)
       if (item === null) {
-        return defaultValue
+        // Check if legacy data exists and migrate it
+        const storage = this.migrateLegacyStorage()
+        // Ensure it's saved (migration already saves, but this handles fresh installs)
+        if (!localStorage.getItem(STORAGE_KEY)) {
+          this.setStorage(storage)
+        }
+        return storage
       }
       return JSON.parse(item)
     } catch (error) {
-      console.error(`Failed to parse localStorage item "${key}":`, error)
-      return defaultValue
+      console.error('Failed to parse localStorage:', error)
+      return this.getDefaultStorage()
     }
   }
 
-  private safeSet<T>(key: string, value: T): boolean {
+  // Set the entire consolidated storage
+  private setStorage(data: ConsolidatedStorage): boolean {
     if (!this.isAvailable()) {
       console.warn('localStorage is not available, cannot save data')
       return false
     }
 
     try {
-      localStorage.setItem(key, JSON.stringify(value))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
       return true
     } catch (error) {
-      console.error(`Failed to save to localStorage "${key}":`, error)
+      console.error('Failed to save to localStorage:', error)
       return false
     }
   }
 
+  // Get default storage structure
+  private getDefaultStorage(): ConsolidatedStorage {
+    return {
+      bookmarks: [],
+      collections: [],
+      bookmarkCollections: [],
+      settings: {
+        theme: 'dark',
+        viewMode: 'grid',
+        defaultSort: 'newest',
+        showMetrics: true,
+        compactMode: false,
+        autoBackup: true,
+        exportFormat: 'json',
+        defaultCollection: null,
+        duplicateHandling: 'skip'
+      },
+      metadata: {
+        version: '1.0.0',
+        totalBookmarks: 0,
+        createdAt: new Date().toISOString(),
+        lastUpdate: new Date().toISOString()
+      },
+      version: '2.0.0'
+    }
+  }
+
+  // Migrate from legacy multi-key storage to consolidated single-key storage
+  private migrateLegacyStorage(): ConsolidatedStorage {
+    if (!this.isAvailable()) {
+      return this.getDefaultStorage()
+    }
+
+    try {
+      // Check if any legacy data exists
+      const hasLegacyData = Object.values(LEGACY_STORAGE_KEYS).some(key =>
+        localStorage.getItem(key) !== null
+      )
+
+      if (!hasLegacyData) {
+        return this.getDefaultStorage()
+      }
+
+      console.log('Migrating from legacy storage format...')
+
+      const defaultStorage = this.getDefaultStorage()
+
+      // Migrate each piece of data
+      const bookmarksStr = localStorage.getItem(LEGACY_STORAGE_KEYS.BOOKMARKS)
+      const collectionsStr = localStorage.getItem(LEGACY_STORAGE_KEYS.COLLECTIONS)
+      const bookmarkCollectionsStr = localStorage.getItem(LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS)
+      const settingsStr = localStorage.getItem(LEGACY_STORAGE_KEYS.SETTINGS)
+      const metadataStr = localStorage.getItem(LEGACY_STORAGE_KEYS.METADATA)
+
+      const consolidatedData: ConsolidatedStorage = {
+        bookmarks: bookmarksStr ? JSON.parse(bookmarksStr) : defaultStorage.bookmarks,
+        collections: collectionsStr ? JSON.parse(collectionsStr) : defaultStorage.collections,
+        bookmarkCollections: bookmarkCollectionsStr ? JSON.parse(bookmarkCollectionsStr) : defaultStorage.bookmarkCollections,
+        settings: settingsStr ? JSON.parse(settingsStr) : defaultStorage.settings,
+        metadata: metadataStr ? JSON.parse(metadataStr) : defaultStorage.metadata,
+        version: '2.0.0'
+      }
+
+      // Save to new consolidated format
+      this.setStorage(consolidatedData)
+
+      // Clean up legacy keys
+      Object.values(LEGACY_STORAGE_KEYS).forEach(key => {
+        localStorage.removeItem(key)
+      })
+
+      console.log('Migration completed successfully')
+      return consolidatedData
+    } catch (error) {
+      console.error('Failed to migrate legacy storage:', error)
+      return this.getDefaultStorage()
+    }
+  }
+
+  // Helper methods to get/set individual sections (maintains compatibility with existing code)
+  private safeGet<T>(key: string, defaultValue: T): T {
+    const storage = this.getStorage()
+
+    // Map legacy keys to consolidated storage properties with null safety
+    switch (key) {
+      case LEGACY_STORAGE_KEYS.BOOKMARKS:
+        return (storage.bookmarks || []) as unknown as T
+      case LEGACY_STORAGE_KEYS.COLLECTIONS:
+        return (storage.collections || []) as unknown as T
+      case LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS:
+        return (storage.bookmarkCollections || []) as unknown as T
+      case LEGACY_STORAGE_KEYS.SETTINGS:
+        return (storage.settings || defaultValue) as unknown as T
+      case LEGACY_STORAGE_KEYS.METADATA:
+        return (storage.metadata || defaultValue) as unknown as T
+      default:
+        return defaultValue
+    }
+  }
+
+  private safeSet<T>(key: string, value: T): boolean {
+    const storage = this.getStorage()
+
+    // Map legacy keys to consolidated storage properties
+    switch (key) {
+      case LEGACY_STORAGE_KEYS.BOOKMARKS:
+        storage.bookmarks = value as unknown as StoredBookmark[]
+        break
+      case LEGACY_STORAGE_KEYS.COLLECTIONS:
+        storage.collections = value as unknown as StoredCollection[]
+        break
+      case LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS:
+        storage.bookmarkCollections = value as unknown as StoredBookmarkCollection[]
+        break
+      case LEGACY_STORAGE_KEYS.SETTINGS:
+        storage.settings = value as unknown as AppSettings
+        break
+      case LEGACY_STORAGE_KEYS.METADATA:
+        storage.metadata = value as unknown as AppMetadata
+        break
+      default:
+        return false
+    }
+
+    return this.setStorage(storage)
+  }
+
   // Bookmark operations
   async getBookmarks(): Promise<StoredBookmark[]> {
-    const bookmarks = this.safeGet<StoredBookmark[]>(STORAGE_KEYS.BOOKMARKS, [])
+    const bookmarks = this.safeGet<StoredBookmark[]>(LEGACY_STORAGE_KEYS.BOOKMARKS, [])
 
     // Migration: Ensure all bookmarks have collections array and normalize boolean values
     let needsUpdate = false
@@ -138,7 +295,7 @@ class LocalStorageService {
 
     // Save migrated bookmarks if needed
     if (needsUpdate) {
-      this.safeSet(STORAGE_KEYS.BOOKMARKS, migratedBookmarks)
+      this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARKS, migratedBookmarks)
     }
 
     return migratedBookmarks.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
@@ -160,7 +317,7 @@ class LocalStorageService {
 
     const updatedBookmarks = [newBookmark, ...bookmarks]
 
-    if (this.safeSet(STORAGE_KEYS.BOOKMARKS, updatedBookmarks)) {
+    if (this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARKS, updatedBookmarks)) {
       await this.updateMetadata()
       return newBookmark
     }
@@ -185,7 +342,7 @@ class LocalStorageService {
 
     bookmarks[index] = updatedBookmark
 
-    if (this.safeSet(STORAGE_KEYS.BOOKMARKS, bookmarks)) {
+    if (this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARKS, bookmarks)) {
       await this.updateMetadata()
       return updatedBookmark
     }
@@ -201,7 +358,7 @@ class LocalStorageService {
       throw new Error(`Bookmark with id ${id} not found`)
     }
 
-    if (this.safeSet(STORAGE_KEYS.BOOKMARKS, filteredBookmarks)) {
+    if (this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARKS, filteredBookmarks)) {
       await this.updateMetadata()
       return
     }
@@ -284,7 +441,7 @@ class LocalStorageService {
       throw new Error(`Bookmark with id ${id} not found`)
     }
 
-    if (this.safeSet(STORAGE_KEYS.BOOKMARKS, filteredBookmarks)) {
+    if (this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARKS, filteredBookmarks)) {
       await this.updateMetadata()
       return
     }
@@ -296,7 +453,7 @@ class LocalStorageService {
     const bookmarks = await this.getBookmarks()
     const activeBookmarks = bookmarks.filter(b => !b.is_deleted)
 
-    if (this.safeSet(STORAGE_KEYS.BOOKMARKS, activeBookmarks)) {
+    if (this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARKS, activeBookmarks)) {
       await this.updateMetadata()
       return
     }
@@ -323,7 +480,7 @@ class LocalStorageService {
     })
 
     if (deletedCount > 0) {
-      if (this.safeSet(STORAGE_KEYS.BOOKMARKS, filteredBookmarks)) {
+      if (this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARKS, filteredBookmarks)) {
         await this.updateMetadata()
       }
     }
@@ -333,7 +490,7 @@ class LocalStorageService {
 
   // Collection operations
   async getCollections(): Promise<StoredCollection[]> {
-    const collections = this.safeGet<StoredCollection[]>(STORAGE_KEYS.COLLECTIONS, [])
+    const collections = this.safeGet<StoredCollection[]>(LEGACY_STORAGE_KEYS.COLLECTIONS, [])
 
     // Initialize default collections if empty
     if (collections.length === 0) {
@@ -401,7 +558,7 @@ class LocalStorageService {
       }
     ]
 
-    this.safeSet(STORAGE_KEYS.COLLECTIONS, defaultCollections)
+    this.safeSet(LEGACY_STORAGE_KEYS.COLLECTIONS, defaultCollections)
     return defaultCollections
   }
 
@@ -425,7 +582,7 @@ class LocalStorageService {
     const updatedCollections = [newCollection, ...collections]
 
 
-    const saved = this.safeSet(STORAGE_KEYS.COLLECTIONS, updatedCollections)
+    const saved = this.safeSet(LEGACY_STORAGE_KEYS.COLLECTIONS, updatedCollections)
 
 
     if (saved) {
@@ -453,7 +610,7 @@ class LocalStorageService {
 
     collections[collectionIndex] = updatedCollection
 
-    if (this.safeSet(STORAGE_KEYS.COLLECTIONS, collections)) {
+    if (this.safeSet(LEGACY_STORAGE_KEYS.COLLECTIONS, collections)) {
       return updatedCollection
     }
 
@@ -475,7 +632,7 @@ class LocalStorageService {
     const filteredCollections = collections.filter(c => c.id !== id)
 
     // Also remove all bookmark-collection relationships
-    const bookmarkCollections = this.safeGet<StoredBookmarkCollection[]>(STORAGE_KEYS.BOOKMARK_COLLECTIONS, [])
+    const bookmarkCollections = this.safeGet<StoredBookmarkCollection[]>(LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS, [])
     const filteredBookmarkCollections = bookmarkCollections.filter(bc => bc.collectionId !== id)
 
     // Update bookmarks to remove this collection from their collections array
@@ -486,9 +643,9 @@ class LocalStorageService {
       primaryCollection: bookmark.primaryCollection === id ? 'uncategorized' : bookmark.primaryCollection
     }))
 
-    if (this.safeSet(STORAGE_KEYS.COLLECTIONS, filteredCollections) &&
-        this.safeSet(STORAGE_KEYS.BOOKMARK_COLLECTIONS, filteredBookmarkCollections) &&
-        this.safeSet(STORAGE_KEYS.BOOKMARKS, updatedBookmarks)) {
+    if (this.safeSet(LEGACY_STORAGE_KEYS.COLLECTIONS, filteredCollections) &&
+        this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS, filteredBookmarkCollections) &&
+        this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARKS, updatedBookmarks)) {
       return
     }
 
@@ -497,7 +654,7 @@ class LocalStorageService {
 
   // Bookmark-Collection relationship operations
   async getBookmarkCollections(): Promise<StoredBookmarkCollection[]> {
-    return this.safeGet<StoredBookmarkCollection[]>(STORAGE_KEYS.BOOKMARK_COLLECTIONS, [])
+    return this.safeGet<StoredBookmarkCollection[]>(LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS, [])
   }
 
   async addBookmarkToCollection(bookmarkId: number, collectionId: string): Promise<void> {
@@ -532,8 +689,8 @@ class LocalStorageService {
 
       bookmarks[bookmarkIndex] = updatedBookmark
 
-      if (this.safeSet(STORAGE_KEYS.BOOKMARK_COLLECTIONS, updatedRelations) &&
-          this.safeSet(STORAGE_KEYS.BOOKMARKS, bookmarks)) {
+      if (this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS, updatedRelations) &&
+          this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARKS, bookmarks)) {
         return
       }
     }
@@ -563,8 +720,8 @@ class LocalStorageService {
 
       bookmarks[bookmarkIndex] = updatedBookmark
 
-      if (this.safeSet(STORAGE_KEYS.BOOKMARK_COLLECTIONS, filteredRelations) &&
-          this.safeSet(STORAGE_KEYS.BOOKMARKS, bookmarks)) {
+      if (this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS, filteredRelations) &&
+          this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARKS, bookmarks)) {
         return
       }
     }
@@ -613,7 +770,7 @@ class LocalStorageService {
 
   // Settings operations
   async getSettings(): Promise<AppSettings> {
-    return this.safeGet<AppSettings>(STORAGE_KEYS.SETTINGS, {
+    return this.safeGet<AppSettings>(LEGACY_STORAGE_KEYS.SETTINGS, {
       theme: 'dark',
       viewMode: 'grid',
       defaultSort: 'newest',
@@ -630,7 +787,7 @@ class LocalStorageService {
     const currentSettings = await this.getSettings()
     const updatedSettings = { ...currentSettings, ...settings }
 
-    if (this.safeSet(STORAGE_KEYS.SETTINGS, updatedSettings)) {
+    if (this.safeSet(LEGACY_STORAGE_KEYS.SETTINGS, updatedSettings)) {
       return updatedSettings
     }
 
@@ -640,7 +797,7 @@ class LocalStorageService {
   // Metadata operations
   private async updateMetadata(): Promise<void> {
     const bookmarks = await this.getBookmarks()
-    const currentMetadata = this.safeGet<AppMetadata>(STORAGE_KEYS.METADATA, {
+    const currentMetadata = this.safeGet<AppMetadata>(LEGACY_STORAGE_KEYS.METADATA, {
       version: '1.0.0',
       totalBookmarks: 0,
       createdAt: new Date().toISOString(),
@@ -653,11 +810,11 @@ class LocalStorageService {
       lastUpdate: new Date().toISOString()
     }
 
-    this.safeSet(STORAGE_KEYS.METADATA, updatedMetadata)
+    this.safeSet(LEGACY_STORAGE_KEYS.METADATA, updatedMetadata)
   }
 
   async getMetadata(): Promise<AppMetadata> {
-    return this.safeGet<AppMetadata>(STORAGE_KEYS.METADATA, {
+    return this.safeGet<AppMetadata>(LEGACY_STORAGE_KEYS.METADATA, {
       version: '1.0.0',
       totalBookmarks: 0,
       createdAt: new Date().toISOString(),
@@ -711,12 +868,12 @@ class LocalStorageService {
           collections: bookmark.collections || ['uncategorized'],
           primaryCollection: bookmark.primaryCollection || 'uncategorized'
         }))
-        this.safeSet(STORAGE_KEYS.BOOKMARKS, updatedBookmarks)
+        this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARKS, updatedBookmarks)
       }
 
       // Handle collections
       if (data.collections) {
-        this.safeSet(STORAGE_KEYS.COLLECTIONS, data.collections)
+        this.safeSet(LEGACY_STORAGE_KEYS.COLLECTIONS, data.collections)
       } else {
         // If no collections in import, initialize default ones
         await this.initializeDefaultCollections()
@@ -724,15 +881,15 @@ class LocalStorageService {
 
       // Handle bookmark-collection relationships
       if (data.bookmarkCollections) {
-        this.safeSet(STORAGE_KEYS.BOOKMARK_COLLECTIONS, data.bookmarkCollections)
+        this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS, data.bookmarkCollections)
       }
 
       if (data.settings) {
-        this.safeSet(STORAGE_KEYS.SETTINGS, data.settings)
+        this.safeSet(LEGACY_STORAGE_KEYS.SETTINGS, data.settings)
       }
 
       if (data.metadata) {
-        this.safeSet(STORAGE_KEYS.METADATA, data.metadata)
+        this.safeSet(LEGACY_STORAGE_KEYS.METADATA, data.metadata)
       }
 
       await this.updateMetadata()
@@ -747,11 +904,15 @@ class LocalStorageService {
     }
 
     try {
-      localStorage.removeItem(STORAGE_KEYS.BOOKMARKS)
-      localStorage.removeItem(STORAGE_KEYS.COLLECTIONS)
-      localStorage.removeItem(STORAGE_KEYS.BOOKMARK_COLLECTIONS)
-      localStorage.removeItem(STORAGE_KEYS.SETTINGS)
-      localStorage.removeItem(STORAGE_KEYS.METADATA)
+      // Remove consolidated storage
+      localStorage.removeItem(STORAGE_KEY)
+
+      // Also remove legacy keys if they exist
+      localStorage.removeItem(LEGACY_STORAGE_KEYS.BOOKMARKS)
+      localStorage.removeItem(LEGACY_STORAGE_KEYS.COLLECTIONS)
+      localStorage.removeItem(LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS)
+      localStorage.removeItem(LEGACY_STORAGE_KEYS.SETTINGS)
+      localStorage.removeItem(LEGACY_STORAGE_KEYS.METADATA)
     } catch (error) {
       throw new Error(`Failed to clear data: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
@@ -770,13 +931,8 @@ class LocalStorageService {
     if (isAvailable) {
       // Estimate used space (rough calculation)
       try {
-        const allData = {
-          bookmarks: localStorage.getItem(STORAGE_KEYS.BOOKMARKS),
-          settings: localStorage.getItem(STORAGE_KEYS.SETTINGS),
-          metadata: localStorage.getItem(STORAGE_KEYS.METADATA)
-        }
-
-        usedSpace = JSON.stringify(allData).length
+        const consolidatedData = localStorage.getItem(STORAGE_KEY)
+        usedSpace = consolidatedData ? consolidatedData.length : 0
       } catch {
         usedSpace = 0
       }

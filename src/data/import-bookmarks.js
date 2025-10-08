@@ -85,17 +85,33 @@ function importBookmarks() {
   try {
     const bookmarks = parseBookmarks();
 
-    // Store in localStorage
-    localStorage.setItem('x-bookmark-manager-bookmarks', JSON.stringify(bookmarks));
-
-    // Update metadata
-    const metadata = {
-      version: '1.0.0',
-      totalBookmarks: bookmarks.length,
-      createdAt: new Date().toISOString(),
-      lastUpdate: new Date().toISOString()
+    // Create consolidated storage structure
+    const consolidatedData = {
+      bookmarks: bookmarks,
+      collections: [],
+      bookmarkCollections: [],
+      settings: {
+        theme: 'dark',
+        viewMode: 'grid',
+        defaultSort: 'newest',
+        showMetrics: true,
+        compactMode: false,
+        autoBackup: false,
+        exportFormat: 'json',
+        defaultCollection: null,
+        duplicateHandling: 'skip'
+      },
+      metadata: {
+        version: '1.0.0',
+        totalBookmarks: bookmarks.length,
+        createdAt: new Date().toISOString(),
+        lastUpdate: new Date().toISOString()
+      },
+      version: '2.0.0'
     };
-    localStorage.setItem('x-bookmark-manager-metadata', JSON.stringify(metadata));
+
+    // Store in consolidated localStorage
+    localStorage.setItem('x-bookmark-manager-data', JSON.stringify(consolidatedData));
 
     console.log(`✅ Successfully imported ${bookmarks.length} bookmarks into localStorage`);
     console.log('📊 Bookmarks:', bookmarks);

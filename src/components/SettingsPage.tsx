@@ -801,6 +801,24 @@ const SettingsPage = () => {
                   </Text>
                 </VStack>
               </Box>
+
+              {/* Company Info */}
+              <Box p={4} style={{ background: 'var(--color-bg-secondary)' }} borderRadius="8px" border="1px solid var(--color-border)">
+                <VStack alignItems="stretch" gap={2}>
+                  <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
+                    About
+                  </Text>
+                  <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.6">
+                    Made by <strong style={{ color: 'var(--color-text-secondary)' }}>Breathwork Labs</strong>
+                  </Text>
+                  <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.6">
+                    Contact: <a href="mailto:hello@breathworklabs.com" style={{ color: 'var(--color-blue)', textDecoration: 'none' }}>hello@breathworklabs.com</a>
+                  </Text>
+                  <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.6">
+                    Website: <a href="https://breathworklabs.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-blue)', textDecoration: 'none' }}>breathworklabs.com</a>
+                  </Text>
+                </VStack>
+              </Box>
             </VStack>
           </Box>
         </Box>
