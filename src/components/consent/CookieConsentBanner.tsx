@@ -18,7 +18,7 @@ const getStoredConsent = (): ConsentValue | null => {
 }
 
 const CookieConsentBanner = () => {
-  const [consent, setConsent] = useState<ConsentValue | null>(null)
+  const [, setConsent] = useState<ConsentValue | null>(null)
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {

@@ -119,24 +119,30 @@ The filtering system is well-structured with:
 
 ## 🟢 Low Priority / Observations
 
-### 6. **Store Access Patterns**
+### 6. **Store Access Patterns** ✅ **DOCUMENTED**
 
-**Location:** Throughout codebase (49 files)
+**Location:** Throughout codebase (22+ components)
 
 **Pattern Observed:**
-Many components directly access stores:
-```tsx
-const bookmarks = useBookmarkStore(state => state.bookmarks)
-const collections = useCollectionsStore(state => state.collections)
-```
+Mixed usage of patterns:
+- **Selector Hooks:** 4 components (AdvancedFilters, FilterBar, etc.)
+- **Direct Access:** 22+ components (most of codebase)
+- **Custom Optimized:** 1 component (SearchHeader with `useFilterData`)
 
-**Alternative Available:**
-Selector hooks exist:
-- `/src/hooks/selectors/useBookmarkSelectors.ts`
-- `/src/hooks/selectors/useCollectionsSelectors.ts`
+**Resolution:**
+- ✅ Created comprehensive guide: [`/docs/STORE_ACCESS_PATTERNS.md`](docs/STORE_ACCESS_PATTERNS.md)
+- ✅ Documented all 3 valid patterns with decision tree
+- ✅ Provided examples from codebase
+- ✅ Migration guide included
+- ✅ Established guideline: **Selector hooks for new components, current mix acceptable**
 
-**Recommendation:**
-Not critical, but consider enforcing use of selector hooks for consistency. Current mix is acceptable for now.
+**Guideline:**
+All three patterns are valid and serve different purposes:
+1. **Selector Hooks** - Best for new components (consistency)
+2. **Direct Access** - Best for 1-2 values (performance)
+3. **Custom Selectors** - Best for performance-critical components (optimization)
+
+**Recommendation:** ✅ **Complete** - No code changes needed, documentation provides clear guidance
 
 ---
 
@@ -226,9 +232,9 @@ If CSV/HTML export is not needed:
 5. **Composite Hooks:** Good use of composite hooks in `/src/hooks/composite/`
 
 ### ⚠️ Watch Out For
-1. **Settings Migration:** Ensure complete transition from old to new system
-2. **Theme Consistency:** Single source of truth for theme management
-3. **Dead Code Accumulation:** Regular cleanup of deprecated components
+1. ✅ **Settings Migration:** Complete - single source of truth established
+2. ✅ **Theme Consistency:** Complete - single source of truth established
+3. ✅ **Dead Code Accumulation:** Audited - codebase is clean (see [`/docs/DEAD_CODE_AUDIT.md`](docs/DEAD_CODE_AUDIT.md))
 
 ---
 

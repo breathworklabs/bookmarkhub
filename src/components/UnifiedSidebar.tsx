@@ -6,7 +6,7 @@ import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { useModal } from './modals/ModalProvider'
 import CollectionsList from './collections/CollectionsList'
-import { useNavigationStyles, useIconButtonStyles } from '../hooks/useStyles'
+import { useNavigationStyles } from '../hooks/useStyles'
 import { componentStyles } from '../styles/components'
 
 // Optimized selector for bookmark data

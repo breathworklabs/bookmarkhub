@@ -327,7 +327,7 @@ export const getButtonStyle = (variant: 'primary' | 'secondary' | 'ghost' | 'ico
   return componentStyles.button[variant]
 }
 
-export const getCardStyle = (isSelected?: boolean, isDragging?: boolean) => {
+export const getCardStyle = (isSelected?: boolean) => {
   // Return base or selected styles - dragging state is handled separately via opacity prop
   if (isSelected) return componentStyles.card.selected
   return componentStyles.card.base

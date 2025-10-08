@@ -307,7 +307,8 @@ export const useBookmarkStore = create<BookmarkState>()(
 
           if (duplicateResult.isDuplicate) {
             // Handle based on duplicate handling setting (default: skip)
-            const duplicateHandling = 'skip' // TODO: Get from settingsStore if needed
+            // Note: Can be enhanced to read from settingsStore in future if needed
+            const duplicateHandling = 'skip'
             if (duplicateHandling === 'skip') {
               // Skip adding duplicate - show notification
               set({
