@@ -15,6 +15,23 @@ export interface DateRangeFilter {
   customEnd?: Date
 }
 
+export interface SavedFilterPreset {
+  id: string
+  name: string
+  description?: string
+  filters: {
+    selectedTags: string[]
+    searchQuery: string
+    authorFilter: string
+    domainFilter: string
+    contentTypeFilter: string
+    dateRangeFilter: DateRangeFilter
+    quickFilters: string[]
+  }
+  createdAt: string
+  updatedAt: string
+}
+
 export interface PaginationState {
   currentPage: number
   itemsPerPage: number
@@ -74,9 +91,18 @@ interface BookmarkState {
   // Activity tracking
   recentActivity: ActivityLog[]
 
+  // Saved filter presets
+  savedFilterPresets: SavedFilterPreset[]
+
   // Actions
   addActivityLog: (action: string, details?: string) => void
   getRecentActivity: (limit?: number) => ActivityLog[]
+
+  // Saved filter preset actions
+  saveFilterPreset: (name: string, description?: string) => void
+  loadFilterPreset: (presetId: string) => void
+  deleteFilterPreset: (presetId: string) => void
+  updateFilterPreset: (presetId: string, name: string, description?: string) => void
   setBookmarks: (bookmarks: Bookmark[]) => void
   loadBookmarks: () => Promise<void>
   addBookmark: (bookmark: BookmarkInsert) => Promise<void>
@@ -208,9 +234,23 @@ export const useBookmarkStore = create<BookmarkState>()(
       // Activity tracking initial state
       recentActivity: [],
 
+      // Saved filter presets initial state
+      savedFilterPresets: [],
+
       // Initialize store
       initialize: async () => {
         try {
+          // Load saved filter presets from localStorage
+          try {
+            const savedPresets = localStorage.getItem('x-bookmark-filter-presets')
+            if (savedPresets) {
+              const presets: SavedFilterPreset[] = JSON.parse(savedPresets)
+              set({ savedFilterPresets: presets }, false, 'initialize:loadPresets')
+            }
+          } catch (error) {
+            console.warn('Failed to load filter presets:', error)
+          }
+
           // Clean up old trash items (30+ days old)
           try {
             await localStorageService.cleanupOldTrash(30)
@@ -838,6 +878,93 @@ export const useBookmarkStore = create<BookmarkState>()(
       getRecentActivity: (limit = 10) => {
         const state = get()
         return state.recentActivity.slice(0, limit)
+      },
+
+      // Saved filter preset actions
+      saveFilterPreset: (name: string, description?: string) => {
+        const state = get()
+        const newPreset: SavedFilterPreset = {
+          id: `preset-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+          name,
+          description,
+          filters: {
+            selectedTags: [...state.selectedTags],
+            searchQuery: state.searchQuery,
+            authorFilter: state.authorFilter,
+            domainFilter: state.domainFilter,
+            contentTypeFilter: state.contentTypeFilter,
+            dateRangeFilter: { ...state.dateRangeFilter },
+            quickFilters: [...state.quickFilters]
+          },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+
+        const updatedPresets = [...state.savedFilterPresets, newPreset]
+        set({ savedFilterPresets: updatedPresets }, false, 'saveFilterPreset')
+
+        // Persist to localStorage
+        try {
+          localStorage.setItem('x-bookmark-filter-presets', JSON.stringify(updatedPresets))
+        } catch (error) {
+          console.error('Failed to save filter presets to localStorage:', error)
+        }
+      },
+
+      loadFilterPreset: (presetId: string) => {
+        const state = get()
+        const preset = state.savedFilterPresets.find(p => p.id === presetId)
+
+        if (preset) {
+          set({
+            selectedTags: [...preset.filters.selectedTags],
+            searchQuery: preset.filters.searchQuery,
+            authorFilter: preset.filters.authorFilter,
+            domainFilter: preset.filters.domainFilter,
+            contentTypeFilter: preset.filters.contentTypeFilter,
+            dateRangeFilter: { ...preset.filters.dateRangeFilter },
+            quickFilters: [...preset.filters.quickFilters]
+          }, false, 'loadFilterPreset')
+
+          // Reset pagination when filters change
+          get().resetPagination()
+        }
+      },
+
+      deleteFilterPreset: (presetId: string) => {
+        const state = get()
+        const updatedPresets = state.savedFilterPresets.filter(p => p.id !== presetId)
+        set({ savedFilterPresets: updatedPresets }, false, 'deleteFilterPreset')
+
+        // Persist to localStorage
+        try {
+          localStorage.setItem('x-bookmark-filter-presets', JSON.stringify(updatedPresets))
+        } catch (error) {
+          console.error('Failed to save filter presets to localStorage:', error)
+        }
+      },
+
+      updateFilterPreset: (presetId: string, name: string, description?: string) => {
+        const state = get()
+        const updatedPresets = state.savedFilterPresets.map(p => {
+          if (p.id === presetId) {
+            return {
+              ...p,
+              name,
+              description,
+              updatedAt: new Date().toISOString()
+            }
+          }
+          return p
+        })
+        set({ savedFilterPresets: updatedPresets }, false, 'updateFilterPreset')
+
+        // Persist to localStorage
+        try {
+          localStorage.setItem('x-bookmark-filter-presets', JSON.stringify(updatedPresets))
+        } catch (error) {
+          console.error('Failed to save filter presets to localStorage:', error)
+        }
       }
     }),
     {

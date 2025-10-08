@@ -31,6 +31,7 @@ export interface SettingsState {
   extension: ExtensionSettings
   display: DisplaySettings
   privacy: PrivacySettings
+  hasSeenSplash: boolean
 
   // Extension settings actions
   updateExtensionSettings: (settings: Partial<ExtensionSettings>) => void
@@ -51,6 +52,9 @@ export interface SettingsState {
 
   // Privacy settings actions
   updatePrivacySettings: (settings: Partial<PrivacySettings>) => void
+
+  // App state actions
+  setHasSeenSplash: (seen: boolean) => void
 
   // Reset actions
   resetExtensionSettings: () => void
@@ -84,6 +88,7 @@ const defaultPrivacySettings: PrivacySettings = {
 }
 
 // Custom storage that uses consolidated localStorage
+// Zustand v5 uses a different storage API that works with objects directly
 const consolidatedStorage = {
   getItem: (_name: string) => {
     try {
@@ -92,21 +97,30 @@ const consolidatedStorage = {
         const parsed = JSON.parse(data)
         if (parsed.extensionSettings) {
           const settings = parsed.extensionSettings
-          // Merge saved settings with defaults to handle new properties
-          const fullState = {
-            extension: { ...defaultExtensionSettings, ...settings.extension },
-            display: { ...defaultDisplaySettings, ...settings.display },
-            privacy: { ...defaultPrivacySettings, ...settings.privacy },
+          // Ensure settings has the correct structure
+          if (settings && typeof settings === 'object') {
+            // Handle Zustand's persist wrapper format {state, version}
+            const actualSettings = settings.state || settings
+            // Merge saved settings with defaults to handle new properties
+            const fullState = {
+              extension: { ...defaultExtensionSettings, ...(actualSettings.extension || {}) },
+              display: { ...defaultDisplaySettings, ...(actualSettings.display || {}) },
+              privacy: { ...defaultPrivacySettings, ...(actualSettings.privacy || {}) },
+              hasSeenSplash: actualSettings.hasSeenSplash ?? false,
+            }
+            console.log('Loading settings from storage:', fullState)
+            // Return in Zustand v5 persist format
+            return { state: fullState, version: settings.version || 0 }
           }
-          return JSON.stringify(fullState)
         }
       }
     } catch (error) {
       console.error('Failed to get settings from consolidated storage:', error)
     }
+    console.log('No settings found in storage, using defaults')
     return null
   },
-  setItem: (_name: string, value: string) => {
+  setItem: (_name: string, value: any): void => {
     try {
       const data = localStorage.getItem('x-bookmark-manager-data')
       const parsed = data ? JSON.parse(data) : {
@@ -117,13 +131,15 @@ const consolidatedStorage = {
         metadata: {},
         version: '2.0.0'
       }
-      parsed.extensionSettings = JSON.parse(value)
+      // In Zustand v5, value is already an object {state, version}
+      parsed.extensionSettings = value
+      console.log('Saving settings to storage:', value)
       localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
     } catch (error) {
       console.error('Failed to save settings to consolidated storage:', error)
     }
   },
-  removeItem: (_name: string) => {
+  removeItem: (_name: string): void => {
     try {
       const data = localStorage.getItem('x-bookmark-manager-data')
       if (data) {
@@ -135,7 +151,7 @@ const consolidatedStorage = {
       console.error('Failed to remove settings from consolidated storage:', error)
     }
   }
-} as any
+}
 
 export const useSettingsStore = create<SettingsState>()(
   persist(
@@ -143,6 +159,7 @@ export const useSettingsStore = create<SettingsState>()(
       extension: defaultExtensionSettings,
       display: defaultDisplaySettings,
       privacy: defaultPrivacySettings,
+      hasSeenSplash: false,
 
       // Extension settings actions
       updateExtensionSettings: (settings) =>
@@ -217,6 +234,10 @@ export const useSettingsStore = create<SettingsState>()(
           privacy: { ...state.privacy, ...settings },
         })),
 
+      // App state actions
+      setHasSeenSplash: (seen) =>
+        set({ hasSeenSplash: seen }),
+
       // Reset actions
       resetExtensionSettings: () =>
         set({ extension: defaultExtensionSettings }),
@@ -226,11 +247,16 @@ export const useSettingsStore = create<SettingsState>()(
           extension: defaultExtensionSettings,
           display: defaultDisplaySettings,
           privacy: defaultPrivacySettings,
+          hasSeenSplash: false,
         }),
     }),
     {
-      name: 'x-bookmark-settings', // Name is ignored since we use custom storage
-      storage: consolidatedStorage,
+      name: 'x-bookmark-settings',
+      storage: {
+        getItem: (name: string) => consolidatedStorage.getItem(name),
+        setItem: (name: string, value: string) => consolidatedStorage.setItem(name, value),
+        removeItem: (name: string) => consolidatedStorage.removeItem(name),
+      },
     }
   )
 )

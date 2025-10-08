@@ -56,6 +56,16 @@ These repository-specific rules guide the AI assistant and contributors in this 
 - **Icons**: Use `react-icons/lu` (Lucide) where possible.
 - **Images**: Always render images via `components/LazyImage`.
 
+### Modal Structure
+- **Template**: ALL modals MUST follow the exact structure in `src/components/modals/ModalProvider.tsx` (lines 418-494 for delete modal, lines 498-584 for add tag modal)
+- **When creating/editing modals**: Always read ModalProvider.tsx first to copy the exact styling patterns
+- **Key elements**:
+  - Backdrop with blur: `bg="rgba(0, 0, 0, 0.85)" backdropFilter="blur(4px)"`
+  - Content: `borderRadius="16px"`, `boxShadow="0 25px 50px rgba(0, 0, 0, 0.6)"`
+  - Header/Footer: `bg="var(--gradient-modal)"`, `p={6}`, with borders
+  - Buttons: `borderRadius="10px"`, consistent hover/disabled states
+  - Inputs: `borderRadius="12px"`, focus with `boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)'`
+
 ## State Management (Zustand)
 - **Stores**: Keep one responsibility per store (`store/bookmarkStore.ts`, `store/collectionsStore.ts`).
 - **Types**: Export store state/action types from the same file; no `any`.

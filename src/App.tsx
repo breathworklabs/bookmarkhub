@@ -17,6 +17,7 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import * as Sentry from '@sentry/react'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { initGA, trackPageView } from './lib/analytics'
+import { useSettingsStore } from './store/settingsStore'
 // import { AuthDebug } from './components/debug/AuthDebug'
 
 // Component to track page views
@@ -89,14 +90,24 @@ function App() {
 function AppContent() {
   const { isLoading, error, hasExistingBookmarks } = useInitializeApp()
   const navigate = useNavigate()
+  const hasSeenSplash = useSettingsStore((state) => state.hasSeenSplash)
+  const setHasSeenSplash = useSettingsStore((state) => state.setHasSeenSplash)
+
+  // One-time migration: move hasSeenSplash from old localStorage to consolidated storage
+  useEffect(() => {
+    const oldHasSeenSplash = localStorage.getItem('hasSeenSplash')
+    if (oldHasSeenSplash === 'true' && !hasSeenSplash) {
+      setHasSeenSplash(true)
+      localStorage.removeItem('hasSeenSplash')
+    }
+  }, [hasSeenSplash, setHasSeenSplash])
 
   // Check if user has seen splash page on first visit
   useEffect(() => {
-    const hasSeenSplash = localStorage.getItem('hasSeenSplash')
     if (!hasSeenSplash && hasExistingBookmarks !== null && !isLoading) {
       navigate('/welcome')
     }
-  }, [hasExistingBookmarks, isLoading, navigate])
+  }, [hasSeenSplash, hasExistingBookmarks, isLoading, navigate])
 
   // Still checking localStorage - show minimal loading
   if (hasExistingBookmarks === null) {

@@ -1,4 +1,4 @@
-import { Box, VStack, HStack, Text, Button, Input, For, IconButton } from '@chakra-ui/react'
+import { Box, VStack, HStack, Text, Button, Input, For, IconButton, Separator } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LuTag, LuX } from 'react-icons/lu'
 import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
@@ -6,6 +6,8 @@ import { useFilterReset } from '../utils/filterUtils'
 import DateRangeFilter from './DateRangeFilter'
 import AuthorFilter from './AuthorFilter'
 import DomainFilter from './DomainFilter'
+import SavedFilterPresets from './filters/SavedFilterPresets'
+import SaveFilterPresetButton from './filters/SaveFilterPresetButton'
 
 const MotionBox = motion.create(Box)
 
@@ -190,14 +192,16 @@ const AdvancedFilters = () => {
             </VStack>
 
             {/* Actions */}
-            <HStack justify="center" pt={1}>
+            <HStack justify="center" pt={1} gap={2}>
+              <SaveFilterPresetButton />
+              <SavedFilterPresets />
               <Button
                 size="sm"
                 variant="outline"
                 style={{borderColor: 'var(--color-border)', color: 'var(--color-text-tertiary)', background: 'transparent' }}
                 fontSize="12px"
                 h="32px"
-                px={4}
+                px={3}
                 _hover={{ borderColor: 'var(--color-border-hover)', color: 'var(--color-text-primary)', bg: 'var(--color-bg-tertiary)' }}
                 onClick={() => {
                   clearAdvancedFilters()

@@ -3,6 +3,7 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { LuCheck } from 'react-icons/lu'
 import splashContent from '../data/splash-content.json'
+import { useSettingsStore } from '../store/settingsStore'
 
 interface FeatureShowcaseProps {
   badge: string
@@ -130,9 +131,10 @@ const FeatureShowcase = ({ badge, title, description, highlights, index }: Featu
 
 const SplashPage = () => {
   const navigate = useNavigate()
+  const setHasSeenSplash = useSettingsStore((state) => state.setHasSeenSplash)
 
   const handleGetStarted = () => {
-    localStorage.setItem('hasSeenSplash', 'true')
+    setHasSeenSplash(true)
     navigate('/')
   }
 

@@ -47,6 +47,8 @@ const UnifiedSidebar = memo(() => {
     setActiveSidebarItem(label)
     // Clear active collection when clicking sidebar navigation items
     setActiveCollection(null)
+    // Clear selected bookmarks when switching categories
+    useBookmarkStore.getState().clearBookmarkSelection()
 
     if (label === 'AI Insights') {
       toggleAIPanel()
@@ -216,6 +218,7 @@ const UnifiedSidebar = memo(() => {
             transition="all 0.2s"
             onClick={() => {
               setActiveCollection(null)
+              useBookmarkStore.getState().clearBookmarkSelection()
               navigate('/shared')
             }}
           >
@@ -252,6 +255,7 @@ const UnifiedSidebar = memo(() => {
             transition="all 0.2s"
             onClick={() => {
               setActiveCollection(null)
+              useBookmarkStore.getState().clearBookmarkSelection()
               navigate('/trash')
             }}
           >
@@ -290,6 +294,7 @@ const UnifiedSidebar = memo(() => {
               transition="all 0.2s"
               onClick={() => {
                 setActiveCollection(null)
+                useBookmarkStore.getState().clearBookmarkSelection()
                 navigate('/settings')
               }}
             >

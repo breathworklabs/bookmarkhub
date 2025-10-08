@@ -128,7 +128,7 @@
   - [x] Fix stale data issues (refresh bookmark state after collection changes)
   - [x] Implement proper move logic (remove from previous collection, add to new)
   - [ ] Implement accessibility features (keyboard navigation, screen reader support)
-  - [ ] Test drag & drop functionality end-to-end
+  - [x] Test drag & drop functionality end-to-end
 - [x] Collection management (rename, delete, share) ✅ UI implemented with collections actions panel
 - [ ] Nested collections/sub-folders
 - [x] Smart collections (auto-categorization)
@@ -144,9 +144,16 @@
   - [x] Clear all filters functionality
   - [x] Store filter state in Zustand
   - [x] Persist applied filters across sessions
-  - [ ] Save custom filter combinations
+  - [x] **Save custom filter combinations** ✅ COMPLETED
+    - [x] SavedFilterPreset data model with comprehensive filter state
+    - [x] Save/load/delete/update filter preset actions in bookmarkStore
+    - [x] SavedFilterPresets component for viewing and managing presets
+    - [x] SaveFilterPresetButton component with dialog for creating presets
+    - [x] Integration with AdvancedFilters panel
+    - [x] LocalStorage persistence for filter presets
+    - [x] Inline editing of preset names and descriptions
+    - [x] Visual feedback with bookmark icons and filter summaries
 - [x] Full-text search across bookmark content
-- [ ] Search history and saved searches
 - [ ] Search suggestions and autocomplete
 
 ### 5. **Tag System Enhancement**
@@ -399,7 +406,7 @@
 - [ ] E2E tests with Playwright/Cypress
 - [ ] Performance testing
 - [ ] Accessibility testing and improvements
-- [ ] Code coverage reporting
+- [x] Code coverage reporting
 
 ### 18. **Developer Experience**
 - [ ] Storybook for component documentation

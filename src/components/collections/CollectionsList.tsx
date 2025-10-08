@@ -244,6 +244,9 @@ const CollectionsList = memo(() => {
     const newActiveId = isActive(collectionId) ? null : collectionId
     setActiveCollection(newActiveId)
 
+    // Clear selected bookmarks when switching collections
+    useBookmarkStore.getState().clearBookmarkSelection()
+
     // Navigate to home page when clicking collections
     navigate('/')
 

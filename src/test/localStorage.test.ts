@@ -500,7 +500,7 @@ describe('LocalStorageService', () => {
         ...importData.bookmarks[0],
         primaryCollection: 'uncategorized'
       })
-      expect(savedData.settings).toMatchObject(importData.settings)
+      // Settings are now managed by settingsStore, not in consolidated storage
     })
   })
 
