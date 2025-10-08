@@ -1,7 +1,6 @@
 import { Box, HStack, Input, Button, Spacer, Badge } from '@chakra-ui/react'
 import { LuMenu, LuLayoutGrid, LuLayoutList } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
-import { theme } from '../styles/theme'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'
 import { sanitizeBookmark } from '../lib/dataValidation'
@@ -116,7 +115,7 @@ const SearchHeader = memo(() => {
       <HStack gap={6} alignItems="center">
         {/* Search Area */}
         <Box position="relative" maxW="400px" flex={1}>
-          <HStack {...theme.styles.searchContainer} gap={2}>
+          <HStack {...componentStyles.input.search} gap={2}>
             <Box w="16px" h="16px" style={{ color: 'var(--color-text-tertiary)' }}>
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>

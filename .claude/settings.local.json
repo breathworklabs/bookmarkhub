@@ -37,7 +37,8 @@
       "Bash(xargs ls:*)",
       "Bash(for file in src/test/archived-count-logic.test.ts src/test/bookmarkStore-actions.test.ts src/test/collections-sidebar-archived-count.test.tsx src/test/filters.test.ts)",
       "Bash(for file in src/test/collections-sidebar-archived-count.test.tsx src/test/test-utils.ts)",
-      "Bash(npx playwright:*)"
+      "Bash(npx playwright:*)",
+      "Bash(awk:*)"
     ],
     "deny": [],
     "ask": []

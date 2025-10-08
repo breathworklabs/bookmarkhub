@@ -34,9 +34,6 @@ export const useBookmarkSelectors = () => {
     // Pagination
     pagination: useBookmarkStore(state => state.pagination),
 
-    // Settings
-    settings: useBookmarkStore(state => state.settings),
-
     // Actions - Filter
     setActiveTab: useBookmarkStore(state => state.setActiveTab),
     setAuthorFilter: useBookmarkStore(state => state.setAuthorFilter),
@@ -71,10 +68,6 @@ export const useBookmarkSelectors = () => {
     updateBookmark: useBookmarkStore(state => state.updateBookmark),
     toggleStarBookmark: useBookmarkStore(state => state.toggleStarBookmark),
     searchBookmarks: useBookmarkStore(state => state.searchBookmarks),
-
-    // Actions - Settings
-    loadSettings: useBookmarkStore(state => state.loadSettings),
-    updateSettings: useBookmarkStore(state => state.updateSettings),
 
     // Actions - Data Management
     exportBookmarks: useBookmarkStore(state => state.exportBookmarks),

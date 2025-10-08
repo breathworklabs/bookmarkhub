@@ -70,21 +70,6 @@ export interface SearchOptions {
   offset?: number
 }
 
-// Application settings
-export interface AppSettings {
-  theme: 'dark' | 'light'
-  viewMode: 'grid' | 'list'
-  defaultSort: 'newest' | 'oldest' | 'title' | 'author' | 'domain'
-  showMetrics: boolean
-  compactMode: boolean
-  autoBackup: boolean
-  exportFormat: 'json' | 'csv' | 'html'
-  maxBookmarks?: number
-  autoTagging?: boolean
-  defaultCollection?: string | null  // Default collection ID for new bookmarks
-  duplicateHandling: 'skip' | 'replace' | 'keepBoth'  // How to handle duplicate URLs
-}
-
 // Application metadata
 export interface AppMetadata {
   version: string
@@ -100,7 +85,6 @@ export interface AppMetadata {
 export interface ExportData {
   bookmarks: Bookmark[]
   collections?: any[]  // Will be properly typed when collections are implemented
-  settings: AppSettings
   metadata: AppMetadata
   exportedAt: string
   version: string
@@ -119,10 +103,6 @@ export interface StorageService {
   searchBookmarks(query: string): Promise<Bookmark[]>
   getBookmarksByTag(tag: string): Promise<Bookmark[]>
   getStarredBookmarks(): Promise<Bookmark[]>
-
-  // Settings operations
-  getSettings(): Promise<AppSettings>
-  updateSettings(settings: Partial<AppSettings>): Promise<AppSettings>
 
   // Metadata operations
   getMetadata(): Promise<AppMetadata>
@@ -174,8 +154,7 @@ export interface BookmarkState {
   activeSidebarItem: string
   error: string | null
 
-  // Settings
-  settings: AppSettings
+  // Metadata
   metadata: AppMetadata
 }
 
@@ -204,10 +183,6 @@ export interface BookmarkActions {
   toggleFiltersPanel: () => void
   setActiveSidebarItem: (item: string) => void
   setError: (error: string | null) => void
-
-  // Settings actions
-  loadSettings: () => Promise<void>
-  updateSettings: (settings: Partial<AppSettings>) => Promise<void>
 
   // Data management actions
   exportBookmarks: () => Promise<ExportData>

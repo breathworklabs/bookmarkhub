@@ -2,7 +2,7 @@ import { Box, Flex, VStack, Text, Button, HStack } from '@chakra-ui/react';
 import { LuImport, LuBookmarkPlus, LuFolderOpen } from 'react-icons/lu';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { theme } from '../styles/theme';
+import { componentStyles } from '../styles/components';
 import { useBookmarkStore } from '../store/bookmarkStore';
 import { ErrorBoundary } from './ErrorBoundary';
 import { DragPreview } from './DragPreview';
@@ -44,7 +44,7 @@ const XBookmarkManager = () => {
   }
 
   return (
-    <Box {...theme.styles.container.background} data-testid="x-bookmark-manager">
+    <Box {...componentStyles.container.background} data-testid="x-bookmark-manager">
       {bookmarks.length === 0 ? (
         // Empty state - full window
         <Flex

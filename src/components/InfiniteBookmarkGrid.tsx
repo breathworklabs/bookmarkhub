@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect } from 'react'
 import { usePaginatedBookmarksOptimized } from '../hooks/composite/usePaginatedBookmarksOptimized'
 import { useInfiniteScrollObserver } from '../hooks/useIntersectionObserver'
 import { useBookmarkStore } from '../store/bookmarkStore'
-import BookmarkCard from './BookmarkCard'
+import BookmarkCard from './BookmarkCard/BookmarkCard'
 import BookmarkList from './BookmarkList'
 
 const InfiniteBookmarkGrid = memo(() => {

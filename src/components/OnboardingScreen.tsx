@@ -1,6 +1,6 @@
 import { Box, Flex, VStack, Text, Button, HStack } from '@chakra-ui/react';
 import { LuImport, LuBookmarkPlus, LuFolderOpen } from 'react-icons/lu';
-import { theme } from '../styles/theme';
+import { componentStyles } from '../styles/components';
 import { useBookmarkStore } from '../store/bookmarkStore';
 
 const OnboardingScreen = () => {
@@ -21,7 +21,7 @@ const OnboardingScreen = () => {
   }
 
   return (
-    <Box {...theme.styles.container.background} w="100vw" data-testid="onboarding-screen">
+    <Box {...componentStyles.container.background} w="100vw" data-testid="onboarding-screen">
       {/* hidden file input for E2E */}
       <input
         type="file"

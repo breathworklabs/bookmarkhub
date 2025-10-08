@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import BookmarkCard from '../components/BookmarkCard'
+import BookmarkCard from '../components/BookmarkCard/BookmarkCard'
 import { ModalProvider } from '../components/modals/ModalProvider'
 
 // Mock the bookmark store

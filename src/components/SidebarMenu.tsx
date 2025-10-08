@@ -1,7 +1,7 @@
 import { Box, VStack, HStack, Text, Badge, For } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuExternalLink, LuSettings } from 'react-icons/lu'
 import { useNavigate } from 'react-router-dom'
-import { theme } from '../styles/theme'
+import { componentStyles } from '../styles/components'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'
 import { useCollectionsStore } from '../store/collectionsStore'
@@ -54,7 +54,7 @@ const SidebarMenu = () => {
   }
 
   return (
-    <Box {...theme.styles.container.sidebar}>
+    <Box {...componentStyles.container.sidebar}>
       <VStack alignItems="stretch" gap={6} h="full">
         {/* Logo */}
         <HStack gap={3} pb={4} borderBottomWidth="1px" style={{ borderColor: 'var(--color-border)' }}>

@@ -429,45 +429,8 @@ describe('LocalStorageService', () => {
     })
   })
 
-  describe('Settings Operations', () => {
-    it('should return default settings when none exist', async () => {
-      localStorageMock.getItem.mockReturnValue(null)
-
-      const result = await service.getSettings()
-
-      expect(result).toMatchObject({
-        theme: 'dark',
-        viewMode: 'grid',
-        defaultSort: 'newest',
-        showMetrics: true,
-        compactMode: false,
-        autoBackup: true,
-        exportFormat: 'json'
-      })
-    })
-
-    it('should update settings', async () => {
-      const existingSettings = {
-        theme: 'dark',
-        viewMode: 'grid',
-        defaultSort: 'newest',
-        showMetrics: true,
-        compactMode: false,
-        autoBackup: true,
-        exportFormat: 'json'
-      }
-
-      localStorageMock.getItem.mockReturnValue(JSON.stringify(existingSettings))
-      localStorageMock.setItem.mockReturnValue(undefined)
-
-      const updates = { theme: 'light' as const, viewMode: 'list' as const }
-      const result = await service.updateSettings(updates)
-
-      expect(result.theme).toBe('light')
-      expect(result.viewMode).toBe('list')
-      expect(result.showMetrics).toBe(true) // Should preserve existing values
-    })
-  })
+  // Settings operations removed - now managed by settingsStore
+  // describe('Settings Operations', () => { ... })
 
   describe('Export/Import Operations', () => {
     it('should export all data', async () => {

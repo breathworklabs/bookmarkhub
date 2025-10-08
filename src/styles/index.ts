@@ -43,16 +43,5 @@ export {
   themes
 } from './themes'
 
-// Legacy theme (deprecated - use new style system)
-export { theme, getFilterTabStyle, getIconButtonStyle } from './theme'
-
 // Re-export all style hooks
 export * from '../hooks/useStyles'
-export {
-  useTheme,
-  useThemeColors,
-  useThemeTokens,
-  useIsDarkTheme,
-  useThemeColor,
-  useThemeStyles
-} from '../hooks/useTheme'

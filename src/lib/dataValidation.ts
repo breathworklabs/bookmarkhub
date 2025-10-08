@@ -3,7 +3,7 @@
  */
 
 import { z } from 'zod'
-import type { Bookmark, BookmarkInsert, ExportData, AppSettings, AppMetadata } from '../types/bookmark'
+import type { Bookmark, BookmarkInsert, ExportData, AppMetadata } from '../types/bookmark'
 import { DataProcessingService } from '../services/dataProcessingService'
 
 // Zod schemas
@@ -86,10 +86,6 @@ export const isValidBookmarkInsert = (bookmark: any): bookmark is BookmarkInsert
   return bookmarkInsertSchema.safeParse(bookmark).success
 }
 
-export const isValidSettings = (settings: any): settings is AppSettings => {
-  return appSettingsSchema.safeParse(settings).success
-}
-
 export const isValidMetadata = (metadata: any): metadata is AppMetadata => {
   return appMetadataSchema.safeParse(metadata).success
 }
@@ -155,12 +151,10 @@ export const migrateBookmarkData = (data: any[]): Bookmark[] => {
 // Data export utilities
 export const createBackupData = (
   bookmarks: Bookmark[],
-  settings: AppSettings,
   metadata: AppMetadata
 ): ExportData => {
   return {
     bookmarks,
-    settings,
     metadata,
     exportedAt: new Date().toISOString(),
     version: '1.0.0'
@@ -194,9 +188,7 @@ export const validateImportData = (data: any): { valid: boolean; errors: string[
     }
   }
 
-  if (data.settings && !isValidSettings(data.settings)) {
-    errors.push('Invalid settings format')
-  }
+  // Settings validation removed - managed by settingsStore
 
   if (data.metadata && !isValidMetadata(data.metadata)) {
     errors.push('Invalid metadata format')

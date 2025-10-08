@@ -6,7 +6,6 @@
 import type {
   Bookmark,
   BookmarkInsert as BookmarkInsertType,
-  AppSettings,
   AppMetadata
 } from '../types/bookmark'
 
@@ -33,7 +32,6 @@ interface ConsolidatedStorage {
   bookmarks: StoredBookmark[]
   collections: StoredCollection[]
   bookmarkCollections: StoredBookmarkCollection[]
-  settings: AppSettings
   metadata: AppMetadata
   uiPreferences?: {
     columnWidths?: {
@@ -46,6 +44,7 @@ interface ConsolidatedStorage {
   consent?: 'accepted' | 'rejected' | null
   extensionSettings?: any // Extension/display/privacy settings from settingsStore
   version: string
+  // settings is deprecated - migrated to extensionSettings
 }
 
 // Types for localStorage data
@@ -123,17 +122,6 @@ class LocalStorageService {
       bookmarks: [],
       collections: [],
       bookmarkCollections: [],
-      settings: {
-        theme: 'dark',
-        viewMode: 'grid',
-        defaultSort: 'newest',
-        showMetrics: true,
-        compactMode: false,
-        autoBackup: true,
-        exportFormat: 'json',
-        defaultCollection: null,
-        duplicateHandling: 'skip'
-      },
       metadata: {
         version: '1.0.0',
         totalBookmarks: 0,
@@ -141,6 +129,7 @@ class LocalStorageService {
         lastUpdate: new Date().toISOString()
       },
       version: '2.0.0'
+      // extensionSettings will be managed by settingsStore
     }
   }
 
@@ -168,16 +157,16 @@ class LocalStorageService {
       const bookmarksStr = localStorage.getItem(LEGACY_STORAGE_KEYS.BOOKMARKS)
       const collectionsStr = localStorage.getItem(LEGACY_STORAGE_KEYS.COLLECTIONS)
       const bookmarkCollectionsStr = localStorage.getItem(LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS)
-      const settingsStr = localStorage.getItem(LEGACY_STORAGE_KEYS.SETTINGS)
       const metadataStr = localStorage.getItem(LEGACY_STORAGE_KEYS.METADATA)
+      // settingsStr is no longer used - settings are managed by settingsStore
 
       const consolidatedData: ConsolidatedStorage = {
         bookmarks: bookmarksStr ? JSON.parse(bookmarksStr) : defaultStorage.bookmarks,
         collections: collectionsStr ? JSON.parse(collectionsStr) : defaultStorage.collections,
         bookmarkCollections: bookmarkCollectionsStr ? JSON.parse(bookmarkCollectionsStr) : defaultStorage.bookmarkCollections,
-        settings: settingsStr ? JSON.parse(settingsStr) : defaultStorage.settings,
         metadata: metadataStr ? JSON.parse(metadataStr) : defaultStorage.metadata,
         version: '2.0.0'
+        // Old settings are ignored - settingsStore manages extensionSettings now
       }
 
       // Save to new consolidated format
@@ -208,8 +197,6 @@ class LocalStorageService {
         return (storage.collections || []) as unknown as T
       case LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS:
         return (storage.bookmarkCollections || []) as unknown as T
-      case LEGACY_STORAGE_KEYS.SETTINGS:
-        return (storage.settings || defaultValue) as unknown as T
       case LEGACY_STORAGE_KEYS.METADATA:
         return (storage.metadata || defaultValue) as unknown as T
       default:
@@ -230,9 +217,6 @@ class LocalStorageService {
         break
       case LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS:
         storage.bookmarkCollections = value as unknown as StoredBookmarkCollection[]
-        break
-      case LEGACY_STORAGE_KEYS.SETTINGS:
-        storage.settings = value as unknown as AppSettings
         break
       case LEGACY_STORAGE_KEYS.METADATA:
         storage.metadata = value as unknown as AppMetadata
@@ -768,31 +752,6 @@ class LocalStorageService {
     return bookmarks.filter(bookmark => bookmark.collections.includes(collectionId))
   }
 
-  // Settings operations
-  async getSettings(): Promise<AppSettings> {
-    return this.safeGet<AppSettings>(LEGACY_STORAGE_KEYS.SETTINGS, {
-      theme: 'dark',
-      viewMode: 'grid',
-      defaultSort: 'newest',
-      showMetrics: true,
-      compactMode: false,
-      autoBackup: true,
-      exportFormat: 'json',
-      defaultCollection: null,
-      duplicateHandling: 'skip'
-    })
-  }
-
-  async updateSettings(settings: Partial<AppSettings>): Promise<AppSettings> {
-    const currentSettings = await this.getSettings()
-    const updatedSettings = { ...currentSettings, ...settings }
-
-    if (this.safeSet(LEGACY_STORAGE_KEYS.SETTINGS, updatedSettings)) {
-      return updatedSettings
-    }
-
-    throw new Error('Failed to update settings in localStorage')
-  }
 
   // Metadata operations
   private async updateMetadata(): Promise<void> {
@@ -827,16 +786,14 @@ class LocalStorageService {
     bookmarks: StoredBookmark[]
     collections: StoredCollection[]
     bookmarkCollections: StoredBookmarkCollection[]
-    settings: AppSettings
     metadata: AppMetadata
     exportedAt: string
     version: string
   }> {
-    const [bookmarks, collections, bookmarkCollections, settings, metadata] = await Promise.all([
+    const [bookmarks, collections, bookmarkCollections, metadata] = await Promise.all([
       this.getBookmarks(),
       this.getCollections(),
       this.getBookmarkCollections(),
-      this.getSettings(),
       this.getMetadata()
     ])
 
@@ -844,10 +801,9 @@ class LocalStorageService {
       bookmarks,
       collections,
       bookmarkCollections,
-      settings,
       metadata,
       exportedAt: new Date().toISOString(),
-      version: '2.0.0' // Updated version to include collections
+      version: '2.0.0' // Settings are managed by settingsStore now
     }
   }
 
@@ -855,7 +811,6 @@ class LocalStorageService {
     bookmarks?: StoredBookmark[]
     collections?: StoredCollection[]
     bookmarkCollections?: StoredBookmarkCollection[]
-    settings?: AppSettings
     metadata?: AppMetadata
     version?: string
   }): Promise<void> {
@@ -884,9 +839,7 @@ class LocalStorageService {
         this.safeSet(LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS, data.bookmarkCollections)
       }
 
-      if (data.settings) {
-        this.safeSet(LEGACY_STORAGE_KEYS.SETTINGS, data.settings)
-      }
+      // Settings are ignored - managed by settingsStore now
 
       if (data.metadata) {
         this.safeSet(LEGACY_STORAGE_KEYS.METADATA, data.metadata)

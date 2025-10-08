@@ -670,10 +670,10 @@ const SettingsPage = () => {
 
                       <SelectRoot
                         collection={exportFormatOptions}
-                        value={[useBookmarkStore.getState().settings.exportFormat]}
+                        value={['json']}
                         onValueChange={(e: any) => {
-                          const format = e.value[0] as 'json' | 'csv' | 'html'
-                          useBookmarkStore.getState().updateSettings({ exportFormat: format })
+                          // Export format preference removed - defaults to JSON
+                          console.log('Export format:', e.value[0])
                         }}
                         size="sm"
                       >

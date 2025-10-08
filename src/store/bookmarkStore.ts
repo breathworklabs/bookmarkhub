@@ -6,8 +6,8 @@ import { transformXBookmarks, validateXBookmarkData } from '../lib/xBookmarkTran
 import { mockBookmarks } from '../data/mockBookmarks'
 import { createErrorHandler } from '../utils/errorHandling'
 import { detectDuplicate, type DuplicateMatch } from '../lib/duplicateDetection'
-import { exportAsCSV, exportAsHTML, downloadFile } from '../lib/exportFormats'
-import type { Bookmark, BookmarkInsert, AppSettings } from '../types/bookmark'
+import { downloadFile } from '../lib/exportFormats'
+import type { Bookmark, BookmarkInsert } from '../types/bookmark'
 
 export interface DateRangeFilter {
   type: 'all' | 'today' | 'week' | 'month' | 'custom'
@@ -44,7 +44,6 @@ interface BookmarkState {
   isFiltersPanelOpen: boolean
   activeSidebarItem: string
   error: string | null
-  settings: AppSettings
 
   // Duplicate detection state
   duplicateMatches: DuplicateMatch[]
@@ -107,10 +106,6 @@ interface BookmarkState {
   toggleFiltersPanel: () => void
   setActiveSidebarItem: (item: string) => void
   setError: (error: string | null) => void
-
-  // Settings actions
-  loadSettings: () => Promise<void>
-  updateSettings: (settings: Partial<AppSettings>) => Promise<void>
 
   // Duplicate detection actions
   setDuplicateMatches: (matches: DuplicateMatch[]) => void
@@ -177,17 +172,6 @@ export const useBookmarkStore = create<BookmarkState>()(
       isFiltersPanelOpen: false,
       activeSidebarItem: 'All Bookmarks',
       error: null,
-      settings: {
-        theme: 'dark',
-        viewMode: 'grid',
-        defaultSort: 'newest',
-        showMetrics: true,
-        compactMode: false,
-        autoBackup: true,
-        exportFormat: 'json',
-        defaultCollection: null,
-        duplicateHandling: 'skip'
-      },
 
       // Duplicate detection initial state
       duplicateMatches: [],
@@ -249,16 +233,12 @@ export const useBookmarkStore = create<BookmarkState>()(
               isLoading: false // No loading state if we have data
             }, false, 'initialize:immediateLoad')
 
-            // Load settings and calculate filter options in background
-            Promise.all([
-              get().loadSettings(),
-              Promise.resolve(get().calculateFilterOptions())
-            ]).catch(error => {
+            // Calculate filter options in background
+            Promise.resolve(get().calculateFilterOptions()).catch(error => {
               console.error('Background initialization failed:', error)
             })
           } else {
             // No bookmarks in localStorage - load mock bookmarks for demo
-            await get().loadSettings()
 
             set({
               bookmarks: mockBookmarks,
@@ -322,19 +302,20 @@ export const useBookmarkStore = create<BookmarkState>()(
           }
 
           // Check for duplicates
-          const { settings, bookmarks } = get()
+          const { bookmarks } = get()
           const duplicateResult = detectDuplicate(sanitizedBookmark, bookmarks)
 
           if (duplicateResult.isDuplicate) {
-            // Handle based on user settings
-            if (settings.duplicateHandling === 'skip') {
+            // Handle based on duplicate handling setting (default: skip)
+            const duplicateHandling = 'skip' // TODO: Get from settingsStore if needed
+            if (duplicateHandling === 'skip') {
               // Skip adding duplicate - show notification
               set({
                 error: 'This bookmark already exists',
                 isLoading: false
               }, false, 'addBookmark:duplicate-skipped')
               return
-            } else if (settings.duplicateHandling === 'replace') {
+            } else if (duplicateHandling === 'replace') {
               // Replace existing bookmark
               const existingBookmark = duplicateResult.matches[0].bookmark
               await get().updateBookmark(existingBookmark.id, sanitizedBookmark)
@@ -494,31 +475,9 @@ export const useBookmarkStore = create<BookmarkState>()(
         }
       },
 
-      // Settings management
-      loadSettings: async () => {
-        try {
-          const settings = await localStorageService.getSettings()
-          set({ settings }, false, 'loadSettings:success')
-        } catch (error) {
-          console.error('Error loading settings:', error)
-          // Keep default settings on error
-        }
-      },
-
-      updateSettings: async (newSettings) => {
-        try {
-          const updatedSettings = await localStorageService.updateSettings(newSettings)
-          set({ settings: updatedSettings }, false, 'updateSettings:success')
-
-          // Update view mode if it changed
-          if (newSettings.viewMode) {
-            set({ viewMode: newSettings.viewMode }, false, 'updateSettings:viewMode')
-          }
-        } catch (error) {
-          console.error('Error updating settings:', error)
-          set({ error: error instanceof Error ? error.message : 'Failed to update settings' }, false, 'updateSettings:error')
-        }
-      },
+      // Settings management - REMOVED
+      // Settings are now managed by settingsStore (extensionSettings)
+      // Use useSettingsStore() hook instead
 
       // Duplicate detection actions
       setDuplicateMatches: (matches) => {
@@ -570,31 +529,13 @@ export const useBookmarkStore = create<BookmarkState>()(
       // Data management
       exportBookmarks: async () => {
         try {
-          const { settings, bookmarks } = get()
-          const format = settings.exportFormat || 'json'
+          // Always export as JSON (CSV/HTML export removed for simplicity)
           const date = new Date().toISOString().split('T')[0]
 
-          switch (format) {
-            case 'csv': {
-              const csvContent = exportAsCSV(bookmarks)
-              downloadFile(csvContent, `x-bookmarks-${date}.csv`, 'text/csv;charset=utf-8;')
-              break
-            }
-
-            case 'html': {
-              const htmlContent = exportAsHTML(bookmarks)
-              downloadFile(htmlContent, `x-bookmarks-${date}.html`, 'text/html;charset=utf-8;')
-              break
-            }
-
-            case 'json':
-            default: {
-              const data = await localStorageService.exportData()
-              const jsonContent = JSON.stringify(data, null, 2)
-              downloadFile(jsonContent, `x-bookmarks-${date}.json`, 'application/json')
-              break
-            }
-          }
+          // Export as JSON
+          const data = await localStorageService.exportData()
+          const jsonContent = JSON.stringify(data, null, 2)
+          downloadFile(jsonContent, `x-bookmarks-${date}.json`, 'application/json')
 
         } catch (error) {
           console.error('Error exporting bookmarks:', error)
@@ -617,7 +558,7 @@ export const useBookmarkStore = create<BookmarkState>()(
 
           await localStorageService.importData(data)
           await get().loadBookmarks()
-          await get().loadSettings()
+          // Settings are managed by settingsStore now
 
         } catch (error) {
           console.error('Error importing bookmarks:', error)
@@ -681,18 +622,7 @@ export const useBookmarkStore = create<BookmarkState>()(
             activeTab: 0,
             viewMode: 'grid',
             selectedBookmarks: [],
-            activeSidebarItem: 'All Bookmarks',
-            settings: {
-              theme: 'dark',
-              viewMode: 'grid',
-              defaultSort: 'newest',
-              showMetrics: true,
-              compactMode: false,
-              autoBackup: true,
-              exportFormat: 'json',
-              defaultCollection: null,
-              duplicateHandling: 'skip'
-            }
+            activeSidebarItem: 'All Bookmarks'
           }, false, 'clearAllData:success')
 
         } catch (error) {
@@ -721,17 +651,8 @@ export const useBookmarkStore = create<BookmarkState>()(
       setActiveTab: (tab) => set({ activeTab: tab }, false, 'setActiveTab'),
       setViewMode: (mode) => {
         set({ viewMode: mode }, false, 'setViewMode')
-        // Persist view mode to consolidated localStorage
-        try {
-          const data = localStorage.getItem('x-bookmark-manager-data')
-          if (data) {
-            const parsed = JSON.parse(data)
-            parsed.settings.viewMode = mode
-            localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
-          }
-        } catch (error) {
-          console.error('Failed to save view mode:', error)
-        }
+        // Note: viewMode is now managed by settingsStore.display.viewMode
+        // This local state is kept for immediate UI updates
       },
       setSelectedBookmarks: (bookmarks) => set({ selectedBookmarks: bookmarks }, false, 'setSelectedBookmarks'),
       selectBookmark: (id) => set(
