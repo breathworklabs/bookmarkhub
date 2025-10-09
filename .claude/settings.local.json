@@ -40,7 +40,10 @@
       "Bash(npx playwright:*)",
       "Bash(awk:*)",
       "Bash(cut:*)",
-      "Bash(/tmp/fix_test_bookmarks.sh:*)"
+      "Bash(/tmp/fix_test_bookmarks.sh:*)",
+      "Bash(npx storybook:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []
