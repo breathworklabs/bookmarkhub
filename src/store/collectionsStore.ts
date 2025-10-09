@@ -15,16 +15,22 @@ interface CollectionsActions {
   loadCollections: () => Promise<void>
   createCollection: (collection: CollectionInsert) => Promise<void>
   updateCollection: (id: string, updates: Partial<StoredCollection>) => Promise<void>
-  deleteCollection: (id: string) => Promise<void>
+  deleteCollection: (id: string, deleteMode?: 'flatten' | 'cascade') => Promise<void>
 
   // Bookmark-Collection relationship management
   addBookmarkToCollection: (bookmarkId: number, collectionId: string) => Promise<void>
   removeBookmarkFromCollection: (bookmarkId: number, collectionId: string) => Promise<void>
   getBookmarksByCollection: (collectionId: string) => Promise<void>
 
-  // Collection navigation
+  // Collection navigation & hierarchy
   setActiveCollection: (collectionId: string | null) => void
   toggleCollectionExpansion: (collectionId: string) => void
+  expandCollection: (id: string) => void
+  collapseCollection: (id: string) => void
+  expandAll: () => void
+  collapseAll: () => void
+  moveCollection: (collectionId: string, newParentId: string | null) => Promise<void>
+  getCollectionBreadcrumb: (collectionId: string) => Collection[]
 
   // UI state management
   setCreatingCollection: (isCreating: boolean) => void
@@ -201,7 +207,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
       },
 
       // Delete collection
-      deleteCollection: async (id) => {
+      deleteCollection: async (id, deleteMode = 'flatten') => {
         try {
           set({ isLoading: true, error: null }, false, 'collections:delete:start')
 
@@ -209,7 +215,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
           const collection = get().collections.find(c => c.id === id)
           const collectionName = collection?.name || 'collection'
 
-          await localStorageService.deleteCollection(id)
+          await localStorageService.deleteCollection(id, deleteMode)
 
           set(
             (state) => ({
@@ -368,6 +374,78 @@ export const useCollectionsStore = create<CollectionsStore>()(
           false,
           'collections:toggleExpansion'
         ),
+
+      expandCollection: (id) =>
+        set(
+          (state) => ({
+            expandedCollections: state.expandedCollections.includes(id)
+              ? state.expandedCollections
+              : [...state.expandedCollections, id]
+          }),
+          false,
+          'collections:expand'
+        ),
+
+      collapseCollection: (id) =>
+        set(
+          (state) => ({
+            expandedCollections: state.expandedCollections.filter(eid => eid !== id)
+          }),
+          false,
+          'collections:collapse'
+        ),
+
+      expandAll: () => {
+        const { collections } = get()
+        const allIds = collections.map(c => c.id)
+        set({ expandedCollections: allIds }, false, 'collections:expandAll')
+      },
+
+      collapseAll: () =>
+        set({ expandedCollections: [] }, false, 'collections:collapseAll'),
+
+      moveCollection: async (collectionId, newParentId) => {
+        try {
+          // Don't set isLoading to true - causes unnecessary re-renders
+          set({ error: null }, false, 'collections:move:start')
+
+          // Update the collection directly without triggering isLoading
+          const updatedCollection = await localStorageService.updateCollection(collectionId, { parentId: newParentId })
+
+          set(
+            (state) => ({
+              collections: state.collections.map(collection =>
+                collection.id === collectionId ? updatedCollection : collection
+              )
+            }),
+            false,
+            'collections:move:success'
+          )
+
+          // Log activity
+          const collection = get().collections.find(c => c.id === collectionId)
+          const newParent = newParentId
+            ? get().collections.find(c => c.id === newParentId)
+            : null
+
+          const { useBookmarkStore } = await import('./bookmarkStore')
+          useBookmarkStore.getState().addActivityLog(
+            'Moved collection',
+            `${collection?.name} to ${newParent?.name || 'root'}`
+          )
+        } catch (error) {
+          console.error('Error moving collection:', error)
+          set({
+            error: error instanceof Error ? error.message : 'Failed to move collection'
+          }, false, 'collections:move:error')
+        }
+      },
+
+      getCollectionBreadcrumb: (collectionId) => {
+        const { collections } = get()
+        const { getCollectionPath } = require('../utils/collectionHierarchy')
+        return getCollectionPath(collectionId, collections)
+      },
 
       setCreatingCollection: (isCreating) =>
         set({ isCreatingCollection: isCreating }, false, 'collections:setCreating'),

@@ -1,247 +1,33 @@
-import { Box, VStack, HStack, Text, Button, Badge, For } from '@chakra-ui/react'
-import { LuFolder, LuStar, LuClock, LuArchive } from 'react-icons/lu'
-import { useMemo, useCallback, memo, useRef, useEffect } from 'react'
-import { useDrop } from 'react-dnd'
+import { Box, Text, Button } from '@chakra-ui/react'
+import { useMemo, useCallback, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import toast from 'react-hot-toast'
 import { useCollectionsStore } from '../../store/collectionsStore'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useModal } from '../modals/ModalProvider'
-import { ItemTypes, type DragItem, type DropResult } from '../../types/dnd'
-
-// Helper component for droppable collection items
-const DroppableCollectionItem = ({
-  collection,
-  isActive,
-  getCollectionIcon,
-  getCollectionColor,
-  getBookmarkCount,
-  handleCollectionClick
-}: any) => {
-  const hasShownToastRef = useRef(false)
-
-  const [{ isOver, canDrop, dragItem }, drop] = useDrop(() => ({
-    accept: ItemTypes.BOOKMARK,
-    drop: (): DropResult => ({
-      collectionId: collection.id,
-      collectionName: collection.name
-    }),
-    canDrop: (item: DragItem) => {
-      // Prevent drops on smart collections (except uncategorized)
-      if (collection.isSmartCollection && collection.id !== 'uncategorized') {
-        return false
-      }
-
-      // Prevent duplicate: check if bookmark is already in this collection
-      // Safety check: item.bookmark might be undefined during drag initialization
-      if (item.bookmark) {
-        const bookmarkCollections = (item.bookmark as any).collections || []
-        if (bookmarkCollections.includes(collection.id)) {
-          return false
-        }
-      }
-
-      return true
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-      dragItem: monitor.getItem() as DragItem,
-    }),
-  }), [collection.id, collection.isSmartCollection])
-
-  const isDropZone = isOver && canDrop
-  const isInvalidDrop = isOver && !canDrop
-
-  // Show toast feedback for invalid drops
-  useEffect(() => {
-    if (isInvalidDrop && !hasShownToastRef.current) {
-      hasShownToastRef.current = true
-
-      // Determine why the drop is invalid
-      if (collection.isSmartCollection && collection.id !== 'uncategorized') {
-        toast.error(`Cannot move to "${collection.name}" - it's a smart collection`, {
-          duration: 2000,
-          id: `invalid-drop-${collection.id}`, // Prevent duplicate toasts
-        })
-      } else if (dragItem?.bookmark) {
-        const bookmarkCollections = (dragItem.bookmark as any).collections || []
-        if (bookmarkCollections.includes(collection.id)) {
-          const count = dragItem.selectedIds?.length || 1
-          const message = count > 1
-            ? `${count} bookmarks already in "${collection.name}"`
-            : `Already in "${collection.name}"`
-          toast.error(message, {
-            duration: 2000,
-            id: `invalid-drop-${collection.id}`, // Prevent duplicate toasts
-          })
-        }
-      }
-    }
-
-    // Reset toast flag when no longer hovering
-    if (!isOver) {
-      hasShownToastRef.current = false
-    }
-  }, [isInvalidDrop, isOver, collection.id, collection.name, collection.isSmartCollection, dragItem])
-
-  // Determine the type of invalid drop for better visual feedback
-  const getInvalidDropType = () => {
-    if (!isInvalidDrop) return null
-
-    if (collection.isSmartCollection && collection.id !== 'uncategorized') {
-      return 'smart-collection'
-    }
-
-    // For duplicate detection, we need to access the current drag item
-    // This will be determined in the visual feedback below
-    return 'duplicate'
-  }
-
-
-  return (
-    <Box
-      ref={drop}
-      key={collection.id}
-      data-testid={`collection-${collection.id}`}
-      px={3}
-      py={2}
-      borderRadius="md"
-      cursor="pointer"
-      bg={
-        isDropZone
-          ? 'var(--color-blue) !important'
-          : isActive(collection.id)
-            ? 'var(--color-blue)'
-            : 'transparent'
-      }
-      color={isActive(collection.id) ? 'white' : 'var(--color-text-primary)'}
-      border={
-        isDropZone
-          ? '3px dashed #3b82f6 !important'
-          : isInvalidDrop
-            ? getInvalidDropType() === 'smart-collection'
-              ? '3px dashed #f59e0b !important'  // Orange for smart collections
-              : '3px dashed #ef4444 !important'  // Red for duplicates
-            : '2px solid transparent'
-      }
-      boxShadow={
-        isDropZone
-          ? '0 0 0 2px rgba(59, 130, 246, 0.5)'
-          : undefined
-      }
-      _hover={{
-        bg: isActive(collection.id) ? 'var(--color-blue-hover)' : 'var(--color-border)'
-      }}
-      onClick={() => handleCollectionClick(collection.id)}
-      transition="all 0.2s ease"
-    >
-      <HStack justify="space-between" align="center">
-        <HStack gap={2} align="center" flex={1} minW={0}>
-          <Box color={getCollectionColor(collection, isActive(collection.id))} flexShrink={0}>
-            {getCollectionIcon(collection)}
-          </Box>
-          <Text
-            fontSize="sm"
-            fontWeight="500"
-            truncate
-            flex={1}
-          >
-            {collection.name}
-          </Text>
-        </HStack>
-        <HStack gap={1} flexShrink={0}>
-          <Badge
-            bg={isActive(collection.id) ? 'rgba(255,255,255,0.2)' : 'var(--color-border)'}
-            color={isActive(collection.id) ? 'white' : 'var(--color-text-secondary)'}
-            fontSize="11px"
-            px={2}
-            py={1}
-            borderRadius="6px"
-          >
-            {getBookmarkCount(collection.id)}
-          </Badge>
-        </HStack>
-      </HStack>
-    </Box>
-  )
-}
+import { CollectionTree } from './tree/CollectionTree'
 
 const CollectionsList = memo(() => {
   const {
     collections,
     activeCollectionId,
     collectionBookmarks,
+    expandedCollections,
     isLoading,
     error,
     setActiveCollection,
+    toggleCollectionExpansion,
     createCollection
   } = useCollectionsStore()
 
   const navigate = useNavigate()
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
   const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
-  const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const { showCreateCollection } = useModal()
 
-  // Memoized bookmark counts for smart collections
-  const smartCollectionCounts = useMemo(() => {
-    const sevenDaysAgo = new Date()
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-
-    return {
-      starred: bookmarks.filter(bookmark => bookmark.is_starred).length,
-      archived: bookmarks.filter(bookmark => bookmark.is_archived).length,
-      recent: bookmarks.filter(bookmark =>
-        new Date(bookmark.created_at) > sevenDaysAgo
-      ).length
-    }
-  }, [bookmarks])
-
-  // Memoized helper functions
-  const getCollectionIcon = useCallback((collection: any) => {
-    if (collection.isSmartCollection) {
-      switch (collection.id) {
-        case 'starred':
-          return <LuStar size={16} />
-        case 'recent':
-          return <LuClock size={16} />
-        case 'archived':
-          return <LuArchive size={16} />
-        default:
-          return <LuFolder size={16} />
-      }
-    }
-    return <LuFolder size={16} />
-  }, [])
-
-  const getCollectionColor = useCallback((collection: any, isActiveCollection: boolean = false) => {
-    // If collection is active, always use white for visibility
-    if (isActiveCollection) {
-      return 'white'
-    }
-
-    if (collection.isSmartCollection) {
-      switch (collection.id) {
-        case 'starred':
-          return '#ffd700'
-        case 'recent':
-          return 'var(--color-blue)'
-        case 'archived':
-          return 'var(--color-text-tertiary)'
-        default:
-          return 'var(--color-text-tertiary)'
-      }
-    }
-    return collection.color || 'var(--color-text-tertiary)'
-  }, [])
-
-  const isActive = useCallback((collectionId: string) => {
-    return activeSidebarItem === 'Collections' && activeCollectionId === collectionId
-  }, [activeSidebarItem, activeCollectionId])
-
+  // Handler for collection clicks
   const handleCollectionClick = useCallback((collectionId: string) => {
-    const newActiveId = isActive(collectionId) ? null : collectionId
+    const isCurrentlyActive = activeSidebarItem === 'Collections' && activeCollectionId === collectionId
+    const newActiveId = isCurrentlyActive ? null : collectionId
     setActiveCollection(newActiveId)
 
     // Clear selected bookmarks when switching collections
@@ -256,29 +42,13 @@ const CollectionsList = memo(() => {
     } else {
       setActiveSidebarItem('All Bookmarks')
     }
-  }, [isActive, setActiveCollection, setActiveSidebarItem, navigate])
-
-  const getBookmarkCount = useCallback((collectionId: string) => {
-    // Handle smart collections with pre-calculated counts
-    if (collectionId === 'starred') {
-      return smartCollectionCounts.starred
-    }
-    if (collectionId === 'archived') {
-      return smartCollectionCounts.archived
-    }
-    if (collectionId === 'recent') {
-      return smartCollectionCounts.recent
-    }
-
-    // For regular collections, use the collection bookmarks mapping
-    return collectionBookmarks[collectionId]?.length || 0
-  }, [smartCollectionCounts, collectionBookmarks])
+  }, [activeSidebarItem, activeCollectionId, setActiveCollection, setActiveSidebarItem, navigate])
 
   // Memoized collection categories
-  const { defaultCollections, userCollections } = useMemo(() => ({
-    defaultCollections: collections.filter(c => c.isDefault),
-    userCollections: collections.filter(c => !c.isDefault)
-  }), [collections])
+  const userCollections = useMemo(() =>
+    collections.filter(c => !c.isDefault),
+    [collections]
+  )
 
   if (error) {
     return (
@@ -301,52 +71,27 @@ const CollectionsList = memo(() => {
   }
 
   return (
-    <VStack align="stretch" gap={1} px={2}>
-      {/* Default Collections */}
-      {defaultCollections.length > 0 && (
-        <>
-          <For each={defaultCollections}>
-            {(collection) => (
-              <DroppableCollectionItem
-                key={collection.id}
-                collection={collection}
-                isActive={isActive}
-                getCollectionIcon={getCollectionIcon}
-                getCollectionColor={(collection: any) => getCollectionColor(collection, isActive(collection.id))}
-                getBookmarkCount={getBookmarkCount}
-                handleCollectionClick={handleCollectionClick}
-              />
-            )}
-          </For>
-        </>
-      )}
-
-      {/* User Collections */}
-      {userCollections.length > 0 && (
-        <>
-          {defaultCollections.length > 0 && (
-            <Box h="1px" style={{ background: 'var(--color-border)' }} my={2} />
-          )}
-          <For each={userCollections}>
-            {(collection) => (
-              <DroppableCollectionItem
-                key={collection.id}
-                collection={collection}
-                isActive={isActive}
-                getCollectionIcon={getCollectionIcon}
-                getCollectionColor={(collection: any) => getCollectionColor(collection, isActive(collection.id))}
-                getBookmarkCount={getBookmarkCount}
-                handleCollectionClick={handleCollectionClick}
-              />
-            )}
-          </For>
-        </>
-      )}
+    <>
+      {/* New Tree Component with max depth of 2 for sidebar */}
+      <CollectionTree
+        collections={collections}
+        activeCollectionId={activeCollectionId}
+        expandedCollections={expandedCollections}
+        collectionBookmarks={collectionBookmarks}
+        maxDepth={2}
+        onToggleExpand={toggleCollectionExpansion}
+        onExpandFullView={(collectionId) => {
+          // TODO: Open CollectionTreePanel
+          console.log('Expand full view for:', collectionId)
+        }}
+        onCollectionClick={handleCollectionClick}
+      />
 
       {/* Empty State for User Collections */}
       {userCollections.length === 0 && (
         <Box
           p={3}
+          mx={2}
           textAlign="center"
           style={{ color: 'var(--color-text-tertiary)' }}
           fontSize="sm"
@@ -375,7 +120,7 @@ const CollectionsList = memo(() => {
           </Button>
         </Box>
       )}
-    </VStack>
+    </>
   )
 })
 

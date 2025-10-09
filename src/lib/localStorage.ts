@@ -474,11 +474,24 @@ class LocalStorageService {
 
   // Collection operations
   async getCollections(): Promise<StoredCollection[]> {
-    const collections = this.safeGet<StoredCollection[]>(LEGACY_STORAGE_KEYS.COLLECTIONS, [])
+    let collections = this.safeGet<StoredCollection[]>(LEGACY_STORAGE_KEYS.COLLECTIONS, [])
 
     // Initialize default collections if empty
     if (collections.length === 0) {
       return this.initializeDefaultCollections()
+    }
+
+    // Migration: Fix uncategorized collection to be a smart collection
+    const uncategorizedIndex = collections.findIndex(c => c.id === 'uncategorized')
+    if (uncategorizedIndex !== -1 && !collections[uncategorizedIndex].isSmartCollection) {
+      collections[uncategorizedIndex] = {
+        ...collections[uncategorizedIndex],
+        isSmartCollection: true,
+        smartCriteria: { type: 'uncategorized' },
+        updatedAt: new Date().toISOString()
+      }
+      // Save the migrated data
+      this.safeSet(LEGACY_STORAGE_KEYS.COLLECTIONS, collections)
     }
 
     return collections.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
@@ -495,7 +508,8 @@ class LocalStorageService {
         description: 'Bookmarks that haven\'t been organized into collections',
         isPrivate: false,
         isDefault: true,
-        isSmartCollection: false,
+        isSmartCollection: true,
+        smartCriteria: { type: 'uncategorized' },
         createdAt: now,
         updatedAt: now,
         bookmarkCount: 0,
@@ -549,6 +563,22 @@ class LocalStorageService {
   async createCollection(collection: CollectionInsert): Promise<StoredCollection> {
       const collections = await this.getCollections()
     const id = collection.id || `collection-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
+
+    // Validate parent assignment if parentId is provided
+    if (collection.parentId) {
+      const { validateParentAssignment } = await import('../utils/collectionHierarchy')
+      const validation = validateParentAssignment(
+        id,
+        collection.parentId,
+        collections,
+        5 // max depth
+      )
+
+      if (!validation.valid) {
+        throw new Error(validation.error || 'Invalid parent assignment')
+      }
+    }
+
     const now = new Date().toISOString()
 
     const newCollection: StoredCollection = {
@@ -586,6 +616,21 @@ class LocalStorageService {
       throw new Error(`Collection with id ${id} not found`)
     }
 
+    // Validate parent change if parentId is being updated
+    if ('parentId' in updates) {
+      const { validateParentAssignment } = await import('../utils/collectionHierarchy')
+      const validation = validateParentAssignment(
+        id,
+        updates.parentId ?? null,
+        collections,
+        5 // max depth
+      )
+
+      if (!validation.valid) {
+        throw new Error(validation.error || 'Invalid parent assignment')
+      }
+    }
+
     const updatedCollection = {
       ...collections[collectionIndex],
       ...updates,
@@ -601,7 +646,7 @@ class LocalStorageService {
     throw new Error('Failed to update collection in localStorage')
   }
 
-  async deleteCollection(id: string): Promise<void> {
+  async deleteCollection(id: string, deleteMode: 'flatten' | 'cascade' = 'flatten'): Promise<void> {
     const collections = await this.getCollections()
     const collection = collections.find(c => c.id === id)
 
@@ -613,7 +658,32 @@ class LocalStorageService {
       throw new Error('Cannot delete default collections')
     }
 
-    const filteredCollections = collections.filter(c => c.id !== id)
+    const { getChildCollections, getAllDescendants } = await import('../utils/collectionHierarchy')
+
+    let filteredCollections: StoredCollection[]
+
+    if (deleteMode === 'cascade') {
+      // Delete this collection and all descendants
+      const descendants = getAllDescendants(id, collections)
+      const idsToDelete = new Set([id, ...descendants.map(d => d.id)])
+      filteredCollections = collections.filter(c => !idsToDelete.has(c.id))
+    } else {
+      // Flatten: move children to this collection's parent
+      const children = getChildCollections(id, collections)
+      const updatedChildren = children.map(child => ({
+        ...child,
+        parentId: collection.parentId, // Move to grandparent
+        updatedAt: new Date().toISOString()
+      }))
+
+      // Update collections: remove deleted one, update children
+      filteredCollections = collections
+        .filter(c => c.id !== id)
+        .map(c => {
+          const updated = updatedChildren.find(uc => uc.id === c.id)
+          return updated || c
+        })
+    }
 
     // Also remove all bookmark-collection relationships
     const bookmarkCollections = this.safeGet<StoredBookmarkCollection[]>(LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS, [])

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react'
-import { Dialog, Button, HStack, Text, Box, Input, VStack, Textarea, Badge } from '@chakra-ui/react'
+import React, { createContext, useContext, useState, ReactNode, useCallback, useMemo } from 'react'
+import { Dialog, Button, HStack, Text, Box, Input, VStack, Textarea, Badge, SelectTrigger, SelectContent, SelectItem, SelectRoot, SelectValueText, createListCollection } from '@chakra-ui/react'
 import type { BookmarkInsert, Bookmark } from '../../types/bookmark'
 import type { CollectionInsert } from '../../lib/localStorage'
 import { DataProcessingService } from '../../services/dataProcessingService'
@@ -7,6 +7,8 @@ import ImageModal from './ImageModal'
 import TagManagerModal from '../tags/TagManagerModal'
 import TagMergeModal from '../tags/TagMergeModal'
 import DuplicateBookmarkDialog from './DuplicateBookmarkDialog'
+import { useCollectionsStore } from '../../store/collectionsStore'
+import { getCollectionPathString, wouldCreateCircularReference } from '../../utils/collectionHierarchy'
 
 interface TagMergeOptions {
   initialSourceTags?: string[]
@@ -138,6 +140,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [collectionFormData, setCollectionFormData] = useState<CollectionInsert>({
     name: '',
     description: '',
+    parentId: null,
     color: 'var(--color-blue)',
     icon: 'folder',
     isPrivate: false,
@@ -145,6 +148,41 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     isSmartCollection: false,
     userId: 'local-user'
   })
+
+  // Get collections for parent selector
+  const collections = useCollectionsStore((state) => state.collections)
+
+  // Get valid parent collections (exclude current collection and its descendants when editing)
+  const validParentCollections = useMemo(() => {
+    const currentCollectionId = modalState.type === 'editCollection'
+      ? modalState.options?.collection?.id
+      : undefined
+
+    return collections.filter(c => {
+      // Exclude smart collections (they can't be parents)
+      if (c.isSmartCollection) return false
+
+      // When editing, exclude self and descendants
+      if (currentCollectionId && c.id === currentCollectionId) return false
+      if (currentCollectionId && wouldCreateCircularReference(currentCollectionId, c.id, collections)) {
+        return false
+      }
+
+      return true
+    })
+  }, [collections, modalState.type, modalState.options])
+
+  // Create parent collection options for select
+  const parentCollectionOptions = useMemo(() => {
+    const items = [
+      { label: 'None (Root Level)', value: '__none__' },
+      ...validParentCollections.map(c => ({
+        label: getCollectionPathString(c.id, collections, ' → '),
+        value: c.id
+      }))
+    ]
+    return createListCollection({ items })
+  }, [validParentCollections, collections])
 
   const showDeleteConfirmation = (options: DeleteConfirmationOptions) => {
     setModalState({ type: 'delete', options })
@@ -350,7 +388,12 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   }, [collectionFormData, modalState.type, modalState.options])
 
   const handleCollectionFormChange = useCallback((field: keyof CollectionInsert, value: any) => {
-    setCollectionFormData(prev => ({ ...prev, [field]: value }))
+    // Handle special "__none__" value for parentId
+    if (field === 'parentId' && value === '__none__') {
+      setCollectionFormData(prev => ({ ...prev, [field]: null }))
+    } else {
+      setCollectionFormData(prev => ({ ...prev, [field]: value }))
+    }
   }, [])
 
   const showImageModal = (options: ImageModalOptions) => {
@@ -861,6 +904,39 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                         _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)' }}
                         _placeholder={{ color: 'var(--color-text-tertiary)' }}
                       />
+                    </VStack>
+
+                    <VStack gap={2} align="stretch">
+                      <Text fontSize="sm" color="var(--color-text-secondary)">Parent Collection</Text>
+                      <SelectRoot
+                        collection={parentCollectionOptions}
+                        value={collectionFormData.parentId ? [collectionFormData.parentId] : ['__none__']}
+                        onValueChange={(e) => handleCollectionFormChange('parentId', e.value[0])}
+                        size="md"
+                      >
+                        <SelectTrigger
+                          style={{ background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
+                          border="1px solid var(--color-border)"
+                          borderRadius="12px"
+                          _hover={{ borderColor: 'var(--color-border-hover)' }}
+                        >
+                          <SelectValueText placeholder="None (Root Level)" />
+                        </SelectTrigger>
+                        <SelectContent
+                          style={{ background: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)' }}
+                          border="1px solid var(--color-border)"
+                          borderRadius="8px"
+                        >
+                          {parentCollectionOptions.items.map((item) => (
+                            <SelectItem key={item.value} item={item}>
+                              {item.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </SelectRoot>
+                      <Text fontSize="xs" color="var(--color-text-tertiary)">
+                        Create a sub-collection by selecting a parent, or leave as root level
+                      </Text>
                     </VStack>
                   </VStack>
                 </Dialog.Body>

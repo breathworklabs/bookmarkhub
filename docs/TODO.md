@@ -130,7 +130,17 @@
   - [ ] Implement accessibility features (keyboard navigation, screen reader support)
   - [x] Test drag & drop functionality end-to-end
 - [x] Collection management (rename, delete, share) ✅ UI implemented with collections actions panel
-- [ ] Nested collections/sub-folders
+- [x] **Nested collections/sub-folders** ✅ PHASE 1 COMPLETE
+  - [x] Tree view with 2-level depth limit in sidebar
+  - [x] Parent selector in Create/Edit modal
+  - [x] Visual indicators (+N more badges, folder icons)
+  - [x] Breadcrumb navigation with clickable path
+  - [x] Active state highlighting
+  - [x] Circular reference prevention
+  - [x] Hierarchy utilities (getCollectionPath, validateParent, etc.)
+  - [x] Drag-and-drop collection nesting ✅ COMPLETED
+  - [x] Text sliding effect with fade-out gradient for long collection names ✅ COMPLETED
+  - [ ] Secondary tree panel for deep exploration → Future (Phase 2)
 - [x] Smart collections (auto-categorization)
 - [x] Remove collection side menu; moved to collections actions panel below filters ✅ COMPLETED
 

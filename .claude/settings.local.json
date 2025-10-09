@@ -3,7 +3,10 @@
     "allow": [
       "Bash(do [ -f \"$file\" ])",
       "Bash(for:*)",
-      "Bash(/tmp/fix_test_imports.sh:*)"
+      "Bash(/tmp/fix_test_imports.sh:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm test:*)"
     ],
     "deny": [],
     "ask": []

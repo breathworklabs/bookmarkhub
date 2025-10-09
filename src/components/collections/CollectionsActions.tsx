@@ -1,11 +1,12 @@
 import { Box, HStack, Text, Button } from '@chakra-ui/react'
-import { LuPencil, LuTrash2, LuFolderPlus, LuArchive, LuX, LuTag } from 'react-icons/lu'
-import { useCallback, memo, useState } from 'react'
+import { LuPencil, LuTrash2, LuFolderPlus, LuArchive, LuX, LuTag, LuChevronRight } from 'react-icons/lu'
+import { useCallback, memo, useState, useMemo } from 'react'
 import { useCollectionsStore } from '../../store/collectionsStore'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useModal } from '../modals/ModalProvider'
 import TagInput from '../tags/TagInput'
 import SmartTagSuggestions from '../tags/SmartTagSuggestions'
+import { getCollectionPath } from '../../utils/collectionHierarchy'
 
 const CollectionsActions = memo(() => {
   const {
@@ -13,7 +14,8 @@ const CollectionsActions = memo(() => {
     collections,
     createCollection,
     deleteCollection,
-    updateCollection
+    updateCollection,
+    setActiveCollection
   } = useCollectionsStore()
 
   // Bookmark selection state for bulk actions
@@ -34,6 +36,12 @@ const CollectionsActions = memo(() => {
   const activeCollection = collections.find(c => c.id === activeCollectionId)
   const isUserCollection = activeCollection && !activeCollection.isDefault && !activeCollection.isSmartCollection
   const isSmartCollection = activeCollection && activeCollection.isSmartCollection
+
+  // Get full breadcrumb path for active collection
+  const breadcrumbPath = useMemo(() => {
+    if (!activeCollectionId) return []
+    return getCollectionPath(activeCollectionId, collections)
+  }, [activeCollectionId, collections])
 
   // Determine if we should show bulk actions
   const selectedCount = selectedBookmarks.length
@@ -302,21 +310,40 @@ const CollectionsActions = memo(() => {
           ) : (
           // Normal Collection Actions Mode
           <>
-            {/* Custom Breadcrumb */}
-            <HStack gap={2} alignItems="center">
+            {/* Custom Breadcrumb - Full Path */}
+            <HStack gap={2} alignItems="center" flexWrap="wrap">
               <Text fontSize="sm" style={{ color: 'var(--color-text-tertiary)' }}>
                 Collections
               </Text>
-              {activeCollection && (
-                <>
-                  <Text fontSize="sm" style={{ color: 'var(--color-text-tertiary)' }}>
-                    /
-                  </Text>
-                  <Text fontSize="sm" style={{ color: 'var(--color-text-primary)' }} fontWeight="500">
-                    {activeCollection.name}
-                  </Text>
-                </>
-              )}
+              {breadcrumbPath.length > 0 && breadcrumbPath.map((collection, index) => {
+                const isLast = index === breadcrumbPath.length - 1
+                return (
+                  <HStack key={collection.id} gap={2} alignItems="center">
+                    <LuChevronRight size={12} color="var(--color-text-tertiary)" />
+                    <Text
+                      fontSize="sm"
+                      style={{
+                        color: isLast
+                          ? 'var(--color-text-primary)'
+                          : 'var(--color-text-secondary)'
+                      }}
+                      fontWeight={isLast ? "500" : "400"}
+                      cursor={isLast ? "default" : "pointer"}
+                      _hover={!isLast ? {
+                        color: 'var(--color-text-primary)',
+                        textDecoration: 'underline'
+                      } : undefined}
+                      onClick={() => {
+                        if (!isLast) {
+                          setActiveCollection(collection.id)
+                        }
+                      }}
+                    >
+                      {collection.name}
+                    </Text>
+                  </HStack>
+                )
+              })}
             </HStack>
 
             {/* Action Buttons */}

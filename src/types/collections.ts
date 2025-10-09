@@ -16,7 +16,7 @@ export interface Collection {
 }
 
 export interface SmartCollectionCriteria {
-  type: 'starred' | 'recent' | 'archived' | 'tag' | 'domain' | 'date_range'
+  type: 'uncategorized' | 'starred' | 'recent' | 'archived' | 'tag' | 'domain' | 'date_range'
   value?: string  // tag name, domain, etc.
   days?: number   // for recent/date_range
 }
