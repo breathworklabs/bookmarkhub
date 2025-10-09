@@ -17,6 +17,7 @@ import AdvancedFilters from './AdvancedFilters';
 import FilterBar from './FilterBar';
 import CollectionsActions from './collections/CollectionsActions';
 import InfiniteBookmarkGrid from './InfiniteBookmarkGrid';
+import { BulkActionsBar } from './BulkActionsBar';
 
 const XBookmarkManager = () => {
   const { bookmarks } = useBookmarkStore()
@@ -204,6 +205,11 @@ const XBookmarkManager = () => {
               <AIInsights />
             </ErrorBoundary>
           </Flex>
+
+          {/* Bulk Actions Bar - Floating */}
+          <ErrorBoundary context="BulkActionsBar">
+            <BulkActionsBar />
+          </ErrorBoundary>
 
         </DndProvider>
       )}

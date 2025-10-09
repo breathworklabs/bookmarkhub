@@ -1,5 +1,5 @@
 import { Card, Box } from '@chakra-ui/react'
-import { memo, useCallback, useMemo, useState, useEffect } from 'react'
+import { memo, useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import { useDrag } from 'react-dnd'
 import { getEmptyImage } from 'react-dnd-html5-backend'
 import toast from 'react-hot-toast'
@@ -8,6 +8,9 @@ import { ItemTypes, type DropResult } from '../../types/dnd'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useCollectionsStore } from '../../store/collectionsStore'
 import { useCardStyles } from '../../hooks/useStyles'
+import { useIsMobile } from '../../hooks/useMobile'
+import { CollectionPickerModal } from '../modals/CollectionPickerModal'
+import { BookmarkContextMenu } from './BookmarkContextMenu'
 import {
   BookmarkHeader,
   BookmarkContent,
@@ -28,10 +31,20 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
   const toggleBookmarkSelection = useBookmarkStore((state) => state.toggleBookmarkSelection)
   const clearBookmarkSelection = useBookmarkStore((state) => state.clearBookmarkSelection)
+  const toggleStarBookmark = useBookmarkStore((state) => state.toggleStarBookmark)
+  const deleteBookmark = useBookmarkStore((state) => state.deleteBookmark)
   const addBookmarkToCollection = useCollectionsStore((state) => state.addBookmarkToCollection)
   const removeBookmarkFromCollection = useCollectionsStore((state) => state.removeBookmarkFromCollection)
+  const isMobile = useIsMobile()
 
   const [isHovered, setIsHovered] = useState(false)
+  const [showContextMenu, setShowContextMenu] = useState(false)
+  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 })
+  const [showCollectionPicker, setShowCollectionPicker] = useState(false)
+
+  // Long press handling
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null)
+  const touchStartPos = useRef({ x: 0, y: 0 })
 
   // Selection state
   const isSelected = selectedBookmarks.includes(bookmark.id)
@@ -150,7 +163,107 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
     toggleBookmarkSelection(bookmark.id)
   }, [toggleBookmarkSelection, bookmark.id])
 
+  // Long press handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (isInBulkMode) return // Skip long press in bulk mode
+
+    const touch = e.touches[0]
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY }
+
+    longPressTimer.current = setTimeout(() => {
+      // Trigger haptic feedback if available
+      if ('vibrate' in navigator) {
+        navigator.vibrate(50)
+      }
+
+      setContextMenuPosition({ x: touch.clientX, y: touch.clientY })
+      setShowContextMenu(true)
+    }, 500) // 500ms long press threshold
+  }, [isInBulkMode])
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!longPressTimer.current) return
+
+    const touch = e.touches[0]
+    const moveThreshold = 10 // pixels
+
+    // Cancel long press if finger moves too much
+    const deltaX = Math.abs(touch.clientX - touchStartPos.current.x)
+    const deltaY = Math.abs(touch.clientY - touchStartPos.current.y)
+
+    if (deltaX > moveThreshold || deltaY > moveThreshold) {
+      clearTimeout(longPressTimer.current)
+      longPressTimer.current = null
+    }
+  }, [])
+
+  const handleTouchEnd = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current)
+      longPressTimer.current = null
+    }
+  }, [])
+
+  // Context menu actions
+  const handleMoveToCollection = useCallback(async (collectionId: number | null) => {
+    try {
+      const currentCollections = (bookmark as any)?.collections || ['uncategorized']
+
+      // Remove from all collections first
+      for (const colId of currentCollections) {
+        if (colId !== 'uncategorized') {
+          await removeBookmarkFromCollection(bookmark.id, colId)
+        }
+      }
+
+      // Add to new collection (or uncategorized if null)
+      if (collectionId === null) {
+        await addBookmarkToCollection(bookmark.id, 'uncategorized')
+      } else {
+        await addBookmarkToCollection(bookmark.id, collectionId)
+      }
+
+      toast.success('Bookmark moved successfully')
+    } catch (error) {
+      console.error('Failed to move bookmark:', error)
+      toast.error('Failed to move bookmark')
+    }
+  }, [bookmark, addBookmarkToCollection, removeBookmarkFromCollection])
+
+  const handleShare = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(bookmark.url)
+      toast.success('Link copied to clipboard')
+    } catch (err) {
+      console.error('Failed to copy:', err)
+      toast.error('Failed to copy link')
+    }
+  }, [bookmark.url])
+
+  const handleDelete = useCallback(async () => {
+    try {
+      await deleteBookmark(bookmark.id)
+      toast.success('Bookmark deleted')
+    } catch (error) {
+      console.error('Failed to delete:', error)
+      toast.error('Failed to delete bookmark')
+    }
+  }, [bookmark.id, deleteBookmark])
+
+  const handleOpenInNewTab = useCallback(() => {
+    window.open(bookmark.url, '_blank', 'noopener,noreferrer')
+  }, [bookmark.url])
+
+  // Get current collection ID for picker
+  const currentCollectionId = useMemo(() => {
+    const collections = (bookmark as any)?.collections || []
+    return collections.length > 0 && collections[0] !== 'uncategorized'
+      ? collections[0]
+      : null
+  }, [bookmark])
+
   return (
+    <>
     <Card.Root
       ref={drag as unknown as React.Ref<HTMLDivElement>}
       data-testid="bookmark-card"
@@ -161,6 +274,9 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleCardClick}
+      onTouchStart={isMobile ? handleTouchStart : undefined}
+      onTouchMove={isMobile ? handleTouchMove : undefined}
+      onTouchEnd={isMobile ? handleTouchEnd : undefined}
     >
       {/* Selection Checkbox - Always render to prevent layout shifts */}
       <Box
@@ -224,6 +340,35 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
         isInBulkMode={isInBulkMode}
       />
     </Card.Root>
+
+    {/* Context Menu - Mobile Only */}
+    {showContextMenu && (
+      <BookmarkContextMenu
+        bookmark={bookmark}
+        position={contextMenuPosition}
+        onClose={() => setShowContextMenu(false)}
+        onMoveToCollection={() => {
+          setShowContextMenu(false)
+          setShowCollectionPicker(true)
+        }}
+        onToggleStar={() => toggleStarBookmark(bookmark.id)}
+        onShare={handleShare}
+        onDelete={handleDelete}
+        onOpenInNewTab={handleOpenInNewTab}
+      />
+    )}
+
+    {/* Collection Picker Modal */}
+    {showCollectionPicker && (
+      <CollectionPickerModal
+        isOpen={showCollectionPicker}
+        onClose={() => setShowCollectionPicker(false)}
+        onSelect={handleMoveToCollection}
+        currentCollectionId={currentCollectionId}
+        title="Move to Collection"
+      />
+    )}
+    </>
   )
 })
 
