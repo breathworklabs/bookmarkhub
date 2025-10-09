@@ -63,7 +63,7 @@ export const GenericFilter: React.FC<GenericFilterProps> = ({
   }
 
   return (
-    <VStack alignItems="start" gap={2} flex="1" minW="220px" maxW="25%">
+    <VStack alignItems="start" gap={2} flex="1" minW={{ base: "100%", md: "220px" }} maxW={{ base: "100%", md: "25%" }} w={{ base: "100%", md: "auto" }}>
       <HStack gap={2} alignItems="center">
         <Icon size={14} color="var(--color-text-tertiary)" />
         <Text fontSize="13px" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>

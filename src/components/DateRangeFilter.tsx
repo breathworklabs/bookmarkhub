@@ -89,7 +89,7 @@ const DateRangeFilterComponent = () => {
 
   return (
     <>
-      <VStack alignItems="start" gap={2} flex="1" minW="220px">
+      <VStack alignItems="start" gap={2} flex="1" minW={{ base: "100%", md: "220px" }} w={{ base: "100%", md: "auto" }}>
         <HStack gap={2} alignItems="center">
           <LuCalendar size={14} style={{ color: 'var(--color-text-tertiary)' }} />
           <Text fontSize="13px" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>

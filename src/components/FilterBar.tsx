@@ -46,9 +46,24 @@ const FilterBar = memo(() => {
 
   return (
     <Box {...componentStyles.container.filterBar}>
-      <HStack justify="space-between" alignItems="center">
+      <HStack
+        justify="space-between"
+        alignItems="center"
+        overflowX="auto"
+        overflowY="hidden"
+        gap={3}
+        css={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          '&::-webkit-scrollbar': {
+            display: 'none'
+          },
+          // Enable momentum scrolling on iOS
+          WebkitOverflowScrolling: 'touch'
+        }}
+      >
         {/* Filter Tabs */}
-        <HStack gap={3}>
+        <HStack gap={3} flexShrink={0}>
           <For each={FILTER_TABS}>
             {(label, index) => {
               const isActive = activeTab === index
@@ -63,6 +78,7 @@ const FilterBar = memo(() => {
                   borderRadius="20px"
                   fontSize="14px"
                   onClick={() => handleTabClick(index)}
+                  flexShrink={0}
                 >
                   {label}
                 </Button>
@@ -72,7 +88,7 @@ const FilterBar = memo(() => {
         </HStack>
 
         {/* Tags */}
-        <HStack gap={3}>
+        <HStack gap={3} flexShrink={0}>
           <For each={selectedTags}>
             {(tag) => (
               <TagChip
@@ -101,6 +117,8 @@ const FilterBar = memo(() => {
             onClick={handleAddTag}
             gap={1}
             alignItems="center"
+            flexShrink={0}
+            whiteSpace="nowrap"
           >
             +
             Add Tag
@@ -118,6 +136,7 @@ const FilterBar = memo(() => {
             gap={1}
             alignItems="center"
             title="Manage Tags"
+            flexShrink={0}
           >
             <LuSettings size={14} />
           </Button>

@@ -85,12 +85,12 @@ const InfiniteBookmarkGrid = memo(() => {
   }
 
   return (
-    <Box flex={1} p={viewMode === 'list' ? 0 : 4} overflowY="auto">
+    <Box flex={1} p={viewMode === 'list' ? 0 : { base: 3, md: 4 }} overflowY="auto">
       {/* Bookmarks Display - Grid or List */}
       {viewMode === 'grid' ? (
         <SimpleGrid
           columns={{ base: 1, md: 2, lg: 3, xl: 4, "2xl": 5 }}
-          gap={4}
+          gap={{ base: 3, md: 4 }}
           w="full"
           mb={4}
         >

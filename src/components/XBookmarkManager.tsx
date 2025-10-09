@@ -2,10 +2,13 @@ import { Box, Flex, VStack, Text, Button, HStack } from '@chakra-ui/react';
 import { LuImport, LuBookmarkPlus, LuFolderOpen } from 'react-icons/lu';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useState } from 'react';
 import { componentStyles } from '../styles/components';
 import { useBookmarkStore } from '../store/bookmarkStore';
+import { useIsMobile } from '../hooks/useMobile';
 import { ErrorBoundary } from './ErrorBoundary';
 import { DragPreview } from './DragPreview';
+import { MobileSidebarDrawer } from './MobileSidebarDrawer';
 import AIInsights from './AIInsights';
 import UnifiedSidebar from './UnifiedSidebar';
 import SearchHeader from './SearchHeader';
@@ -16,6 +19,8 @@ import InfiniteBookmarkGrid from './InfiniteBookmarkGrid';
 
 const XBookmarkManager = () => {
   const { bookmarks } = useBookmarkStore()
+  const isMobile = useIsMobile()
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false)
 
   const handleImport = () => {
     const input = document.createElement('input')
@@ -44,12 +49,12 @@ const XBookmarkManager = () => {
   }
 
   return (
-    <Box {...componentStyles.container.background} data-testid="x-bookmark-manager">
+    <Box {...componentStyles.container.background} data-testid="x-bookmark-manager" w="100vw" h="100vh" overflow="hidden">
       {bookmarks.length === 0 ? (
         // Empty state - full window
         <Flex
-          h="100vh"
-          w="100vw"
+          h="100%"
+          w="100%"
           direction="column"
           align="center"
           justify="center"
@@ -98,17 +103,28 @@ const XBookmarkManager = () => {
         // Normal layout with bookmarks - wrapped with DndProvider
         <DndProvider backend={HTML5Backend}>
           <DragPreview />
-          <Flex h="100vh" w="100vw">
-            {/* Sidebar */}
-            <ErrorBoundary context="UnifiedSidebar">
-              <UnifiedSidebar />
-            </ErrorBoundary>
+
+          {/* Mobile Sidebar Drawer */}
+          {isMobile && (
+            <MobileSidebarDrawer
+              isOpen={isMobileDrawerOpen}
+              onClose={() => setIsMobileDrawerOpen(false)}
+            />
+          )}
+
+          <Flex h="100%" w="100%" overflow="hidden">
+            {/* Desktop Sidebar - Hidden on mobile */}
+            {!isMobile && (
+              <ErrorBoundary context="UnifiedSidebar">
+                <UnifiedSidebar />
+              </ErrorBoundary>
+            )}
 
             {/* Main Content */}
-            <Flex flex={1} direction="column" w="100%">
+            <Flex flex={1} direction="column" w="100%" minW={0} overflow="hidden">
               {/* Header */}
               <ErrorBoundary context="SearchHeader">
-                <SearchHeader />
+                <SearchHeader onMenuClick={() => setIsMobileDrawerOpen(true)} />
               </ErrorBoundary>
 
               {/* Advanced Filters Panel */}

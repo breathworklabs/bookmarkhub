@@ -61,6 +61,7 @@
   --color-bg-secondary: @bg-secondary;
   --color-bg-tertiary: @bg-tertiary;
   --color-bg-hover: @bg-hover;
+  --color-bg-sidebar: @bg-secondary; // Sidebar uses secondary background
   --color-border: @border;
   --color-border-hover: @border-hover;
   --color-text-primary: @text-primary;
@@ -119,12 +120,37 @@ a {
   }
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html {
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  position: fixed;
+}
+
 body {
   margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
   min-width: 320px;
-  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  position: fixed;
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
+  // Prevent text size adjustment on mobile
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  // Prevent pull-to-refresh on mobile
+  overscroll-behavior-y: contain;
+  // Prevent horizontal scroll on mobile
+  overscroll-behavior-x: none;
 }
 
 h1 {

@@ -308,16 +308,16 @@ export const componentStyles = {
       bg: colors.dark.background,
       borderBottomWidth: '1px',
       borderColor: colors.dark.border,
-      px: 6,
-      py: 4
+      px: { base: 3, md: 6 },
+      py: { base: 3, md: 4 }
     },
 
     filterBar: {
       bg: colors.dark.background,
       borderBottomWidth: '1px',
       borderColor: colors.dark.border,
-      px: 6,
-      py: 4,
+      px: { base: 3, md: 6 },
+      py: { base: 3, md: 4 },
       boxShadow: '0 2px 8px var(--color-card-shadow)'
     }
   }

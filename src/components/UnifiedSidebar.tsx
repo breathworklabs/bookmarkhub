@@ -1,10 +1,11 @@
-import { Box, VStack, HStack, Text, Badge, Separator, IconButton } from '@chakra-ui/react'
-import { LuMenu, LuStar, LuExternalLink, LuFolderPlus, LuSettings, LuTrash2 } from 'react-icons/lu'
+import { Box, VStack, HStack, Text, Badge, Separator, IconButton, Button } from '@chakra-ui/react'
+import { LuMenu, LuStar, LuExternalLink, LuFolderPlus, LuSettings, LuTrash2, LuLayoutGrid, LuLayoutList } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { useModal } from './modals/ModalProvider'
+import { useIsMobile } from '../hooks/useMobile'
 import CollectionsList from './collections/CollectionsList'
 import { useNavigationStyles } from '../hooks/useStyles'
 import { componentStyles } from '../styles/components'
@@ -31,16 +32,23 @@ const useBookmarkCounts = () => {
   }, [bookmarks])
 }
 
-const UnifiedSidebar = memo(() => {
+interface UnifiedSidebarProps {
+  onItemClick?: () => void // Optional callback for mobile drawer close
+}
+
+const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
   const navigate = useNavigate()
   const location = useLocation()
   const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
   const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
   const toggleAIPanel = useBookmarkStore((state) => state.toggleAIPanel)
+  const viewMode = useBookmarkStore((state) => state.viewMode)
+  const setViewMode = useBookmarkStore((state) => state.setViewMode)
   const bookmarkCounts = useBookmarkCounts()
   const { showCreateCollection } = useModal()
   const createCollection = useCollectionsStore((state) => state.createCollection)
   const setActiveCollection = useCollectionsStore((state) => state.setActiveCollection)
+  const isMobile = useIsMobile()
 
   // Memoized event handlers
   const handleNavItemClick = useCallback((label: string) => {
@@ -55,7 +63,10 @@ const UnifiedSidebar = memo(() => {
     } else if (label === 'All Bookmarks') {
       navigate('/')
     }
-  }, [setActiveSidebarItem, setActiveCollection, toggleAIPanel, navigate])
+
+    // Close mobile drawer if callback provided
+    onItemClick?.()
+  }, [setActiveSidebarItem, setActiveCollection, toggleAIPanel, navigate, onItemClick])
 
   // create handler inline where used; remove unused local
 
@@ -220,6 +231,7 @@ const UnifiedSidebar = memo(() => {
               setActiveCollection(null)
               useBookmarkStore.getState().clearBookmarkSelection()
               navigate('/shared')
+              onItemClick?.()
             }}
           >
             <Box w="18px" h="18px">
@@ -257,6 +269,7 @@ const UnifiedSidebar = memo(() => {
               setActiveCollection(null)
               useBookmarkStore.getState().clearBookmarkSelection()
               navigate('/trash')
+              onItemClick?.()
             }}
           >
             <Box w="18px" h="18px">
@@ -277,6 +290,63 @@ const UnifiedSidebar = memo(() => {
             )}
           </HStack>
 
+          {/* View Mode Toggle - Mobile Only */}
+          {isMobile && (
+            <VStack alignItems="stretch" borderTopWidth="1px" style={{ borderColor: 'var(--color-border)' }} pt={4} pb={2} gap={2}>
+              <Text fontSize="11px" fontWeight="600" textTransform="uppercase" letterSpacing="0.5px" style={{ color: 'var(--color-text-tertiary)' }} px={3}>
+                View Mode
+              </Text>
+              <HStack gap={2} bg="var(--color-bg-secondary)" borderRadius="8px" p="2px">
+                <Button
+                  size="sm"
+                  flex={1}
+                  px={3}
+                  py={2}
+                  borderRadius="6px"
+                  fontSize="12px"
+                  fontWeight="500"
+                  style={{
+                    background: viewMode === 'grid' ? 'var(--color-bg-tertiary)' : 'transparent',
+                    color: viewMode === 'grid' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                    border: 'none'
+                  }}
+                  _hover={{
+                    bg: viewMode === 'grid' ? 'var(--color-bg-tertiary)' : 'var(--color-bg-hover)',
+                    color: 'var(--color-text-primary)'
+                  }}
+                  onClick={() => setViewMode('grid')}
+                  gap={2}
+                >
+                  <LuLayoutGrid size={14} />
+                  Grid
+                </Button>
+                <Button
+                  size="sm"
+                  flex={1}
+                  px={3}
+                  py={2}
+                  borderRadius="6px"
+                  fontSize="12px"
+                  fontWeight="500"
+                  style={{
+                    background: viewMode === 'list' ? 'var(--color-bg-tertiary)' : 'transparent',
+                    color: viewMode === 'list' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                    border: 'none'
+                  }}
+                  _hover={{
+                    bg: viewMode === 'list' ? 'var(--color-bg-tertiary)' : 'var(--color-bg-hover)',
+                    color: 'var(--color-text-primary)'
+                  }}
+                  onClick={() => setViewMode('list')}
+                  gap={2}
+                >
+                  <LuLayoutList size={14} />
+                  List
+                </Button>
+              </HStack>
+            </VStack>
+          )}
+
           {/* Settings */}
           <VStack alignItems="stretch" borderTopWidth="1px" style={{ borderColor: 'var(--color-border)' }} pt={4} gap={2}>
             <HStack
@@ -296,6 +366,7 @@ const UnifiedSidebar = memo(() => {
                 setActiveCollection(null)
                 useBookmarkStore.getState().clearBookmarkSelection()
                 navigate('/settings')
+                onItemClick?.()
               }}
             >
               <Box w="18px" h="18px">

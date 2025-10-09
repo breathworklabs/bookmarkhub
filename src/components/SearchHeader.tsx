@@ -1,11 +1,16 @@
-import { Box, HStack, Input, Button, Spacer, Badge } from '@chakra-ui/react'
-import { LuMenu, LuLayoutGrid, LuLayoutList } from 'react-icons/lu'
+import { Box, HStack, Input, Button, Spacer, Badge, IconButton } from '@chakra-ui/react'
+import { LuMenu, LuLayoutGrid, LuLayoutList, LuBookmarkPlus } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'
 import { sanitizeBookmark } from '../lib/dataValidation'
 import { useButtonStyles, useInputStyles } from '../hooks/useStyles'
 import { componentStyles } from '../styles/components'
+import { useIsMobile } from '../hooks/useMobile'
+
+interface SearchHeaderProps {
+  onMenuClick?: () => void // For opening mobile drawer
+}
 
 // Optimized selector to get all filter data at once
 const useFilterData = () => {
@@ -28,7 +33,7 @@ const useFilterData = () => {
   }), [searchQuery, isFiltersPanelOpen, authorFilter, domainFilter, contentTypeFilter, dateRangeFilter, quickFilters])
 }
 
-const SearchHeader = memo(() => {
+const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
   const filterData = useFilterData()
   const setSearchQuery = useBookmarkStore((state) => state.setSearchQuery)
   const addBookmark = useBookmarkStore((state) => state.addBookmark)
@@ -36,6 +41,11 @@ const SearchHeader = memo(() => {
   const viewMode = useBookmarkStore((state) => state.viewMode)
   const setViewMode = useBookmarkStore((state) => state.setViewMode)
   const { showAddBookmark } = useModal()
+  const isMobile = useIsMobile()
+
+  // Call hooks unconditionally to avoid "Rendered fewer hooks" error
+  const secondaryButtonStyles = useButtonStyles('secondary')
+  const primaryButtonStyles = useButtonStyles('primary')
 
   // Memoized active filter count calculation
   const activeFilterCount = useMemo(() => {
@@ -112,9 +122,23 @@ const SearchHeader = memo(() => {
   }, [showAddBookmark, addBookmark])
   return (
     <Box {...componentStyles.container.header}>
-      <HStack gap={6} alignItems="center">
+      <HStack gap={{ base: 2, md: 6 }} alignItems="center">
+        {/* Mobile Hamburger Menu */}
+        {isMobile && (
+          <IconButton
+            aria-label="Open menu"
+            variant="ghost"
+            size="sm"
+            onClick={onMenuClick}
+            style={{ color: 'var(--color-text-secondary)' }}
+            _hover={{ bg: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+          >
+            <LuMenu size={20} />
+          </IconButton>
+        )}
+
         {/* Search Area */}
-        <Box position="relative" maxW="400px" flex={1}>
+        <Box position="relative" maxW={{ base: '100%', md: '400px' }} flex={1}>
           <HStack {...componentStyles.input.search} gap={2}>
             <Box w="16px" h="16px" style={{ color: 'var(--color-text-tertiary)' }}>
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
@@ -133,97 +157,167 @@ const SearchHeader = memo(() => {
         <Spacer />
 
         {/* Action Buttons */}
-        <HStack gap={3}>
-          {/* View Toggle */}
-          <HStack gap={0} bg="var(--color-bg-secondary)" borderRadius="8px" p="2px">
-            <Button
-              {...useButtonStyles('secondary')}
-              size="sm"
-              px={3}
-              py={2}
-              minW="auto"
-              data-testid="view-toggle-grid"
-              style={{
-                background: viewMode === 'grid' ? 'var(--color-bg-tertiary)' : 'transparent',
-                color: viewMode === 'grid' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
-                border: 'none'
-              }}
-              _hover={{
-                bg: viewMode === 'grid' ? 'var(--color-bg-tertiary)' : 'var(--color-bg-hover)',
-                color: 'var(--color-text-primary)'
-              }}
-              onClick={() => setViewMode('grid')}
-              title="Grid View"
-            >
-              <LuLayoutGrid size={16} />
-            </Button>
-            <Button
-              {...useButtonStyles('secondary')}
-              size="sm"
-              px={3}
-              py={2}
-              minW="auto"
-              data-testid="view-toggle-list"
-              style={{
-                background: viewMode === 'list' ? 'var(--color-bg-tertiary)' : 'transparent',
-                color: viewMode === 'list' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
-                border: 'none'
-              }}
-              _hover={{
-                bg: viewMode === 'list' ? 'var(--color-bg-tertiary)' : 'var(--color-bg-hover)',
-                color: 'var(--color-text-primary)'
-              }}
-              onClick={() => setViewMode('list')}
-              title="List View"
-            >
-              <LuLayoutList size={16} />
-            </Button>
-          </HStack>
-
-          <Button
-            {...useButtonStyles('secondary')}
-            style={{
-              background: filterData.isFiltersPanelOpen ? 'var(--color-blue)' : 'transparent',
-              color: filterData.isFiltersPanelOpen ? 'white' : 'var(--color-text-tertiary)',
-              borderColor: filterData.isFiltersPanelOpen ? 'var(--color-blue)' : 'var(--color-border)'
-            }}
-            _hover={{
-              bg: filterData.isFiltersPanelOpen ? 'var(--color-blue-hover)' : 'var(--color-bg-tertiary)',
-              color: filterData.isFiltersPanelOpen ? 'white' : 'var(--color-text-primary)',
-              borderColor: filterData.isFiltersPanelOpen ? 'var(--color-blue-hover)' : 'var(--color-border-hover)'
-            }}
-            onClick={handleToggleFilters}
-            position="relative"
-          >
-            <LuMenu size={14} />
-            Filters
-            {activeFilterCount > 0 && (
-              <Badge
+        <HStack gap={{ base: 2, md: 3 }}>
+          {/* View Toggle - Hide on mobile */}
+          {!isMobile && (
+            <HStack gap={0} bg="var(--color-bg-secondary)" borderRadius="8px" p="2px">
+              <Button
+                {...secondaryButtonStyles}
                 size="sm"
-                style={{ background: 'var(--color-error)' }}
-                color="white"
-                borderRadius="full"
-                fontSize="11px"
-                fontWeight="600"
-                px={2}
-                py={1}
-                position="absolute"
-                top="-8px"
-                right="-8px"
-                zIndex={1}
+                px={3}
+                py={2}
+                minW="auto"
+                data-testid="view-toggle-grid"
+                style={{
+                  background: viewMode === 'grid' ? 'var(--color-bg-tertiary)' : 'transparent',
+                  color: viewMode === 'grid' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                  border: 'none'
+                }}
+                _hover={{
+                  bg: viewMode === 'grid' ? 'var(--color-bg-tertiary)' : 'var(--color-bg-hover)',
+                  color: 'var(--color-text-primary)'
+                }}
+                onClick={() => setViewMode('grid')}
+                title="Grid View"
               >
-                {activeFilterCount}
-              </Badge>
-            )}
-          </Button>
-          <Button {...useButtonStyles('secondary')} onClick={handleImportXBookmarks}>
-            +
-            Import
-          </Button>
-          <Button {...useButtonStyles('primary')} onClick={handleAddBookmark}>
-            +
-            Add Bookmark
-          </Button>
+                <LuLayoutGrid size={16} />
+              </Button>
+              <Button
+                {...secondaryButtonStyles}
+                size="sm"
+                px={3}
+                py={2}
+                minW="auto"
+                data-testid="view-toggle-list"
+                style={{
+                  background: viewMode === 'list' ? 'var(--color-bg-tertiary)' : 'transparent',
+                  color: viewMode === 'list' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                  border: 'none'
+                }}
+                _hover={{
+                  bg: viewMode === 'list' ? 'var(--color-bg-tertiary)' : 'var(--color-bg-hover)',
+                  color: 'var(--color-text-primary)'
+                }}
+                onClick={() => setViewMode('list')}
+                title="List View"
+              >
+                <LuLayoutList size={16} />
+              </Button>
+            </HStack>
+          )}
+
+          {/* Filters Button - Icon only on mobile */}
+          {isMobile ? (
+            <IconButton
+              aria-label="Toggle filters"
+              variant="ghost"
+              size="sm"
+              onClick={handleToggleFilters}
+              position="relative"
+              style={{
+                background: filterData.isFiltersPanelOpen ? 'var(--color-blue)' : 'transparent',
+                color: filterData.isFiltersPanelOpen ? 'white' : 'var(--color-text-tertiary)',
+                borderColor: filterData.isFiltersPanelOpen ? 'var(--color-blue)' : 'var(--color-border)',
+                border: '1px solid'
+              }}
+              _hover={{
+                bg: filterData.isFiltersPanelOpen ? 'var(--color-blue-hover)' : 'var(--color-bg-tertiary)',
+                color: filterData.isFiltersPanelOpen ? 'white' : 'var(--color-text-primary)',
+                borderColor: filterData.isFiltersPanelOpen ? 'var(--color-blue-hover)' : 'var(--color-border-hover)'
+              }}
+            >
+              <LuMenu size={16} />
+              {activeFilterCount > 0 && (
+                <Badge
+                  size="sm"
+                  style={{ background: 'var(--color-error)' }}
+                  color="white"
+                  borderRadius="full"
+                  fontSize="9px"
+                  fontWeight="600"
+                  px={1.5}
+                  py={0.5}
+                  position="absolute"
+                  top="-6px"
+                  right="-6px"
+                  zIndex={1}
+                >
+                  {activeFilterCount}
+                </Badge>
+              )}
+            </IconButton>
+          ) : (
+            <Button
+              {...secondaryButtonStyles}
+              style={{
+                background: filterData.isFiltersPanelOpen ? 'var(--color-blue)' : 'transparent',
+                color: filterData.isFiltersPanelOpen ? 'white' : 'var(--color-text-tertiary)',
+                borderColor: filterData.isFiltersPanelOpen ? 'var(--color-blue)' : 'var(--color-border)'
+              }}
+              _hover={{
+                bg: filterData.isFiltersPanelOpen ? 'var(--color-blue-hover)' : 'var(--color-bg-tertiary)',
+                color: filterData.isFiltersPanelOpen ? 'white' : 'var(--color-text-primary)',
+                borderColor: filterData.isFiltersPanelOpen ? 'var(--color-blue-hover)' : 'var(--color-border-hover)'
+              }}
+              onClick={handleToggleFilters}
+              position="relative"
+            >
+              <LuMenu size={14} />
+              Filters
+              {activeFilterCount > 0 && (
+                <Badge
+                  size="sm"
+                  style={{ background: 'var(--color-error)' }}
+                  color="white"
+                  borderRadius="full"
+                  fontSize="11px"
+                  fontWeight="600"
+                  px={2}
+                  py={1}
+                  position="absolute"
+                  top="-8px"
+                  right="-8px"
+                  zIndex={1}
+                >
+                  {activeFilterCount}
+                </Badge>
+              )}
+            </Button>
+          )}
+
+          {/* Import Button - Hide text on mobile */}
+          {isMobile ? (
+            <IconButton
+              aria-label="Import bookmarks"
+              {...secondaryButtonStyles}
+              size="sm"
+              onClick={handleImportXBookmarks}
+            >
+              +
+            </IconButton>
+          ) : (
+            <Button {...secondaryButtonStyles} onClick={handleImportXBookmarks}>
+              +
+              Import
+            </Button>
+          )}
+
+          {/* Add Bookmark Button - Icon only on mobile */}
+          {isMobile ? (
+            <IconButton
+              aria-label="Add bookmark"
+              {...primaryButtonStyles}
+              size="sm"
+              onClick={handleAddBookmark}
+            >
+              <LuBookmarkPlus size={16} />
+            </IconButton>
+          ) : (
+            <Button {...primaryButtonStyles} onClick={handleAddBookmark}>
+              +
+              Add Bookmark
+            </Button>
+          )}
         </HStack>
       </HStack>
     </Box>

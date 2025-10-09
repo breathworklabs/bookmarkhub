@@ -31,7 +31,7 @@ const AdvancedFilters = () => {
         <MotionBox
           style={{background: 'var(--color-bg-primary)', borderColor: 'var(--color-border)' }}
           borderBottomWidth="1px"
-          px={6}
+          px={{ base: 3, md: 6 }}
           py={0}
           initial={{
             height: 0,
@@ -122,7 +122,7 @@ const AdvancedFilters = () => {
               <DomainFilter />
 
               {/* Content Type Filter */}
-              <VStack alignItems="start" gap={2} flex="1" minW="180px">
+              <VStack alignItems="start" gap={2} flex="1" minW={{ base: "100%", md: "180px" }} w={{ base: "100%", md: "auto" }}>
                 <HStack gap={2} alignItems="center">
                   <LuTag size={14} style={{ color: 'var(--color-text-tertiary)' }} />
                   <Text fontSize="13px" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>

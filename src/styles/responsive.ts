@@ -32,10 +32,19 @@ export const fontSizes = {
 
 // Responsive container widths
 export const containerSizes = {
-  sidebar: { base: '260px', sm: '280px', md: '320px' },
+  sidebar: { base: '0', sm: '0', md: '320px' }, // Hidden on mobile, visible on desktop
   content: { base: '100%', sm: '100%', md: 'calc(100% - 320px)' },
   card: { base: '100%', sm: '100%', md: '100%' },
-  modal: { base: '90vw', sm: '80vw', md: '600px' }
+  modal: { base: '95vw', sm: '90vw', md: '600px' }
+} as const
+
+// Mobile-specific configurations
+export const mobileConfig = {
+  drawerWidth: '280px',
+  headerHeight: '64px',
+  bottomNavHeight: '56px',
+  touchTargetSize: '44px', // Minimum touch target size for accessibility
+  swipeThreshold: 50, // Pixels needed to trigger a swipe action
 } as const
 
 // Responsive grid configurations
