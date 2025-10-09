@@ -1,4 +1,4 @@
-import { Box, VStack, HStack, Text, Button, Input, For, IconButton, Separator } from '@chakra-ui/react'
+import { Box, VStack, HStack, Text, Button, Input, For, IconButton } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LuTag, LuX } from 'react-icons/lu'
 import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'

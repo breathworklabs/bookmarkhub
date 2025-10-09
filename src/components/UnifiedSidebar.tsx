@@ -183,6 +183,41 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
           <Box flex={1} overflowY="auto">
             <CollectionsList />
           </Box>
+
+          {/* Create Collection Button - Mobile Only */}
+          {isMobile && (
+            <Box px={3} pb={2}>
+              <Button
+                size="sm"
+                width="100%"
+                fontSize="13px"
+                fontWeight="500"
+                style={{
+                  background: 'var(--color-blue)',
+                  color: 'white'
+                }}
+                _hover={{
+                  bg: 'var(--color-blue-hover)'
+                }}
+                onClick={() => {
+                  showCreateCollection({
+                    onCreate: async (collectionData) => {
+                      try {
+                        await createCollection(collectionData)
+                      } catch (error) {
+                        console.error('Failed to create collection:', error)
+                      }
+                    }
+                  })
+                  onItemClick?.()
+                }}
+                gap={2}
+              >
+                <LuFolderPlus size={16} />
+                Create Collection
+              </Button>
+            </Box>
+          )}
         </VStack>
 
         {/* Bottom Navigation */}

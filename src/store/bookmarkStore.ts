@@ -69,6 +69,7 @@ interface BookmarkState {
   isLoading: boolean
   isAIPanelOpen: boolean
   isFiltersPanelOpen: boolean
+  isMobileHeaderVisible: boolean
   activeSidebarItem: string
   error: string | null
 
@@ -150,6 +151,8 @@ interface BookmarkState {
   toggleAIPanel: () => void
   setFiltersPanelOpen: (isOpen: boolean) => void
   toggleFiltersPanel: () => void
+  setMobileHeaderVisible: (isVisible: boolean) => void
+  toggleMobileHeader: () => void
   setActiveSidebarItem: (item: string) => void
   setError: (error: string | null) => void
 
@@ -216,6 +219,7 @@ export const useBookmarkStore = create<BookmarkState>()(
       isLoading: false,
       isAIPanelOpen: false,
       isFiltersPanelOpen: false,
+      isMobileHeaderVisible: true,
       activeSidebarItem: 'All Bookmarks',
       error: null,
 
@@ -764,6 +768,12 @@ export const useBookmarkStore = create<BookmarkState>()(
         (state) => ({ isFiltersPanelOpen: !state.isFiltersPanelOpen }),
         false,
         'toggleFiltersPanel'
+      ),
+      setMobileHeaderVisible: (isVisible) => set({ isMobileHeaderVisible: isVisible }, false, 'setMobileHeaderVisible'),
+      toggleMobileHeader: () => set(
+        (state) => ({ isMobileHeaderVisible: !state.isMobileHeaderVisible }),
+        false,
+        'toggleMobileHeader'
       ),
       setActiveSidebarItem: (item) => set({ activeSidebarItem: item }, false, 'setActiveSidebarItem'),
       setError: (error) => set({ error }, false, 'setError'),

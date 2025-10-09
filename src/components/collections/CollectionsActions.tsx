@@ -4,6 +4,7 @@ import { useCallback, memo, useState, useMemo } from 'react'
 import { useCollectionsStore } from '../../store/collectionsStore'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useModal } from '../modals/ModalProvider'
+import { useIsMobile } from '../../hooks/useMobile'
 import TagInput from '../tags/TagInput'
 import SmartTagSuggestions from '../tags/SmartTagSuggestions'
 import { getCollectionPath } from '../../utils/collectionHierarchy'
@@ -31,6 +32,7 @@ const CollectionsActions = memo(() => {
   const [selectedBookmarkTags, setSelectedBookmarkTags] = useState<string[]>([])
 
   const { showCreateCollection, showDeleteConfirmation, showEditCollection } = useModal()
+  const isMobile = useIsMobile()
 
   // Get the currently active collection
   const activeCollection = collections.find(c => c.id === activeCollectionId)
@@ -348,7 +350,7 @@ const CollectionsActions = memo(() => {
 
             {/* Action Buttons */}
             <HStack gap={2} h="40px" alignItems="center">
-              {!isSmartCollection && (
+              {!isSmartCollection && !isMobile && (
                 <Button
                   size="sm"
                   variant="ghost"

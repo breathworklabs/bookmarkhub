@@ -32,7 +32,9 @@ This document outlines the mobile responsiveness improvements implemented in the
 #### 2. **Mobile Detection Hooks**
 - **Location:** `src/hooks/useMobile.ts`
 - **Hooks:**
-  - `useIsMobile()` - Returns true if viewport < 768px
+  - `useIsMobile()` - Returns true for mobile devices (portrait & landscape)
+    - Portrait: width < 768px
+    - Landscape: width < 992px AND height < 600px (e.g., 915x412)
   - `useIsTablet()` - Returns true if viewport between 768px and 992px
   - `useScreenSize()` - Returns 'mobile' | 'tablet' | 'desktop'
 

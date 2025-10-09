@@ -34,7 +34,7 @@ export const validateUrl = async (url: string): Promise<{ isValid: boolean; stat
     const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
 
     try {
-      const response = await fetch(url, {
+      await fetch(url, {
         method: 'HEAD',
         signal: controller.signal,
         mode: 'no-cors', // This won't give us status, but will detect if URL is blocked

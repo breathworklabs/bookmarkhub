@@ -1,5 +1,5 @@
 import { Dialog, Button, VStack, HStack, Text, IconButton, For, Input, Badge, Textarea, Box } from '@chakra-ui/react'
-import { LuBookmark, LuTrash2, LuCheck, LuX, LuPencil, LuFilter } from 'react-icons/lu'
+import { LuBookmark, LuTrash2, LuCheck, LuX, LuPencil } from 'react-icons/lu'
 import { useState, memo, useCallback } from 'react'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useFilterReset } from '../../utils/filterUtils'

@@ -88,9 +88,9 @@ const defaultPrivacySettings: PrivacySettings = {
 }
 
 // Custom storage that uses consolidated localStorage
-// Zustand v5 uses a different storage API that works with objects directly
+// Zustand v5 persist expects StorageValue<S> = { state: S, version?: number }
 const consolidatedStorage = {
-  getItem: (_name: string) => {
+  getItem: (_name: string): { state: SettingsState; version?: number } | null => {
     try {
       const data = localStorage.getItem('x-bookmark-manager-data')
       if (data) {
@@ -102,11 +102,29 @@ const consolidatedStorage = {
             // Handle Zustand's persist wrapper format {state, version}
             const actualSettings = settings.state || settings
             // Merge saved settings with defaults to handle new properties
-            const fullState = {
+            const fullState: SettingsState = {
               extension: { ...defaultExtensionSettings, ...(actualSettings.extension || {}) },
               display: { ...defaultDisplaySettings, ...(actualSettings.display || {}) },
               privacy: { ...defaultPrivacySettings, ...(actualSettings.privacy || {}) },
               hasSeenSplash: actualSettings.hasSeenSplash ?? false,
+              // Include all action functions (they won't be persisted)
+              updateExtensionSettings: () => {},
+              setAutoSyncInterval: () => {},
+              setSyncNotifications: () => {},
+              setDefaultTags: () => {},
+              setImportDuplicates: () => {},
+              setAutoOpenApp: () => {},
+              setDefaultCollection: () => {},
+              updateDisplaySettings: () => {},
+              setTheme: () => {},
+              setFontSize: () => {},
+              setViewMode: () => {},
+              setSortBy: () => {},
+              setSortOrder: () => {},
+              updatePrivacySettings: () => {},
+              setHasSeenSplash: () => {},
+              resetExtensionSettings: () => {},
+              resetAllSettings: () => {},
             }
             console.log('Loading settings from storage:', fullState)
             // Return in Zustand v5 persist format
@@ -120,7 +138,7 @@ const consolidatedStorage = {
     console.log('No settings found in storage, using defaults')
     return null
   },
-  setItem: (_name: string, value: any): void => {
+  setItem: (_name: string, value: { state: SettingsState; version?: number }): void => {
     try {
       const data = localStorage.getItem('x-bookmark-manager-data')
       const parsed = data ? JSON.parse(data) : {
@@ -131,7 +149,7 @@ const consolidatedStorage = {
         metadata: {},
         version: '2.0.0'
       }
-      // In Zustand v5, value is already an object {state, version}
+      // Store the full StorageValue object
       parsed.extensionSettings = value
       console.log('Saving settings to storage:', value)
       localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
@@ -252,11 +270,7 @@ export const useSettingsStore = create<SettingsState>()(
     }),
     {
       name: 'x-bookmark-settings',
-      storage: {
-        getItem: (name: string) => consolidatedStorage.getItem(name),
-        setItem: (name: string, value: string) => consolidatedStorage.setItem(name, value),
-        removeItem: (name: string) => consolidatedStorage.removeItem(name),
-      },
+      storage: consolidatedStorage,
     }
   )
 )

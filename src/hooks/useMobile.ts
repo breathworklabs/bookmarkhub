@@ -3,19 +3,30 @@ import { breakpoints } from '../styles/responsive'
 
 /**
  * Hook to detect if the current viewport is mobile-sized
- * @returns boolean indicating if the viewport is mobile (< 768px)
+ * Detects mobile devices in both portrait and landscape orientation
+ * @returns boolean indicating if the viewport is mobile
  */
 export const useIsMobile = (): boolean => {
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window !== 'undefined') {
-      return window.innerWidth < parseInt(breakpoints.md)
+      // Consider mobile if either dimension is < 768px (handles landscape orientation)
+      // OR if width is < 992px AND height is < 600px (landscape mobile)
+      const width = window.innerWidth
+      const height = window.innerHeight
+      return width < parseInt(breakpoints.md) ||
+             (width < parseInt(breakpoints.lg) && height < 600)
     }
     return false
   })
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < parseInt(breakpoints.md))
+      const width = window.innerWidth
+      const height = window.innerHeight
+      setIsMobile(
+        width < parseInt(breakpoints.md) ||
+        (width < parseInt(breakpoints.lg) && height < 600)
+      )
     }
 
     window.addEventListener('resize', handleResize)

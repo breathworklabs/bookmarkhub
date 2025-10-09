@@ -1,5 +1,5 @@
-import { Box, Flex, VStack, Text, Button, HStack } from '@chakra-ui/react';
-import { LuImport, LuBookmarkPlus, LuFolderOpen } from 'react-icons/lu';
+import { Box, Flex, VStack, Text, Button, HStack, IconButton } from '@chakra-ui/react';
+import { LuImport, LuBookmarkPlus, LuFolderOpen, LuChevronDown, LuChevronUp } from 'react-icons/lu';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useState } from 'react';
@@ -9,6 +9,7 @@ import { useIsMobile } from '../hooks/useMobile';
 import { ErrorBoundary } from './ErrorBoundary';
 import { DragPreview } from './DragPreview';
 import { MobileSidebarDrawer } from './MobileSidebarDrawer';
+import { MobileHeaderContainer } from './MobileHeaderContainer';
 import AIInsights from './AIInsights';
 import UnifiedSidebar from './UnifiedSidebar';
 import SearchHeader from './SearchHeader';
@@ -20,6 +21,8 @@ import InfiniteBookmarkGrid from './InfiniteBookmarkGrid';
 const XBookmarkManager = () => {
   const { bookmarks } = useBookmarkStore()
   const isMobile = useIsMobile()
+  const isMobileHeaderVisible = useBookmarkStore((state) => state.isMobileHeaderVisible)
+  const toggleMobileHeader = useBookmarkStore((state) => state.toggleMobileHeader)
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false)
 
   const handleImport = () => {
@@ -122,25 +125,73 @@ const XBookmarkManager = () => {
 
             {/* Main Content */}
             <Flex flex={1} direction="column" w="100%" minW={0} overflow="hidden">
-              {/* Header */}
-              <ErrorBoundary context="SearchHeader">
-                <SearchHeader onMenuClick={() => setIsMobileDrawerOpen(true)} />
-              </ErrorBoundary>
+              {/* Mobile Header with Swipe Gesture */}
+              {isMobile ? (
+                <>
+                  <MobileHeaderContainer>
+                    {/* Header */}
+                    <ErrorBoundary context="SearchHeader">
+                      <SearchHeader onMenuClick={() => setIsMobileDrawerOpen(true)} />
+                    </ErrorBoundary>
 
-              {/* Advanced Filters Panel */}
-              <ErrorBoundary context="AdvancedFilters">
-                <AdvancedFilters />
-              </ErrorBoundary>
+                    {/* Advanced Filters Panel */}
+                    <ErrorBoundary context="AdvancedFilters">
+                      <AdvancedFilters />
+                    </ErrorBoundary>
 
-              {/* Filter Bar */}
-              <ErrorBoundary context="FilterBar">
-                <FilterBar />
-              </ErrorBoundary>
+                    {/* Filter Bar */}
+                    <ErrorBoundary context="FilterBar">
+                      <FilterBar />
+                    </ErrorBoundary>
+                  </MobileHeaderContainer>
 
-              {/* Collections Actions Panel */}
-              <ErrorBoundary context="CollectionsActions">
-                <CollectionsActions />
-              </ErrorBoundary>
+                  {/* Toggle Header Button - Subtle */}
+                  <Box
+                    position="relative"
+                    h="6px"
+                    bg="var(--color-bg-primary)"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    cursor="pointer"
+                    onClick={toggleMobileHeader}
+                    _hover={{ bg: 'var(--color-bg-secondary)' }}
+                    transition="background-color 0.2s ease"
+                  >
+                    <Box
+                      w="32px"
+                      h="3px"
+                      borderRadius="full"
+                      bg="var(--color-border)"
+                      opacity={0.5}
+                      transition="opacity 0.2s ease"
+                      _hover={{ opacity: 0.8 }}
+                    />
+                  </Box>
+                </>
+              ) : (
+                <>
+                  {/* Desktop Header - No Container */}
+                  <ErrorBoundary context="SearchHeader">
+                    <SearchHeader onMenuClick={() => setIsMobileDrawerOpen(true)} />
+                  </ErrorBoundary>
+
+                  {/* Advanced Filters Panel */}
+                  <ErrorBoundary context="AdvancedFilters">
+                    <AdvancedFilters />
+                  </ErrorBoundary>
+
+                  {/* Filter Bar */}
+                  <ErrorBoundary context="FilterBar">
+                    <FilterBar />
+                  </ErrorBoundary>
+
+                  {/* Collections Actions Panel - Desktop only */}
+                  <ErrorBoundary context="CollectionsActions">
+                    <CollectionsActions />
+                  </ErrorBoundary>
+                </>
+              )}
 
               {/* Infinite Scroll Bookmarks Grid */}
               <ErrorBoundary context="InfiniteBookmarkGrid">
