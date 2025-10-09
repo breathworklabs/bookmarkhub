@@ -7,6 +7,7 @@ import { mockBookmarks } from '../data/mockBookmarks'
 import { createErrorHandler } from '../utils/errorHandling'
 import { detectDuplicate, type DuplicateMatch } from '../lib/duplicateDetection'
 import { downloadFile } from '../lib/exportFormats'
+import { trackOperationPerformance } from '../lib/performance'
 import type { Bookmark, BookmarkInsert } from '../types/bookmark'
 import {
   validateBookmarks,
@@ -264,6 +265,7 @@ export const useBookmarkStore = create<BookmarkState>()(
 
       // Initialize store
       initialize: async () => {
+        const startTime = Date.now()
         try {
           // Load saved filter presets from localStorage
           try {
@@ -317,6 +319,10 @@ export const useBookmarkStore = create<BookmarkState>()(
             // Calculate filter options with mock bookmarks
             get().calculateFilterOptions()
           }
+
+          // Track initialization performance
+          const bookmarkCount = get().bookmarks.length
+          trackOperationPerformance('bookmark_store_init', startTime, { count: bookmarkCount })
 
         } catch (error) {
           const errorHandler = createErrorHandler('BookmarkStore.initialize')
@@ -610,6 +616,7 @@ export const useBookmarkStore = create<BookmarkState>()(
       },
 
       importBookmarks: async (file) => {
+        const startTime = Date.now()
         try {
           set({ isLoading: true, error: null }, false, 'importBookmarks:start')
 
@@ -625,6 +632,10 @@ export const useBookmarkStore = create<BookmarkState>()(
           await localStorageService.importData(data)
           await get().loadBookmarks()
           // Settings are managed by settingsStore now
+
+          // Track successful import
+          const importedCount = data.bookmarks?.length || 0
+          trackOperationPerformance('bookmark_import', startTime, { count: importedCount })
 
         } catch (error) {
           console.error('Error importing bookmarks:', error)

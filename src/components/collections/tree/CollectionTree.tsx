@@ -50,7 +50,7 @@ export const CollectionTree = memo<CollectionTreeProps>(({
   }), [rootCollections])
 
   return (
-    <VStack align="stretch" gap={2} px={2}>
+    <VStack align="stretch" gap={2}>
       {/* Smart Collections Section */}
       {defaultCollections.length > 0 && (
         <CollectionSection

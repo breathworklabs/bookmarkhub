@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
+import { initGA } from '../lib/analytics'
+import { initAllPerformanceMonitoring } from '../lib/performance'
 
 export const useInitializeApp = () => {
   const [hasExistingBookmarks, setHasExistingBookmarks] = useState<boolean | null>(null)
@@ -19,6 +21,15 @@ export const useInitializeApp = () => {
     }
 
     hasInitialized.current = true
+
+    // Initialize analytics and performance monitoring
+    // Note: Check cookie consent in production
+    const shouldInitAnalytics = import.meta.env.DEV || true // Replace with actual consent check
+
+    if (shouldInitAnalytics) {
+      initGA()
+      initAllPerformanceMonitoring()
+    }
 
     // First, synchronously check if we have existing bookmarks
     const checkExistingBookmarks = () => {

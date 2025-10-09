@@ -300,7 +300,8 @@ export const componentStyles = {
       bg: colors.dark.sidebarBg,
       borderRightWidth: '1px',
       borderColor: colors.dark.border,
-      p: 5
+      py: 5,
+      px: 5
     },
 
     header: {
