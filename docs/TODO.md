@@ -101,8 +101,8 @@
   - [x] Enhanced drag & drop supporting multiple selected items
   - [x] Click prevention overlay for bulk mode (prevents accidental actions)
   - [x] Card click selection in bulk mode for easier interaction
-- [ ] Duplicate bookmark detection
-- [ ] Bookmark validation (check if URLs still work)
+- [x] Duplicate bookmark detection
+- [x] Bookmark validation (check if URLs still work)
 - [x] Archive/unarchive bookmarks
 - [x] **Recently deleted/trash functionality** ✅ COMPLETED
   - [x] TrashView component with full trash management
@@ -524,4 +524,4 @@
 - **Extensibility**: Well-structured for adding new features
 - **Testing**: Unit tests implemented, integration tests needed
 
-move tests from src/test to /tests/unittests
+i should be able to collapse collection sections

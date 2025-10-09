@@ -25,8 +25,12 @@ const AIInsights = () => {
   const isAIPanelOpen = useBookmarkStore((state) => state.isAIPanelOpen)
   const setAIPanelOpen = useBookmarkStore((state) => state.setAIPanelOpen)
   const allActivity = useBookmarkStore((state) => state.recentActivity)
+  const validationSummary = useBookmarkStore((state) => state.validationSummary)
+  const isValidating = useBookmarkStore((state) => state.isValidating)
+  const validationProgress = useBookmarkStore((state) => state.validationProgress)
 
   const recentActivity = useMemo(() => allActivity.slice(0, 5), [allActivity])
+  const invalidCount = validationSummary?.invalid || 0
 
   return (
     <AnimatePresence mode="wait">
@@ -135,31 +139,70 @@ const AIInsights = () => {
               </Button>
             </Box>
 
-            <Box
-              w="full"
-              p={4}
-              style={{ background: 'var(--color-bg-tertiary)' }}
-              border="1px solid var(--color-success)"
-              borderRadius="12px"
-              borderLeftWidth="4px"
-              borderLeftColor="var(--color-success)"
-            >
-              <Text fontSize="13px" color="var(--color-accent)" lineHeight="1.4" mb={3}>
-                3 of your bookmarked links are no longer available.
-              </Text>
-              <Button
-                size="xs"
-                bg="var(--color-success)"
-                color="white"
-                fontSize="11px"
-                px={3}
-                py={1}
-                borderRadius="8px"
-                _hover={{ bg: 'var(--color-success)' }}
+            {isValidating ? (
+              <Box
+                w="full"
+                p={4}
+                style={{ background: 'var(--color-bg-tertiary)' }}
+                border="1px solid var(--color-border)"
+                borderRadius="12px"
+                borderLeftWidth="4px"
+                borderLeftColor="var(--color-blue)"
               >
-                Review Links
-              </Button>
-            </Box>
+                <Text fontSize="13px" color="var(--color-text-secondary)" lineHeight="1.4" mb={2}>
+                  Validating bookmarks...
+                </Text>
+                {validationProgress && (
+                  <Text fontSize="12px" color="var(--color-text-tertiary)">
+                    {validationProgress.current} / {validationProgress.total}
+                  </Text>
+                )}
+              </Box>
+            ) : invalidCount > 0 ? (
+              <Box
+                w="full"
+                p={4}
+                style={{ background: 'var(--color-bg-tertiary)' }}
+                border="1px solid var(--color-error)"
+                borderRadius="12px"
+                borderLeftWidth="4px"
+                borderLeftColor="var(--color-error)"
+              >
+                <Text fontSize="13px" color="var(--color-error)" lineHeight="1.4" mb={3}>
+                  {invalidCount} of your bookmarked link{invalidCount > 1 ? 's are' : ' is'} no longer available.
+                </Text>
+                <Button
+                  size="xs"
+                  bg="var(--color-error)"
+                  color="white"
+                  fontSize="11px"
+                  px={3}
+                  py={1}
+                  borderRadius="8px"
+                  _hover={{ opacity: 0.8 }}
+                  onClick={() => {
+                    // TODO: Navigate to broken links view
+                    console.log('Review broken links')
+                  }}
+                >
+                  Review Links
+                </Button>
+              </Box>
+            ) : validationSummary ? (
+              <Box
+                w="full"
+                p={4}
+                style={{ background: 'var(--color-bg-tertiary)' }}
+                border="1px solid var(--color-success)"
+                borderRadius="12px"
+                borderLeftWidth="4px"
+                borderLeftColor="var(--color-success)"
+              >
+                <Text fontSize="13px" color="var(--color-success)" lineHeight="1.4">
+                  All {validationSummary.total} bookmark{validationSummary.total > 1 ? 's are' : ' is'} working correctly!
+                </Text>
+              </Box>
+            ) : null}
           </VStack>
         </VStack>
 

@@ -104,6 +104,21 @@ export const useInitializeApp = () => {
     return () => clearTimeout(timer)
   }, [])
 
+  // Validate bookmarks on app open
+  useEffect(() => {
+    // Only validate if we have existing bookmarks
+    if (hasExistingBookmarks === true) {
+      const timer = setTimeout(() => {
+        const validateAllBookmarks = useBookmarkStore.getState().validateAllBookmarks
+        validateAllBookmarks().catch(error => {
+          console.error('Failed to validate bookmarks on startup:', error)
+        })
+      }, 2000) // Delay to allow other initialization to complete
+
+      return () => clearTimeout(timer)
+    }
+  }, [hasExistingBookmarks])
+
   // Only show loading when we're actually loading and have existing bookmarks
   const showLoading = hasExistingBookmarks === true && (isLoading || collectionsLoading)
 

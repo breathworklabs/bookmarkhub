@@ -8,6 +8,15 @@ import { createErrorHandler } from '../utils/errorHandling'
 import { detectDuplicate, type DuplicateMatch } from '../lib/duplicateDetection'
 import { downloadFile } from '../lib/exportFormats'
 import type { Bookmark, BookmarkInsert } from '../types/bookmark'
+import {
+  validateBookmarks,
+  getValidationSummary,
+  loadCachedValidationResults,
+  saveCachedValidationResults,
+  areCachedResultsFresh,
+  type ValidationResult,
+  type ValidationSummary
+} from '../services/bookmarkValidationService'
 
 export interface DateRangeFilter {
   type: 'all' | 'today' | 'week' | 'month' | 'custom'
@@ -94,9 +103,19 @@ interface BookmarkState {
   // Saved filter presets
   savedFilterPresets: SavedFilterPreset[]
 
+  // Bookmark validation state
+  validationResults: ValidationResult[]
+  validationSummary: ValidationSummary | null
+  isValidating: boolean
+  validationProgress: { current: number; total: number } | null
+
   // Actions
   addActivityLog: (action: string, details?: string) => void
   getRecentActivity: (limit?: number) => ActivityLog[]
+
+  // Validation actions
+  validateAllBookmarks: () => Promise<void>
+  getInvalidBookmarksCount: () => number
 
   // Saved filter preset actions
   saveFilterPreset: (name: string, description?: string) => void
@@ -236,6 +255,12 @@ export const useBookmarkStore = create<BookmarkState>()(
 
       // Saved filter presets initial state
       savedFilterPresets: [],
+
+      // Bookmark validation initial state
+      validationResults: [],
+      validationSummary: null,
+      isValidating: false,
+      validationProgress: null,
 
       // Initialize store
       initialize: async () => {
@@ -965,6 +990,69 @@ export const useBookmarkStore = create<BookmarkState>()(
         } catch (error) {
           console.error('Failed to save filter presets to localStorage:', error)
         }
+      },
+
+      // Bookmark validation actions
+      validateAllBookmarks: async () => {
+        const state = get()
+
+        // Check if we have cached results that are still fresh
+        const cachedResults = loadCachedValidationResults()
+        if (cachedResults.length > 0 && areCachedResultsFresh(cachedResults)) {
+          const summary = getValidationSummary(cachedResults)
+          set({
+            validationResults: cachedResults,
+            validationSummary: summary
+          }, false, 'validateAllBookmarks:useCached')
+          return
+        }
+
+        // Start validation
+        set({
+          isValidating: true,
+          validationProgress: { current: 0, total: state.bookmarks.length }
+        }, false, 'validateAllBookmarks:start')
+
+        try {
+          const results = await validateBookmarks(
+            state.bookmarks,
+            (current, total) => {
+              set({
+                validationProgress: { current, total }
+              }, false, 'validateAllBookmarks:progress')
+            },
+            5 // concurrency
+          )
+
+          const summary = getValidationSummary(results)
+
+          // Save results to cache
+          saveCachedValidationResults(results)
+
+          set({
+            validationResults: results,
+            validationSummary: summary,
+            isValidating: false,
+            validationProgress: null
+          }, false, 'validateAllBookmarks:complete')
+
+          // Log activity
+          if (summary.invalid > 0) {
+            get().addActivityLog('Validation complete', `Found ${summary.invalid} broken link${summary.invalid > 1 ? 's' : ''}`)
+          }
+        } catch (error) {
+          console.error('Error validating bookmarks:', error)
+          set({
+            isValidating: false,
+            validationProgress: null,
+            error: 'Failed to validate bookmarks'
+          }, false, 'validateAllBookmarks:error')
+        }
+      },
+
+      getInvalidBookmarksCount: () => {
+        const state = get()
+        return state.validationSummary?.invalid || 0
       }
     }),
     {
