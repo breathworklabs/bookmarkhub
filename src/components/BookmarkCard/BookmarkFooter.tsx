@@ -3,6 +3,7 @@ import { memo, useCallback } from 'react'
 import { type Bookmark } from '../../types/bookmark'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import TagChip from '../tags/TagChip'
+import SmartTagSuggestionInline from '../tags/SmartTagSuggestionInline'
 
 interface BookmarkFooterProps {
   bookmark: Bookmark
@@ -13,6 +14,8 @@ interface BookmarkFooterProps {
 const BookmarkFooter = memo(({ bookmark, isInBulkMode }: BookmarkFooterProps) => {
   const selectedTags = useBookmarkStore((state) => state.selectedTags)
   const addTag = useBookmarkStore((state) => state.addTag)
+  const bookmarks = useBookmarkStore((state) => state.bookmarks)
+  const updateBookmark = useBookmarkStore((state) => state.updateBookmark)
 
   const formatCount = (count: number | string): string => {
     const num = typeof count === 'string' ? parseInt(count, 10) : count
@@ -64,6 +67,18 @@ const BookmarkFooter = memo(({ bookmark, isInBulkMode }: BookmarkFooterProps) =>
       addTag(tag)
     }
   }, [isInBulkMode, selectedTags, addTag])
+
+  // Handle applying smart tag suggestion
+  const handleApplySmartTag = useCallback(async (tag: string) => {
+    const currentTags = bookmark.tags || []
+    if (!currentTags.includes(tag)) {
+      const updatedBookmark = {
+        ...bookmark,
+        tags: [...currentTags, tag],
+      }
+      await updateBookmark(updatedBookmark)
+    }
+  }, [bookmark, updateBookmark])
 
   return (
     <Box mt={4}>
@@ -145,6 +160,17 @@ const BookmarkFooter = memo(({ bookmark, isInBulkMode }: BookmarkFooterProps) =>
               )}
             </For>
           </Wrap>
+        )}
+
+        {/* Smart Tag Suggestions - Only show when not in bulk mode */}
+        {!isInBulkMode && (
+          <SmartTagSuggestionInline
+            bookmark={bookmark}
+            allBookmarks={bookmarks}
+            onApplyTag={handleApplySmartTag}
+            collapsed={true}
+            maxVisibleSuggestions={3}
+          />
         )}
       </VStack>
     </Box>

@@ -3,7 +3,7 @@
  * X/Twitter-aware auto-tagging with rule-based NLP
  */
 
-import type { Bookmark } from '@/types/bookmark'
+import type { Bookmark } from '../../types/bookmark'
 
 // ==================== Core Types ====================
 
@@ -17,25 +17,25 @@ export interface TagSuggestion {
   confidence: number
   /** Which strategies generated this tag */
   sources: TagSource[]
-  /** Optional reasoning for the suggestion */
-  reasoning?: string
+  /** Strategy that generated this suggestion */
+  strategy: string
+  /** Reasoning for the suggestion */
+  reasoning: string
 }
 
 /**
  * Source of a tag suggestion
  */
-export type TagSource = 'domain' | 'url' | 'nlp' | 'learning'
+export type TagSource = 'domain' | 'url' | 'nlp' | 'learning' | 'content' | 'history'
 
 /**
  * Result of tag generation
  */
 export interface TaggingResult {
-  /** All suggestions sorted by confidence */
+  /** Manual suggestions (confidence < threshold) */
   suggestions: TagSuggestion[]
-  /** High confidence tags to auto-apply */
-  autoApplied: string[]
-  /** Lower confidence tags needing review */
-  needsReview: string[]
+  /** High confidence tags to auto-apply (confidence >= threshold) */
+  autoApply: TagSuggestion[]
   /** Performance metrics */
   metrics: TaggingMetrics
 }
@@ -44,12 +44,16 @@ export interface TaggingResult {
  * Performance metrics for a tagging operation
  */
 export interface TaggingMetrics {
+  /** Number of strategies used */
+  strategiesUsed: number
+  /** Total suggestions before deduplication */
+  totalSuggestions: number
+  /** Unique suggestions after deduplication */
+  uniqueSuggestions: number
+  /** Number of tags auto-applied */
+  autoApplied: number
   /** Total processing time in ms */
   processingTime: number
-  /** Time per strategy */
-  strategyTimes: Record<TagSource, number>
-  /** Number of suggestions per source */
-  suggestionCounts: Record<TagSource, number>
 }
 
 /**
@@ -61,7 +65,7 @@ export interface TaggingOptions {
   /** Maximum number of suggestions (default: 10) */
   maxSuggestions?: number
   /** Enable/disable specific strategies */
-  enabledStrategies?: TagSource[]
+  enabledStrategies?: string[]
   /** Custom domain rules to merge with defaults */
   customDomainRules?: DomainRule[]
 }
@@ -73,7 +77,7 @@ export interface TaggingOptions {
  */
 export interface TaggingStrategy {
   /** Unique identifier for the strategy */
-  readonly name: TagSource
+  readonly name: string
   /** Generate tag suggestions for a bookmark */
   generateTags(
     bookmark: Bookmark,
