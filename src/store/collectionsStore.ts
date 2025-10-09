@@ -32,6 +32,10 @@ interface CollectionsActions {
   moveCollection: (collectionId: string, newParentId: string | null) => Promise<void>
   getCollectionBreadcrumb: (collectionId: string) => Collection[]
 
+  // Section collapse/expand
+  toggleSectionCollapse: (sectionId: string) => void
+  isSectionCollapsed: (sectionId: string) => boolean
+
   // UI state management
   setCreatingCollection: (isCreating: boolean) => void
   setCollectionFilter: (filter: 'all' | 'private' | 'shared') => void
@@ -57,6 +61,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
       isCreatingCollection: false,
       collectionFilter: 'all',
       expandedCollections: [],
+      collapsedSections: [], // No sections collapsed by default
       isLoading: false,
       error: null,
 
@@ -445,6 +450,22 @@ export const useCollectionsStore = create<CollectionsStore>()(
         const { collections } = get()
         const { getCollectionPath } = require('../utils/collectionHierarchy')
         return getCollectionPath(collectionId, collections)
+      },
+
+      // Section collapse/expand actions
+      toggleSectionCollapse: (sectionId) =>
+        set(
+          (state) => ({
+            collapsedSections: state.collapsedSections.includes(sectionId)
+              ? state.collapsedSections.filter(id => id !== sectionId)
+              : [...state.collapsedSections, sectionId]
+          }),
+          false,
+          'collections:toggleSection'
+        ),
+
+      isSectionCollapsed: (sectionId) => {
+        return get().collapsedSections.includes(sectionId)
       },
 
       setCreatingCollection: (isCreating) =>

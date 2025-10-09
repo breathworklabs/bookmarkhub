@@ -32,8 +32,8 @@ export const fontSizes = {
 
 // Responsive container widths
 export const containerSizes = {
-  sidebar: { base: '240px', sm: '260px', md: '280px' },
-  content: { base: '100%', sm: '100%', md: 'calc(100% - 280px)' },
+  sidebar: { base: '260px', sm: '280px', md: '320px' },
+  content: { base: '100%', sm: '100%', md: 'calc(100% - 320px)' },
   card: { base: '100%', sm: '100%', md: '100%' },
   modal: { base: '90vw', sm: '80vw', md: '600px' }
 } as const

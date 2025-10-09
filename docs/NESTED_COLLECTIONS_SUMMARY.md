@@ -27,20 +27,32 @@ Users can create sub-collections through the Create/Edit Collection modal:
 
 ---
 
-### 2. **Tree View with Depth Limiting**
+### 2. **Tree View with Depth Limiting & Collapsible Sections**
 **Files:**
 - `src/components/collections/tree/CollectionTreeItem.tsx`
 - `src/components/collections/tree/CollectionTree.tsx`
+- `src/components/collections/tree/CollectionSection.tsx`
 
 **Sidebar Display (2 Levels Max):**
 ```
-📁 Work
-  ├─ 📁 Projects       [30] +3 more  🔍
-  └─ 📁 Resources      [12]
+▼ SMART COLLECTIONS (4)
+  ⭐ Starred           [15]
+  🕐 Recent            [8]
+  📦 Archived          [5]
+  📂 Uncategorized     [2]
+
+▼ MY COLLECTIONS (3)
+  📁 Work
+    ├─ 📁 Projects     [30] +3 more  🔍
+    └─ 📁 Resources    [12]
+  📁 Personal          [8]
 ```
 
 **Features:**
 - Shows only 2 levels deep in sidebar to prevent clutter
+- **Collapsible Sections:** Click section headers to collapse/expand entire groups
+  - Smart Collections section
+  - My Collections section
 - Chevron icons (▶/▼) for expand/collapse with smooth animations
 - Different folder icons:
   - 📁 Regular folder (shallow nesting)
@@ -49,6 +61,7 @@ Users can create sub-collections through the Create/Edit Collection modal:
 - **Smooth Animations:** Expand/collapse transitions with height and opacity fade
 
 **Visual Indicators:**
+- **Section Headers:** Uppercase labels with collection count
 - **"+N more" badge:** Shows count of hidden nested subfolders
 - **Ellipsis (...) icon:** Indicates hidden children at max depth
 - **Expand Full View button (🔍):** For collections with 3+ levels (reserved for Phase 2)
@@ -57,6 +70,7 @@ Users can create sub-collections through the Create/Edit Collection modal:
 - Max-height transition (0.3s ease-in-out) for smooth expand/collapse
 - Opacity fade (0.2s ease-in-out) for visual polish
 - Smart collections aligned flush left (no arrow spacer)
+- Section collapse state persisted in Zustand store
 
 ---
 

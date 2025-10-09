@@ -296,7 +296,7 @@ export const componentStyles = {
     },
 
     sidebar: {
-      w: '280px',
+      w: '320px',
       bg: colors.dark.sidebarBg,
       borderRightWidth: '1px',
       borderColor: colors.dark.border,

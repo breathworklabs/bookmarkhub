@@ -49,6 +49,7 @@ export interface CollectionsState {
   isCreatingCollection: boolean
   collectionFilter: 'all' | 'private' | 'shared'
   expandedCollections: string[]  // For tree view
+  collapsedSections: string[]  // For collapsible sections (e.g., 'smart', 'user')
   isLoading: boolean
   error: string | null
 }

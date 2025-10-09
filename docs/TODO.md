@@ -533,5 +533,3 @@
 - **Security**: Privacy-compliant with local storage and input validation
 - **Extensibility**: Well-structured for adding new features
 - **Testing**: Unit tests implemented, integration tests needed
-
-i should be able to collapse collection sections
