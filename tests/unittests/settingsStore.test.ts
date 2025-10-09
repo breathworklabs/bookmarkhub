@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { useSettingsStore } from '../store/settingsStore'
+import { useSettingsStore } from '../../src/store/settingsStore'
 
 // Mock localStorage
 const localStorageMock = (() => {

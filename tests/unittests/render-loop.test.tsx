@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useFilteredBookmarksOptimized } from '../hooks/composite/useFilteredBookmarksOptimized'
+import { useBookmarkStore } from '../../src/store/bookmarkStore'
+import { useFilteredBookmarksOptimized } from '../../src/hooks/composite/useFilteredBookmarksOptimized'
 import { TEST_CONSTANTS, resetBookmarkStore } from './test-utils'
 
 // Mock Supabase
-vi.mock('../lib/supabase', () => ({
+vi.mock('../../src/lib/supabase', () => ({
   supabase: {
     auth: {
       getUser: vi.fn().mockResolvedValue({

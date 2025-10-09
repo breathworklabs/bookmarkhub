@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useCollectionsStore } from '../store/collectionsStore'
-import { useFilteredBookmarksOptimized } from '../hooks/composite/useFilteredBookmarksOptimized'
+import { useBookmarkStore } from '../../src/store/bookmarkStore'
+import { useCollectionsStore } from '../../src/store/collectionsStore'
+import { useFilteredBookmarksOptimized } from '../../src/hooks/composite/useFilteredBookmarksOptimized'
 import { createMockBookmarks } from './test-utils'
-import type { Bookmark } from '../types/bookmark'
+import type { Bookmark } from '../../src/types/bookmark'
 
 // Create mock bookmarks with specific configurations for testing
 const mockBookmarks: Bookmark[] = createMockBookmarks(4, [

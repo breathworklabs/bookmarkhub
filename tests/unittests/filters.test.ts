@@ -1,13 +1,13 @@
 import { renderHook } from '@testing-library/react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { useFilteredBookmarksOptimized } from '../hooks/composite/useFilteredBookmarksOptimized'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useCollectionsStore } from '../store/collectionsStore'
-import { type Bookmark } from '../types/bookmark'
+import { useFilteredBookmarksOptimized } from '../../src/hooks/composite/useFilteredBookmarksOptimized'
+import { useBookmarkStore } from '../../src/store/bookmarkStore'
+import { useCollectionsStore } from '../../src/store/collectionsStore'
+import { type Bookmark } from '../../src/types/bookmark'
 
 // Mock the stores
-vi.mock('../store/bookmarkStore')
-vi.mock('../store/collectionsStore')
+vi.mock('../../src/store/bookmarkStore')
+vi.mock('../../src/store/collectionsStore')
 
 const mockBookmarks: Bookmark[] = [
   {

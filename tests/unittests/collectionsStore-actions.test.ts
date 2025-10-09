@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { useCollectionsStore } from '../store/collectionsStore'
-import { localStorageService, type StoredCollection } from '../lib/localStorage'
+import { useCollectionsStore } from '../../src/store/collectionsStore'
+import { localStorageService, type StoredCollection } from '../../src/lib/localStorage'
 
 const makeCollection = (overrides: Partial<StoredCollection> = {}): StoredCollection => ({
   id: overrides.id ?? 'c1',

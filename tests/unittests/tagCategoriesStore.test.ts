@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { useTagCategoriesStore } from '../store/tagCategoriesStore'
-import { DEFAULT_TAG_CATEGORIES } from '../types/tags'
+import { useTagCategoriesStore } from '../../src/store/tagCategoriesStore'
+import { DEFAULT_TAG_CATEGORIES } from '../../src/types/tags'
 
 describe('TagCategoriesStore', () => {
   beforeEach(() => {

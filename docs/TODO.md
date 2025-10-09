@@ -523,3 +523,5 @@
 - **Security**: Privacy-compliant with local storage and input validation
 - **Extensibility**: Well-structured for adding new features
 - **Testing**: Unit tests implemented, integration tests needed
+
+move tests from src/test to /tests/unittests

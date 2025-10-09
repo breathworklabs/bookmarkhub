@@ -1,4 +1,4 @@
-import type { Bookmark } from '../types/bookmark'
+import type { Bookmark } from '../../src/types/bookmark'
 
 // Common test constants
 export const TEST_CONSTANTS = {

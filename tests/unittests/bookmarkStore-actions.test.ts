@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { localStorageService, type StoredBookmark } from '../lib/localStorage'
+import { useBookmarkStore } from '../../src/store/bookmarkStore'
+import { localStorageService, type StoredBookmark } from '../../src/lib/localStorage'
 
 const makeStored = (overrides: Partial<StoredBookmark> = {}): StoredBookmark => ({
   id: overrides.id ?? 1,

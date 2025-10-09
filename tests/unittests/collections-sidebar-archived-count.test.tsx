@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
-import CollectionsList from '../components/collections/CollectionsList'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useCollectionsStore } from '../store/collectionsStore'
-import type { Bookmark } from '../types/bookmark'
-import { ModalProvider } from '../components/modals/ModalProvider'
+import CollectionsList from '../../src/components/collections/CollectionsList'
+import { useBookmarkStore } from '../../src/store/bookmarkStore'
+import { useCollectionsStore } from '../../src/store/collectionsStore'
+import type { Bookmark } from '../../src/types/bookmark'
+import { ModalProvider } from '../../src/components/modals/ModalProvider'
 
 // Mock the stores
-vi.mock('../store/bookmarkStore')
-vi.mock('../store/collectionsStore')
+vi.mock('../../src/store/bookmarkStore')
+vi.mock('../../src/store/collectionsStore')
 
 const mockUseBookmarkStore = vi.mocked(useBookmarkStore)
 const mockUseCollectionsStore = vi.mocked(useCollectionsStore)

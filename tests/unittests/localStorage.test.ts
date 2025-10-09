@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { LocalStorageService, type StoredBookmarkCollection } from '../lib/localStorage'
-import type { BookmarkInsert } from '../types/bookmark'
+import { LocalStorageService, type StoredBookmarkCollection } from '../../src/lib/localStorage'
+import type { BookmarkInsert } from '../../src/types/bookmark'
 
 // Mock localStorage with consolidated storage support
 let mockStorage: any = {}

@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
+    setupFiles: ['./tests/unittests/setup.ts'],
     globals: true,
     exclude: [
       '**/node_modules/**',
@@ -20,7 +20,7 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
-        'src/test/',
+        'tests/',
         '**/*.config.*',
         '**/types.ts',
         'dist/',

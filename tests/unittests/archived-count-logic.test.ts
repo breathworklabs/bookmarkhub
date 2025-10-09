@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import type { Bookmark } from '../types/bookmark'
+import type { Bookmark } from '../../src/types/bookmark'
 
 // Test the exact logic from CollectionsSidebar getBookmarkCount function
 function getBookmarkCount(collectionId: string, bookmarks: Bookmark[]) {

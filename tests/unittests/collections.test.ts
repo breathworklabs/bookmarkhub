@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { localStorageService } from '../lib/localStorage'
-import { useCollectionsStore } from '../store/collectionsStore'
-import type { CollectionInsert } from '../lib/localStorage'
+import { localStorageService } from '../../src/lib/localStorage'
+import { useCollectionsStore } from '../../src/store/collectionsStore'
+import type { CollectionInsert } from '../../src/lib/localStorage'
 
 // Mock localStorage with consolidated storage support
 let mockStorage: any = {}

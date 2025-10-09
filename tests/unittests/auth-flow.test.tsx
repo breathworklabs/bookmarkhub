@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
-import { useBookmarkStore } from '../store/bookmarkStore'
+import { useBookmarkStore } from '../../src/store/bookmarkStore'
 import { TEST_CONSTANTS, resetBookmarkStore } from './test-utils'
 
 // Simplified test component focused on the store behavior

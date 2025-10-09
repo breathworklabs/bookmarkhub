@@ -3,11 +3,11 @@ import { render, screen } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import BookmarkCard from '../components/BookmarkCard/BookmarkCard'
-import { ModalProvider } from '../components/modals/ModalProvider'
+import BookmarkCard from '../../src/components/BookmarkCard/BookmarkCard'
+import { ModalProvider } from '../../src/components/modals/ModalProvider'
 
 // Mock the bookmark store
-vi.mock('../store/bookmarkStore', () => ({
+vi.mock('../../src/store/bookmarkStore', () => ({
   useBookmarkStore: vi.fn((selector) => {
     const state = {
       bookmarks: [],
@@ -24,7 +24,7 @@ vi.mock('../store/bookmarkStore', () => ({
 }))
 
 // Mock the collections store
-vi.mock('../store/collectionsStore', () => ({
+vi.mock('../../src/store/collectionsStore', () => ({
   useCollectionsStore: vi.fn((selector) => {
     const state = {
       collections: [],

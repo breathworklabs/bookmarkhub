@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useCollectionsStore } from '../store/collectionsStore'
+import { useBookmarkStore } from '../../src/store/bookmarkStore'
+import { useCollectionsStore } from '../../src/store/collectionsStore'
 import { createMockBookmark } from './test-utils'
-import type { Bookmark } from '../types/bookmark'
-import type { Collection } from '../store/collectionsStore'
-import type { DropResult } from '../types/dnd'
+import type { Bookmark } from '../../src/types/bookmark'
+import type { Collection } from '../../src/store/collectionsStore'
+import type { DropResult } from '../../src/types/dnd'
 import toast from 'react-hot-toast'
 
 // Mock toast

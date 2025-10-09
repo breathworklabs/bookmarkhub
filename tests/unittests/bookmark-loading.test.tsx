@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { useBookmarkStore } from '../store/bookmarkStore'
+import { useBookmarkStore } from '../../src/store/bookmarkStore'
 import { mockBookmarks } from './test-utils'
 
 // Mock localStorage for testing
