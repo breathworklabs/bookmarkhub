@@ -162,7 +162,8 @@ const BookmarkFooter = memo(({ bookmark, isInBulkMode }: BookmarkFooterProps) =>
           </Wrap>
         )}
 
-        {/* Smart Tag Suggestions - Only show when not in bulk mode */}
+        {/* Smart Tag Suggestions - TEMPORARILY DISABLED (feature not ready)
+            TODO: Re-enable once performance and UX issues are resolved
         {!isInBulkMode && (
           <SmartTagSuggestionInline
             bookmark={bookmark}
@@ -172,6 +173,7 @@ const BookmarkFooter = memo(({ bookmark, isInBulkMode }: BookmarkFooterProps) =>
             maxVisibleSuggestions={3}
           />
         )}
+        */}
       </VStack>
     </Box>
   )
