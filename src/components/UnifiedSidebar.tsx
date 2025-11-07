@@ -9,7 +9,7 @@ import { useIsMobile } from '../hooks/useMobile'
 import CollectionsList from './collections/CollectionsList'
 import { useNavigationStyles } from '../hooks/useStyles'
 import { componentStyles } from '../styles/components'
-import logoImage from '../assets/logo_x_v1.jpeg'
+import logoImage from '../assets/logo_x_v1.png'
 
 // Optimized selector for bookmark data
 const useBookmarkCounts = () => {
