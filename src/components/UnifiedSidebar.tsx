@@ -1,4 +1,4 @@
-import { Box, VStack, HStack, Text, Badge, Separator, IconButton, Button } from '@chakra-ui/react'
+import { Box, VStack, HStack, Text, Badge, Separator, IconButton, Button, Image } from '@chakra-ui/react'
 import { LuMenu, LuStar, LuExternalLink, LuFolderPlus, LuSettings, LuTrash2, LuLayoutGrid, LuLayoutList } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -9,6 +9,7 @@ import { useIsMobile } from '../hooks/useMobile'
 import CollectionsList from './collections/CollectionsList'
 import { useNavigationStyles } from '../hooks/useStyles'
 import { componentStyles } from '../styles/components'
+import logoImage from '../assets/logo_x_v1.jpeg'
 
 // Optimized selector for bookmark data
 const useBookmarkCounts = () => {
@@ -93,19 +94,14 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
       <VStack alignItems="stretch" gap={6} h="full">
         {/* Logo */}
         <HStack gap={3} pb={4} borderBottomWidth="1px" style={{ borderColor: 'var(--color-border)' }}>
-          <Box
+          <Image
+            src={logoImage}
+            alt="BookmarkX Logo"
             w={8}
             h={8}
-            bg="var(--gradient-brand)"
             borderRadius="lg"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            color="white"
-            fontWeight="bold"
-          >
-            X
-          </Box>
+            objectFit="cover"
+          />
           <Text fontSize="lg" fontWeight="bold" style={{ color: 'var(--color-text-primary)' }}>
             BookmarkX
           </Text>
