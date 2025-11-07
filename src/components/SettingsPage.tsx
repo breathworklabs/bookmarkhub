@@ -242,7 +242,7 @@ const SettingsPage = () => {
                       <SelectRoot
                         collection={syncIntervalOptions}
                         value={[extensionSettings.autoSyncInterval]}
-                        onValueChange={(e: any) => setAutoSyncInterval(e.value[0] as any)}
+                        onValueChange={(details) => setAutoSyncInterval(details.value[0] as any)}
                         size="sm"
                       >
                         <SelectTrigger
@@ -360,7 +360,7 @@ const SettingsPage = () => {
                       <SelectRoot
                         collection={duplicateHandlingOptions}
                         value={[extensionSettings.importDuplicates]}
-                        onValueChange={(e: any) => setImportDuplicates(e.value[0] as any)}
+                        onValueChange={(details) => setImportDuplicates(details.value[0] as any)}
                         size="sm"
                       >
                         <SelectTrigger
@@ -454,7 +454,7 @@ const SettingsPage = () => {
                       <SelectRoot
                         collection={collectionOptions}
                         value={[extensionSettings.defaultCollection || 'none']}
-                        onValueChange={(e: any) => setDefaultCollection(e.value[0] === 'none' ? null : e.value[0])}
+                        onValueChange={(details) => setDefaultCollection(details.value[0] === 'none' ? null : details.value[0])}
                         size="sm"
                       >
                         <SelectTrigger
@@ -541,7 +541,7 @@ const SettingsPage = () => {
                     <SelectRoot
                       collection={themeOptions}
                       value={[displaySettings.theme]}
-                      onValueChange={(e: any) => setTheme(e.value[0] as any)}
+                      onValueChange={(details) => setTheme(details.value[0] as any)}
                       size="sm"
                     >
                       <SelectTrigger
@@ -579,7 +579,7 @@ const SettingsPage = () => {
                       <SelectRoot
                         collection={sortByOptions}
                         value={[displaySettings.sortBy]}
-                        onValueChange={(e: any) => setSortBy(e.value[0] as any)}
+                        onValueChange={(details) => setSortBy(details.value[0] as any)}
                         size="sm"
                       >
                         <SelectTrigger
@@ -671,9 +671,9 @@ const SettingsPage = () => {
                       <SelectRoot
                         collection={exportFormatOptions}
                         value={['json']}
-                        onValueChange={(e: any) => {
+                        onValueChange={(details) => {
                           // Export format preference removed - defaults to JSON
-                          console.log('Export format:', e.value[0])
+                          console.log('Export format:', details.value[0])
                         }}
                         size="sm"
                       >
