@@ -1,6 +1,6 @@
 # Claude Development Guidelines
 
-## Project: X Bookmark Manager
+## Project: BookmarkX
 Privacy-focused bookmark management for X/Twitter with React, TypeScript, Chakra UI, and local storage.
 
 **Core Principles:** Quality over speed • Test before commit • Document as you go • Follow the plan

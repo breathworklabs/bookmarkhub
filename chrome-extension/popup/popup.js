@@ -1,5 +1,5 @@
 /**
- * Simple Popup Script for X Bookmark Manager Extension
+ * Simple Popup Script for BookmarkX Extension
  * Direct extraction without content scripts
  */
 
@@ -18,7 +18,8 @@ class SimplePopupManager {
     this.extractBtn = document.getElementById('extract-bookmarks');
     this.managerBtn = document.getElementById('open-manager');
     this.testBtn = document.getElementById('test-connection');
-    this.statusText = document.getElementById('status-text');
+    this.progressSection = document.getElementById('progress-section');
+    this.progressText = document.getElementById('progress-text');
     this.progressBar = document.getElementById('progress-bar');
     this.debugInfo = document.getElementById('debug-info');
     this.debugContent = document.getElementById('debug-content');
@@ -45,7 +46,15 @@ class SimplePopupManager {
    */
   handleProgressUpdate(progress) {
     const { count, hasMore, batchCount } = progress;
-    this.updateStatus(
+
+    // Update both info card and progress section
+    this.showInfo(
+      `Extracting... (${count})`,
+      `Found <strong>${count} bookmarks</strong> so far. Batch ${batchCount}${hasMore ? ' - continuing...' : ''}`,
+      'extracting'
+    );
+
+    this.showProgress(
       `Extracting... ${count} bookmarks found (batch ${batchCount})${hasMore ? ' - continuing...' : ''}`
     );
   }
@@ -55,8 +64,8 @@ class SimplePopupManager {
    */
   async initializePopup() {
     try {
-      this.updateStatus('Ready to extract bookmarks');
-      this.extractBtn.disabled = false;
+      // Automatically check login status on open
+      await this.checkLoginStatus();
     } catch (error) {
       console.error('Error initializing popup:', error);
       this.updateStatus('Error initializing');
@@ -72,19 +81,24 @@ class SimplePopupManager {
     try {
       this.isExtracting = true;
       this.extractBtn.disabled = true;
-      this.updateStatus('Starting automated extraction...');
-      this.showProgress(true);
+
+      // Show initial extraction status
+      this.showInfo('Starting...', 'Initializing bookmark extraction from X/Twitter...', 'extracting');
+      this.showProgress('Starting extraction...');
 
       // Check authentication first
       const authCheck = await chrome.runtime.sendMessage({ action: 'CHECK_AUTH' });
 
       if (!authCheck.authenticated) {
-        this.updateStatus('Not logged into X/Twitter. Opening login page...');
+        this.showInfo('Not Logged In', 'Opening X/Twitter login page. Please log in and try again.', 'error');
+        this.hideProgress();
         await chrome.tabs.create({ url: 'https://x.com/login' });
         return;
       }
 
-      this.updateStatus('Authenticated! Extracting all bookmarks automatically...');
+      // Update status: authenticated
+      this.showInfo('Extracting... (0)', 'Connected to X/Twitter. Fetching your bookmarks...', 'extracting');
+      this.showProgress('Fetching bookmarks from X/Twitter...');
 
       // Send extraction request to background service worker
       const result = await chrome.runtime.sendMessage({
@@ -93,39 +107,47 @@ class SimplePopupManager {
       });
 
       if (result.success) {
-        this.updateStatus(
-          `✓ Success! Extracted ${result.count} bookmarks ` +
-          `(${result.saved} new, ${result.duplicates} duplicates skipped). ` +
-          `Syncing to your app automatically...`
+        // Show success with details
+        this.showInfo(
+          'Success!',
+          `Extracted <strong>${result.count} bookmarks</strong> (${result.saved} new, ${result.duplicates} duplicates skipped). Syncing to your app...`,
+          'success'
         );
+        this.showProgress(`✓ Successfully extracted ${result.count} bookmarks`);
 
-        // Show additional instruction if no localhost tab is open
+        // Check if app is open
         setTimeout(async () => {
           const tabs = await chrome.tabs.query({
             url: ['http://localhost/*', 'http://127.0.0.1/*']
           });
 
           if (tabs.length === 0) {
-            this.updateStatus(
-              `✓ Extraction complete! Opening your app to sync bookmarks...`
+            this.showInfo(
+              'Complete!',
+              `Extracted <strong>${result.count} bookmarks</strong>. Opening BookmarkX app to view them...`,
+              'success'
             );
           } else {
-            this.updateStatus(
-              `✓ Extraction complete! Bookmarks synced to your app. Refresh to see them!`
+            this.showInfo(
+              'Complete!',
+              `Extracted <strong>${result.count} bookmarks</strong>. Refresh your BookmarkX app to see them!`,
+              'success'
             );
           }
+          this.hideProgress();
         }, 2000);
       } else {
-        this.updateStatus(`❌ Error: ${result.error}`);
+        this.showInfo('Error', `Extraction failed: ${result.error}`, 'error');
+        this.hideProgress();
       }
 
     } catch (error) {
       console.error('Error during extraction:', error);
-      this.updateStatus(`❌ Error: ${error.message}`);
+      this.showInfo('Error', `Something went wrong: ${error.message}`, 'error');
+      this.hideProgress();
     } finally {
       this.isExtracting = false;
       this.extractBtn.disabled = false;
-      this.showProgress(false);
     }
   }
 
@@ -365,7 +387,7 @@ class SimplePopupManager {
       } else {
         // Ask user for their app URL
         const appUrl = prompt(
-          'Enter your X Bookmark Manager URL:',
+          'Enter your BookmarkX URL:',
           'http://localhost:3000'
         );
 
@@ -389,11 +411,65 @@ class SimplePopupManager {
   }
 
   /**
-   * Update status text
+   * Show info message in the info card
    */
-  updateStatus(text) {
-    if (this.statusText) {
-      this.statusText.textContent = text;
+  showInfo(title, message, type = 'default') {
+    const infoCard = document.getElementById('requirements-info');
+    if (infoCard) {
+      const titleEl = infoCard.querySelector('.info-title');
+      const textEl = infoCard.querySelector('.info-text');
+      if (titleEl) titleEl.textContent = title;
+      if (textEl) textEl.innerHTML = message;
+
+      // Update card styling based on type
+      infoCard.className = 'info-card';
+      if (type === 'extracting') {
+        infoCard.classList.add('extracting');
+      } else if (type === 'success') {
+        infoCard.classList.add('success');
+      } else if (type === 'error') {
+        infoCard.classList.add('error');
+      }
+    }
+  }
+
+  /**
+   * Update status (for backward compatibility - updates info card)
+   */
+  updateStatus(message) {
+    // Determine title based on message content
+    let title = 'Status';
+    if (message.includes('Error') || message.includes('❌')) {
+      title = 'Error';
+    } else if (message.includes('✓') || message.includes('Success')) {
+      title = 'Ready';
+    } else if (message.includes('Extracting') || message.includes('Starting')) {
+      title = 'Extracting';
+    } else if (message.includes('Opening')) {
+      title = 'Opening App';
+    }
+
+    this.showInfo(title, message);
+  }
+
+  /**
+   * Show progress during extraction
+   */
+  showProgress(text) {
+    if (this.progressSection) {
+      this.progressSection.style.display = 'block';
+    }
+    if (this.progressText) {
+      this.progressText.textContent = text;
+    }
+  }
+
+  /**
+   * Hide progress section
+   */
+  hideProgress() {
+    if (this.progressSection) {
+      this.progressSection.style.display = 'none';
     }
   }
 
@@ -407,29 +483,40 @@ class SimplePopupManager {
   }
 
   /**
-   * Test connection and show debug information
+   * Check login status (called automatically on popup open)
    */
-  async testConnection() {
-    this.updateStatus('Testing connection...');
+  async checkLoginStatus() {
+    this.showInfo('Checking...', 'Verifying your X/Twitter login status...');
+    this.extractBtn.disabled = true;
 
     try {
-      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-      const currentTab = tabs[0];
+      // Check for Twitter/X auth cookies
+      const cookies = await chrome.cookies.getAll({
+        domain: '.x.com'
+      });
 
-      if (!this.isTwitterPage(currentTab?.url)) {
-        this.updateStatus('Not on Twitter. Please navigate to twitter.com/i/bookmarks');
+      const authCookie = cookies.find(c => c.name === 'auth_token');
+
+      if (!authCookie) {
+        this.showInfo('Login Required', 'Please open <strong>X/Twitter</strong> in a new tab and log in to your account before extracting bookmarks.');
+        this.extractBtn.disabled = true;
         return;
       }
 
-      if (!currentTab.url.includes('/i/bookmarks')) {
-        this.updateStatus('Please navigate to twitter.com/i/bookmarks to extract bookmarks');
-        return;
-      }
-
-      this.updateStatus('✓ Ready! On bookmarks page. Click Extract to begin.');
+      this.showInfo('Ready to Go', 'You\'re logged in! Click <strong>Extract Bookmarks</strong> to start.');
+      this.extractBtn.disabled = false;
     } catch (error) {
-      this.updateStatus('Error checking page');
+      console.error('Error checking login status:', error);
+      this.showInfo('Error', 'Could not verify login status. Please try again.');
+      this.extractBtn.disabled = true;
     }
+  }
+
+  /**
+   * Test connection (manual button click)
+   */
+  async testConnection() {
+    await this.checkLoginStatus();
   }
 
 }

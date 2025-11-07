@@ -9,7 +9,7 @@ import { useIsMobile } from '../hooks/useMobile'
 import CollectionsList from './collections/CollectionsList'
 import { useNavigationStyles } from '../hooks/useStyles'
 import { componentStyles } from '../styles/components'
-import logoImage from '../assets/logo_x_v1.png'
+import logoImage from '../assets/logo_v2 1.png'
 
 // Optimized selector for bookmark data
 const useBookmarkCounts = () => {
@@ -97,10 +97,10 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
           <Image
             src={logoImage}
             alt="BookmarkX Logo"
-            w={8}
+            w={10}
             h={8}
             borderRadius="lg"
-            objectFit="cover"
+            objectFit="contain"
           />
           <Text fontSize="lg" fontWeight="bold" style={{ color: 'var(--color-text-primary)' }}>
             BookmarkX

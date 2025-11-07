@@ -1,4 +1,4 @@
-# X Bookmark Manager - Next Steps & Plan
+# BookmarkX - Next Steps & Plan
 
 ## 📊 Current Status (As of Oct 8, 2025)
 

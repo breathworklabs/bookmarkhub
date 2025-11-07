@@ -1,4 +1,4 @@
-# X Bookmark Manager
+# BookmarkX
 
 A privacy-focused bookmark management application for X/Twitter content, built with React, TypeScript, and Vite.
 
@@ -34,7 +34,7 @@ A privacy-focused bookmark management application for X/Twitter content, built w
 1. **Clone and Install**
 ```bash
 git clone <repository-url>
-cd x-bookmark-manager2
+cd bookmarkx
 npm install
 ```
 

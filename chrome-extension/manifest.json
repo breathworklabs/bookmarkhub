@@ -1,8 +1,15 @@
 {
   "manifest_version": 3,
-  "name": "X Bookmark Manager - Automated",
-  "version": "3.0.0",
+  "name": "BookmarkX - Automated Extractor",
+  "version": "3.0.1",
   "description": "Automatically extract ALL your X/Twitter bookmarks with one click - no manual navigation required!",
+
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "32": "assets/icons/icon32.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
 
   "permissions": [
     "activeTab",
@@ -36,6 +43,12 @@
 
   "action": {
     "default_popup": "popup/popup.html",
-    "default_title": "Extract X Bookmarks (Automated)"
+    "default_title": "BookmarkX - Extract Bookmarks",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "32": "assets/icons/icon32.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
   }
 }

@@ -726,4 +726,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-console.log('X Bookmark Manager - Service Worker initialized');
+console.log('BookmarkX - Service Worker initialized');

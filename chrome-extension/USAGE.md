@@ -1,4 +1,4 @@
-# X Bookmark Manager Extension - Usage Guide
+# BookmarkX Extension - Usage Guide
 
 ## 🚀 Quick Start (v3.0 - FULLY AUTOMATED!)
 
@@ -122,7 +122,7 @@ This helps identify what might be blocking the extraction.
 
 ## 🔄 Integration
 
-The extension integrates seamlessly with the X Bookmark Manager app:
+The extension integrates seamlessly with the BookmarkX app:
 - Bookmarks appear automatically in your collection
 - Tagged as "Imported from X" for easy identification
 - Maintains original timestamps and metadata

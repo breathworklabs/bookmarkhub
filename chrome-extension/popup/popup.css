@@ -1,5 +1,11 @@
-/* X Bookmark Manager Extension Popup - Dark Theme */
+/* ============================================
+   BookmarkX Extension Popup - Premium Dark Theme
+   Matching the main app's visual style
+   ============================================ */
 
+/* ============================================
+   Base & Reset
+   ============================================ */
 * {
   margin: 0;
   padding: 0;
@@ -7,95 +13,253 @@
 }
 
 body {
-  width: 320px;
-  min-height: 240px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #15171c;
+  width: 380px;
+  min-height: 480px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #0a0e1a;
   color: #e1e5e9;
+  overflow-x: hidden;
 }
 
 .popup-container {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 480px;
 }
 
-/* Header */
+/* ============================================
+   Header - Premium Branding
+   ============================================ */
 .header {
+  position: relative;
+  padding: 20px;
+  background: linear-gradient(135deg, #0a0e1a 0%, #15171c 100%);
+  border-bottom: 1px solid rgba(29, 161, 242, 0.1);
+  overflow: hidden;
+}
+
+/* Subtle gradient overlay */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(29, 161, 242, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+  pointer-events: none;
+}
+
+.logo-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px;
-  background: #1c1f26;
-  border-bottom: 1px solid #2a2d35;
-  color: #e1e5e9;
+  z-index: 1;
 }
 
 .logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #1DA1F2, #8B5CF6);
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #1da1f2 0%, #8B5CF6 100%);
+  border-radius: 10px;
   color: white;
+  box-shadow: 0 4px 12px rgba(29, 161, 242, 0.3),
+              0 2px 4px rgba(139, 92, 246, 0.2);
+  transition: all 0.3s ease;
+}
+
+.logo-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: contain;
+  box-shadow: 0 4px 12px rgba(29, 161, 242, 0.3),
+              0 2px 4px rgba(139, 92, 246, 0.2);
+  transition: all 0.3s ease;
+}
+
+.logo-img:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(29, 161, 242, 0.4),
+              0 3px 6px rgba(139, 92, 246, 0.3);
+}
+
+.brand-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .header h1 {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-  color: #e1e5e9;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #e1e5e9 0%, #9ca3af 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* Main Content */
+.subtitle {
+  font-size: 11px;
+  font-weight: 500;
+  color: #71767b;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
 .main-content {
   flex: 1;
-  padding: 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  background: #0a0e1a;
 }
 
-/* Status Section */
-.status-section {
-  text-align: center;
-  background: #1c1f26;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #2a2d35;
+/* ============================================
+   Info Card - Requirements & Instructions
+   ============================================ */
+.info-card {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(29, 161, 242, 0.08);
+  border: 1px solid rgba(29, 161, 242, 0.2);
+  border-radius: 10px;
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
 }
 
-.status-text {
+.info-card.extracting {
+  background: rgba(29, 161, 242, 0.12);
+  border-color: rgba(29, 161, 242, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.info-card.success {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.info-card.error {
+  background: rgba(220, 38, 38, 0.08);
+  border-color: rgba(220, 38, 38, 0.2);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(29, 161, 242, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(29, 161, 242, 0);
+  }
+}
+
+.info-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  color: #1da1f2;
+}
+
+.info-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.info-title {
   font-size: 13px;
+  font-weight: 600;
+  color: #e1e5e9;
+  letter-spacing: -0.01em;
+}
+
+.info-text {
+  font-size: 12px;
+  line-height: 1.5;
   color: #9ca3af;
+}
+
+.info-text strong {
+  color: #1da1f2;
+  font-weight: 600;
+}
+
+/* ============================================
+   Progress Section - Shown During Extraction
+   ============================================ */
+.progress-section {
+  background: linear-gradient(135deg, #15171c 0%, #1a1d24 100%);
+  border: 1px solid rgba(29, 161, 242, 0.15);
+  border-radius: 10px;
+  padding: 16px;
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 10px;
-  line-height: 1.4;
+}
+
+#progress-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #e1e5e9;
+  letter-spacing: -0.01em;
 }
 
 .progress-bar {
   width: 100%;
-  height: 3px;
-  background: #2a2d35;
-  border-radius: 2px;
+  height: 4px;
+  background: rgba(29, 161, 242, 0.1);
+  border-radius: 4px;
   overflow: hidden;
+  margin-top: 8px;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #1da1f2, #8B5CF6);
-  border-radius: 2px;
+  background: linear-gradient(90deg, #1da1f2 0%, #8B5CF6 100%);
+  border-radius: 4px;
   animation: progress 2s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(29, 161, 242, 0.5);
 }
 
 @keyframes progress {
-  0% { width: 0%; }
-  50% { width: 70%; }
-  100% { width: 100%; }
+  0% {
+    width: 0%;
+    opacity: 0.8;
+  }
+  50% {
+    width: 70%;
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 0.9;
+  }
 }
 
-/* Buttons Section */
+/* ============================================
+   Buttons - Premium Design
+   ============================================ */
 .buttons-section {
   display: flex;
   flex-direction: column;
@@ -103,111 +267,308 @@ body {
 }
 
 .btn {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 11px 16px;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 12px 18px;
   border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
+  overflow: hidden;
 }
 
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn:hover::before {
+  opacity: 1;
+}
+
+/* Primary Button - Gradient Accent */
 .btn-primary {
-  background: #1d4ed8;
+  background: linear-gradient(135deg, #1da1f2 0%, #1d8bd9 100%);
   color: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(29, 161, 242, 0.35),
+              0 2px 4px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-primary:hover {
-  background: #1e40af;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, #1d8bd9 0%, #1a7bc4 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(29, 161, 242, 0.45),
+              0 3px 6px rgba(0, 0, 0, 0.35);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(29, 161, 242, 0.3);
 }
 
 .btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
+/* Secondary Button - Elevated Dark */
 .btn-secondary {
-  background: #2a2d35;
+  background: linear-gradient(135deg, #1a1d24 0%, #15171c 100%);
   color: #e1e5e9;
-  border: 1px solid #3a3d45;
+  border: 1px solid rgba(29, 161, 242, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .btn-secondary:hover {
-  background: #3a3d45;
-  border-color: #4a4d55;
+  background: linear-gradient(135deg, #1f232a 0%, #1a1d24 100%);
+  border-color: rgba(29, 161, 242, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* Tertiary Button - Subtle Ghost */
 .btn-tertiary {
   background: transparent;
   color: #71767b;
-  border: 1px solid #2a2d35;
-  font-size: 12px;
-  padding: 8px 12px;
+  border: 1px solid rgba(113, 118, 123, 0.2);
+  font-size: 13px;
+  padding: 10px 16px;
+  box-shadow: none;
 }
 
 .btn-tertiary:hover {
-  background: #2a2d35;
+  background: rgba(29, 161, 242, 0.08);
   color: #9ca3af;
-  border-color: #3a3d45;
+  border-color: rgba(29, 161, 242, 0.3);
+}
+
+.btn-tertiary:active {
+  background: rgba(29, 161, 242, 0.12);
 }
 
 .btn-icon {
-  font-size: 16px;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.95;
 }
 
 .btn-text {
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
+/* ============================================
+   Debug Section - Console Style
+   ============================================ */
 .debug-section {
-  margin-top: 12px;
-  padding: 10px;
-  background: #1c1f26;
-  border-radius: 8px;
-  border: 1px solid #2a2d35;
-  max-height: 150px;
+  margin-top: 4px;
+  padding: 12px;
+  background: linear-gradient(135deg, #15171c 0%, #0a0e1a 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(29, 161, 242, 0.1);
+  max-height: 160px;
   overflow-y: auto;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.debug-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(29, 161, 242, 0.15);
+}
+
+.debug-header svg {
+  color: #1da1f2;
+  opacity: 0.6;
 }
 
 .debug-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: #9ca3af;
-  margin-bottom: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #71767b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .debug-content {
   font-size: 11px;
-  font-family: 'Courier New', monospace;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Courier New', monospace;
   color: #71767b;
   white-space: pre-wrap;
-  line-height: 1.3;
+  line-height: 1.5;
+  word-break: break-word;
 }
 
-/* Scrollbar styling */
+/* Custom Scrollbar */
 .debug-section::-webkit-scrollbar {
   width: 6px;
 }
 
 .debug-section::-webkit-scrollbar-track {
-  background: #2a2d35;
+  background: rgba(29, 161, 242, 0.05);
   border-radius: 3px;
 }
 
 .debug-section::-webkit-scrollbar-thumb {
-  background: #3a3d45;
+  background: rgba(29, 161, 242, 0.2);
   border-radius: 3px;
+  transition: background 0.2s ease;
 }
 
 .debug-section::-webkit-scrollbar-thumb:hover {
-  background: #4a4d55;
+  background: rgba(29, 161, 242, 0.3);
+}
+
+/* ============================================
+   Footer - Branding Badge
+   ============================================ */
+.footer {
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #15171c 0%, #0a0e1a 100%);
+  border-top: 1px solid rgba(29, 161, 242, 0.1);
+}
+
+.footer-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #71767b;
+  letter-spacing: 0.02em;
+}
+
+.footer-text svg {
+  opacity: 0.5;
+  color: #1da1f2;
+}
+
+/* ============================================
+   Animations & Transitions
+   ============================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.status-card,
+.btn,
+.debug-section {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.btn:nth-child(1) { animation-delay: 0.05s; }
+.btn:nth-child(2) { animation-delay: 0.1s; }
+.btn:nth-child(3) { animation-delay: 0.15s; }
+
+/* ============================================
+   Loading & Success States
+   ============================================ */
+.status-card.loading {
+  border-color: rgba(29, 161, 242, 0.4);
+  box-shadow: 0 0 20px rgba(29, 161, 242, 0.2);
+}
+
+.status-card.success {
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.status-card.error {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* Success checkmark animation */
+@keyframes checkmark {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 400px) {
+  body {
+    width: 340px;
+  }
+
+  .header {
+    padding: 16px;
+  }
+
+  .main-content {
+    padding: 16px;
+  }
+
+  .btn {
+    padding: 11px 16px;
+    font-size: 13px;
+  }
+}
+
+/* ============================================
+   Dark Theme Enhancements
+   ============================================ */
+::selection {
+  background: rgba(29, 161, 242, 0.3);
+  color: #e1e5e9;
+}
+
+/* Smooth scrolling */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Focus states for accessibility */
+.btn:focus-visible {
+  outline: 2px solid #1da1f2;
+  outline-offset: 2px;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

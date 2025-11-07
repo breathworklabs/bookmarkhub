@@ -98,7 +98,7 @@ Page reloads with new bookmarks!
 ### **Check if content script is loaded:**
 1. Open your React app at `http://localhost:3000` (or whatever port)
 2. Open DevTools (F12) → Console
-3. Look for: `🔗 X Bookmark Manager: Content script bridge loaded`
+3. Look for: `🔗 BookmarkX: Content script bridge loaded`
 
 ### **Check bookmark transfer:**
 1. Click "Go to Manager"

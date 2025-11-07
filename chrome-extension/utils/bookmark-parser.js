@@ -1,5 +1,5 @@
 /**
- * BookmarkParser - Transform Twitter data to X Bookmark Manager format
+ * BookmarkParser - Transform Twitter data to BookmarkX format
  * Maps Twitter API data to the existing Bookmark interface
  */
 
@@ -9,7 +9,7 @@ class BookmarkParser {
   }
 
   /**
-   * Transform Twitter bookmark data to X Bookmark Manager format
+   * Transform Twitter bookmark data to BookmarkX format
    */
   transformToBookmarkFormat(twitterData) {
     return {

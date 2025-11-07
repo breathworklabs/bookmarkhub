@@ -168,8 +168,8 @@ Extracting... 200 bookmarks found (batch 2) - continuing...
 
 ### **In Browser Console (your app):**
 ```
-🔗 X Bookmark Manager: Auto-sync bridge loaded on http://localhost:3000/
-✅ X Bookmark Manager: Auto-sync enabled (checks every 10 seconds)
+🔗 BookmarkX: Auto-sync bridge loaded on http://localhost:3000/
+✅ BookmarkX: Auto-sync enabled (checks every 10 seconds)
 🔄 Running initial bookmark sync...
 📊 All extension bookmarks already in localStorage
 

@@ -1,6 +1,6 @@
 # Style System Documentation
 
-This document provides comprehensive guidelines for using the X Bookmark Manager's design system.
+This document provides comprehensive guidelines for using the BookmarkX's design system.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ This document provides comprehensive guidelines for using the X Bookmark Manager
 
 ## Overview
 
-The X Bookmark Manager uses a comprehensive design system built on top of Chakra UI v3, providing:
+The BookmarkX uses a comprehensive design system built on top of Chakra UI v3, providing:
 
 - **Consistent Design Language**: Unified colors, typography, and spacing
 - **Theme Support**: Dark/light mode with system preference detection

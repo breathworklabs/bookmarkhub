@@ -43,7 +43,7 @@ bearerToken: 'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7
 **Changes:**
 ```json
 {
-  "name": "X Bookmark Manager - Automated",
+  "name": "BookmarkX - Automated",
   "version": "3.0.0",
   "description": "Automatically extract ALL your X/Twitter bookmarks with one click - no manual navigation required!",
 
@@ -224,7 +224,7 @@ while (hasMore) {
 ### 1. Reload the Extension:
 ```
 1. Go to chrome://extensions/
-2. Find "X Bookmark Manager - Automated"
+2. Find "BookmarkX - Automated"
 3. Click the reload icon (🔄)
 ```
 
@@ -253,7 +253,7 @@ while (hasMore) {
 1. Go to chrome://extensions/
 2. Click "service worker" link under the extension
 3. Console should show:
-   - "X Bookmark Manager - Service Worker initialized"
+   - "BookmarkX - Service Worker initialized"
    - "Received extraction request from popup"
    - "Starting automated bookmark extraction..."
    - "Batch 1: Got X bookmarks, total: X, hasMore: true"

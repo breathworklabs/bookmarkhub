@@ -105,8 +105,8 @@ async openManager() {
 2. Open DevTools (F12) → Console
 3. Should see:
    ```
-   🔗 X Bookmark Manager: Auto-sync bridge loaded on http://localhost:3000/
-   ✅ X Bookmark Manager: Auto-sync enabled (checks every 5 seconds)
+   🔗 BookmarkX: Auto-sync bridge loaded on http://localhost:3000/
+   ✅ BookmarkX: Auto-sync enabled (checks every 5 seconds)
    ```
 
 ### **2. Check Auto-Sync:**

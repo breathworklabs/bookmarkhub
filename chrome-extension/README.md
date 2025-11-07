@@ -1,6 +1,6 @@
-# X Bookmark Manager Chrome Extension
+# BookmarkX Chrome Extension
 
-A Chrome extension that extracts bookmarks from X/Twitter using your existing session and integrates with the X Bookmark Manager application.
+A Chrome extension that extracts bookmarks from X/Twitter using your existing session and integrates with the BookmarkX application.
 
 ## 🚀 **Features**
 
@@ -10,7 +10,7 @@ A Chrome extension that extracts bookmarks from X/Twitter using your existing se
 - **Duplicate Detection**: Automatically detects and skips duplicate bookmarks
 - **Local Storage**: All data stays on your device - no external servers
 - **Real-time Progress**: See extraction progress with live updates
-- **Integration**: Seamlessly integrates with X Bookmark Manager app
+- **Integration**: Seamlessly integrates with BookmarkX app
 
 ## 📦 **Installation**
 
@@ -164,7 +164,7 @@ The extension targets these X/Twitter internal API endpoints:
 
 ## 🤝 **Contributing**
 
-This extension is part of the X Bookmark Manager project. For contributions:
+This extension is part of the BookmarkX project. For contributions:
 
 1. **Fork the repository**
 2. **Create a feature branch**
@@ -174,8 +174,8 @@ This extension is part of the X Bookmark Manager project. For contributions:
 
 ## 📄 **License**
 
-This project is part of the X Bookmark Manager and follows the same license terms.
+This project is part of the BookmarkX and follows the same license terms.
 
 ---
 
-**Note**: This extension is designed to work with the X Bookmark Manager application. Make sure you have the main app running to fully utilize the extracted bookmarks.
+**Note**: This extension is designed to work with the BookmarkX application. Make sure you have the main app running to fully utilize the extracted bookmarks.

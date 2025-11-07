@@ -189,7 +189,7 @@ const SplashPage = () => {
             backgroundClip: 'text',
           }}
         >
-          X Bookmark Manager
+          BookmarkX
         </Heading>
         <Button
           size="lg"
@@ -473,7 +473,7 @@ const SplashPage = () => {
 
           {/* Copyright */}
           <Text color="#666" fontSize="0.85rem" textAlign="center">
-            &copy; 2025 X Bookmark Manager. All rights reserved.
+            &copy; 2025 BookmarkX. All rights reserved.
           </Text>
         </VStack>
       </Box>

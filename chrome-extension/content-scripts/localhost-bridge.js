@@ -1,5 +1,5 @@
 /**
- * Content Script Bridge for X Bookmark Manager
+ * Content Script Bridge for BookmarkX
  * Automatically syncs extension bookmarks to page localStorage
  */
 
