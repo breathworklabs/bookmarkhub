@@ -4,7 +4,7 @@ import {
   normalizeTitle,
   calculateSimilarity,
   detectDuplicate,
-  findUrlDuplicates
+  findUrlDuplicates,
 } from '../duplicateDetection'
 import type { Bookmark } from '../../types/bookmark'
 
@@ -28,7 +28,7 @@ const createMockBookmark = (overrides: Partial<Bookmark> = {}): Bookmark => ({
   collections: [],
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
-  ...overrides
+  ...overrides,
 })
 
 describe('duplicateDetection', () => {
@@ -39,15 +39,21 @@ describe('duplicateDetection', () => {
     })
 
     it('should remove query parameters', () => {
-      expect(normalizeUrl('https://example.com/page?utm_source=test')).toBe('https://example.com/page')
+      expect(normalizeUrl('https://example.com/page?utm_source=test')).toBe(
+        'https://example.com/page'
+      )
     })
 
     it('should remove hash fragments', () => {
-      expect(normalizeUrl('https://example.com/page#section')).toBe('https://example.com/page')
+      expect(normalizeUrl('https://example.com/page#section')).toBe(
+        'https://example.com/page'
+      )
     })
 
     it('should lowercase URLs', () => {
-      expect(normalizeUrl('HTTPS://EXAMPLE.COM/Page')).toBe('https://example.com/page')
+      expect(normalizeUrl('HTTPS://EXAMPLE.COM/Page')).toBe(
+        'https://example.com/page'
+      )
     })
   })
 
@@ -82,14 +88,14 @@ describe('duplicateDetection', () => {
       const existing = createMockBookmark({
         id: 1,
         url: 'https://example.com/article',
-        title: 'Article'
+        title: 'Article',
       })
 
       const newBookmark = {
         ...createMockBookmark({
           url: 'https://example.com/article',
-          title: 'Different Title'
-        })
+          title: 'Different Title',
+        }),
       }
 
       const result = detectDuplicate(newBookmark, [existing])
@@ -103,14 +109,14 @@ describe('duplicateDetection', () => {
       const existing = createMockBookmark({
         id: 1,
         url: 'https://example.com/article',
-        title: 'Same Title'
+        title: 'Same Title',
       })
 
       const newBookmark = {
         ...createMockBookmark({
           url: 'https://example.com/article',
-          title: 'Same Title'
-        })
+          title: 'Same Title',
+        }),
       }
 
       const result = detectDuplicate(newBookmark, [existing])
@@ -124,14 +130,14 @@ describe('duplicateDetection', () => {
       const existing = createMockBookmark({
         id: 1,
         url: 'https://example.com/different',
-        title: 'How to Build a React Application'
+        title: 'How to Build a React Application',
       })
 
       const newBookmark = {
         ...createMockBookmark({
           url: 'https://another-site.com/page',
-          title: 'How to Build a React Applications'
-        })
+          title: 'How to Build a React Applications',
+        }),
       }
 
       const result = detectDuplicate(newBookmark, [existing])
@@ -146,14 +152,14 @@ describe('duplicateDetection', () => {
       const existing = createMockBookmark({
         id: 1,
         url: 'https://example.com/article?ref=twitter',
-        title: 'Article'
+        title: 'Article',
       })
 
       const newBookmark = {
         ...createMockBookmark({
           url: 'https://example.com/article?ref=facebook',
-          title: 'Article'
-        })
+          title: 'Article',
+        }),
       }
 
       const result = detectDuplicate(newBookmark, [existing])
@@ -166,14 +172,14 @@ describe('duplicateDetection', () => {
       const existing = createMockBookmark({
         id: 1,
         url: 'https://example.com/article1',
-        title: 'First Article'
+        title: 'First Article',
       })
 
       const newBookmark = {
         ...createMockBookmark({
           url: 'https://example.com/article2',
-          title: 'Second Article'
-        })
+          title: 'Second Article',
+        }),
       }
 
       const result = detectDuplicate(newBookmark, [existing])
@@ -184,16 +190,28 @@ describe('duplicateDetection', () => {
 
     it('should return multiple matches when multiple duplicates exist', () => {
       const existing = [
-        createMockBookmark({ id: 1, url: 'https://example.com/article', title: 'Article 1' }),
-        createMockBookmark({ id: 2, url: 'https://example.com/article', title: 'Article 2' }),
-        createMockBookmark({ id: 3, url: 'https://other.com/page', title: 'Article 1' })
+        createMockBookmark({
+          id: 1,
+          url: 'https://example.com/article',
+          title: 'Article 1',
+        }),
+        createMockBookmark({
+          id: 2,
+          url: 'https://example.com/article',
+          title: 'Article 2',
+        }),
+        createMockBookmark({
+          id: 3,
+          url: 'https://other.com/page',
+          title: 'Article 1',
+        }),
       ]
 
       const newBookmark = {
         ...createMockBookmark({
           url: 'https://example.com/article',
-          title: 'Article 1'
-        })
+          title: 'Article 1',
+        }),
       }
 
       const result = detectDuplicate(newBookmark, existing)
@@ -207,24 +225,33 @@ describe('duplicateDetection', () => {
     it('should find all bookmarks with the same URL', () => {
       const bookmarks = [
         createMockBookmark({ id: 1, url: 'https://example.com/article' }),
-        createMockBookmark({ id: 2, url: 'https://example.com/article?ref=twitter' }),
-        createMockBookmark({ id: 3, url: 'https://other.com/page' })
+        createMockBookmark({
+          id: 2,
+          url: 'https://example.com/article?ref=twitter',
+        }),
+        createMockBookmark({ id: 3, url: 'https://other.com/page' }),
       ]
 
-      const duplicates = findUrlDuplicates('https://example.com/article', bookmarks)
+      const duplicates = findUrlDuplicates(
+        'https://example.com/article',
+        bookmarks
+      )
 
       expect(duplicates.length).toBe(2)
-      expect(duplicates.map(b => b.id)).toContain(1)
-      expect(duplicates.map(b => b.id)).toContain(2)
+      expect(duplicates.map((b) => b.id)).toContain(1)
+      expect(duplicates.map((b) => b.id)).toContain(2)
     })
 
     it('should return empty array when no duplicates exist', () => {
       const bookmarks = [
         createMockBookmark({ id: 1, url: 'https://example.com/article1' }),
-        createMockBookmark({ id: 2, url: 'https://example.com/article2' })
+        createMockBookmark({ id: 2, url: 'https://example.com/article2' }),
       ]
 
-      const duplicates = findUrlDuplicates('https://example.com/article3', bookmarks)
+      const duplicates = findUrlDuplicates(
+        'https://example.com/article3',
+        bookmarks
+      )
 
       expect(duplicates.length).toBe(0)
     })

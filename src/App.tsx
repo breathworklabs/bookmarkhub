@@ -1,5 +1,11 @@
 import { ChakraProvider, Box, Spinner, Text, VStack } from '@chakra-ui/react'
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useEffect } from 'react'
 import XBookmarkManager from './components/XBookmarkManager'

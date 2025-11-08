@@ -40,15 +40,19 @@ export class DataProcessingService {
     const allImages = Array.isArray(images) ? images : []
 
     return {
-      normalProfileImages: allImages.filter(img =>
-        img && typeof img === 'string' && img.includes('_normal')
+      normalProfileImages: allImages.filter(
+        (img) => img && typeof img === 'string' && img.includes('_normal')
       ),
-      biggerProfileImages: allImages.filter(img =>
-        img && typeof img === 'string' && img.includes('_bigger')
+      biggerProfileImages: allImages.filter(
+        (img) => img && typeof img === 'string' && img.includes('_bigger')
       ),
-      contentImages: allImages.filter(img =>
-        img && typeof img === 'string' && !img.includes('_normal') && !img.includes('_bigger')
-      )
+      contentImages: allImages.filter(
+        (img) =>
+          img &&
+          typeof img === 'string' &&
+          !img.includes('_normal') &&
+          !img.includes('_bigger')
+      ),
     }
   }
 
@@ -87,13 +91,19 @@ export class DataProcessingService {
     try {
       // Apply defaults and sanitization
       const sanitized: BookmarkInsert = {
-        user_id: String(bookmark.user_id || 'ae879c80-f3fc-4e05-a837-384e4b9bfb28'),
+        user_id: String(
+          bookmark.user_id || 'ae879c80-f3fc-4e05-a837-384e4b9bfb28'
+        ),
         title: String(bookmark.title || '').trim(),
         url: String(bookmark.url || '').trim(),
-        description: String(bookmark.description || bookmark.content || '').trim(),
+        description: String(
+          bookmark.description || bookmark.content || ''
+        ).trim(),
         content: String(bookmark.content || bookmark.description || '').trim(),
         author: String(bookmark.author || 'Unknown Author').trim(),
-        domain: String(bookmark.domain || this.extractDomain(bookmark.url)).trim(),
+        domain: String(
+          bookmark.domain || this.extractDomain(bookmark.url)
+        ).trim(),
         source_platform: String(bookmark.source_platform || 'manual').trim(),
         engagement_score: Number(bookmark.engagement_score || 0),
         is_starred: Boolean(bookmark.is_starred || bookmark.isStarred),
@@ -101,19 +111,33 @@ export class DataProcessingService {
         is_archived: Boolean(bookmark.is_archived || false),
         is_shared: Boolean(bookmark.is_shared || false),
         tags: Array.isArray(bookmark.tags)
-          ? bookmark.tags.filter((tag: any) => typeof tag === 'string').map((tag: string) => tag.trim())
+          ? bookmark.tags
+              .filter((tag: any) => typeof tag === 'string')
+              .map((tag: string) => tag.trim())
           : [],
         collections: Array.isArray(bookmark.collections)
-          ? bookmark.collections.filter((id: any) => typeof id === 'string').map((id: string) => id.trim())
+          ? bookmark.collections
+              .filter((id: any) => typeof id === 'string')
+              .map((id: string) => id.trim())
           : ['uncategorized'],
-        thumbnail_url: bookmark.thumbnail_url ? String(bookmark.thumbnail_url).trim() : undefined,
-        favicon_url: bookmark.favicon_url ? String(bookmark.favicon_url).trim() : undefined,
-        source_id: bookmark.source_id ? String(bookmark.source_id).trim() : undefined,
-        metadata: bookmark.metadata
+        thumbnail_url: bookmark.thumbnail_url
+          ? String(bookmark.thumbnail_url).trim()
+          : undefined,
+        favicon_url: bookmark.favicon_url
+          ? String(bookmark.favicon_url).trim()
+          : undefined,
+        source_id: bookmark.source_id
+          ? String(bookmark.source_id).trim()
+          : undefined,
+        metadata: bookmark.metadata,
       }
 
       // Validate required fields
-      if (!sanitized.title || !sanitized.url || !this.validateUrl(sanitized.url)) {
+      if (
+        !sanitized.title ||
+        !sanitized.url ||
+        !this.validateUrl(sanitized.url)
+      ) {
         return null
       }
 
@@ -131,9 +155,7 @@ export class DataProcessingService {
       return 'Untitled Bookmark'
     }
 
-    return text.length > maxLength
-      ? text.substring(0, maxLength) + '...'
-      : text
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
   }
 
   /**
@@ -161,7 +183,7 @@ export class DataProcessingService {
       domain: domain || 'unknown',
       description: formData.description || `Bookmark for ${formData.title}`,
       content: formData.content || `Bookmark for ${formData.title}`,
-      author: formData.author || 'Unknown'
+      author: formData.author || 'Unknown',
     }
   }
 }

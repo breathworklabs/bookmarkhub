@@ -2,12 +2,12 @@ export interface Collection {
   id: string
   name: string
   description?: string
-  parentId?: string | null  // For nested collections
+  parentId?: string | null // For nested collections
   color?: string
   icon?: string
   isPrivate: boolean
   isDefault: boolean
-  isSmartCollection: boolean  // For auto-updating collections
+  isSmartCollection: boolean // For auto-updating collections
   smartCriteria?: SmartCollectionCriteria
   createdAt: string
   updatedAt: string
@@ -16,20 +16,27 @@ export interface Collection {
 }
 
 export interface SmartCollectionCriteria {
-  type: 'uncategorized' | 'starred' | 'recent' | 'archived' | 'tag' | 'domain' | 'date_range'
-  value?: string  // tag name, domain, etc.
-  days?: number   // for recent/date_range
+  type:
+    | 'uncategorized'
+    | 'starred'
+    | 'recent'
+    | 'archived'
+    | 'tag'
+    | 'domain'
+    | 'date_range'
+  value?: string // tag name, domain, etc.
+  days?: number // for recent/date_range
 }
 
 export interface BookmarkCollection {
   bookmarkId: number
   collectionId: string
   addedAt: string
-  order?: number  // For custom ordering
+  order?: number // For custom ordering
 }
 
 export interface CollectionInsert {
-  id?: string  // Optional - will be auto-generated if not provided
+  id?: string // Optional - will be auto-generated if not provided
   name: string
   description?: string
   parentId?: string | null
@@ -39,7 +46,7 @@ export interface CollectionInsert {
   isDefault?: boolean
   isSmartCollection?: boolean
   smartCriteria?: SmartCollectionCriteria
-  userId?: string  // Optional - defaults to 'local-user'
+  userId?: string // Optional - defaults to 'local-user'
 }
 
 export interface CollectionsState {
@@ -48,8 +55,8 @@ export interface CollectionsState {
   collectionBookmarks: Record<string, number[]>
   isCreatingCollection: boolean
   collectionFilter: 'all' | 'private' | 'shared'
-  expandedCollections: string[]  // For tree view
-  collapsedSections: string[]  // For collapsible sections (e.g., 'smart', 'user')
+  expandedCollections: string[] // For tree view
+  collapsedSections: string[] // For collapsible sections (e.g., 'smart', 'user')
   isLoading: boolean
   error: string | null
 }
@@ -60,7 +67,8 @@ export const DEFAULT_COLLECTIONS = {
   UNCATEGORIZED: 'uncategorized',
   STARRED: 'starred',
   RECENT: 'recent',
-  ARCHIVED: 'archived'
+  ARCHIVED: 'archived',
 } as const
 
-export type DefaultCollectionId = typeof DEFAULT_COLLECTIONS[keyof typeof DEFAULT_COLLECTIONS]
+export type DefaultCollectionId =
+  (typeof DEFAULT_COLLECTIONS)[keyof typeof DEFAULT_COLLECTIONS]

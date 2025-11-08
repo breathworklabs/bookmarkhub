@@ -15,7 +15,7 @@ interface UseIntersectionObserverOptions {
 const getObserverKey = (options: IntersectionObserverInit): string => {
   return JSON.stringify({
     rootMargin: options.rootMargin || '0px',
-    threshold: options.threshold || 0
+    threshold: options.threshold || 0,
   })
 }
 
@@ -24,7 +24,7 @@ export const useIntersectionObserver = ({
   rootMargin = '0px',
   threshold = 0,
   onIntersect,
-  enabled = true
+  enabled = true,
 }: UseIntersectionObserverOptions) => {
   const elementRef = useRef<HTMLElement | null>(null)
   const callbackRef = useRef(onIntersect)
@@ -33,14 +33,17 @@ export const useIntersectionObserver = ({
   callbackRef.current = onIntersect
 
   // Memoized callback to handle intersection
-  const handleIntersection = useCallback((entries: IntersectionObserverEntry[]) => {
-    for (const entry of entries) {
-      if (entry.target === elementRef.current) {
-        callbackRef.current(entry)
-        break
+  const handleIntersection = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      for (const entry of entries) {
+        if (entry.target === elementRef.current) {
+          callbackRef.current(entry)
+          break
+        }
       }
-    }
-  }, [])
+    },
+    []
+  )
 
   useEffect(() => {
     if (!enabled || !elementRef.current) return
@@ -48,7 +51,7 @@ export const useIntersectionObserver = ({
     const observerOptions: IntersectionObserverInit = {
       root,
       rootMargin,
-      threshold
+      threshold,
     }
 
     const observerKey = getObserverKey(observerOptions)
@@ -99,12 +102,15 @@ export const useLazyImageObserver = (onIntersect: () => void) => {
       if (entry.isIntersecting) {
         onIntersect()
       }
-    }
+    },
   })
 }
 
 // Hook specifically for infinite scroll
-export const useInfiniteScrollObserver = (onIntersect: () => void, hasMore: boolean) => {
+export const useInfiniteScrollObserver = (
+  onIntersect: () => void,
+  hasMore: boolean
+) => {
   const ref = useIntersectionObserver({
     rootMargin: '100px',
     threshold: 0.1,
@@ -113,7 +119,7 @@ export const useInfiniteScrollObserver = (onIntersect: () => void, hasMore: bool
         onIntersect()
       }
     },
-    enabled: hasMore
+    enabled: hasMore,
   })
 
   // Type assertion for div compatibility

@@ -26,8 +26,8 @@ export interface Bookmark {
   is_deleted: boolean
   deleted_at?: string
   tags: string[]
-  collections: string[]  // Array of collection IDs
-  primaryCollection?: string  // Main collection
+  collections: string[] // Array of collection IDs
+  primaryCollection?: string // Main collection
   metadata?: any
   created_at: string
   updated_at: string
@@ -41,12 +41,17 @@ export interface BookmarkMetrics {
 }
 
 // For creating new bookmarks
-export interface BookmarkInsert extends Omit<Bookmark, 'id' | 'created_at' | 'updated_at' | 'is_deleted' | 'deleted_at'> {
+export interface BookmarkInsert
+  extends Omit<
+    Bookmark,
+    'id' | 'created_at' | 'updated_at' | 'is_deleted' | 'deleted_at'
+  > {
   id?: number
 }
 
 // For updating existing bookmarks
-export interface BookmarkUpdate extends Partial<Omit<Bookmark, 'id' | 'created_at'>> {
+export interface BookmarkUpdate
+  extends Partial<Omit<Bookmark, 'id' | 'created_at'>> {
   updated_at?: string
 }
 
@@ -84,7 +89,7 @@ export interface AppMetadata {
 // Export/Import data structure
 export interface ExportData {
   bookmarks: Bookmark[]
-  collections?: any[]  // Will be properly typed when collections are implemented
+  collections?: any[] // Will be properly typed when collections are implemented
   metadata: AppMetadata
   exportedAt: string
   version: string
@@ -123,7 +128,11 @@ export interface StorageService {
 
 // Error types
 export class BookmarkError extends Error {
-  public code: 'NOT_FOUND' | 'STORAGE_FULL' | 'INVALID_DATA' | 'STORAGE_UNAVAILABLE'
+  public code:
+    | 'NOT_FOUND'
+    | 'STORAGE_FULL'
+    | 'INVALID_DATA'
+    | 'STORAGE_UNAVAILABLE'
   public details?: any
 
   constructor(

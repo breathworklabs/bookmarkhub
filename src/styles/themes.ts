@@ -35,8 +35,8 @@ export const lightThemeColors = {
   accent: {
     blue: '#4a9eff',
     purple: '#8B5CF6',
-    gold: '#ffd700'
-  }
+    gold: '#ffd700',
+  },
 } as const
 
 // Dark theme colors (existing)
@@ -56,13 +56,16 @@ export interface ThemeConfig {
 export const defaultThemeConfig: ThemeConfig = {
   mode: 'dark',
   colors: darkThemeColors,
-  isDark: true
+  isDark: true,
 }
 
 // Theme switching utilities
 export const themeUtils = {
   // Get theme colors based on mode
-  getThemeColors: (mode: ThemeMode, systemIsDark: boolean = false): typeof lightThemeColors | typeof darkThemeColors => {
+  getThemeColors: (
+    mode: ThemeMode,
+    systemIsDark: boolean = false
+  ): typeof lightThemeColors | typeof darkThemeColors => {
     if (mode === 'system') {
       return systemIsDark ? darkThemeColors : lightThemeColors
     }
@@ -88,7 +91,10 @@ export const themeUtils = {
   // Apply theme to document
   applyTheme: (isDark: boolean): void => {
     if (typeof document !== 'undefined') {
-      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
+      document.documentElement.setAttribute(
+        'data-theme',
+        isDark ? 'dark' : 'light'
+      )
       document.documentElement.style.colorScheme = isDark ? 'dark' : 'light'
     }
   },
@@ -103,14 +109,20 @@ export const themeUtils = {
     mediaQuery.addEventListener('change', handler)
 
     return () => mediaQuery.removeEventListener('change', handler)
-  }
+  },
 }
 
 // Theme-aware color tokens
-export const createThemeTokens = (themeColors: typeof lightThemeColors | typeof darkThemeColors) => {
+export const createThemeTokens = (
+  themeColors: typeof lightThemeColors | typeof darkThemeColors
+) => {
   const isLight = 'light' in themeColors
-  const lightColors = isLight ? (themeColors as typeof lightThemeColors).light : null
-  const darkColors = isLight ? null : (themeColors as typeof darkThemeColors).dark
+  const lightColors = isLight
+    ? (themeColors as typeof lightThemeColors).light
+    : null
+  const darkColors = isLight
+    ? null
+    : (themeColors as typeof darkThemeColors).dark
 
   return {
     // Background tokens
@@ -122,39 +134,49 @@ export const createThemeTokens = (themeColors: typeof lightThemeColors | typeof 
       success: themeColors.success[500],
       warning: themeColors.warning[500],
       error: themeColors.error[500],
-      info: themeColors.info[500]
+      info: themeColors.info[500],
     },
 
     // Text tokens
     text: {
       primary: lightColors?.textPrimary || darkColors?.textPrimary || '#e1e5e9',
-      secondary: lightColors?.textSecondary || darkColors?.textSecondary || '#71767b',
+      secondary:
+        lightColors?.textSecondary || darkColors?.textSecondary || '#71767b',
       muted: lightColors?.textMuted || darkColors?.textMuted || '#9ca3af',
       accent: themeColors.accent.blue,
       success: themeColors.success[500],
       warning: themeColors.warning[500],
       error: themeColors.error[500],
-      info: themeColors.info[500]
+      info: themeColors.info[500],
     },
 
     // Border tokens
     border: {
       primary: lightColors?.border || darkColors?.border || '#2a2d35',
-      secondary: lightColors?.borderHover || darkColors?.borderHover || '#3a3d45',
+      secondary:
+        lightColors?.borderHover || darkColors?.borderHover || '#3a3d45',
       accent: themeColors.accent.blue,
       success: themeColors.success[500],
       warning: themeColors.warning[500],
       error: themeColors.error[500],
-      info: themeColors.info[500]
+      info: themeColors.info[500],
     },
 
     // Shadow tokens
     shadow: {
-      sm: isLight ? '0 1px 2px rgba(0, 0, 0, 0.05)' : '0 1px 2px rgba(0, 0, 0, 0.3)',
-      md: isLight ? '0 4px 6px rgba(0, 0, 0, 0.1)' : '0 4px 6px rgba(0, 0, 0, 0.4)',
-      lg: isLight ? '0 10px 15px rgba(0, 0, 0, 0.1)' : '0 10px 15px rgba(0, 0, 0, 0.5)',
-      xl: isLight ? '0 20px 25px rgba(0, 0, 0, 0.1)' : '0 20px 25px rgba(0, 0, 0, 0.6)'
-    }
+      sm: isLight
+        ? '0 1px 2px rgba(0, 0, 0, 0.05)'
+        : '0 1px 2px rgba(0, 0, 0, 0.3)',
+      md: isLight
+        ? '0 4px 6px rgba(0, 0, 0, 0.1)'
+        : '0 4px 6px rgba(0, 0, 0, 0.4)',
+      lg: isLight
+        ? '0 10px 15px rgba(0, 0, 0, 0.1)'
+        : '0 10px 15px rgba(0, 0, 0, 0.5)',
+      xl: isLight
+        ? '0 20px 25px rgba(0, 0, 0, 0.1)'
+        : '0 20px 25px rgba(0, 0, 0, 0.6)',
+    },
   }
 }
 
@@ -164,14 +186,14 @@ export const themes = {
     mode: 'light' as const,
     colors: lightThemeColors,
     isDark: false,
-    tokens: createThemeTokens(lightThemeColors)
+    tokens: createThemeTokens(lightThemeColors),
   },
   dark: {
     mode: 'dark' as const,
     colors: darkThemeColors,
     isDark: true,
-    tokens: createThemeTokens(darkThemeColors)
-  }
+    tokens: createThemeTokens(darkThemeColors),
+  },
 } as const
 
 // Theme context type for React

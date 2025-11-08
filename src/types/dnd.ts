@@ -2,7 +2,7 @@ import { type Bookmark } from './bookmark'
 
 // Drag item types
 export const ItemTypes = {
-  BOOKMARK: 'bookmark'
+  BOOKMARK: 'bookmark',
 } as const
 
 // Drag item interfaces

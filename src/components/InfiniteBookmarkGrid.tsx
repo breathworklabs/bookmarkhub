@@ -7,22 +7,20 @@ import BookmarkCard from './BookmarkCard/BookmarkCard'
 import BookmarkList from './BookmarkList'
 
 const InfiniteBookmarkGrid = memo(() => {
-  const {
-    bookmarks,
-    hasMore,
-    isLoading,
-    loadMore,
-    totalItems,
-    currentPage
-  } = usePaginatedBookmarksOptimized()
+  const { bookmarks, hasMore, isLoading, loadMore, totalItems, currentPage } =
+    usePaginatedBookmarksOptimized()
 
   // View mode
   const viewMode = useBookmarkStore((state) => state.viewMode)
 
   // Selection management
   useBookmarkStore((state) => state.selectedBookmarks)
-  const setSelectedBookmarks = useBookmarkStore((state) => state.setSelectedBookmarks)
-  const clearBookmarkSelection = useBookmarkStore((state) => state.clearBookmarkSelection)
+  const setSelectedBookmarks = useBookmarkStore(
+    (state) => state.setSelectedBookmarks
+  )
+  const clearBookmarkSelection = useBookmarkStore(
+    (state) => state.clearBookmarkSelection
+  )
 
   // Optimized intersection observer for infinite scroll
   const handleLoadMore = useCallback(() => {
@@ -34,25 +32,31 @@ const InfiniteBookmarkGrid = memo(() => {
   const loadingTriggerRef = useInfiniteScrollObserver(handleLoadMore, hasMore)
 
   // Handle keyboard shortcuts for selection
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    // Only handle keyboard shortcuts when not typing in inputs
-    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
-      return
-    }
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      // Only handle keyboard shortcuts when not typing in inputs
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement
+      ) {
+        return
+      }
 
-    // Ctrl+A: Select all visible bookmarks
-    if (event.ctrlKey && event.key === 'a') {
-      event.preventDefault()
-      const allVisibleIds = bookmarks.map(bookmark => bookmark.id)
-      setSelectedBookmarks(allVisibleIds)
-    }
+      // Ctrl+A: Select all visible bookmarks
+      if (event.ctrlKey && event.key === 'a') {
+        event.preventDefault()
+        const allVisibleIds = bookmarks.map((bookmark) => bookmark.id)
+        setSelectedBookmarks(allVisibleIds)
+      }
 
-    // Escape: Clear selection
-    if (event.key === 'Escape') {
-      event.preventDefault()
-      clearBookmarkSelection()
-    }
-  }, [bookmarks, setSelectedBookmarks, clearBookmarkSelection])
+      // Escape: Clear selection
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        clearBookmarkSelection()
+      }
+    },
+    [bookmarks, setSelectedBookmarks, clearBookmarkSelection]
+  )
 
   // Add/remove keyboard event listeners
   useEffect(() => {
@@ -85,7 +89,11 @@ const InfiniteBookmarkGrid = memo(() => {
   }
 
   return (
-    <Box flex={1} p={viewMode === 'list' ? 0 : { base: 3, md: 4 }} overflowY="auto">
+    <Box
+      flex={1}
+      p={viewMode === 'list' ? 0 : { base: 3, md: 4 }}
+      overflowY="auto"
+    >
       {/* Bookmarks Display - Grid or List */}
       {viewMode === 'grid' ? (
         <SimpleGrid
@@ -95,8 +103,8 @@ const InfiniteBookmarkGrid = memo(() => {
           mb={4}
           css={{
             '@media (min-width: 1920px)': {
-              gridTemplateColumns: 'repeat(5, minmax(0, 1fr))'
-            }
+              gridTemplateColumns: 'repeat(5, minmax(0, 1fr))',
+            },
           }}
         >
           <For each={bookmarks}>
@@ -109,8 +117,6 @@ const InfiniteBookmarkGrid = memo(() => {
         <BookmarkList bookmarks={bookmarks} />
       )}
 
-
-
       {/* Loading Trigger */}
       {hasMore && (
         <div
@@ -120,7 +126,7 @@ const InfiniteBookmarkGrid = memo(() => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            margin: '20px 0'
+            margin: '20px 0',
           }}
         >
           {isLoading && (

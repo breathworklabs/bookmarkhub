@@ -14,18 +14,18 @@ export const componentStyles = {
       _hover: {
         bg: colors.primary[600],
         transform: 'translateY(-1px)',
-        boxShadow: '0 4px 12px rgba(29, 78, 216, 0.3)'
+        boxShadow: '0 4px 12px rgba(29, 78, 216, 0.3)',
       },
       _active: {
         bg: colors.primary[700],
-        transform: 'translateY(0)'
+        transform: 'translateY(0)',
       },
       _focus: {
         boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.3)',
-        outline: 'none'
+        outline: 'none',
       },
       transition: 'all 0.2s ease',
-      gap: 2
+      gap: 2,
     },
 
     secondary: {
@@ -43,18 +43,18 @@ export const componentStyles = {
         bg: colors.dark.cardBg,
         color: colors.dark.textPrimary,
         borderColor: colors.dark.borderHover,
-        transform: 'translateY(-1px)'
+        transform: 'translateY(-1px)',
       },
       _active: {
         bg: colors.dark.border,
-        transform: 'translateY(0)'
+        transform: 'translateY(0)',
       },
       _focus: {
         boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.2)',
-        outline: 'none'
+        outline: 'none',
       },
       transition: 'all 0.2s ease',
-      gap: 2
+      gap: 2,
     },
 
     ghost: {
@@ -68,16 +68,16 @@ export const componentStyles = {
       borderRadius: '12px',
       _hover: {
         bg: colors.dark.border,
-        color: colors.dark.textPrimary
+        color: colors.dark.textPrimary,
       },
       _active: {
-        bg: colors.dark.borderHover
+        bg: colors.dark.borderHover,
       },
       _focus: {
         boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.2)',
-        outline: 'none'
+        outline: 'none',
       },
-      transition: 'all 0.2s ease'
+      transition: 'all 0.2s ease',
     },
 
     icon: {
@@ -94,18 +94,18 @@ export const componentStyles = {
         bg: colors.dark.border,
         color: colors.dark.textPrimary,
         borderColor: colors.dark.borderHover,
-        transform: 'scale(1.1)'
+        transform: 'scale(1.1)',
       },
       _active: {
         bg: colors.dark.borderHover,
-        transform: 'scale(0.95)'
+        transform: 'scale(0.95)',
       },
       _focus: {
         boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.2)',
-        outline: 'none'
+        outline: 'none',
       },
-      transition: 'all 0.2s ease'
-    }
+      transition: 'all 0.2s ease',
+    },
   },
 
   card: {
@@ -120,8 +120,8 @@ export const componentStyles = {
         borderColor: colors.accent.blue,
         transform: 'translateY(-1px)',
         boxShadow: '0 8px 20px var(--color-card-shadow)',
-        bg: colors.dark.sidebarBg
-      }
+        bg: colors.dark.sidebarBg,
+      },
     },
 
     selected: {
@@ -135,9 +135,9 @@ export const componentStyles = {
         bg: 'linear-gradient(135deg, rgba(74, 158, 255, 0.15) 0%, rgba(29, 78, 216, 0.08) 100%)',
         borderColor: colors.accent.blue,
         transform: 'translateY(-1px)',
-        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.4)'
-      }
-    }
+        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.4)',
+      },
+    },
   },
 
   input: {
@@ -149,17 +149,17 @@ export const componentStyles = {
       fontSize: '14px',
       fontWeight: '400',
       _placeholder: {
-        color: colors.dark.textSecondary
+        color: colors.dark.textSecondary,
       },
       _hover: {
-        borderColor: colors.dark.borderHover
+        borderColor: colors.dark.borderHover,
       },
       _focus: {
         borderColor: colors.primary[500],
         boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.1)',
-        outline: 'none'
+        outline: 'none',
       },
-      transition: 'all 0.2s ease'
+      transition: 'all 0.2s ease',
     },
 
     search: {
@@ -170,14 +170,14 @@ export const componentStyles = {
       fontSize: '14px',
       fontWeight: '400',
       _placeholder: {
-        color: colors.dark.textSecondary
+        color: colors.dark.textSecondary,
       },
       _focus: {
         outline: 'none',
-        boxShadow: 'none'
+        boxShadow: 'none',
       },
-      flex: 1
-    }
+      flex: 1,
+    },
   },
 
   navigation: {
@@ -191,12 +191,12 @@ export const componentStyles = {
       transition: 'all 0.2s ease',
       _hover: {
         bg: 'var(--color-bg-hover)',
-        color: 'var(--color-blue)'
+        color: 'var(--color-blue)',
       },
       _focus: {
         boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.2)',
-        outline: 'none'
-      }
+        outline: 'none',
+      },
     },
 
     active: {
@@ -205,13 +205,13 @@ export const componentStyles = {
       fontWeight: '600',
       _hover: {
         bg: 'var(--color-blue-hover)',
-        color: 'white'
+        color: 'white',
       },
       _focus: {
         boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.4)',
-        outline: 'none'
-      }
-    }
+        outline: 'none',
+      },
+    },
   },
 
   badge: {
@@ -220,7 +220,7 @@ export const componentStyles = {
       fontSize: 'xs',
       fontWeight: '500',
       px: 2,
-      py: 1
+      py: 1,
     },
 
     count: {
@@ -229,12 +229,12 @@ export const componentStyles = {
       fontSize: '11px',
       px: 2,
       py: 1,
-      borderRadius: '6px'
+      borderRadius: '6px',
     },
 
     active: {
       bg: 'rgba(255,255,255,0.2)',
-      color: 'white'
+      color: 'white',
     },
 
     error: {
@@ -244,8 +244,8 @@ export const componentStyles = {
       fontWeight: '600',
       px: 2,
       py: 1,
-      borderRadius: 'full'
-    }
+      borderRadius: 'full',
+    },
   },
 
   tag: {
@@ -264,8 +264,8 @@ export const componentStyles = {
       _hover: {
         bg: colors.dark.borderHover,
         color: colors.dark.textPrimary,
-        borderColor: colors.dark.borderHover
-      }
+        borderColor: colors.dark.borderHover,
+      },
     },
 
     active: {
@@ -274,8 +274,8 @@ export const componentStyles = {
       borderColor: colors.primary[500],
       _hover: {
         bg: colors.primary[600],
-        color: 'white'
-      }
+        color: 'white',
+      },
     },
 
     filter: {
@@ -284,15 +284,15 @@ export const componentStyles = {
       borderColor: 'transparent',
       _hover: {
         bg: colors.dark.borderHover,
-        color: colors.dark.textPrimary
-      }
-    }
+        color: colors.dark.textPrimary,
+      },
+    },
   },
 
   container: {
     background: {
       bg: 'var(--color-bg-primary)',
-      minH: '100vh'
+      minH: '100vh',
     },
 
     sidebar: {
@@ -302,7 +302,7 @@ export const componentStyles = {
       py: 5,
       px: 5,
       position: 'relative' as const,
-      flexShrink: 0
+      flexShrink: 0,
     },
 
     sidebarCollapsed: {
@@ -312,7 +312,7 @@ export const componentStyles = {
       py: 5,
       px: 2,
       position: 'relative' as const,
-      flexShrink: 0
+      flexShrink: 0,
     },
 
     header: {
@@ -320,7 +320,7 @@ export const componentStyles = {
       borderBottomWidth: '1px',
       borderColor: colors.dark.border,
       px: { base: 3, md: 6 },
-      py: { base: 3, md: 4 }
+      py: { base: 3, md: 4 },
     },
 
     filterBar: {
@@ -329,13 +329,15 @@ export const componentStyles = {
       borderColor: colors.dark.border,
       px: { base: 3, md: 6 },
       py: { base: 3, md: 4 },
-      boxShadow: '0 2px 8px var(--color-card-shadow)'
-    }
-  }
+      boxShadow: '0 2px 8px var(--color-card-shadow)',
+    },
+  },
 }
 
 // Helper functions for dynamic styles
-export const getButtonStyle = (variant: 'primary' | 'secondary' | 'ghost' | 'icon') => {
+export const getButtonStyle = (
+  variant: 'primary' | 'secondary' | 'ghost' | 'icon'
+) => {
   return componentStyles.button[variant]
 }
 
@@ -350,10 +352,14 @@ export const getInputStyle = (type: 'base' | 'search' = 'base') => {
 }
 
 export const getNavigationStyle = (isActive: boolean) => {
-  return isActive ? componentStyles.navigation.active : componentStyles.navigation.item
+  return isActive
+    ? componentStyles.navigation.active
+    : componentStyles.navigation.item
 }
 
-export const getBadgeStyle = (variant: 'base' | 'count' | 'active' | 'error' = 'base') => {
+export const getBadgeStyle = (
+  variant: 'base' | 'count' | 'active' | 'error' = 'base'
+) => {
   return componentStyles.badge[variant]
 }
 
@@ -362,5 +368,7 @@ export const getTagStyle = (variant: 'base' | 'active' | 'filter' = 'base') => {
 }
 
 export const getSidebarStyle = (isCollapsed: boolean) => {
-  return isCollapsed ? componentStyles.container.sidebarCollapsed : componentStyles.container.sidebar
+  return isCollapsed
+    ? componentStyles.container.sidebarCollapsed
+    : componentStyles.container.sidebar
 }

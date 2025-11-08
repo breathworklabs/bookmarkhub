@@ -28,315 +28,390 @@ interface ColumnWidths {
   date: number
 }
 
-const BookmarkListItem = memo(({ bookmark, columnWidths }: BookmarkListItemProps) => {
-  const [isHovered, setIsHovered] = useState(false)
-  const bookmarks = useBookmarkStore((state) => state.bookmarks)
-  const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
-  const toggleBookmarkSelection = useBookmarkStore((state) => state.toggleBookmarkSelection)
-  const clearBookmarkSelection = useBookmarkStore((state) => state.clearBookmarkSelection)
-  const toggleStarBookmark = useBookmarkStore((state) => state.toggleStarBookmark)
-  const setSelectedTags = useBookmarkStore((state) => state.setSelectedTags)
-  const addBookmarkToCollection = useCollectionsStore((state) => state.addBookmarkToCollection)
-  const removeBookmarkFromCollection = useCollectionsStore((state) => state.removeBookmarkFromCollection)
+const BookmarkListItem = memo(
+  ({ bookmark, columnWidths }: BookmarkListItemProps) => {
+    const [isHovered, setIsHovered] = useState(false)
+    const bookmarks = useBookmarkStore((state) => state.bookmarks)
+    const selectedBookmarks = useBookmarkStore(
+      (state) => state.selectedBookmarks
+    )
+    const toggleBookmarkSelection = useBookmarkStore(
+      (state) => state.toggleBookmarkSelection
+    )
+    const clearBookmarkSelection = useBookmarkStore(
+      (state) => state.clearBookmarkSelection
+    )
+    const toggleStarBookmark = useBookmarkStore(
+      (state) => state.toggleStarBookmark
+    )
+    const setSelectedTags = useBookmarkStore((state) => state.setSelectedTags)
+    const addBookmarkToCollection = useCollectionsStore(
+      (state) => state.addBookmarkToCollection
+    )
+    const removeBookmarkFromCollection = useCollectionsStore(
+      (state) => state.removeBookmarkFromCollection
+    )
 
-  const isSelected = selectedBookmarks.includes(bookmark.id)
-  const isInBulkMode = selectedBookmarks.length > 0
+    const isSelected = selectedBookmarks.includes(bookmark.id)
+    const isInBulkMode = selectedBookmarks.length > 0
 
-  // Helper functions to get author data (same as BookmarkHeader)
-  const getAuthorName = () => {
-    if (typeof bookmark.author === 'string') {
-      return bookmark.author || 'Unknown'
-    }
-    return (bookmark as any).author?.name || 'Unknown'
-  }
-
-  const getAuthorInitial = () => {
-    const name = getAuthorName()
-    return name.charAt(0).toUpperCase()
-  }
-
-  const getProfileImage = () => {
-    const metadata = (bookmark as any).metadata
-    if (metadata && metadata.profile_image_normal) {
-      return metadata.profile_image_normal
-    }
-    if ((bookmark as any).favicon_url && !(bookmark as any).favicon_url.includes('favicon.ico')) {
-      return (bookmark as any).favicon_url
-    }
-    return null
-  }
-
-  // Drag and drop functionality
-  const [{ isDragging }, drag, preview] = useDrag(() => ({
-    type: ItemTypes.BOOKMARK,
-    item: () => {
-      // If this bookmark is selected and there are multiple selected, include all selected IDs
-      const selectedIds = isSelected && selectedBookmarks.length > 1
-        ? selectedBookmarks
-        : [bookmark.id]
-
-      return {
-        id: bookmark.id,
-        bookmark,
-        selectedIds // Include all selected bookmark IDs for bulk operations
+    // Helper functions to get author data (same as BookmarkHeader)
+    const getAuthorName = () => {
+      if (typeof bookmark.author === 'string') {
+        return bookmark.author || 'Unknown'
       }
-    },
-    end: async (item, monitor) => {
-      const dropResult = monitor.getDropResult<DropResult>()
-      if (dropResult) {
-        try {
-          const bookmarkIds = item.selectedIds || [item.id]
-          const moveCount = bookmarkIds.length
+      return (bookmark as any).author?.name || 'Unknown'
+    }
 
-          // Process all selected bookmarks
-          for (const bookmarkId of bookmarkIds) {
-            // Get current bookmark state to avoid stale data
-            const currentBookmark = bookmarks.find(b => b.id === bookmarkId)
-            const currentCollections = (currentBookmark as any)?.collections || ['uncategorized']
+    const getAuthorInitial = () => {
+      const name = getAuthorName()
+      return name.charAt(0).toUpperCase()
+    }
 
-            // If moving TO uncategorized, remove from all other collections first
-            if (dropResult.collectionId === 'uncategorized') {
-              // Remove from all non-uncategorized collections
-              for (const collectionId of currentCollections) {
-                if (collectionId !== 'uncategorized') {
-                  await removeBookmarkFromCollection(bookmarkId, collectionId)
+    const getProfileImage = () => {
+      const metadata = (bookmark as any).metadata
+      if (metadata && metadata.profile_image_normal) {
+        return metadata.profile_image_normal
+      }
+      if (
+        (bookmark as any).favicon_url &&
+        !(bookmark as any).favicon_url.includes('favicon.ico')
+      ) {
+        return (bookmark as any).favicon_url
+      }
+      return null
+    }
+
+    // Drag and drop functionality
+    const [{ isDragging }, drag, preview] = useDrag(
+      () => ({
+        type: ItemTypes.BOOKMARK,
+        item: () => {
+          // If this bookmark is selected and there are multiple selected, include all selected IDs
+          const selectedIds =
+            isSelected && selectedBookmarks.length > 1
+              ? selectedBookmarks
+              : [bookmark.id]
+
+          return {
+            id: bookmark.id,
+            bookmark,
+            selectedIds, // Include all selected bookmark IDs for bulk operations
+          }
+        },
+        end: async (item, monitor) => {
+          const dropResult = monitor.getDropResult<DropResult>()
+          if (dropResult) {
+            try {
+              const bookmarkIds = item.selectedIds || [item.id]
+              const moveCount = bookmarkIds.length
+
+              // Process all selected bookmarks
+              for (const bookmarkId of bookmarkIds) {
+                // Get current bookmark state to avoid stale data
+                const currentBookmark = bookmarks.find(
+                  (b) => b.id === bookmarkId
+                )
+                const currentCollections = (currentBookmark as any)
+                  ?.collections || ['uncategorized']
+
+                // If moving TO uncategorized, remove from all other collections first
+                if (dropResult.collectionId === 'uncategorized') {
+                  // Remove from all non-uncategorized collections
+                  for (const collectionId of currentCollections) {
+                    if (collectionId !== 'uncategorized') {
+                      await removeBookmarkFromCollection(
+                        bookmarkId,
+                        collectionId
+                      )
+                    }
+                  }
+                } else {
+                  // If moving FROM uncategorized TO another collection, remove from uncategorized
+                  if (currentCollections.includes('uncategorized')) {
+                    await removeBookmarkFromCollection(
+                      bookmarkId,
+                      'uncategorized'
+                    )
+                  }
                 }
+
+                // Add to the new collection
+                await addBookmarkToCollection(
+                  bookmarkId,
+                  dropResult.collectionId
+                )
               }
-            } else {
-              // If moving FROM uncategorized TO another collection, remove from uncategorized
-              if (currentCollections.includes('uncategorized')) {
-                await removeBookmarkFromCollection(bookmarkId, 'uncategorized')
+
+              // Clear selection after successful bulk move
+              if (moveCount > 1) {
+                clearBookmarkSelection()
               }
+
+              // Show success toast with count
+              const message =
+                moveCount > 1
+                  ? `Moved ${moveCount} bookmarks to "${dropResult.collectionName}"`
+                  : `Moved to "${dropResult.collectionName}"`
+              toast.success(message)
+            } catch (error) {
+              console.error('Failed to move bookmark(s) to collection:', error)
+              toast.error('Failed to move bookmark(s)')
             }
-
-            // Add to the new collection
-            await addBookmarkToCollection(bookmarkId, dropResult.collectionId)
           }
+        },
+        collect: (monitor) => ({
+          isDragging: monitor.isDragging(),
+        }),
+      }),
+      [
+        bookmark.id,
+        selectedBookmarks,
+        isSelected,
+        bookmarks,
+        addBookmarkToCollection,
+        removeBookmarkFromCollection,
+        clearBookmarkSelection,
+      ]
+    )
 
-          // Clear selection after successful bulk move
-          if (moveCount > 1) {
-            clearBookmarkSelection()
-          }
+    // Hide default drag preview
+    useEffect(() => {
+      preview(getEmptyImage(), { captureDraggingState: true })
+    }, [preview])
 
-          // Show success toast with count
-          const message = moveCount > 1
-            ? `Moved ${moveCount} bookmarks to "${dropResult.collectionName}"`
-            : `Moved to "${dropResult.collectionName}"`
-          toast.success(message)
-        } catch (error) {
-          console.error('Failed to move bookmark(s) to collection:', error)
-          toast.error('Failed to move bookmark(s)')
-        }
+    const handleRowClick = (e: React.MouseEvent) => {
+      // In bulk mode, clicking the row toggles selection
+      if (isInBulkMode) {
+        e.preventDefault()
+        toggleBookmarkSelection(bookmark.id)
+      } else {
+        // Normal mode - open link
+        window.open(bookmark.url, '_blank', 'noopener,noreferrer')
       }
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }), [bookmark.id, selectedBookmarks, isSelected, bookmarks, addBookmarkToCollection, removeBookmarkFromCollection, clearBookmarkSelection])
-
-  // Hide default drag preview
-  useEffect(() => {
-    preview(getEmptyImage(), { captureDraggingState: true })
-  }, [preview])
-
-  const handleRowClick = (e: React.MouseEvent) => {
-    // In bulk mode, clicking the row toggles selection
-    if (isInBulkMode) {
-      e.preventDefault()
-      toggleBookmarkSelection(bookmark.id)
-    } else {
-      // Normal mode - open link
-      window.open(bookmark.url, '_blank', 'noopener,noreferrer')
     }
-  }
 
-  const handleStarClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    toggleStarBookmark(bookmark.id)
-  }
+    const handleStarClick = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      toggleStarBookmark(bookmark.id)
+    }
 
-  const handleTagClick = (tag: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    setSelectedTags([tag])
-  }
+    const handleTagClick = (tag: string, e: React.MouseEvent) => {
+      e.stopPropagation()
+      setSelectedTags([tag])
+    }
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.stopPropagation()
-    toggleBookmarkSelection(bookmark.id)
-  }
+    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.stopPropagation()
+      toggleBookmarkSelection(bookmark.id)
+    }
 
-  return (
-    <Box
-      ref={drag}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={handleRowClick}
-      opacity={isDragging ? 0.5 : 1}
-      cursor={isInBulkMode ? 'pointer' : 'default'}
-      bg={isSelected ? 'var(--color-bg-tertiary)' : 'var(--color-bg-secondary)'}
-      borderBottom="1px solid var(--color-border)"
-      _hover={{ bg: 'var(--color-bg-tertiary)' }}
-      transition="all 0.2s"
-      position="relative"
-    >
-      <HStack gap={3} px={4} py={3} align="center">
-        {/* Drag handle */}
-        <Box
-          color="var(--color-text-tertiary)"
-          opacity={isHovered || isDragging ? 1 : 0}
-          transition="opacity 0.2s"
-          cursor="grab"
-          _active={{ cursor: 'grabbing' }}
-        >
-          <LuGripVertical size={16} />
-        </Box>
+    return (
+      <Box
+        ref={drag}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={handleRowClick}
+        opacity={isDragging ? 0.5 : 1}
+        cursor={isInBulkMode ? 'pointer' : 'default'}
+        bg={
+          isSelected ? 'var(--color-bg-tertiary)' : 'var(--color-bg-secondary)'
+        }
+        borderBottom="1px solid var(--color-border)"
+        _hover={{ bg: 'var(--color-bg-tertiary)' }}
+        transition="all 0.2s"
+        position="relative"
+      >
+        <HStack gap={3} px={4} py={3} align="center">
+          {/* Drag handle */}
+          <Box
+            color="var(--color-text-tertiary)"
+            opacity={isHovered || isDragging ? 1 : 0}
+            transition="opacity 0.2s"
+            cursor="grab"
+            _active={{ cursor: 'grabbing' }}
+          >
+            <LuGripVertical size={16} />
+          </Box>
 
-        {/* Checkbox (visible in bulk mode or when hovered) */}
-        <Box
-          opacity={(isInBulkMode || isHovered || isSelected) ? 1 : 0}
-          transition="opacity 0.2s"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={handleCheckboxChange}
-            style={{
-              width: '16px',
-              height: '16px',
-              cursor: 'pointer',
-              accentColor: 'var(--color-accent)'
+          {/* Checkbox (visible in bulk mode or when hovered) */}
+          <Box
+            opacity={isInBulkMode || isHovered || isSelected ? 1 : 0}
+            transition="opacity 0.2s"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={handleCheckboxChange}
+              style={{
+                width: '16px',
+                height: '16px',
+                cursor: 'pointer',
+                accentColor: 'var(--color-accent)',
+              }}
+            />
+          </Box>
+
+          {/* Star */}
+          <Box
+            onClick={handleStarClick}
+            cursor="pointer"
+            color={
+              bookmark.is_starred
+                ? 'var(--color-star)'
+                : 'var(--color-text-tertiary)'
+            }
+            _hover={{
+              color: bookmark.is_starred
+                ? 'var(--color-star-hover)'
+                : 'var(--color-text-secondary)',
             }}
-          />
-        </Box>
+            transition="color 0.2s"
+          >
+            <LuStar
+              size={16}
+              fill={bookmark.is_starred ? 'currentColor' : 'none'}
+            />
+          </Box>
 
-        {/* Star */}
-        <Box
-          onClick={handleStarClick}
-          cursor="pointer"
-          color={bookmark.is_starred ? 'var(--color-star)' : 'var(--color-text-tertiary)'}
-          _hover={{ color: bookmark.is_starred ? 'var(--color-star-hover)' : 'var(--color-text-secondary)' }}
-          transition="color 0.2s"
-        >
-          <LuStar size={16} fill={bookmark.is_starred ? 'currentColor' : 'none'} />
-        </Box>
+          {/* Title & URL - takes most space */}
+          <VStack align="stretch" flex={1} gap={0} minW={0}>
+            <HStack gap={2}>
+              <Text
+                fontSize="sm"
+                fontWeight="medium"
+                color="var(--color-text-primary)"
+                truncate
+                _hover={{ color: 'var(--color-accent)' }}
+                transition="color 0.2s"
+              >
+                {bookmark.title}
+              </Text>
+              {bookmark.is_archived && (
+                <Text fontSize="xs" color="var(--color-text-tertiary)">
+                  (Archived)
+                </Text>
+              )}
+            </HStack>
+            <HStack gap={2} fontSize="xs" color="var(--color-text-tertiary)">
+              <LuExternalLink size={10} />
+              <Text truncate>{bookmark.url}</Text>
+            </HStack>
+          </VStack>
 
-        {/* Title & URL - takes most space */}
-        <VStack align="stretch" flex={1} gap={0} minW={0}>
-          <HStack gap={2}>
+          {/* Author - resizable width */}
+          <HStack
+            w={`${columnWidths.author}px`}
+            gap={2}
+            display={{ base: 'none', md: 'flex' }}
+            minW="100px"
+          >
+            <Box
+              w="24px"
+              h="24px"
+              borderRadius="full"
+              overflow="hidden"
+              bg="var(--gradient-avatar)"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              fontSize="xs"
+              fontWeight="bold"
+              color="white"
+              flexShrink={0}
+              position="relative"
+            >
+              {getProfileImage() ? (
+                <LazyImage
+                  src={getProfileImage()}
+                  alt={`${getAuthorName()} profile`}
+                  w="100%"
+                  h="100%"
+                  objectFit="cover"
+                  position="absolute"
+                  top={0}
+                  left={0}
+                  fallback={
+                    <Box
+                      w="100%"
+                      h="100%"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      bg="var(--gradient-avatar)"
+                      color="white"
+                      fontSize="xs"
+                      fontWeight="bold"
+                    >
+                      {getAuthorInitial()}
+                    </Box>
+                  }
+                />
+              ) : (
+                <Text fontSize="xs" fontWeight="bold">
+                  {getAuthorInitial()}
+                </Text>
+              )}
+            </Box>
             <Text
               fontSize="sm"
-              fontWeight="medium"
-              color="var(--color-text-primary)"
+              color="var(--color-text-secondary)"
               truncate
-              _hover={{ color: 'var(--color-accent)' }}
-              transition="color 0.2s"
+              flex={1}
             >
-              {bookmark.title}
+              {getAuthorName()}
             </Text>
-            {bookmark.is_archived && (
-              <Text fontSize="xs" color="var(--color-text-tertiary)">
-                (Archived)
-              </Text>
-            )}
           </HStack>
-          <HStack gap={2} fontSize="xs" color="var(--color-text-tertiary)">
-            <LuExternalLink size={10} />
-            <Text truncate>{bookmark.url}</Text>
-          </HStack>
-        </VStack>
 
-        {/* Author - resizable width */}
-        <HStack w={`${columnWidths.author}px`} gap={2} display={{ base: 'none', md: 'flex' }} minW="100px">
+          {/* Domain - resizable width */}
           <Box
-            w="24px"
-            h="24px"
-            borderRadius="full"
-            overflow="hidden"
-            bg="var(--gradient-avatar)"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            fontSize="xs"
-            fontWeight="bold"
-            color="white"
-            flexShrink={0}
-            position="relative"
+            w={`${columnWidths.domain}px`}
+            display={{ base: 'none', lg: 'block' }}
+            minW="80px"
           >
-            {getProfileImage() ? (
-              <LazyImage
-                src={getProfileImage()}
-                alt={`${getAuthorName()} profile`}
-                w="100%"
-                h="100%"
-                objectFit="cover"
-                position="absolute"
-                top={0}
-                left={0}
-                fallback={
-                  <Box
-                    w="100%"
-                    h="100%"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    bg="var(--gradient-avatar)"
-                    color="white"
-                    fontSize="xs"
-                    fontWeight="bold"
-                  >
-                    {getAuthorInitial()}
-                  </Box>
-                }
-              />
-            ) : (
-              <Text fontSize="xs" fontWeight="bold">
-                {getAuthorInitial()}
+            <Text fontSize="sm" color="var(--color-text-tertiary)" truncate>
+              {bookmark.domain}
+            </Text>
+          </Box>
+
+          {/* Tags - resizable width */}
+          <HStack
+            gap={1}
+            w={`${columnWidths.tags}px`}
+            display={{ base: 'none', xl: 'flex' }}
+            flexWrap="wrap"
+            minW="120px"
+          >
+            {bookmark.tags.slice(0, 2).map((tag) => (
+              <Box key={tag} onClick={(e) => handleTagClick(tag, e)}>
+                <TagChip tag={tag} size="sm" />
+              </Box>
+            ))}
+            {bookmark.tags.length > 2 && (
+              <Text fontSize="xs" color="var(--color-text-tertiary)">
+                +{bookmark.tags.length - 2}
               </Text>
             )}
-          </Box>
-          <Text fontSize="sm" color="var(--color-text-secondary)" truncate flex={1}>
-            {getAuthorName()}
-          </Text>
-        </HStack>
+          </HStack>
 
-        {/* Domain - resizable width */}
-        <Box w={`${columnWidths.domain}px`} display={{ base: 'none', lg: 'block' }} minW="80px">
-          <Text fontSize="sm" color="var(--color-text-tertiary)" truncate>
-            {bookmark.domain}
-          </Text>
-        </Box>
-
-        {/* Tags - resizable width */}
-        <HStack gap={1} w={`${columnWidths.tags}px`} display={{ base: 'none', xl: 'flex' }} flexWrap="wrap" minW="120px">
-          {bookmark.tags.slice(0, 2).map((tag) => (
-            <Box
-              key={tag}
-              onClick={(e) => handleTagClick(tag, e)}
-            >
-              <TagChip
-                tag={tag}
-                size="sm"
-              />
-            </Box>
-          ))}
-          {bookmark.tags.length > 2 && (
+          {/* Date - resizable width */}
+          <Box
+            w={`${columnWidths.date}px`}
+            display={{ base: 'none', lg: 'block' }}
+            minW="80px"
+          >
             <Text fontSize="xs" color="var(--color-text-tertiary)">
-              +{bookmark.tags.length - 2}
+              {formatDistanceToNow(new Date(bookmark.created_at), {
+                addSuffix: true,
+              })}
             </Text>
-          )}
+          </Box>
         </HStack>
-
-        {/* Date - resizable width */}
-        <Box w={`${columnWidths.date}px`} display={{ base: 'none', lg: 'block' }} minW="80px">
-          <Text fontSize="xs" color="var(--color-text-tertiary)">
-            {formatDistanceToNow(new Date(bookmark.created_at), { addSuffix: true })}
-          </Text>
-        </Box>
-      </HStack>
-    </Box>
-  )
-})
+      </Box>
+    )
+  }
+)
 
 BookmarkListItem.displayName = 'BookmarkListItem'
 
@@ -357,12 +432,14 @@ const getInitialColumnWidths = (): ColumnWidths => {
     author: 150,
     domain: 120,
     tags: 200,
-    date: 100
+    date: 100,
   }
 }
 
 const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
-  const [columnWidths, setColumnWidths] = useState<ColumnWidths>(getInitialColumnWidths)
+  const [columnWidths, setColumnWidths] = useState<ColumnWidths>(
+    getInitialColumnWidths
+  )
   const [resizing, setResizing] = useState<keyof ColumnWidths | null>(null)
   const startXRef = useRef<number>(0)
   const startWidthRef = useRef<number>(0)
@@ -384,19 +461,25 @@ const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
     }
   }, [columnWidths])
 
-  const handleResizeStart = useCallback((column: keyof ColumnWidths, e: React.MouseEvent) => {
-    e.preventDefault()
-    setResizing(column)
-    startXRef.current = e.clientX
-    startWidthRef.current = columnWidths[column]
-  }, [columnWidths])
+  const handleResizeStart = useCallback(
+    (column: keyof ColumnWidths, e: React.MouseEvent) => {
+      e.preventDefault()
+      setResizing(column)
+      startXRef.current = e.clientX
+      startWidthRef.current = columnWidths[column]
+    },
+    [columnWidths]
+  )
 
-  const handleResizeMove = useCallback((e: MouseEvent) => {
-    if (!resizing) return
-    const diff = e.clientX - startXRef.current
-    const newWidth = Math.max(80, startWidthRef.current + diff) // Min 80px
-    setColumnWidths(prev => ({ ...prev, [resizing]: newWidth }))
-  }, [resizing])
+  const handleResizeMove = useCallback(
+    (e: MouseEvent) => {
+      if (!resizing) return
+      const diff = e.clientX - startXRef.current
+      const newWidth = Math.max(80, startWidthRef.current + diff) // Min 80px
+      setColumnWidths((prev) => ({ ...prev, [resizing]: newWidth }))
+    },
+    [resizing]
+  )
 
   const handleResizeEnd = useCallback(() => {
     setResizing(null)
@@ -428,14 +511,28 @@ const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
           <Box w="16px" /> {/* Drag handle space */}
           <Box w="16px" /> {/* Checkbox space */}
           <Box w="16px" /> {/* Star space */}
-
-          <Text flex={1} fontSize="xs" fontWeight="bold" color="var(--color-text-secondary)" textTransform="uppercase">
+          <Text
+            flex={1}
+            fontSize="xs"
+            fontWeight="bold"
+            color="var(--color-text-secondary)"
+            textTransform="uppercase"
+          >
             Title
           </Text>
-
           {/* Author column with resize handle */}
-          <Box w={`${columnWidths.author}px`} position="relative" display={{ base: 'none', md: 'block' }} minW="100px">
-            <Text fontSize="xs" fontWeight="bold" color="var(--color-text-secondary)" textTransform="uppercase">
+          <Box
+            w={`${columnWidths.author}px`}
+            position="relative"
+            display={{ base: 'none', md: 'block' }}
+            minW="100px"
+          >
+            <Text
+              fontSize="xs"
+              fontWeight="bold"
+              color="var(--color-text-secondary)"
+              textTransform="uppercase"
+            >
               Author
             </Text>
             <Box
@@ -451,8 +548,8 @@ const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
               _hover={{
                 '& > div': {
                   bg: 'var(--color-accent)',
-                  opacity: 1
-                }
+                  opacity: 1,
+                },
               }}
               onMouseDown={(e) => handleResizeStart('author', e)}
             >
@@ -465,10 +562,19 @@ const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
               />
             </Box>
           </Box>
-
           {/* Domain column with resize handle */}
-          <Box w={`${columnWidths.domain}px`} position="relative" display={{ base: 'none', lg: 'block' }} minW="80px">
-            <Text fontSize="xs" fontWeight="bold" color="var(--color-text-secondary)" textTransform="uppercase">
+          <Box
+            w={`${columnWidths.domain}px`}
+            position="relative"
+            display={{ base: 'none', lg: 'block' }}
+            minW="80px"
+          >
+            <Text
+              fontSize="xs"
+              fontWeight="bold"
+              color="var(--color-text-secondary)"
+              textTransform="uppercase"
+            >
               Domain
             </Text>
             <Box
@@ -484,8 +590,8 @@ const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
               _hover={{
                 '& > div': {
                   bg: 'var(--color-accent)',
-                  opacity: 1
-                }
+                  opacity: 1,
+                },
               }}
               onMouseDown={(e) => handleResizeStart('domain', e)}
             >
@@ -498,10 +604,19 @@ const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
               />
             </Box>
           </Box>
-
           {/* Tags column with resize handle */}
-          <Box w={`${columnWidths.tags}px`} position="relative" display={{ base: 'none', xl: 'block' }} minW="120px">
-            <Text fontSize="xs" fontWeight="bold" color="var(--color-text-secondary)" textTransform="uppercase">
+          <Box
+            w={`${columnWidths.tags}px`}
+            position="relative"
+            display={{ base: 'none', xl: 'block' }}
+            minW="120px"
+          >
+            <Text
+              fontSize="xs"
+              fontWeight="bold"
+              color="var(--color-text-secondary)"
+              textTransform="uppercase"
+            >
               Tags
             </Text>
             <Box
@@ -517,8 +632,8 @@ const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
               _hover={{
                 '& > div': {
                   bg: 'var(--color-accent)',
-                  opacity: 1
-                }
+                  opacity: 1,
+                },
               }}
               onMouseDown={(e) => handleResizeStart('tags', e)}
             >
@@ -531,10 +646,19 @@ const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
               />
             </Box>
           </Box>
-
           {/* Date column with resize handle */}
-          <Box w={`${columnWidths.date}px`} position="relative" display={{ base: 'none', lg: 'block' }} minW="80px">
-            <Text fontSize="xs" fontWeight="bold" color="var(--color-text-secondary)" textTransform="uppercase">
+          <Box
+            w={`${columnWidths.date}px`}
+            position="relative"
+            display={{ base: 'none', lg: 'block' }}
+            minW="80px"
+          >
+            <Text
+              fontSize="xs"
+              fontWeight="bold"
+              color="var(--color-text-secondary)"
+              textTransform="uppercase"
+            >
               Date
             </Text>
             <Box
@@ -550,8 +674,8 @@ const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
               _hover={{
                 '& > div': {
                   bg: 'var(--color-accent)',
-                  opacity: 1
-                }
+                  opacity: 1,
+                },
               }}
               onMouseDown={(e) => handleResizeStart('date', e)}
             >
@@ -570,7 +694,11 @@ const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
       {/* Table Body */}
       <VStack gap={0} align="stretch">
         {bookmarks.map((bookmark) => (
-          <BookmarkListItem key={bookmark.id} bookmark={bookmark} columnWidths={columnWidths} />
+          <BookmarkListItem
+            key={bookmark.id}
+            bookmark={bookmark}
+            columnWidths={columnWidths}
+          />
         ))}
       </VStack>
 

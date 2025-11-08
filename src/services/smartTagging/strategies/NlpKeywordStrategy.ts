@@ -8,7 +8,10 @@ import type { TaggingStrategy, TagSuggestion, TaggingContext } from '../types'
 import type { Bookmark } from '../../../types/bookmark'
 import { findTechKeywords } from '../../../data/smartTagging/techKeywords'
 import { TagNormalizer } from '../core/TagNormalizer'
-import { isAmbiguousTechTerm, hasTechContext } from '../../../data/smartTagging/ambiguousTechTerms'
+import {
+  isAmbiguousTechTerm,
+  hasTechContext,
+} from '../../../data/smartTagging/ambiguousTechTerms'
 
 export class NlpKeywordStrategy implements TaggingStrategy {
   readonly name = 'nlp'
@@ -17,7 +20,10 @@ export class NlpKeywordStrategy implements TaggingStrategy {
   /**
    * Extract keywords using NLP and tech keyword matching
    */
-  async generateTags(bookmark: Bookmark, _context: TaggingContext): Promise<TagSuggestion[]> {
+  async generateTags(
+    bookmark: Bookmark,
+    _context: TaggingContext
+  ): Promise<TagSuggestion[]> {
     const suggestions: TagSuggestion[] = []
 
     // Extract text content from bookmark
@@ -135,7 +141,10 @@ export class NlpKeywordStrategy implements TaggingStrategy {
     properNouns.forEach((noun) => {
       const normalized = this.normalizer.normalize(noun)
       if (normalized.normalized) {
-        wordFrequency.set(normalized.normalized, (wordFrequency.get(normalized.normalized) || 0) + 1)
+        wordFrequency.set(
+          normalized.normalized,
+          (wordFrequency.get(normalized.normalized) || 0) + 1
+        )
       }
     })
 

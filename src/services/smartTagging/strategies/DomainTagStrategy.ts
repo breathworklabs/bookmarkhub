@@ -14,7 +14,10 @@ export class DomainTagStrategy implements TaggingStrategy {
 
   private linkExtractor = new ContentLinkExtractor()
 
-  async generateTags(bookmark: Bookmark, context: TaggingContext): Promise<TagSuggestion[]> {
+  async generateTags(
+    bookmark: Bookmark,
+    context: TaggingContext
+  ): Promise<TagSuggestion[]> {
     const suggestions: TagSuggestion[] = []
 
     // Strategy 1: Check embedded links in content (PRIORITY for X/Twitter)
@@ -64,7 +67,10 @@ export class DomainTagStrategy implements TaggingStrategy {
         })
 
         // Also add category
-        if (rule.category && !suggestions.find((s) => s.tag === rule.category)) {
+        if (
+          rule.category &&
+          !suggestions.find((s) => s.tag === rule.category)
+        ) {
           suggestions.push({
             tag: rule.category,
             confidence: rule.confidence * 0.9,
@@ -77,7 +83,10 @@ export class DomainTagStrategy implements TaggingStrategy {
     }
 
     // Merge custom domain rules from options
-    if (context.options.customDomainRules && context.options.customDomainRules.length > 0) {
+    if (
+      context.options.customDomainRules &&
+      context.options.customDomainRules.length > 0
+    ) {
       for (const customRule of context.options.customDomainRules) {
         const rulePattern = customRule.domain.toString()
         const matches =

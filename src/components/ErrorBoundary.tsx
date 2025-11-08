@@ -1,7 +1,11 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
 import { Box, VStack, Text, Button, HStack } from '@chakra-ui/react'
 import { LuTriangleAlert, LuRefreshCw } from 'react-icons/lu'
-import { createErrorHandler, createUserFriendlyMessage, type AppError } from '../utils/errorHandling'
+import {
+  createErrorHandler,
+  createUserFriendlyMessage,
+  type AppError,
+} from '../utils/errorHandling'
 
 interface Props {
   children: ReactNode
@@ -30,15 +34,17 @@ export class ErrorBoundary extends Component<Props, State> {
 
     return {
       hasError: true,
-      error: standardError
+      error: standardError,
     }
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    const errorHandler = createErrorHandler(this.props.context || 'ErrorBoundary')
+    const errorHandler = createErrorHandler(
+      this.props.context || 'ErrorBoundary'
+    )
     const standardError = errorHandler(error, {
       action: 'componentDidCatch',
-      component: errorInfo.componentStack || undefined
+      component: errorInfo.componentStack || undefined,
     })
 
     this.setState({ error: standardError })
@@ -77,12 +83,20 @@ export class ErrorBoundary extends Component<Props, State> {
             </Box>
 
             <VStack gap={2}>
-              <Text fontSize="18px" fontWeight="600" style={{ color: 'var(--color-text-primary)' }}>
+              <Text
+                fontSize="18px"
+                fontWeight="600"
+                style={{ color: 'var(--color-text-primary)' }}
+              >
                 Something went wrong
               </Text>
 
               {this.state.error && (
-                <Text fontSize="14px" style={{ color: 'var(--color-text-tertiary)' }} maxW="400px">
+                <Text
+                  fontSize="14px"
+                  style={{ color: 'var(--color-text-tertiary)' }}
+                  maxW="400px"
+                >
                   {createUserFriendlyMessage(this.state.error)}
                 </Text>
               )}
@@ -103,8 +117,14 @@ export class ErrorBoundary extends Component<Props, State> {
               <Button
                 size="sm"
                 variant="outline"
-                style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-tertiary)' }}
-                _hover={{ borderColor: 'var(--color-border-hover)', color: 'var(--color-text-primary)' }}
+                style={{
+                  borderColor: 'var(--color-border)',
+                  color: 'var(--color-text-tertiary)',
+                }}
+                _hover={{
+                  borderColor: 'var(--color-border-hover)',
+                  color: 'var(--color-text-primary)',
+                }}
                 onClick={() => window.location.reload()}
               >
                 Reload Page
@@ -120,14 +140,26 @@ export class ErrorBoundary extends Component<Props, State> {
                 borderRadius="4px"
                 w="100%"
               >
-                <Text fontSize="12px" style={{ color: 'var(--color-text-tertiary)' }} fontFamily="mono">
-                  <strong>Error Details:</strong><br />
-                  {this.state.error.message}<br />
+                <Text
+                  fontSize="12px"
+                  style={{ color: 'var(--color-text-tertiary)' }}
+                  fontFamily="mono"
+                >
+                  <strong>Error Details:</strong>
+                  <br />
+                  {this.state.error.message}
+                  <br />
                   {this.state.error.context?.component && (
-                    <>Component: {this.state.error.context.component}<br /></>
+                    <>
+                      Component: {this.state.error.context.component}
+                      <br />
+                    </>
                   )}
                   {this.state.error.timestamp && (
-                    <>Time: {new Date(this.state.error.timestamp).toLocaleString()}</>
+                    <>
+                      Time:{' '}
+                      {new Date(this.state.error.timestamp).toLocaleString()}
+                    </>
                   )}
                 </Text>
               </Box>
@@ -140,6 +172,5 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children
   }
 }
-
 
 export default ErrorBoundary

@@ -38,7 +38,7 @@ export class AppError extends Error {
     this.code = code
     this.context = {
       timestamp: new Date().toISOString(),
-      ...context
+      ...context,
     }
     this.timestamp = this.context.timestamp || new Date().toISOString()
     this.originalError = originalError
@@ -54,20 +54,22 @@ export class AppError extends Error {
    */
   toUserMessage(): string {
     const friendlyMessages: Record<string, string> = {
-      'NOT_FOUND': 'The requested item could not be found',
-      'STORAGE_FULL': 'Storage is full. Please free up some space and try again',
-      'INVALID_DATA': 'The data provided is invalid',
-      'STORAGE_UNAVAILABLE': 'Storage is currently unavailable. Please try again later',
-      'NETWORK_ERROR': 'Network connection failed. Please check your internet connection',
-      'PERMISSION_DENIED': 'You do not have permission to perform this action',
-      'VALIDATION_ERROR': 'Please check your input and try again',
-      'BOOKMARK_NOT_FOUND': 'Bookmark not found',
-      'COLLECTION_NOT_FOUND': 'Collection not found',
-      'IMPORT_FAILED': 'Failed to import data',
-      'EXPORT_FAILED': 'Failed to export data',
-      'AUTHENTICATION_FAILED': 'Authentication failed',
-      'RATE_LIMITED': 'Too many requests. Please try again later',
-      'UNKNOWN_ERROR': 'An unexpected error occurred'
+      NOT_FOUND: 'The requested item could not be found',
+      STORAGE_FULL: 'Storage is full. Please free up some space and try again',
+      INVALID_DATA: 'The data provided is invalid',
+      STORAGE_UNAVAILABLE:
+        'Storage is currently unavailable. Please try again later',
+      NETWORK_ERROR:
+        'Network connection failed. Please check your internet connection',
+      PERMISSION_DENIED: 'You do not have permission to perform this action',
+      VALIDATION_ERROR: 'Please check your input and try again',
+      BOOKMARK_NOT_FOUND: 'Bookmark not found',
+      COLLECTION_NOT_FOUND: 'Collection not found',
+      IMPORT_FAILED: 'Failed to import data',
+      EXPORT_FAILED: 'Failed to export data',
+      AUTHENTICATION_FAILED: 'Authentication failed',
+      RATE_LIMITED: 'Too many requests. Please try again later',
+      UNKNOWN_ERROR: 'An unexpected error occurred',
     }
 
     return friendlyMessages[this.code] || this.message
@@ -82,7 +84,7 @@ export class AppError extends Error {
       code: this.code,
       context: this.context,
       originalError: this.originalError,
-      timestamp: this.timestamp
+      timestamp: this.timestamp,
     }
   }
 
@@ -105,7 +107,12 @@ export class AppError extends Error {
 export class BookmarkError extends AppError {
   constructor(
     message: string,
-    code: 'NOT_FOUND' | 'INVALID_DATA' | 'STORAGE_FULL' | 'STORAGE_UNAVAILABLE' | 'VALIDATION_ERROR' = 'INVALID_DATA',
+    code:
+      | 'NOT_FOUND'
+      | 'INVALID_DATA'
+      | 'STORAGE_FULL'
+      | 'STORAGE_UNAVAILABLE'
+      | 'VALIDATION_ERROR' = 'INVALID_DATA',
     context: Partial<ErrorContext> = {},
     originalError?: unknown
   ) {
@@ -114,35 +121,29 @@ export class BookmarkError extends AppError {
   }
 
   static notFound(id: string): BookmarkError {
-    return new BookmarkError(
-      `Bookmark with id ${id} not found`,
-      'NOT_FOUND',
-      { action: 'find_bookmark', metadata: { bookmarkId: id } }
-    )
+    return new BookmarkError(`Bookmark with id ${id} not found`, 'NOT_FOUND', {
+      action: 'find_bookmark',
+      metadata: { bookmarkId: id },
+    })
   }
 
   static invalidData(data: any): BookmarkError {
-    return new BookmarkError(
-      'Invalid bookmark data provided',
-      'INVALID_DATA',
-      { action: 'validate_bookmark', metadata: { data } }
-    )
+    return new BookmarkError('Invalid bookmark data provided', 'INVALID_DATA', {
+      action: 'validate_bookmark',
+      metadata: { data },
+    })
   }
 
   static storageFull(): BookmarkError {
-    return new BookmarkError(
-      'Storage is full',
-      'STORAGE_FULL',
-      { action: 'save_bookmark' }
-    )
+    return new BookmarkError('Storage is full', 'STORAGE_FULL', {
+      action: 'save_bookmark',
+    })
   }
 
   static storageUnavailable(): BookmarkError {
-    return new BookmarkError(
-      'Storage is unavailable',
-      'STORAGE_UNAVAILABLE',
-      { action: 'access_storage' }
-    )
+    return new BookmarkError('Storage is unavailable', 'STORAGE_UNAVAILABLE', {
+      action: 'access_storage',
+    })
   }
 }
 
@@ -152,7 +153,12 @@ export class BookmarkError extends AppError {
 export class CollectionError extends AppError {
   constructor(
     message: string,
-    code: 'NOT_FOUND' | 'INVALID_DATA' | 'STORAGE_FULL' | 'STORAGE_UNAVAILABLE' | 'VALIDATION_ERROR' = 'INVALID_DATA',
+    code:
+      | 'NOT_FOUND'
+      | 'INVALID_DATA'
+      | 'STORAGE_FULL'
+      | 'STORAGE_UNAVAILABLE'
+      | 'VALIDATION_ERROR' = 'INVALID_DATA',
     context: Partial<ErrorContext> = {},
     originalError?: unknown
   ) {
@@ -183,7 +189,12 @@ export class CollectionError extends AppError {
 export class ImportExportError extends AppError {
   constructor(
     message: string,
-    code: 'IMPORT_FAILED' | 'EXPORT_FAILED' | 'INVALID_FORMAT' | 'FILE_TOO_LARGE' | 'PERMISSION_DENIED' = 'IMPORT_FAILED',
+    code:
+      | 'IMPORT_FAILED'
+      | 'EXPORT_FAILED'
+      | 'INVALID_FORMAT'
+      | 'FILE_TOO_LARGE'
+      | 'PERMISSION_DENIED' = 'IMPORT_FAILED',
     context: Partial<ErrorContext> = {},
     originalError?: unknown
   ) {
@@ -192,19 +203,17 @@ export class ImportExportError extends AppError {
   }
 
   static importFailed(reason: string): ImportExportError {
-    return new ImportExportError(
-      `Import failed: ${reason}`,
-      'IMPORT_FAILED',
-      { action: 'import_data', metadata: { reason } }
-    )
+    return new ImportExportError(`Import failed: ${reason}`, 'IMPORT_FAILED', {
+      action: 'import_data',
+      metadata: { reason },
+    })
   }
 
   static exportFailed(reason: string): ImportExportError {
-    return new ImportExportError(
-      `Export failed: ${reason}`,
-      'EXPORT_FAILED',
-      { action: 'export_data', metadata: { reason } }
-    )
+    return new ImportExportError(`Export failed: ${reason}`, 'EXPORT_FAILED', {
+      action: 'export_data',
+      metadata: { reason },
+    })
   }
 
   static invalidFormat(format: string): ImportExportError {
@@ -230,7 +239,11 @@ export class ImportExportError extends AppError {
 export class NetworkError extends AppError {
   constructor(
     message: string,
-    code: 'NETWORK_ERROR' | 'TIMEOUT' | 'RATE_LIMITED' | 'SERVER_ERROR' = 'NETWORK_ERROR',
+    code:
+      | 'NETWORK_ERROR'
+      | 'TIMEOUT'
+      | 'RATE_LIMITED'
+      | 'SERVER_ERROR' = 'NETWORK_ERROR',
     context: Partial<ErrorContext> = {},
     originalError?: unknown
   ) {
@@ -239,11 +252,9 @@ export class NetworkError extends AppError {
   }
 
   static connectionFailed(): NetworkError {
-    return new NetworkError(
-      'Network connection failed',
-      'NETWORK_ERROR',
-      { action: 'network_request' }
-    )
+    return new NetworkError('Network connection failed', 'NETWORK_ERROR', {
+      action: 'network_request',
+    })
   }
 
   static timeout(duration: number): NetworkError {
@@ -255,19 +266,17 @@ export class NetworkError extends AppError {
   }
 
   static rateLimited(retryAfter?: number): NetworkError {
-    return new NetworkError(
-      'Rate limit exceeded',
-      'RATE_LIMITED',
-      { action: 'network_request', metadata: { retryAfter } }
-    )
+    return new NetworkError('Rate limit exceeded', 'RATE_LIMITED', {
+      action: 'network_request',
+      metadata: { retryAfter },
+    })
   }
 
   static serverError(status: number): NetworkError {
-    return new NetworkError(
-      `Server error: ${status}`,
-      'SERVER_ERROR',
-      { action: 'network_request', metadata: { status } }
-    )
+    return new NetworkError(`Server error: ${status}`, 'SERVER_ERROR', {
+      action: 'network_request',
+      metadata: { status },
+    })
   }
 }
 
@@ -292,15 +301,17 @@ export class ValidationError extends AppError {
   }
 
   static required(field: string): ValidationError {
-    return new ValidationError(
-      `${field} is required`,
-      field,
-      undefined,
-      { action: 'validate_required', metadata: { field } }
-    )
+    return new ValidationError(`${field} is required`, field, undefined, {
+      action: 'validate_required',
+      metadata: { field },
+    })
   }
 
-  static invalidFormat(field: string, value: any, expectedFormat: string): ValidationError {
+  static invalidFormat(
+    field: string,
+    value: any,
+    expectedFormat: string
+  ): ValidationError {
     return new ValidationError(
       `${field} has invalid format. Expected: ${expectedFormat}`,
       field,
@@ -309,7 +320,11 @@ export class ValidationError extends AppError {
     )
   }
 
-  static tooLong(field: string, value: any, maxLength: number): ValidationError {
+  static tooLong(
+    field: string,
+    value: any,
+    maxLength: number
+  ): ValidationError {
     return new ValidationError(
       `${field} is too long. Maximum length: ${maxLength}`,
       field,
@@ -318,7 +333,11 @@ export class ValidationError extends AppError {
     )
   }
 
-  static tooShort(field: string, value: any, minLength: number): ValidationError {
+  static tooShort(
+    field: string,
+    value: any,
+    minLength: number
+  ): ValidationError {
     return new ValidationError(
       `${field} is too short. Minimum length: ${minLength}`,
       field,
@@ -332,7 +351,10 @@ export class ValidationError extends AppError {
  * Create a standardized error handler for a specific context
  */
 export const createErrorHandler = (context: string) => {
-  return (error: unknown, additionalContext?: Partial<ErrorContext>): AppError => {
+  return (
+    error: unknown,
+    additionalContext?: Partial<ErrorContext>
+  ): AppError => {
     // If it's already an AppError, just add context
     if (error instanceof AppError) {
       return error.withContext({ component: context, ...additionalContext })
@@ -344,7 +366,7 @@ export const createErrorHandler = (context: string) => {
       getErrorCode(error) || 'UNKNOWN_ERROR',
       {
         component: context,
-        ...additionalContext
+        ...additionalContext,
       },
       error
     )
@@ -411,7 +433,9 @@ export const isErrorType = (error: unknown, type: string): boolean => {
 /**
  * Create a user-friendly error message for display
  */
-export const createUserFriendlyMessage = (error: AppError | StandardError): string => {
+export const createUserFriendlyMessage = (
+  error: AppError | StandardError
+): string => {
   if (error instanceof AppError) {
     return error.toUserMessage()
   }
@@ -420,13 +444,15 @@ export const createUserFriendlyMessage = (error: AppError | StandardError): stri
 
   // Map technical error codes to user-friendly messages
   const friendlyMessages: Record<string, string> = {
-    'NOT_FOUND': 'The requested item could not be found',
-    'STORAGE_FULL': 'Storage is full. Please free up some space and try again',
-    'INVALID_DATA': 'The data provided is invalid',
-    'STORAGE_UNAVAILABLE': 'Storage is currently unavailable. Please try again later',
-    'NETWORK_ERROR': 'Network connection failed. Please check your internet connection',
-    'PERMISSION_DENIED': 'You do not have permission to perform this action',
-    'VALIDATION_ERROR': 'Please check your input and try again'
+    NOT_FOUND: 'The requested item could not be found',
+    STORAGE_FULL: 'Storage is full. Please free up some space and try again',
+    INVALID_DATA: 'The data provided is invalid',
+    STORAGE_UNAVAILABLE:
+      'Storage is currently unavailable. Please try again later',
+    NETWORK_ERROR:
+      'Network connection failed. Please check your internet connection',
+    PERMISSION_DENIED: 'You do not have permission to perform this action',
+    VALIDATION_ERROR: 'Please check your input and try again',
   }
 
   // Return user-friendly message if available, otherwise return original message
@@ -483,13 +509,15 @@ export const withRetry = async <T>(
 
       if (attempt === maxRetries) {
         const errorHandler = createErrorHandler(context)
-        const appError = errorHandler(error, { action: `retry_failed_after_${maxRetries}_attempts` })
+        const appError = errorHandler(error, {
+          action: `retry_failed_after_${maxRetries}_attempts`,
+        })
         throw appError
       }
 
       // Exponential backoff delay
       const delay = baseDelay * Math.pow(2, attempt)
-      await new Promise(resolve => setTimeout(resolve, delay))
+      await new Promise((resolve) => setTimeout(resolve, delay))
     }
   }
 
@@ -539,7 +567,9 @@ export const isErrorClass = <T extends AppError>(
 /**
  * Safely extract error information without throwing
  */
-export const safeGetErrorInfo = (error: unknown): {
+export const safeGetErrorInfo = (
+  error: unknown
+): {
   message: string
   code?: string
   isAppError: boolean
@@ -548,14 +578,14 @@ export const safeGetErrorInfo = (error: unknown): {
     return {
       message: error.message,
       code: error.code,
-      isAppError: true
+      isAppError: true,
     }
   }
 
   return {
     message: getErrorMessage(error),
     code: getErrorCode(error),
-    isAppError: false
+    isAppError: false,
   }
 }
 
@@ -563,23 +593,22 @@ export const safeGetErrorInfo = (error: unknown): {
  * Create a safe error boundary handler
  */
 export const createSafeErrorHandler = (context: string) => {
-  return (error: unknown, additionalContext?: Partial<ErrorContext>): AppError => {
+  return (
+    error: unknown,
+    additionalContext?: Partial<ErrorContext>
+  ): AppError => {
     try {
       return createErrorHandler(context)(error, additionalContext)
     } catch (handlerError) {
       // If the error handler itself fails, create a basic error
-      return new AppError(
-        'Error handler failed',
-        'HANDLER_ERROR',
-        {
-          component: context,
-          action: 'handle_error',
-          metadata: {
-            originalError: String(error),
-            handlerError: String(handlerError)
-          }
-        }
-      )
+      return new AppError('Error handler failed', 'HANDLER_ERROR', {
+        component: context,
+        action: 'handle_error',
+        metadata: {
+          originalError: String(error),
+          handlerError: String(handlerError),
+        },
+      })
     }
   }
 }
@@ -605,5 +634,5 @@ export default {
   withErrorHandling,
   withRetry,
   validateErrorResponse,
-  safeGetErrorInfo
+  safeGetErrorInfo,
 }

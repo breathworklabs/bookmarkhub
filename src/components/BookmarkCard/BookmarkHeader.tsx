@@ -1,4 +1,12 @@
-import { Box, HStack, VStack, Text, IconButton, Menu, Portal } from '@chakra-ui/react'
+import {
+  Box,
+  HStack,
+  VStack,
+  Text,
+  IconButton,
+  Menu,
+  Portal,
+} from '@chakra-ui/react'
 import { LuPencil, LuTrash2, LuArchive } from 'react-icons/lu'
 import { memo, useCallback } from 'react'
 import { type Bookmark } from '../../types/bookmark'
@@ -16,7 +24,9 @@ interface BookmarkHeaderProps {
 const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
   const updateBookmark = useBookmarkStore((state) => state.updateBookmark)
   const removeBookmark = useBookmarkStore((state) => state.removeBookmark)
-  const toggleArchiveBookmark = useBookmarkStore((state) => state.toggleArchiveBookmark)
+  const toggleArchiveBookmark = useBookmarkStore(
+    (state) => state.toggleArchiveBookmark
+  )
   const { showDeleteConfirmation, showEditBookmark } = useModal()
 
   const menuItemStyles = useMenuItemStyles()
@@ -43,7 +53,10 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
     }
 
     // Check for general favicon_url which might contain profile image
-    if ((bookmark as any).favicon_url && !(bookmark as any).favicon_url.includes('favicon.ico')) {
+    if (
+      (bookmark as any).favicon_url &&
+      !(bookmark as any).favicon_url.includes('favicon.ico')
+    ) {
       return (bookmark as any).favicon_url
     }
 
@@ -64,7 +77,11 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
     if (typeof (bookmark as any).author === 'string') {
       return (bookmark as any).domain || 'unknown'
     }
-    return (bookmark as any).author?.username || (bookmark as any).domain || 'unknown'
+    return (
+      (bookmark as any).author?.username ||
+      (bookmark as any).domain ||
+      'unknown'
+    )
   }
 
   const getTimestamp = () => {
@@ -75,7 +92,8 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
     }
 
     // Fallback to general timestamp or created_at
-    const timestamp = (bookmark as any).timestamp || (bookmark as any).created_at
+    const timestamp =
+      (bookmark as any).timestamp || (bookmark as any).created_at
     if (timestamp) {
       return new Date(timestamp).toLocaleDateString()
     }
@@ -91,22 +109,25 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
         } catch (error) {
           console.error('Failed to update bookmark:', error)
         }
-      }
+      },
     })
   }, [showEditBookmark, bookmark, updateBookmark])
 
   const handleDelete = useCallback(() => {
     showDeleteConfirmation({
       title: 'Delete Bookmark',
-      message: 'Are you sure you want to delete this bookmark? This action cannot be undone.',
-      preview: (bookmark as any).content?.slice(0, 100) + ((bookmark as any).content?.length > 100 ? '...' : ''),
+      message:
+        'Are you sure you want to delete this bookmark? This action cannot be undone.',
+      preview:
+        (bookmark as any).content?.slice(0, 100) +
+        ((bookmark as any).content?.length > 100 ? '...' : ''),
       onConfirm: async () => {
         try {
           await removeBookmark(bookmark.id)
         } catch (error) {
           console.error('Failed to delete bookmark:', error)
         }
-      }
+      },
     })
   }, [showDeleteConfirmation, removeBookmark, bookmark])
 
@@ -163,7 +184,7 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
         ) : null}
         {/* Fallback initial */}
         <Box
-          position={getProfileImage() ? "absolute" : "static"}
+          position={getProfileImage() ? 'absolute' : 'static'}
           zIndex={getProfileImage() ? -1 : 1}
         >
           {getAuthorInitial()}
@@ -171,7 +192,11 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
       </Box>
       <VStack alignItems="start" gap={0} flex={1}>
         <HStack gap={2} alignItems="center">
-          <Text fontWeight="600" fontSize="sm" style={{ color: 'var(--color-text-primary)' }}>
+          <Text
+            fontWeight="600"
+            fontSize="sm"
+            style={{ color: 'var(--color-text-primary)' }}
+          >
             {getAuthorName()}
           </Text>
           {getBadgeImage() && (
@@ -236,11 +261,18 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
               color: 'var(--color-text-primary)',
               borderColor: 'var(--color-border-hover)',
               transform: 'scale(1.1)',
-              transition: 'all 0.2s'
+              transition: 'all 0.2s',
             }}
           >
-            <Box display="flex" alignItems="center" justifyContent="center" h="100%">
-              <Text fontSize="md" lineHeight="1">☰</Text>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              h="100%"
+            >
+              <Text fontSize="md" lineHeight="1">
+                ☰
+              </Text>
             </Box>
           </IconButton>
         </Menu.Trigger>
@@ -260,17 +292,23 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
                 onClick={handleToggleArchive}
               >
                 <HStack gap={2}>
-                  <LuArchive size={14} color={bookmark.is_archived ? 'var(--color-warning)' : 'var(--color-text-tertiary)'} />
+                  <LuArchive
+                    size={14}
+                    color={
+                      bookmark.is_archived
+                        ? 'var(--color-warning)'
+                        : 'var(--color-text-tertiary)'
+                    }
+                  />
                   <Text>{bookmark.is_archived ? 'Unarchive' : 'Archive'}</Text>
                 </HStack>
               </Menu.Item>
-              <Menu.Item
-                value="edit"
-                {...menuItemStyles}
-                onClick={handleEdit}
-              >
+              <Menu.Item value="edit" {...menuItemStyles} onClick={handleEdit}>
                 <HStack gap={2}>
-                  <LuPencil size={14} style={{ color: 'var(--color-text-tertiary)' }} />
+                  <LuPencil
+                    size={14}
+                    style={{ color: 'var(--color-text-tertiary)' }}
+                  />
                   <Text>Edit</Text>
                 </HStack>
               </Menu.Item>

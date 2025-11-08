@@ -1,6 +1,11 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { TagCategory, TagWithCategory, DEFAULT_TAG_CATEGORIES, getTagCategory } from '../types/tags'
+import {
+  TagCategory,
+  TagWithCategory,
+  DEFAULT_TAG_CATEGORIES,
+  getTagCategory,
+} from '../types/tags'
 
 interface TagCategoriesState {
   // Categories
@@ -22,7 +27,11 @@ interface TagCategoriesState {
 
   // Helper functions
   getCategoryForTag: (tag: string) => TagCategory | undefined
-  getTagWithCategory: (tag: string, count: number, lastUsed: Date) => TagWithCategory
+  getTagWithCategory: (
+    tag: string,
+    count: number,
+    lastUsed: Date
+  ) => TagWithCategory
 }
 
 export const useTagCategoriesStore = create<TagCategoriesState>()(
@@ -35,35 +44,35 @@ export const useTagCategoriesStore = create<TagCategoriesState>()(
         const id = categoryData.name.toLowerCase().replace(/\s+/g, '-')
         const newCategory: TagCategory = {
           ...categoryData,
-          id
+          id,
         }
 
-        set(state => ({
-          categories: [...state.categories, newCategory]
+        set((state) => ({
+          categories: [...state.categories, newCategory],
         }))
       },
 
       updateCategory: (id, updates) => {
-        set(state => ({
-          categories: state.categories.map(cat =>
+        set((state) => ({
+          categories: state.categories.map((cat) =>
             cat.id === id ? { ...cat, ...updates } : cat
-          )
+          ),
         }))
       },
 
       deleteCategory: (id) => {
-        set(state => {
+        set((state) => {
           // Remove category assignments for tags assigned to this category
           const updatedMappings = { ...state.tagCategoryMappings }
-          Object.keys(updatedMappings).forEach(tag => {
+          Object.keys(updatedMappings).forEach((tag) => {
             if (updatedMappings[tag] === id) {
               delete updatedMappings[tag]
             }
           })
 
           return {
-            categories: state.categories.filter(cat => cat.id !== id),
-            tagCategoryMappings: updatedMappings
+            categories: state.categories.filter((cat) => cat.id !== id),
+            tagCategoryMappings: updatedMappings,
           }
         })
       },
@@ -71,25 +80,25 @@ export const useTagCategoriesStore = create<TagCategoriesState>()(
       resetCategories: () => {
         set({
           categories: DEFAULT_TAG_CATEGORIES,
-          tagCategoryMappings: {}
+          tagCategoryMappings: {},
         })
       },
 
       assignTagToCategory: (tag, categoryId) => {
-        set(state => ({
+        set((state) => ({
           tagCategoryMappings: {
             ...state.tagCategoryMappings,
-            [tag]: categoryId
-          }
+            [tag]: categoryId,
+          },
         }))
       },
 
       removeTagFromCategory: (tag) => {
-        set(state => {
+        set((state) => {
           const updatedMappings = { ...state.tagCategoryMappings }
           delete updatedMappings[tag]
           return {
-            tagCategoryMappings: updatedMappings
+            tagCategoryMappings: updatedMappings,
           }
         })
       },
@@ -97,7 +106,7 @@ export const useTagCategoriesStore = create<TagCategoriesState>()(
       getTagsInCategory: (categoryId) => {
         const { tagCategoryMappings } = get()
         return Object.keys(tagCategoryMappings).filter(
-          tag => tagCategoryMappings[tag] === categoryId
+          (tag) => tagCategoryMappings[tag] === categoryId
         )
       },
 
@@ -107,7 +116,7 @@ export const useTagCategoriesStore = create<TagCategoriesState>()(
         // Check if tag has an explicit category assignment
         const assignedCategoryId = tagCategoryMappings[tag]
         if (assignedCategoryId) {
-          return categories.find(cat => cat.id === assignedCategoryId)
+          return categories.find((cat) => cat.id === assignedCategoryId)
         }
 
         // Check if tag uses hierarchical format (category:tag)
@@ -127,13 +136,13 @@ export const useTagCategoriesStore = create<TagCategoriesState>()(
           name: tag,
           category: category?.id,
           count,
-          lastUsed
+          lastUsed,
         }
-      }
+      },
     }),
     {
       name: 'tag-categories-storage',
-      version: 1
+      version: 1,
     }
   )
 )

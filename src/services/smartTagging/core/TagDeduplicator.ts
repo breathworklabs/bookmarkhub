@@ -26,16 +26,24 @@ export class TagDeduplicator {
     })
 
     // Convert back to array and sort by confidence (descending)
-    return Array.from(tagMap.values()).sort((a, b) => b.confidence - a.confidence)
+    return Array.from(tagMap.values()).sort(
+      (a, b) => b.confidence - a.confidence
+    )
   }
 
   /**
    * Merge two suggestions for the same tag
    * Updates the existing suggestion in place
    */
-  private mergeSuggestions(existing: TagSuggestion, newSuggestion: TagSuggestion): void {
+  private mergeSuggestions(
+    existing: TagSuggestion,
+    newSuggestion: TagSuggestion
+  ): void {
     // Combine sources (avoid duplicates)
-    const combinedSources = new Set([...existing.sources, ...newSuggestion.sources])
+    const combinedSources = new Set([
+      ...existing.sources,
+      ...newSuggestion.sources,
+    ])
     existing.sources = Array.from(combinedSources)
 
     // Boost confidence when multiple sources agree
@@ -71,9 +79,7 @@ export class TagDeduplicator {
    * Combine suggestions and remove exact duplicates
    * Useful when you have suggestions from multiple strategies
    */
-  combineAndDeduplicate(
-    suggestionsArrays: TagSuggestion[][]
-  ): TagSuggestion[] {
+  combineAndDeduplicate(suggestionsArrays: TagSuggestion[][]): TagSuggestion[] {
     const allSuggestions = suggestionsArrays.flat()
     return this.deduplicate(allSuggestions)
   }

@@ -312,13 +312,16 @@ export const URL_PATTERNS: UrlPattern[] = [
 /**
  * Match URL against all patterns and return matching tags
  */
-export function matchUrlPatterns(url: string): Array<{ tags: string[]; confidence: number }> {
+export function matchUrlPatterns(
+  url: string
+): Array<{ tags: string[]; confidence: number }> {
   const matches: Array<{ tags: string[]; confidence: number }> = []
 
   for (const pattern of URL_PATTERNS) {
-    const regex = typeof pattern.pattern === 'string'
-      ? new RegExp(pattern.pattern, 'i')
-      : pattern.pattern
+    const regex =
+      typeof pattern.pattern === 'string'
+        ? new RegExp(pattern.pattern, 'i')
+        : pattern.pattern
 
     if (regex.test(url)) {
       matches.push({

@@ -16,18 +16,28 @@ interface SidebarItem {
 const SidebarMenu = () => {
   const navigate = useNavigate()
   const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
-  const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
+  const setActiveSidebarItem = useBookmarkStore(
+    (state) => state.setActiveSidebarItem
+  )
   const toggleAIPanel = useBookmarkStore((state) => state.toggleAIPanel)
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const { showCreateCollection } = useModal()
-  const createCollection = useCollectionsStore((state) => state.createCollection)
-  const setActiveCollection = useCollectionsStore((state) => state.setActiveCollection)
+  const createCollection = useCollectionsStore(
+    (state) => state.createCollection
+  )
+  const setActiveCollection = useCollectionsStore(
+    (state) => state.setActiveCollection
+  )
 
   // Calculate actual counts
   const totalBookmarks = bookmarks.length
 
   const sidebarItems: SidebarItem[] = [
-    { icon: LuMenu, label: 'All Bookmarks', count: totalBookmarks.toLocaleString() },
+    {
+      icon: LuMenu,
+      label: 'All Bookmarks',
+      count: totalBookmarks.toLocaleString(),
+    },
     { icon: LuMenu, label: 'Collections', count: null },
     { icon: LuStar, label: 'AI Insights', badge: 'New' },
     { icon: LuExternalLink, label: 'Shared', count: null },
@@ -48,7 +58,7 @@ const SidebarMenu = () => {
           } catch (error) {
             console.error('Failed to create collection:', error)
           }
-        }
+        },
       })
     }
   }
@@ -57,7 +67,12 @@ const SidebarMenu = () => {
     <Box {...componentStyles.container.sidebar}>
       <VStack alignItems="stretch" gap={6} h="full">
         {/* Logo */}
-        <HStack gap={3} pb={4} borderBottomWidth="1px" style={{ borderColor: 'var(--color-border)' }}>
+        <HStack
+          gap={3}
+          pb={4}
+          borderBottomWidth="1px"
+          style={{ borderColor: 'var(--color-border)' }}
+        >
           <Box
             w={8}
             h={8}
@@ -71,7 +86,11 @@ const SidebarMenu = () => {
           >
             X
           </Box>
-          <Text fontSize="lg" fontWeight="bold" style={{ color: 'var(--color-text-primary)' }}>
+          <Text
+            fontSize="lg"
+            fontWeight="bold"
+            style={{ color: 'var(--color-text-primary)' }}
+          >
             BookmarkX
           </Text>
         </HStack>
@@ -92,48 +111,61 @@ const SidebarMenu = () => {
                   fontSize="14px"
                   fontWeight={isActive ? '600' : '500'}
                   _hover={{
-                    bg: isActive ? 'var(--color-blue-hover)' : 'var(--color-border)',
-                    color: isActive ? 'white' : 'var(--color-text-primary)'
+                    bg: isActive
+                      ? 'var(--color-blue-hover)'
+                      : 'var(--color-border)',
+                    color: isActive ? 'white' : 'var(--color-text-primary)',
                   }}
                   transition="all 0.2s"
                   onClick={() => handleItemClick(item)}
                 >
-                <Box w="18px" h="18px">
-                  <item.icon size={18} />
-                </Box>
-                <Text flex={1}>{item.label}</Text>
-                {item.count && (
-                  <Badge
-                    bg={isActive ? 'rgba(255,255,255,0.2)' : 'var(--color-border)'}
-                    color={isActive ? 'white' : 'var(--color-text-secondary)'}
-                    fontSize="11px"
-                    px={2}
-                    py={1}
-                    borderRadius="6px"
-                  >
-                    {item.count}
-                  </Badge>
-                )}
-                {item.badge && (
-                  <Badge
-                    style={{ background: 'var(--color-error)' }}
-                    color="white"
-                    fontSize="10px"
-                    px={2}
-                    py={1}
-                    borderRadius="6px"
-                  >
-                    {item.badge}
-                  </Badge>
-                )}
-              </HStack>
+                  <Box w="18px" h="18px">
+                    <item.icon size={18} />
+                  </Box>
+                  <Text flex={1}>{item.label}</Text>
+                  {item.count && (
+                    <Badge
+                      bg={
+                        isActive
+                          ? 'rgba(255,255,255,0.2)'
+                          : 'var(--color-border)'
+                      }
+                      color={isActive ? 'white' : 'var(--color-text-secondary)'}
+                      fontSize="11px"
+                      px={2}
+                      py={1}
+                      borderRadius="6px"
+                    >
+                      {item.count}
+                    </Badge>
+                  )}
+                  {item.badge && (
+                    <Badge
+                      style={{ background: 'var(--color-error)' }}
+                      color="white"
+                      fontSize="10px"
+                      px={2}
+                      py={1}
+                      borderRadius="6px"
+                    >
+                      {item.badge}
+                    </Badge>
+                  )}
+                </HStack>
               )
             }}
           </For>
         </VStack>
 
         {/* Settings */}
-        <VStack alignItems="stretch" borderTopWidth="1px" style={{ borderColor: 'var(--color-border)' }} pt={4} mt="auto" gap={2}>
+        <VStack
+          alignItems="stretch"
+          borderTopWidth="1px"
+          style={{ borderColor: 'var(--color-border)' }}
+          pt={4}
+          mt="auto"
+          gap={2}
+        >
           <HStack
             p={3}
             borderRadius="12px"
@@ -143,7 +175,7 @@ const SidebarMenu = () => {
             fontWeight="500"
             _hover={{
               bg: 'var(--color-border)',
-              color: 'var(--color-text-primary)'
+              color: 'var(--color-text-primary)',
             }}
             transition="all 0.2s"
             onClick={() => navigate('/settings')}
@@ -154,7 +186,6 @@ const SidebarMenu = () => {
             <Text>Settings</Text>
           </HStack>
         </VStack>
-
       </VStack>
     </Box>
   )

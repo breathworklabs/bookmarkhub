@@ -1,11 +1,12 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { localStorageService, type StoredCollection, type CollectionInsert } from '../lib/localStorage'
+import {
+  localStorageService,
+  type StoredCollection,
+  type CollectionInsert,
+} from '../lib/localStorage'
 import { createErrorHandler } from '../utils/errorHandling'
-import type {
-  CollectionsState,
-  Collection
-} from '../types/collections'
+import type { CollectionsState, Collection } from '../types/collections'
 
 // Re-export Collection type for convenience
 export type { Collection }
@@ -14,12 +15,24 @@ interface CollectionsActions {
   // Collection CRUD operations
   loadCollections: () => Promise<void>
   createCollection: (collection: CollectionInsert) => Promise<void>
-  updateCollection: (id: string, updates: Partial<StoredCollection>) => Promise<void>
-  deleteCollection: (id: string, deleteMode?: 'flatten' | 'cascade') => Promise<void>
+  updateCollection: (
+    id: string,
+    updates: Partial<StoredCollection>
+  ) => Promise<void>
+  deleteCollection: (
+    id: string,
+    deleteMode?: 'flatten' | 'cascade'
+  ) => Promise<void>
 
   // Bookmark-Collection relationship management
-  addBookmarkToCollection: (bookmarkId: number, collectionId: string) => Promise<void>
-  removeBookmarkFromCollection: (bookmarkId: number, collectionId: string) => Promise<void>
+  addBookmarkToCollection: (
+    bookmarkId: number,
+    collectionId: string
+  ) => Promise<void>
+  removeBookmarkFromCollection: (
+    bookmarkId: number,
+    collectionId: string
+  ) => Promise<void>
   getBookmarksByCollection: (collectionId: string) => Promise<void>
 
   // Collection navigation & hierarchy
@@ -29,7 +42,10 @@ interface CollectionsActions {
   collapseCollection: (id: string) => void
   expandAll: () => void
   collapseAll: () => void
-  moveCollection: (collectionId: string, newParentId: string | null) => Promise<void>
+  moveCollection: (
+    collectionId: string,
+    newParentId: string | null
+  ) => Promise<void>
   getCollectionBreadcrumb: (collectionId: string) => Collection[]
 
   // Section collapse/expand
@@ -43,7 +59,10 @@ interface CollectionsActions {
   setLoading: (loading: boolean) => void
 
   // Bulk operations
-  moveMultipleBookmarks: (bookmarkIds: number[], toCollectionId: string) => Promise<void>
+  moveMultipleBookmarks: (
+    bookmarkIds: number[],
+    toCollectionId: string
+  ) => Promise<void>
 
   // Initialize collections
   initialize: () => Promise<void>
@@ -79,36 +98,53 @@ export const useCollectionsStore = create<CollectionsStore>()(
           const collections = await localStorageService.getCollections()
 
           // Quick load: set collections immediately, build collection bookmarks in background
-          set({
-            collections,
-            isLoading: false,
-            error: null
-          }, false, 'collections:quickLoad')
+          set(
+            {
+              collections,
+              isLoading: false,
+              error: null,
+            },
+            false,
+            'collections:quickLoad'
+          )
 
           // Build collection bookmarks map in background
           const collectionBookmarks: Record<string, number[]> = {}
           for (const collection of collections) {
             try {
-              const bookmarks = await localStorageService.getBookmarksByCollection(collection.id)
-              collectionBookmarks[collection.id] = bookmarks.map(b => b.id)
+              const bookmarks =
+                await localStorageService.getBookmarksByCollection(
+                  collection.id
+                )
+              collectionBookmarks[collection.id] = bookmarks.map((b) => b.id)
             } catch (error) {
-              console.warn(`Failed to load bookmarks for collection ${collection.id}:`, error)
+              console.warn(
+                `Failed to load bookmarks for collection ${collection.id}:`,
+                error
+              )
               collectionBookmarks[collection.id] = []
             }
           }
 
           // Update with collection bookmarks map
-          set({
-            collectionBookmarks
-          }, false, 'collections:backgroundLoad')
-
+          set(
+            {
+              collectionBookmarks,
+            },
+            false,
+            'collections:backgroundLoad'
+          )
         } catch (error) {
           const errorHandler = createErrorHandler('CollectionsStore.initialize')
           const appError = errorHandler(error)
-          set({
-            error: appError.toUserMessage(),
-            isLoading: false
-          }, false, 'collections:initialize:error')
+          set(
+            {
+              error: appError.toUserMessage(),
+              isLoading: false,
+            },
+            false,
+            'collections:initialize:error'
+          )
         }
       },
 
@@ -130,43 +166,65 @@ export const useCollectionsStore = create<CollectionsStore>()(
           const collectionBookmarks: Record<string, number[]> = {}
           for (const collection of collections) {
             try {
-              const bookmarks = await localStorageService.getBookmarksByCollection(collection.id)
-              collectionBookmarks[collection.id] = bookmarks.map(b => b.id)
+              const bookmarks =
+                await localStorageService.getBookmarksByCollection(
+                  collection.id
+                )
+              collectionBookmarks[collection.id] = bookmarks.map((b) => b.id)
             } catch (error) {
-              console.warn(`Failed to load bookmarks for collection ${collection.id}:`, error)
+              console.warn(
+                `Failed to load bookmarks for collection ${collection.id}:`,
+                error
+              )
               collectionBookmarks[collection.id] = []
             }
           }
 
-          set({
-            collections,
-            collectionBookmarks,
-            isLoading: false,
-            error: null
-          }, false, 'collections:load:success')
+          set(
+            {
+              collections,
+              collectionBookmarks,
+              isLoading: false,
+              error: null,
+            },
+            false,
+            'collections:load:success'
+          )
         } catch (error) {
           console.error('Error loading collections:', error)
-          set({
-            error: error instanceof Error ? error.message : 'Failed to load collections',
-            isLoading: false
-          }, false, 'collections:load:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to load collections',
+              isLoading: false,
+            },
+            false,
+            'collections:load:error'
+          )
         }
       },
 
       // Create new collection
       createCollection: async (collection) => {
         try {
-          set({ isLoading: true, error: null }, false, 'collections:create:start')
+          set(
+            { isLoading: true, error: null },
+            false,
+            'collections:create:start'
+          )
 
-          const newCollection = await localStorageService.createCollection(collection)
+          const newCollection =
+            await localStorageService.createCollection(collection)
 
           set(
             (state) => ({
               collections: [newCollection, ...state.collections],
               collectionBookmarks: {
                 ...state.collectionBookmarks,
-                [newCollection.id]: []
-              }
+                [newCollection.id]: [],
+              },
             }),
             false,
             'collections:create:success'
@@ -174,12 +232,21 @@ export const useCollectionsStore = create<CollectionsStore>()(
 
           // Log activity
           const { useBookmarkStore } = await import('./bookmarkStore')
-          useBookmarkStore.getState().addActivityLog('Created collection', newCollection.name)
+          useBookmarkStore
+            .getState()
+            .addActivityLog('Created collection', newCollection.name)
         } catch (error) {
           console.error('Error creating collection:', error)
-          set({
-            error: error instanceof Error ? error.message : 'Failed to create collection'
-          }, false, 'collections:create:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to create collection',
+            },
+            false,
+            'collections:create:error'
+          )
         } finally {
           set({ isLoading: false }, false, 'collections:create:complete')
         }
@@ -188,24 +255,38 @@ export const useCollectionsStore = create<CollectionsStore>()(
       // Update existing collection
       updateCollection: async (id, updates) => {
         try {
-          set({ isLoading: true, error: null }, false, 'collections:update:start')
+          set(
+            { isLoading: true, error: null },
+            false,
+            'collections:update:start'
+          )
 
-          const updatedCollection = await localStorageService.updateCollection(id, updates)
+          const updatedCollection = await localStorageService.updateCollection(
+            id,
+            updates
+          )
 
           set(
             (state) => ({
-              collections: state.collections.map(collection =>
+              collections: state.collections.map((collection) =>
                 collection.id === id ? updatedCollection : collection
-              )
+              ),
             }),
             false,
             'collections:update:success'
           )
         } catch (error) {
           console.error('Error updating collection:', error)
-          set({
-            error: error instanceof Error ? error.message : 'Failed to update collection'
-          }, false, 'collections:update:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to update collection',
+            },
+            false,
+            'collections:update:error'
+          )
         } finally {
           set({ isLoading: false }, false, 'collections:update:complete')
         }
@@ -214,21 +295,30 @@ export const useCollectionsStore = create<CollectionsStore>()(
       // Delete collection
       deleteCollection: async (id, deleteMode = 'flatten') => {
         try {
-          set({ isLoading: true, error: null }, false, 'collections:delete:start')
+          set(
+            { isLoading: true, error: null },
+            false,
+            'collections:delete:start'
+          )
 
           // Get collection name before deleting
-          const collection = get().collections.find(c => c.id === id)
+          const collection = get().collections.find((c) => c.id === id)
           const collectionName = collection?.name || 'collection'
 
           await localStorageService.deleteCollection(id, deleteMode)
 
           set(
             (state) => ({
-              collections: state.collections.filter(c => c.id !== id),
+              collections: state.collections.filter((c) => c.id !== id),
               collectionBookmarks: Object.fromEntries(
-                Object.entries(state.collectionBookmarks).filter(([key]) => key !== id)
+                Object.entries(state.collectionBookmarks).filter(
+                  ([key]) => key !== id
+                )
               ),
-              activeCollectionId: state.activeCollectionId === id ? null : state.activeCollectionId
+              activeCollectionId:
+                state.activeCollectionId === id
+                  ? null
+                  : state.activeCollectionId,
             }),
             false,
             'collections:delete:success'
@@ -236,12 +326,21 @@ export const useCollectionsStore = create<CollectionsStore>()(
 
           // Log activity
           const { useBookmarkStore } = await import('./bookmarkStore')
-          useBookmarkStore.getState().addActivityLog('Deleted collection', collectionName)
+          useBookmarkStore
+            .getState()
+            .addActivityLog('Deleted collection', collectionName)
         } catch (error) {
           console.error('Error deleting collection:', error)
-          set({
-            error: error instanceof Error ? error.message : 'Failed to delete collection'
-          }, false, 'collections:delete:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to delete collection',
+            },
+            false,
+            'collections:delete:error'
+          )
         } finally {
           set({ isLoading: false }, false, 'collections:delete:complete')
         }
@@ -250,110 +349,168 @@ export const useCollectionsStore = create<CollectionsStore>()(
       // Add bookmark to collection
       addBookmarkToCollection: async (bookmarkId, collectionId) => {
         try {
-          await localStorageService.addBookmarkToCollection(bookmarkId, collectionId)
+          await localStorageService.addBookmarkToCollection(
+            bookmarkId,
+            collectionId
+          )
 
           set(
             (state) => ({
               collectionBookmarks: {
                 ...state.collectionBookmarks,
-                [collectionId]: [...(state.collectionBookmarks[collectionId] || []), bookmarkId]
-              }
+                [collectionId]: [
+                  ...(state.collectionBookmarks[collectionId] || []),
+                  bookmarkId,
+                ],
+              },
             }),
             false,
             'collections:addBookmark:success'
           )
 
           // Log activity
-          const collection = get().collections.find(c => c.id === collectionId)
+          const collection = get().collections.find(
+            (c) => c.id === collectionId
+          )
           const collectionName = collection?.name || 'collection'
           const { useBookmarkStore } = await import('./bookmarkStore')
-          useBookmarkStore.getState().addActivityLog('Added to collection', collectionName)
+          useBookmarkStore
+            .getState()
+            .addActivityLog('Added to collection', collectionName)
         } catch (error) {
           console.error('Error adding bookmark to collection:', error)
-          set({
-            error: error instanceof Error ? error.message : 'Failed to add bookmark to collection'
-          }, false, 'collections:addBookmark:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to add bookmark to collection',
+            },
+            false,
+            'collections:addBookmark:error'
+          )
         }
       },
 
       // Remove bookmark from collection
       removeBookmarkFromCollection: async (bookmarkId, collectionId) => {
         try {
-          await localStorageService.removeBookmarkFromCollection(bookmarkId, collectionId)
+          await localStorageService.removeBookmarkFromCollection(
+            bookmarkId,
+            collectionId
+          )
 
           set(
             (state) => ({
               collectionBookmarks: {
                 ...state.collectionBookmarks,
-                [collectionId]: (state.collectionBookmarks[collectionId] || []).filter(id => id !== bookmarkId)
-              }
+                [collectionId]: (
+                  state.collectionBookmarks[collectionId] || []
+                ).filter((id) => id !== bookmarkId),
+              },
             }),
             false,
             'collections:removeBookmark:success'
           )
 
           // Log activity
-          const collection = get().collections.find(c => c.id === collectionId)
+          const collection = get().collections.find(
+            (c) => c.id === collectionId
+          )
           const collectionName = collection?.name || 'collection'
           const { useBookmarkStore } = await import('./bookmarkStore')
-          useBookmarkStore.getState().addActivityLog('Removed from collection', collectionName)
+          useBookmarkStore
+            .getState()
+            .addActivityLog('Removed from collection', collectionName)
         } catch (error) {
           console.error('Error removing bookmark from collection:', error)
-          set({
-            error: error instanceof Error ? error.message : 'Failed to remove bookmark from collection'
-          }, false, 'collections:removeBookmark:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to remove bookmark from collection',
+            },
+            false,
+            'collections:removeBookmark:error'
+          )
         }
       },
 
       // Get bookmarks by collection
       getBookmarksByCollection: async (collectionId) => {
         try {
-          const bookmarks = await localStorageService.getBookmarksByCollection(collectionId)
+          const bookmarks =
+            await localStorageService.getBookmarksByCollection(collectionId)
 
           set(
             (state) => ({
               collectionBookmarks: {
                 ...state.collectionBookmarks,
-                [collectionId]: bookmarks.map(b => b.id)
-              }
+                [collectionId]: bookmarks.map((b) => b.id),
+              },
             }),
             false,
             'collections:getBookmarks:success'
           )
         } catch (error) {
           console.error('Error getting bookmarks by collection:', error)
-          set({
-            error: error instanceof Error ? error.message : 'Failed to get bookmarks by collection'
-          }, false, 'collections:getBookmarks:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to get bookmarks by collection',
+            },
+            false,
+            'collections:getBookmarks:error'
+          )
         }
       },
 
       // Bulk move bookmarks
       moveMultipleBookmarks: async (bookmarkIds, toCollectionId) => {
         try {
-          set({ isLoading: true, error: null }, false, 'collections:bulkMove:start')
+          set(
+            { isLoading: true, error: null },
+            false,
+            'collections:bulkMove:start'
+          )
 
           // Add all bookmarks to the target collection
           await Promise.all(
-            bookmarkIds.map(id => localStorageService.addBookmarkToCollection(id, toCollectionId))
+            bookmarkIds.map((id) =>
+              localStorageService.addBookmarkToCollection(id, toCollectionId)
+            )
           )
 
           // Reload collections to get updated state
           await get().loadCollections()
 
           // Log activity
-          const collection = get().collections.find(c => c.id === toCollectionId)
+          const collection = get().collections.find(
+            (c) => c.id === toCollectionId
+          )
           const collectionName = collection?.name || 'collection'
           const { useBookmarkStore } = await import('./bookmarkStore')
-          useBookmarkStore.getState().addActivityLog(
-            `Moved ${bookmarkIds.length} bookmark${bookmarkIds.length > 1 ? 's' : ''}`,
-            `to ${collectionName}`
-          )
+          useBookmarkStore
+            .getState()
+            .addActivityLog(
+              `Moved ${bookmarkIds.length} bookmark${bookmarkIds.length > 1 ? 's' : ''}`,
+              `to ${collectionName}`
+            )
         } catch (error) {
           console.error('Error moving bookmarks:', error)
-          set({
-            error: error instanceof Error ? error.message : 'Failed to move bookmarks'
-          }, false, 'collections:bulkMove:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to move bookmarks',
+            },
+            false,
+            'collections:bulkMove:error'
+          )
         } finally {
           set({ isLoading: false }, false, 'collections:bulkMove:complete')
         }
@@ -361,14 +518,20 @@ export const useCollectionsStore = create<CollectionsStore>()(
 
       // UI state actions
       setActiveCollection: (collectionId) =>
-        set({ activeCollectionId: collectionId }, false, 'collections:setActive'),
+        set(
+          { activeCollectionId: collectionId },
+          false,
+          'collections:setActive'
+        ),
 
       toggleCollectionExpansion: (collectionId) =>
         set(
           (state) => ({
-            expandedCollections: state.expandedCollections.includes(collectionId)
-              ? state.expandedCollections.filter(id => id !== collectionId)
-              : [...state.expandedCollections, collectionId]
+            expandedCollections: state.expandedCollections.includes(
+              collectionId
+            )
+              ? state.expandedCollections.filter((id) => id !== collectionId)
+              : [...state.expandedCollections, collectionId],
           }),
           false,
           'collections:toggleExpansion'
@@ -379,7 +542,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
           (state) => ({
             expandedCollections: state.expandedCollections.includes(id)
               ? state.expandedCollections
-              : [...state.expandedCollections, id]
+              : [...state.expandedCollections, id],
           }),
           false,
           'collections:expand'
@@ -388,7 +551,9 @@ export const useCollectionsStore = create<CollectionsStore>()(
       collapseCollection: (id) =>
         set(
           (state) => ({
-            expandedCollections: state.expandedCollections.filter(eid => eid !== id)
+            expandedCollections: state.expandedCollections.filter(
+              (eid) => eid !== id
+            ),
           }),
           false,
           'collections:collapse'
@@ -396,7 +561,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
 
       expandAll: () => {
         const { collections } = get()
-        const allIds = collections.map(c => c.id)
+        const allIds = collections.map((c) => c.id)
         set({ expandedCollections: allIds }, false, 'collections:expandAll')
       },
 
@@ -409,34 +574,48 @@ export const useCollectionsStore = create<CollectionsStore>()(
           set({ error: null }, false, 'collections:move:start')
 
           // Update the collection directly without triggering isLoading
-          const updatedCollection = await localStorageService.updateCollection(collectionId, { parentId: newParentId })
+          const updatedCollection = await localStorageService.updateCollection(
+            collectionId,
+            { parentId: newParentId }
+          )
 
           set(
             (state) => ({
-              collections: state.collections.map(collection =>
+              collections: state.collections.map((collection) =>
                 collection.id === collectionId ? updatedCollection : collection
-              )
+              ),
             }),
             false,
             'collections:move:success'
           )
 
           // Log activity
-          const collection = get().collections.find(c => c.id === collectionId)
+          const collection = get().collections.find(
+            (c) => c.id === collectionId
+          )
           const newParent = newParentId
-            ? get().collections.find(c => c.id === newParentId)
+            ? get().collections.find((c) => c.id === newParentId)
             : null
 
           const { useBookmarkStore } = await import('./bookmarkStore')
-          useBookmarkStore.getState().addActivityLog(
-            'Moved collection',
-            `${collection?.name} to ${newParent?.name || 'root'}`
-          )
+          useBookmarkStore
+            .getState()
+            .addActivityLog(
+              'Moved collection',
+              `${collection?.name} to ${newParent?.name || 'root'}`
+            )
         } catch (error) {
           console.error('Error moving collection:', error)
-          set({
-            error: error instanceof Error ? error.message : 'Failed to move collection'
-          }, false, 'collections:move:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to move collection',
+            },
+            false,
+            'collections:move:error'
+          )
         }
       },
 
@@ -451,8 +630,8 @@ export const useCollectionsStore = create<CollectionsStore>()(
         set(
           (state) => ({
             collapsedSections: state.collapsedSections.includes(sectionId)
-              ? state.collapsedSections.filter(id => id !== sectionId)
-              : [...state.collapsedSections, sectionId]
+              ? state.collapsedSections.filter((id) => id !== sectionId)
+              : [...state.collapsedSections, sectionId],
           }),
           false,
           'collections:toggleSection'
@@ -463,16 +642,19 @@ export const useCollectionsStore = create<CollectionsStore>()(
       },
 
       setCreatingCollection: (isCreating) =>
-        set({ isCreatingCollection: isCreating }, false, 'collections:setCreating'),
+        set(
+          { isCreatingCollection: isCreating },
+          false,
+          'collections:setCreating'
+        ),
 
       setCollectionFilter: (filter) =>
         set({ collectionFilter: filter }, false, 'collections:setFilter'),
 
-      setError: (error) =>
-        set({ error }, false, 'collections:setError'),
+      setError: (error) => set({ error }, false, 'collections:setError'),
 
       setLoading: (loading) =>
-        set({ isLoading: loading }, false, 'collections:setLoading')
+        set({ isLoading: loading }, false, 'collections:setLoading'),
     }),
     {
       name: 'collections-store', // Store name for devtools

@@ -33,30 +33,30 @@ The BookmarkX uses a comprehensive design system built on top of Chakra UI v3, p
 import { colors } from '../styles/colors'
 
 // Primary brand colors
-colors.primary[500]  // #1d4ed8 - Main brand color
-colors.primary[600]  // #1e40af - Hover state
-colors.primary[700]  // #1d4ed8 - Active state
+colors.primary[500] // #1d4ed8 - Main brand color
+colors.primary[600] // #1e40af - Hover state
+colors.primary[700] // #1d4ed8 - Active state
 ```
 
 ### Semantic Colors
 
 ```typescript
 // Status colors
-colors.success[500]  // #22c55e - Success states
-colors.warning[500]  // #f59e0b - Warning states
-colors.error[500]    // #dc2626 - Error states
-colors.info[500]     // #3b82f6 - Info states
+colors.success[500] // #22c55e - Success states
+colors.warning[500] // #f59e0b - Warning states
+colors.error[500] // #dc2626 - Error states
+colors.info[500] // #3b82f6 - Info states
 ```
 
 ### Theme-Specific Colors
 
 ```typescript
 // Dark theme
-colors.dark.background    // #0f1419 - Main background
-colors.dark.sidebarBg     // #16181c - Sidebar background
-colors.dark.cardBg        // #1a1d23 - Card background
-colors.dark.border        // #2a2d35 - Default borders
-colors.dark.textPrimary   // #e1e5e9 - Primary text
+colors.dark.background // #0f1419 - Main background
+colors.dark.sidebarBg // #16181c - Sidebar background
+colors.dark.cardBg // #1a1d23 - Card background
+colors.dark.border // #2a2d35 - Default borders
+colors.dark.textPrimary // #e1e5e9 - Primary text
 colors.dark.textSecondary // #71767b - Secondary text
 ```
 
@@ -82,21 +82,21 @@ colors.dark.textSecondary // #71767b - Secondary text
 import { fontSizes } from '../styles/responsive'
 
 // Responsive font sizes
-fontSizes.xs   // 10px/11px/12px (base/sm/md)
-fontSizes.sm   // 12px/13px/14px
-fontSizes.md   // 14px/15px/16px
-fontSizes.lg   // 16px/17px/18px
-fontSizes.xl   // 18px/20px/22px
+fontSizes.xs // 10px/11px/12px (base/sm/md)
+fontSizes.sm // 12px/13px/14px
+fontSizes.md // 14px/15px/16px
+fontSizes.lg // 16px/17px/18px
+fontSizes.xl // 18px/20px/22px
 ```
 
 ### Font Weights
 
 ```typescript
 // Standard font weights
-fontWeight: '400'  // Normal
-fontWeight: '500'  // Medium
-fontWeight: '600'  // Semibold
-fontWeight: '700'  // Bold
+fontWeight: '400' // Normal
+fontWeight: '500' // Medium
+fontWeight: '600' // Semibold
+fontWeight: '700' // Bold
 ```
 
 ## Spacing
@@ -107,11 +107,11 @@ fontWeight: '700'  // Bold
 import { spacing } from '../styles/responsive'
 
 // Responsive spacing
-spacing.xs   // 4px/6px/8px (base/sm/md)
-spacing.sm   // 8px/12px/16px
-spacing.md   // 12px/16px/20px
-spacing.lg   // 16px/20px/24px
-spacing.xl   // 20px/24px/32px
+spacing.xs // 4px/6px/8px (base/sm/md)
+spacing.sm // 8px/12px/16px
+spacing.md // 12px/16px/20px
+spacing.lg // 16px/20px/24px
+spacing.xl // 20px/24px/32px
 ```
 
 ### Usage Examples
@@ -161,15 +161,15 @@ const inputStyles = useInputStyles('search')
 
 ```typescript
 // Button variants
-useButtonStyles('primary')   // Primary action buttons
+useButtonStyles('primary') // Primary action buttons
 useButtonStyles('secondary') // Secondary actions
-useButtonStyles('ghost')     // Subtle actions
-useButtonStyles('icon')      // Icon-only buttons
+useButtonStyles('ghost') // Subtle actions
+useButtonStyles('icon') // Icon-only buttons
 
 // Card states
-useCardStyles(false, false)  // Default card
-useCardStyles(true, false)   // Selected card
-useCardStyles(false, true)   // Dragging card
+useCardStyles(false, false) // Default card
+useCardStyles(true, false) // Selected card
+useCardStyles(false, true) // Dragging card
 ```
 
 ## Animations
@@ -180,28 +180,28 @@ useCardStyles(false, true)   // Dragging card
 import { animations, transitions } from '../styles/animations'
 
 // Fade animations
-animations.fadeIn    // Fade in from transparent
-animations.fadeOut   // Fade out to transparent
+animations.fadeIn // Fade in from transparent
+animations.fadeOut // Fade out to transparent
 
 // Slide animations
-animations.slideInUp    // Slide in from bottom
-animations.slideInDown  // Slide in from top
-animations.slideInLeft  // Slide in from left
+animations.slideInUp // Slide in from bottom
+animations.slideInDown // Slide in from top
+animations.slideInLeft // Slide in from left
 animations.slideInRight // Slide in from right
 
 // Scale animations
-animations.scaleIn   // Scale in from smaller
-animations.scaleOut  // Scale out to smaller
+animations.scaleIn // Scale in from smaller
+animations.scaleOut // Scale out to smaller
 ```
 
 ### Transition Presets
 
 ```typescript
 // Component transitions
-transitions.button  // Button hover/active states
-transitions.card    // Card hover effects
-transitions.input   // Input focus states
-transitions.modal   // Modal enter/exit
+transitions.button // Button hover/active states
+transitions.card // Card hover effects
+transitions.input // Input focus states
+transitions.modal // Modal enter/exit
 ```
 
 ### Usage Examples
@@ -230,11 +230,11 @@ transitions.modal   // Modal enter/exit
 ```typescript
 import { breakpoints } from '../styles/responsive'
 
-breakpoints.base  // 0px
-breakpoints.sm    // 480px
-breakpoints.md    // 768px
-breakpoints.lg    // 992px
-breakpoints.xl    // 1280px
+breakpoints.base // 0px
+breakpoints.sm // 480px
+breakpoints.md // 768px
+breakpoints.lg // 992px
+breakpoints.xl // 1280px
 breakpoints['2xl'] // 1536px
 ```
 
@@ -256,9 +256,9 @@ breakpoints['2xl'] // 1536px
 ```typescript
 import { containerSizes } from '../styles/responsive'
 
-containerSizes.sidebar  // 240px/260px/280px
-containerSizes.content  // 100%/100%/calc(100% - 280px)
-containerSizes.modal    // 90vw/80vw/600px
+containerSizes.sidebar // 240px/260px/280px
+containerSizes.content // 100%/100%/calc(100% - 280px)
+containerSizes.modal // 90vw/80vw/600px
 ```
 
 ## Theme Switching
@@ -326,12 +326,14 @@ const MyComponent = () => {
 ### 1. Use Style Hooks
 
 ✅ **Good**: Use provided style hooks
+
 ```typescript
 const buttonStyles = useButtonStyles('primary')
 <Button {...buttonStyles}>Click me</Button>
 ```
 
 ❌ **Avoid**: Hardcoded styles
+
 ```typescript
 <Button bg="#1d4ed8" color="white" _hover={{ bg: "#1e40af" }}>
   Click me
@@ -341,6 +343,7 @@ const buttonStyles = useButtonStyles('primary')
 ### 2. Leverage Theme System
 
 ✅ **Good**: Use theme tokens
+
 ```typescript
 const tokens = useThemeTokens()
 <Box bg={tokens.bg.primary} color={tokens.text.primary}>
@@ -349,6 +352,7 @@ const tokens = useThemeTokens()
 ```
 
 ❌ **Avoid**: Hardcoded theme colors
+
 ```typescript
 <Box bg="#0f1419" color="#e1e5e9">
   Content
@@ -358,6 +362,7 @@ const tokens = useThemeTokens()
 ### 3. Use Responsive Design
 
 ✅ **Good**: Responsive values
+
 ```typescript
 <Box w={{ base: '100%', md: '50%' }} p={{ base: 4, md: 6 }}>
   Content
@@ -365,6 +370,7 @@ const tokens = useThemeTokens()
 ```
 
 ❌ **Avoid**: Fixed values
+
 ```typescript
 <Box w="50%" p={6}>
   Content
@@ -374,6 +380,7 @@ const tokens = useThemeTokens()
 ### 4. Apply Consistent Animations
 
 ✅ **Good**: Use animation presets
+
 ```typescript
 <Box transition={transitions.card.transition} _hover={transitions.card._hover}>
   Card
@@ -381,6 +388,7 @@ const tokens = useThemeTokens()
 ```
 
 ❌ **Avoid**: Custom animation values
+
 ```typescript
 <Box transition="all 0.2s ease" _hover={{ transform: "translateY(-2px)" }}>
   Card
@@ -392,12 +400,14 @@ const tokens = useThemeTokens()
 ### From Hardcoded Styles
 
 1. **Identify hardcoded values**:
+
    ```typescript
    // Before
    <Button bg="#1d4ed8" color="white">
    ```
 
 2. **Replace with style hooks**:
+
    ```typescript
    // After
    const buttonStyles = useButtonStyles('primary')
@@ -405,6 +415,7 @@ const tokens = useThemeTokens()
    ```
 
 3. **Update color references**:
+
    ```typescript
    // Before
    color="#71767b"
@@ -418,6 +429,7 @@ const tokens = useThemeTokens()
 ### From Legacy Theme
 
 1. **Replace theme imports**:
+
    ```typescript
    // Before
    import { theme } from '../styles/theme'
@@ -427,6 +439,7 @@ const tokens = useThemeTokens()
    ```
 
 2. **Update style references**:
+
    ```typescript
    // Before
    {...theme.styles.primaryButton}

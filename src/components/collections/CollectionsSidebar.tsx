@@ -1,5 +1,24 @@
-import { Box, VStack, HStack, Text, Button, IconButton, Badge, Separator, For, Flex } from '@chakra-ui/react'
-import { LuFolderPlus, LuFolder, LuStar, LuClock, LuArchive, LuEllipsis, LuFolderOpen } from 'react-icons/lu'
+import {
+  Box,
+  VStack,
+  HStack,
+  Text,
+  Button,
+  IconButton,
+  Badge,
+  Separator,
+  For,
+  Flex,
+} from '@chakra-ui/react'
+import {
+  LuFolderPlus,
+  LuFolder,
+  LuStar,
+  LuClock,
+  LuArchive,
+  LuEllipsis,
+  LuFolderOpen,
+} from 'react-icons/lu'
 import { useDrop } from 'react-dnd'
 import { useCollectionsStore } from '../../store/collectionsStore'
 import { useBookmarkStore } from '../../store/bookmarkStore'
@@ -16,26 +35,29 @@ const DroppableCollectionItem = ({
   getCollectionColor,
   getBookmarkCount,
   handleCollectionClick,
-  isUserCollection = false
+  isUserCollection = false,
 }: any) => {
-  const [{ isOver, canDrop }, drop] = useDrop(() => ({
-    accept: ItemTypes.BOOKMARK,
-    drop: (): DropResult => ({
-      collectionId: collection.id,
-      collectionName: collection.name
+  const [{ isOver, canDrop }, drop] = useDrop(
+    () => ({
+      accept: ItemTypes.BOOKMARK,
+      drop: (): DropResult => ({
+        collectionId: collection.id,
+        collectionName: collection.name,
+      }),
+      canDrop: (_item: DragItem) => {
+        // Prevent drops on smart collections (except uncategorized)
+        if (collection.isSmartCollection && collection.id !== 'uncategorized') {
+          return false
+        }
+        return true
+      },
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+      }),
     }),
-    canDrop: (_item: DragItem) => {
-      // Prevent drops on smart collections (except uncategorized)
-      if (collection.isSmartCollection && collection.id !== 'uncategorized') {
-        return false
-      }
-      return true
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
-  }), [collection.id, collection.isSmartCollection])
+    [collection.id, collection.isSmartCollection]
+  )
 
   const isDropZone = isOver && canDrop
   const isInvalidDrop = isOver && !canDrop
@@ -63,13 +85,11 @@ const DroppableCollectionItem = ({
             ? '3px dashed var(--color-error) !important'
             : '2px solid transparent'
       }
-      boxShadow={
-        isDropZone
-          ? '0 0 0 2px rgba(59, 130, 246, 0.5)'
-          : undefined
-      }
+      boxShadow={isDropZone ? '0 0 0 2px rgba(59, 130, 246, 0.5)' : undefined}
       _hover={{
-        bg: isActive(collection.id) ? 'var(--color-blue-hover)' : 'var(--color-border)'
+        bg: isActive(collection.id)
+          ? 'var(--color-blue-hover)'
+          : 'var(--color-border)',
       }}
       onClick={() => handleCollectionClick(collection.id)}
       transition="all 0.2s ease"
@@ -77,22 +97,40 @@ const DroppableCollectionItem = ({
       <HStack justify="space-between">
         <HStack gap={isUserCollection ? 3 : 2}>
           {isUserCollection && (
-            <Box w="16px" h="16px" display="flex" alignItems="center" justifyContent="center">
+            <Box
+              w="16px"
+              h="16px"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
               {/* Future: Show expand/collapse for nested collections */}
             </Box>
           )}
           <Box color={getCollectionColor(collection)}>
             {getCollectionIcon(collection)}
           </Box>
-          <Text fontSize="sm" fontWeight="500" lineClamp={isUserCollection ? 1 : undefined}>
+          <Text
+            fontSize="sm"
+            fontWeight="500"
+            lineClamp={isUserCollection ? 1 : undefined}
+          >
             {collection.name}
           </Text>
         </HStack>
         <HStack gap={1}>
           <Badge
             size="sm"
-            bg={isActive(collection.id) ? 'rgba(255,255,255,0.2)' : (isUserCollection ? 'var(--color-border)' : 'var(--color-bg-tertiary)')}
-            color={isActive(collection.id) ? 'white' : 'var(--color-text-tertiary)'}
+            bg={
+              isActive(collection.id)
+                ? 'rgba(255,255,255,0.2)'
+                : isUserCollection
+                  ? 'var(--color-border)'
+                  : 'var(--color-bg-tertiary)'
+            }
+            color={
+              isActive(collection.id) ? 'white' : 'var(--color-text-tertiary)'
+            }
             fontSize="xs"
             px={2}
             py={1}
@@ -106,10 +144,16 @@ const DroppableCollectionItem = ({
               size="xs"
               variant="ghost"
               aria-label="Collection options"
-              color={isActive(collection.id) ? 'white' : 'var(--color-text-tertiary)'}
+              color={
+                isActive(collection.id) ? 'white' : 'var(--color-text-tertiary)'
+              }
               _hover={{
-                color: isActive(collection.id) ? 'white' : 'var(--color-text-primary)',
-                bg: isActive(collection.id) ? 'rgba(255,255,255,0.1)' : '#3a3d45'
+                color: isActive(collection.id)
+                  ? 'white'
+                  : 'var(--color-text-primary)',
+                bg: isActive(collection.id)
+                  ? 'rgba(255,255,255,0.1)'
+                  : '#3a3d45',
               }}
               onClick={(e) => {
                 e.stopPropagation()
@@ -134,11 +178,10 @@ const CollectionsSidebar = () => {
     error,
     loadCollections,
     setActiveCollection,
-    setCreatingCollection
+    setCreatingCollection,
   } = useCollectionsStore()
 
   const { bookmarks } = useBookmarkStore()
-
 
   useEffect(() => {
     loadCollections()
@@ -187,17 +230,18 @@ const CollectionsSidebar = () => {
   const getBookmarkCount = (collectionId: string) => {
     // Handle smart collections with dynamic counts
     if (collectionId === 'starred') {
-      return bookmarks.filter(bookmark => bookmark.is_starred === true).length
+      return bookmarks.filter((bookmark) => bookmark.is_starred === true).length
     }
     if (collectionId === 'archived') {
-      return bookmarks.filter(bookmark => bookmark.is_archived === true).length
+      return bookmarks.filter((bookmark) => bookmark.is_archived === true)
+        .length
     }
     if (collectionId === 'recent') {
       // Recent: bookmarks from last 7 days
       const sevenDaysAgo = new Date()
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-      return bookmarks.filter(bookmark =>
-        new Date(bookmark.created_at) > sevenDaysAgo
+      return bookmarks.filter(
+        (bookmark) => new Date(bookmark.created_at) > sevenDaysAgo
       ).length
     }
 
@@ -206,12 +250,18 @@ const CollectionsSidebar = () => {
   }
 
   // Separate collections into categories
-  const defaultCollections = collections.filter(c => c.isDefault)
-  const userCollections = collections.filter(c => !c.isDefault)
+  const defaultCollections = collections.filter((c) => c.isDefault)
+  const userCollections = collections.filter((c) => !c.isDefault)
 
   if (error) {
     return (
-      <Box p={4} style={{ background: 'var(--color-bg-primary)' }} borderRight="1px solid #2a2d35" h="100%" w="280px">
+      <Box
+        p={4}
+        style={{ background: 'var(--color-bg-primary)' }}
+        borderRight="1px solid #2a2d35"
+        h="100%"
+        w="280px"
+      >
         <Text color="var(--color-error)" fontSize="sm">
           Error loading collections: {error}
         </Text>
@@ -225,7 +275,11 @@ const CollectionsSidebar = () => {
         {/* Header */}
         <Box p={4} borderBottom="1px solid var(--color-border)">
           <HStack justify="space-between" align="center">
-            <Text fontWeight="600" fontSize="md" style={{ color: 'var(--color-text-primary)' }}>
+            <Text
+              fontWeight="600"
+              fontSize="md"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
               Collections
             </Text>
             <IconButton
@@ -249,10 +303,18 @@ const CollectionsSidebar = () => {
               py={2}
               borderRadius="md"
               cursor="pointer"
-              bg={isActive('all-bookmarks') ? 'var(--color-blue)' : 'transparent'}
-              color={isActive('all-bookmarks') ? 'white' : 'var(--color-text-primary)'}
+              bg={
+                isActive('all-bookmarks') ? 'var(--color-blue)' : 'transparent'
+              }
+              color={
+                isActive('all-bookmarks')
+                  ? 'white'
+                  : 'var(--color-text-primary)'
+              }
               _hover={{
-                bg: isActive('all-bookmarks') ? 'var(--color-blue-hover)' : 'var(--color-border)'
+                bg: isActive('all-bookmarks')
+                  ? 'var(--color-blue-hover)'
+                  : 'var(--color-border)',
               }}
               onClick={() => handleCollectionClick('all-bookmarks')}
             >
@@ -267,8 +329,16 @@ const CollectionsSidebar = () => {
                 </HStack>
                 <Badge
                   size="sm"
-                  bg={isActive('all-bookmarks') ? 'rgba(255,255,255,0.2)' : 'var(--color-border)'}
-                  color={isActive('all-bookmarks') ? 'white' : 'var(--color-text-tertiary)'}
+                  bg={
+                    isActive('all-bookmarks')
+                      ? 'rgba(255,255,255,0.2)'
+                      : 'var(--color-border)'
+                  }
+                  color={
+                    isActive('all-bookmarks')
+                      ? 'white'
+                      : 'var(--color-text-tertiary)'
+                  }
                   fontSize="xs"
                   px={2}
                   py={1}
@@ -297,7 +367,10 @@ const CollectionsSidebar = () => {
                 </For>
 
                 {userCollections.length > 0 && (
-                  <Separator style={{ borderColor: 'var(--color-border)' }} my={2} />
+                  <Separator
+                    style={{ borderColor: 'var(--color-border)' }}
+                    my={2}
+                  />
                 )}
               </>
             )}
@@ -337,10 +410,18 @@ const CollectionsSidebar = () => {
                   <LuFolderOpen />
                 </Box>
                 <VStack gap={1}>
-                  <Text fontSize="sm" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
+                  <Text
+                    fontSize="sm"
+                    fontWeight="500"
+                    style={{ color: 'var(--color-text-primary)' }}
+                  >
                     No custom collections
                   </Text>
-                  <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }} lineHeight="1.4">
+                  <Text
+                    fontSize="xs"
+                    style={{ color: 'var(--color-text-tertiary)' }}
+                    lineHeight="1.4"
+                  >
                     Organize your bookmarks by creating custom collections
                   </Text>
                 </VStack>

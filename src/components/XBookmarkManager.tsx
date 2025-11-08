@@ -1,28 +1,30 @@
-import { Box, Flex, VStack, Text, Button, HStack } from '@chakra-ui/react';
-import { LuImport, LuBookmarkPlus, LuFolderOpen } from 'react-icons/lu';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { useState } from 'react';
-import { componentStyles } from '../styles/components';
-import { useBookmarkStore } from '../store/bookmarkStore';
-import { useIsMobile } from '../hooks/useMobile';
-import { ErrorBoundary } from './ErrorBoundary';
-import { DragPreview } from './DragPreview';
-import { MobileSidebarDrawer } from './MobileSidebarDrawer';
-import { MobileHeaderContainer } from './MobileHeaderContainer';
-import AIInsights from './AIInsights';
-import UnifiedSidebar from './UnifiedSidebar';
-import SearchHeader from './SearchHeader';
-import AdvancedFilters from './AdvancedFilters';
-import FilterBar from './FilterBar';
-import CollectionsActions from './collections/CollectionsActions';
-import InfiniteBookmarkGrid from './InfiniteBookmarkGrid';
-import { BulkActionsBar } from './BulkActionsBar';
+import { Box, Flex, VStack, Text, Button, HStack } from '@chakra-ui/react'
+import { LuImport, LuBookmarkPlus, LuFolderOpen } from 'react-icons/lu'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { useState } from 'react'
+import { componentStyles } from '../styles/components'
+import { useBookmarkStore } from '../store/bookmarkStore'
+import { useIsMobile } from '../hooks/useMobile'
+import { ErrorBoundary } from './ErrorBoundary'
+import { DragPreview } from './DragPreview'
+import { MobileSidebarDrawer } from './MobileSidebarDrawer'
+import { MobileHeaderContainer } from './MobileHeaderContainer'
+import AIInsights from './AIInsights'
+import UnifiedSidebar from './UnifiedSidebar'
+import SearchHeader from './SearchHeader'
+import AdvancedFilters from './AdvancedFilters'
+import FilterBar from './FilterBar'
+import CollectionsActions from './collections/CollectionsActions'
+import InfiniteBookmarkGrid from './InfiniteBookmarkGrid'
+import { BulkActionsBar } from './BulkActionsBar'
 
 const XBookmarkManager = () => {
   const { bookmarks } = useBookmarkStore()
   const isMobile = useIsMobile()
-  const toggleMobileHeader = useBookmarkStore((state) => state.toggleMobileHeader)
+  const toggleMobileHeader = useBookmarkStore(
+    (state) => state.toggleMobileHeader
+  )
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false)
 
   const handleImport = () => {
@@ -37,14 +39,21 @@ const XBookmarkManager = () => {
           const data = JSON.parse(text)
 
           // Check if this looks like X bookmark data (array with tweet-like structure)
-          if (Array.isArray(data) && data.length > 0 && data[0].tweet_id && data[0].username) {
+          if (
+            Array.isArray(data) &&
+            data.length > 0 &&
+            data[0].tweet_id &&
+            data[0].username
+          ) {
             await useBookmarkStore.getState().importXBookmarks(data) // Import all bookmarks
           } else {
             await useBookmarkStore.getState().importBookmarks(file)
           }
         } catch (error) {
           console.error('Import failed:', error)
-          alert(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+          alert(
+            `Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+          )
         }
       }
     }
@@ -52,7 +61,13 @@ const XBookmarkManager = () => {
   }
 
   return (
-    <Box {...componentStyles.container.background} data-testid="x-bookmark-manager" w="100vw" h="100vh" overflow="hidden">
+    <Box
+      {...componentStyles.container.background}
+      data-testid="x-bookmark-manager"
+      w="100vw"
+      h="100vh"
+      overflow="hidden"
+    >
       {bookmarks.length === 0 ? (
         // Empty state - full window
         <Flex
@@ -69,11 +84,16 @@ const XBookmarkManager = () => {
             <LuFolderOpen />
           </Box>
           <VStack gap={3}>
-            <Text fontSize="2xl" fontWeight="600" style={{ color: 'var(--color-text-primary)' }}>
+            <Text
+              fontSize="2xl"
+              fontWeight="600"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
               No bookmarks yet
             </Text>
             <Text fontSize="lg" maxW="500px">
-              Get started by importing your existing bookmarks or adding new ones manually.
+              Get started by importing your existing bookmarks or adding new
+              ones manually.
             </Text>
           </VStack>
           <HStack gap={4}>
@@ -81,7 +101,7 @@ const XBookmarkManager = () => {
               size="lg"
               style={{ background: 'var(--color-blue)' }}
               color="white"
-              _hover={{ bg: "var(--color-blue-hover)" }}
+              _hover={{ bg: 'var(--color-blue-hover)' }}
               onClick={handleImport}
             >
               <HStack gap={2}>
@@ -92,8 +112,14 @@ const XBookmarkManager = () => {
             <Button
               size="lg"
               variant="outline"
-              style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}
-              _hover={{ bg: "var(--color-border)", borderColor: "var(--color-border-hover)" }}
+              style={{
+                borderColor: 'var(--color-border)',
+                color: 'var(--color-text-primary)',
+              }}
+              _hover={{
+                bg: 'var(--color-border)',
+                borderColor: 'var(--color-border-hover)',
+              }}
             >
               <HStack gap={2}>
                 <LuBookmarkPlus />
@@ -124,14 +150,22 @@ const XBookmarkManager = () => {
             )}
 
             {/* Main Content */}
-            <Flex flex={1} direction="column" w="100%" minW={0} overflow="hidden">
+            <Flex
+              flex={1}
+              direction="column"
+              w="100%"
+              minW={0}
+              overflow="hidden"
+            >
               {/* Mobile Header with Swipe Gesture */}
               {isMobile ? (
                 <>
                   <MobileHeaderContainer>
                     {/* Header */}
                     <ErrorBoundary context="SearchHeader">
-                      <SearchHeader onMenuClick={() => setIsMobileDrawerOpen(true)} />
+                      <SearchHeader
+                        onMenuClick={() => setIsMobileDrawerOpen(true)}
+                      />
                     </ErrorBoundary>
 
                     {/* Advanced Filters Panel */}
@@ -173,7 +207,9 @@ const XBookmarkManager = () => {
                 <>
                   {/* Desktop Header - No Container */}
                   <ErrorBoundary context="SearchHeader">
-                    <SearchHeader onMenuClick={() => setIsMobileDrawerOpen(true)} />
+                    <SearchHeader
+                      onMenuClick={() => setIsMobileDrawerOpen(true)}
+                    />
                   </ErrorBoundary>
 
                   {/* Advanced Filters Panel */}
@@ -209,11 +245,10 @@ const XBookmarkManager = () => {
           <ErrorBoundary context="BulkActionsBar">
             <BulkActionsBar />
           </ErrorBoundary>
-
         </DndProvider>
       )}
     </Box>
-  );
-};
+  )
+}
 
-export default XBookmarkManager;
+export default XBookmarkManager

@@ -31,7 +31,9 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     if (theme === 'auto') {
       // Check system preference
       if (typeof window !== 'undefined' && window.matchMedia) {
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        return window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light'
       }
       return 'dark' // Default to dark if we can't detect
     }
@@ -55,7 +57,10 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     // Update meta theme-color for mobile browsers
     const metaThemeColor = document.querySelector('meta[name="theme-color"]')
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', effectiveTheme === 'dark' ? '#0a0e1a' : '#ffffff')
+      metaThemeColor.setAttribute(
+        'content',
+        effectiveTheme === 'dark' ? '#0a0e1a' : '#ffffff'
+      )
     }
   }, [effectiveTheme])
 
@@ -75,7 +80,9 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   }, [theme])
 
   return (
-    <ThemeContext.Provider value={{ theme, effectiveTheme, setTheme, toggleTheme }}>
+    <ThemeContext.Provider
+      value={{ theme, effectiveTheme, setTheme, toggleTheme }}
+    >
       {children}
     </ThemeContext.Provider>
   )

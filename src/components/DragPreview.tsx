@@ -3,9 +3,7 @@ import { useDragLayer } from 'react-dnd'
 import { LuGripVertical, LuBookmark } from 'react-icons/lu'
 import { ItemTypes } from '../types/dnd'
 
-const getItemStyles = (
-  currentOffset: { x: number; y: number } | null
-) => {
+const getItemStyles = (currentOffset: { x: number; y: number } | null) => {
   if (!currentOffset) {
     return {
       display: 'none',
@@ -27,13 +25,14 @@ const getItemStyles = (
 }
 
 export const DragPreview = () => {
-  const { itemType, isDragging, item, currentOffset } =
-    useDragLayer((monitor) => ({
+  const { itemType, isDragging, item, currentOffset } = useDragLayer(
+    (monitor) => ({
       item: monitor.getItem(),
       itemType: monitor.getItemType(),
       currentOffset: monitor.getClientOffset(),
       isDragging: monitor.isDragging(),
-    }))
+    })
+  )
 
   if (!isDragging || itemType !== ItemTypes.BOOKMARK) {
     return null

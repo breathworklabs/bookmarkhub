@@ -6,7 +6,7 @@ import {
   Combobox,
   Portal,
   useFilter,
-  useListCollection
+  useListCollection,
 } from '@chakra-ui/react'
 import { LuChevronDown } from 'react-icons/lu'
 
@@ -36,15 +36,17 @@ export const GenericFilter: React.FC<GenericFilterProps> = ({
   onChange,
   onReset,
   options,
-  emptyMessage = `No ${type}s found`
+  emptyMessage = `No ${type}s found`,
 }) => {
   const { contains } = useFilter({ sensitivity: 'base' })
 
-  const processedOptions = useMemo(() =>
-    options.map(option => ({
-      label: option.label,
-      value: option.value
-    })), [options]
+  const processedOptions = useMemo(
+    () =>
+      options.map((option) => ({
+        label: option.label,
+        value: option.value,
+      })),
+    [options]
   )
 
   const { collection, filter } = useListCollection({
@@ -63,10 +65,21 @@ export const GenericFilter: React.FC<GenericFilterProps> = ({
   }
 
   return (
-    <VStack alignItems="start" gap={2} flex="1" minW={{ base: "100%", md: "220px" }} maxW={{ base: "100%", md: "25%" }} w={{ base: "100%", md: "auto" }}>
+    <VStack
+      alignItems="start"
+      gap={2}
+      flex="1"
+      minW={{ base: '100%', md: '220px' }}
+      maxW={{ base: '100%', md: '25%' }}
+      w={{ base: '100%', md: 'auto' }}
+    >
       <HStack gap={2} alignItems="center">
         <Icon size={14} color="var(--color-text-tertiary)" />
-        <Text fontSize="13px" fontWeight="500" style={{ color: 'var(--color-text-primary)' }}>
+        <Text
+          fontSize="13px"
+          fontWeight="500"
+          style={{ color: 'var(--color-text-primary)' }}
+        >
           {label}
         </Text>
       </HStack>
@@ -86,18 +99,28 @@ export const GenericFilter: React.FC<GenericFilterProps> = ({
             minH="32px"
             maxH="32px"
             fontSize="12px"
-            style={{background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
+            style={{
+              background: 'var(--color-bg-tertiary)',
+              color: 'var(--color-text-primary)',
+              borderColor: 'var(--color-border)',
+            }}
             border="1px solid"
             borderRadius="6px"
             px={3}
             py={0}
             _placeholder={{ color: 'var(--color-text-tertiary)' }}
             _hover={{ borderColor: 'var(--color-border-hover)' }}
-            _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
+            _focus={{
+              borderColor: 'var(--color-blue)',
+              boxShadow: '0 0 0 1px var(--color-blue)',
+            }}
           />
           <Combobox.IndicatorGroup>
             <Combobox.ClearTrigger
-              style={{color: 'var(--color-text-tertiary)', background: 'var(--color-bg-tertiary)'}}
+              style={{
+                color: 'var(--color-text-tertiary)',
+                background: 'var(--color-bg-tertiary)',
+              }}
               border="0"
               h="30px"
               mr="-7px"
@@ -107,7 +130,10 @@ export const GenericFilter: React.FC<GenericFilterProps> = ({
               p="0"
             />
             <Combobox.Trigger
-              style={{color: 'var(--color-text-tertiary)', background: 'var(--color-bg-tertiary)'}}
+              style={{
+                color: 'var(--color-text-tertiary)',
+                background: 'var(--color-bg-tertiary)',
+              }}
               border="0"
               h="30px"
               mr="-7px"
@@ -147,19 +173,19 @@ export const GenericFilter: React.FC<GenericFilterProps> = ({
                   bg="transparent"
                   _hover={{
                     bg: 'var(--color-border)',
-                    color: 'var(--color-text-primary)'
+                    color: 'var(--color-text-primary)',
                   }}
                   _focus={{
                     bg: 'var(--color-border)',
-                    color: 'var(--color-text-primary)'
+                    color: 'var(--color-text-primary)',
                   }}
                   _selected={{
                     bg: 'var(--color-blue) !important',
-                    color: 'white !important'
+                    color: 'white !important',
                   }}
                   _highlighted={{
                     bg: 'var(--color-border)',
-                    color: 'var(--color-text-primary)'
+                    color: 'var(--color-text-primary)',
                   }}
                   px={3}
                   py={2}

@@ -23,7 +23,7 @@ export const exportAsCSV = (bookmarks: Bookmark[]): string => {
     'Is Archived',
     'Created At',
     'Source Platform',
-    'Engagement Score'
+    'Engagement Score',
   ]
 
   // Escape CSV field
@@ -38,7 +38,7 @@ export const exportAsCSV = (bookmarks: Bookmark[]): string => {
   }
 
   // Build CSV rows
-  const rows = bookmarks.map(bookmark => [
+  const rows = bookmarks.map((bookmark) => [
     bookmark.id,
     escapeCSV(bookmark.title),
     escapeCSV(bookmark.url),
@@ -52,13 +52,13 @@ export const exportAsCSV = (bookmarks: Bookmark[]): string => {
     bookmark.is_archived ? 'Yes' : 'No',
     escapeCSV(bookmark.created_at),
     escapeCSV(bookmark.source_platform || 'manual'),
-    bookmark.engagement_score || 0
+    bookmark.engagement_score || 0,
   ])
 
   // Combine headers and rows
   const csvContent = [
     headers.join(','),
-    ...rows.map(row => row.join(','))
+    ...rows.map((row) => row.join(',')),
   ].join('\n')
 
   return csvContent
@@ -252,18 +252,20 @@ export const exportAsHTML = (bookmarks: Bookmark[]): string => {
           <span>Total Bookmarks</span>
         </div>
         <div class="stat">
-          <span class="stat-value">${bookmarks.filter(b => b.is_starred).length}</span>
+          <span class="stat-value">${bookmarks.filter((b) => b.is_starred).length}</span>
           <span>Starred</span>
         </div>
         <div class="stat">
-          <span class="stat-value">${bookmarks.filter(b => b.is_read).length}</span>
+          <span class="stat-value">${bookmarks.filter((b) => b.is_read).length}</span>
           <span>Read</span>
         </div>
       </div>
     </header>
 
     <div class="bookmarks">
-      ${bookmarks.map(bookmark => `
+      ${bookmarks
+        .map(
+          (bookmark) => `
       <div class="bookmark ${bookmark.is_starred ? 'starred' : ''}">
         <div class="bookmark-header">
           <div>
@@ -286,19 +288,29 @@ export const exportAsHTML = (bookmarks: Bookmark[]): string => {
           ${bookmark.source_platform ? `<span>📱 ${escapeHTML(bookmark.source_platform)}</span>` : ''}
         </div>
 
-        ${bookmark.description ? `
+        ${
+          bookmark.description
+            ? `
         <div class="bookmark-description">
           ${escapeHTML(bookmark.description)}
         </div>
-        ` : ''}
+        `
+            : ''
+        }
 
-        ${bookmark.tags.length > 0 ? `
+        ${
+          bookmark.tags.length > 0
+            ? `
         <div class="tags">
-          ${bookmark.tags.map(tag => `<span class="tag">${escapeHTML(tag)}</span>`).join('')}
+          ${bookmark.tags.map((tag) => `<span class="tag">${escapeHTML(tag)}</span>`).join('')}
         </div>
-        ` : ''}
+        `
+            : ''
+        }
       </div>
-      `).join('')}
+      `
+        )
+        .join('')}
     </div>
 
     <footer>
@@ -315,7 +327,11 @@ export const exportAsHTML = (bookmarks: Bookmark[]): string => {
 /**
  * Download file with given content and filename
  */
-export const downloadFile = (content: string, filename: string, mimeType: string) => {
+export const downloadFile = (
+  content: string,
+  filename: string,
+  mimeType: string
+) => {
   const blob = new Blob([content], { type: mimeType })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')

@@ -5,14 +5,15 @@ import { useFilterReset } from '../utils/filterUtils'
 import { GenericFilter } from './filters/GenericFilter'
 
 const DomainFilter = () => {
-  const { domainFilter, setDomainFilter, filterOptions } = useBookmarkSelectors()
+  const { domainFilter, setDomainFilter, filterOptions } =
+    useBookmarkSelectors()
   const resetFilters = useFilterReset()
 
   // Use cached domains from the store
   const domains = useMemo(() => {
-    return filterOptions.domains.map(domain => ({
+    return filterOptions.domains.map((domain) => ({
       label: domain,
-      value: domain
+      value: domain,
     }))
   }, [filterOptions.domains])
 

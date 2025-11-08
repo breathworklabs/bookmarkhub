@@ -83,8 +83,12 @@ export class SmartTaggingService {
     const limited = sorted.slice(0, mergedOptions.maxSuggestions)
 
     // Separate auto-apply vs manual suggestions
-    const autoApply = limited.filter((s) => s.confidence >= mergedOptions.autoApplyThreshold)
-    const suggestions = limited.filter((s) => s.confidence < mergedOptions.autoApplyThreshold)
+    const autoApply = limited.filter(
+      (s) => s.confidence >= mergedOptions.autoApplyThreshold
+    )
+    const suggestions = limited.filter(
+      (s) => s.confidence < mergedOptions.autoApplyThreshold
+    )
 
     // Calculate metrics
     const endTime = Date.now()
@@ -113,7 +117,11 @@ export class SmartTaggingService {
   /**
    * Enable/disable a strategy
    */
-  setStrategyEnabled(strategyName: string, enabled: boolean, options: TaggingOptions): void {
+  setStrategyEnabled(
+    strategyName: string,
+    enabled: boolean,
+    options: TaggingOptions
+  ): void {
     if (!options.enabledStrategies) {
       return
     }
@@ -123,7 +131,9 @@ export class SmartTaggingService {
         options.enabledStrategies.push(strategyName)
       }
     } else {
-      options.enabledStrategies = options.enabledStrategies.filter((s) => s !== strategyName)
+      options.enabledStrategies = options.enabledStrategies.filter(
+        (s) => s !== strategyName
+      )
     }
   }
 }

@@ -40,7 +40,7 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
       dateRangeFilter: bookmarkSelectors.dateRangeFilter,
       quickFilters: bookmarkSelectors.quickFilters,
       activeCollectionId: collectionsSelectors.activeCollectionId,
-      collectionBookmarks: collectionsSelectors.collectionBookmarks
+      collectionBookmarks: collectionsSelectors.collectionBookmarks,
     })
   }, [
     bookmarkSelectors.bookmarks,
@@ -54,7 +54,7 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
     bookmarkSelectors.dateRangeFilter,
     bookmarkSelectors.quickFilters,
     collectionsSelectors.activeCollectionId,
-    collectionsSelectors.collectionBookmarks
+    collectionsSelectors.collectionBookmarks,
   ])
 
   // Get paginated bookmarks based on current page
@@ -69,7 +69,11 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
     const { currentPage, itemsPerPage } = pagination
     const endIndex = currentPage * itemsPerPage
     return endIndex < filteredBookmarks.length
-  }, [pagination.currentPage, pagination.itemsPerPage, filteredBookmarks.length])
+  }, [
+    pagination.currentPage,
+    pagination.itemsPerPage,
+    filteredBookmarks.length,
+  ])
 
   // Reset pagination when filters change
   useEffect(() => {
@@ -85,7 +89,7 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
     bookmarkSelectors.dateRangeFilter,
     bookmarkSelectors.quickFilters,
     collectionsSelectors.activeCollectionId,
-    resetPagination
+    resetPagination,
   ])
 
   // Load more function that increases the page
@@ -97,8 +101,8 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
       pagination: {
         ...pagination,
         currentPage: pagination.currentPage + 1,
-        isLoading: false // Don't keep loading state, let the UI handle it
-      }
+        isLoading: false, // Don't keep loading state, let the UI handle it
+      },
     })
   }
 
@@ -108,7 +112,7 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
     isLoading: pagination.isLoading,
     loadMore,
     totalItems: filteredBookmarks.length,
-    currentPage: pagination.currentPage
+    currentPage: pagination.currentPage,
   }
 }
 

@@ -57,16 +57,31 @@ const CookieConsentBanner = () => {
       px={4}
       py={3}
     >
-      <HStack justify="space-between" align="flex-start" gap={4} maxW="1200px" mx="auto">
+      <HStack
+        justify="space-between"
+        align="flex-start"
+        gap={4}
+        maxW="1200px"
+        mx="auto"
+      >
         <Text fontSize="sm" style={{ color: 'var(--color-text-secondary)' }}>
-          We do not use tracking cookies. We only store essential data locally on your device to make the
-          app work. See our Cookie Policy.
+          We do not use tracking cookies. We only store essential data locally
+          on your device to make the app work. See our Cookie Policy.
         </Text>
         <HStack gap={2}>
-          <Button size="sm" variant="ghost" onClick={() => handleChoice('rejected')} _focus={{ boxShadow: 'none' }}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => handleChoice('rejected')}
+            _focus={{ boxShadow: 'none' }}
+          >
             Reject
           </Button>
-          <Button size="sm" onClick={() => handleChoice('accepted')} _focus={{ boxShadow: 'none' }}>
+          <Button
+            size="sm"
+            onClick={() => handleChoice('accepted')}
+            _focus={{ boxShadow: 'none' }}
+          >
             Accept
           </Button>
         </HStack>

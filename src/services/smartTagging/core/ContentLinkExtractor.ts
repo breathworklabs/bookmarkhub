@@ -115,7 +115,11 @@ export class ContentLinkExtractor {
   /**
    * Extract context around a URL
    */
-  private extractContext(text: string, position: number, urlLength: number): string {
+  private extractContext(
+    text: string,
+    position: number,
+    urlLength: number
+  ): string {
     const windowSize = LINK_EXTRACTION_CONFIG.contextWindowSize
     const start = Math.max(0, position - windowSize)
     const end = Math.min(text.length, position + urlLength + windowSize)
@@ -213,7 +217,9 @@ export class ContentLinkExtractor {
     })
 
     // Sort by confidence (descending)
-    return Array.from(linkMap.values()).sort((a, b) => b.confidence - a.confidence)
+    return Array.from(linkMap.values()).sort(
+      (a, b) => b.confidence - a.confidence
+    )
   }
 
   /**

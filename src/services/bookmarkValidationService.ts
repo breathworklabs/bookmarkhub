@@ -26,7 +26,9 @@ export interface ValidationSummary {
  * Check if a URL is still accessible
  * Uses HEAD request for efficiency
  */
-export const validateUrl = async (url: string): Promise<{ isValid: boolean; status?: number; error?: string }> => {
+export const validateUrl = async (
+  url: string
+): Promise<{ isValid: boolean; status?: number; error?: string }> => {
   try {
     // Use a CORS proxy for validation to avoid CORS issues
     // In production, this should be replaced with a server-side validation
@@ -92,7 +94,9 @@ export const validateUrl = async (url: string): Promise<{ isValid: boolean; stat
 /**
  * Validate a single bookmark
  */
-export const validateBookmark = async (bookmark: Bookmark): Promise<ValidationResult> => {
+export const validateBookmark = async (
+  bookmark: Bookmark
+): Promise<ValidationResult> => {
   const result = await validateUrl(bookmark.url)
 
   return {
@@ -120,7 +124,7 @@ export const validateBookmarks = async (
   for (let i = 0; i < bookmarks.length; i += concurrency) {
     const batch = bookmarks.slice(i, i + concurrency)
     const batchResults = await Promise.all(
-      batch.map(bookmark => validateBookmark(bookmark))
+      batch.map((bookmark) => validateBookmark(bookmark))
     )
 
     results.push(...batchResults)
@@ -136,9 +140,11 @@ export const validateBookmarks = async (
 /**
  * Get validation summary
  */
-export const getValidationSummary = (results: ValidationResult[]): ValidationSummary => {
-  const valid = results.filter(r => r.isValid).length
-  const invalid = results.filter(r => !r.isValid).length
+export const getValidationSummary = (
+  results: ValidationResult[]
+): ValidationSummary => {
+  const valid = results.filter((r) => r.isValid).length
+  const invalid = results.filter((r) => !r.isValid).length
 
   return {
     total: results.length,
@@ -156,11 +162,9 @@ export const getInvalidBookmarks = (
   bookmarks: Bookmark[],
   results: ValidationResult[]
 ): Bookmark[] => {
-  const invalidIds = new Set(
-    results.filter(r => !r.isValid).map(r => r.id)
-  )
+  const invalidIds = new Set(results.filter((r) => !r.isValid).map((r) => r.id))
 
-  return bookmarks.filter(b => invalidIds.has(b.id))
+  return bookmarks.filter((b) => invalidIds.has(b.id))
 }
 
 /**
@@ -186,9 +190,14 @@ export const loadCachedValidationResults = (): ValidationResult[] => {
 /**
  * Save validation results to localStorage
  */
-export const saveCachedValidationResults = (results: ValidationResult[]): void => {
+export const saveCachedValidationResults = (
+  results: ValidationResult[]
+): void => {
   try {
-    localStorage.setItem('x-bookmark-validation-results', JSON.stringify(results))
+    localStorage.setItem(
+      'x-bookmark-validation-results',
+      JSON.stringify(results)
+    )
   } catch (error) {
     console.error('Failed to save validation results:', error)
   }
@@ -205,6 +214,7 @@ export const areCachedResultsFresh = (results: ValidationResult[]): boolean => {
     return current.checkedAt < oldest.checkedAt ? current : oldest
   })
 
-  const hoursSinceCheck = (now.getTime() - oldestResult.checkedAt.getTime()) / (1000 * 60 * 60)
+  const hoursSinceCheck =
+    (now.getTime() - oldestResult.checkedAt.getTime()) / (1000 * 60 * 60)
   return hoursSinceCheck < 24
 }

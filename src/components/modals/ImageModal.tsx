@@ -11,7 +11,13 @@ interface ImageModalProps {
   title?: string
 }
 
-const ImageModal = ({ isOpen, onClose, images, initialIndex = 0, title }: ImageModalProps) => {
+const ImageModal = ({
+  isOpen,
+  onClose,
+  images,
+  initialIndex = 0,
+  title,
+}: ImageModalProps) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
 
   useEffect(() => {
@@ -27,10 +33,10 @@ const ImageModal = ({ isOpen, onClose, images, initialIndex = 0, title }: ImageM
           onClose()
           break
         case 'ArrowLeft':
-          setCurrentIndex(prev => prev > 0 ? prev - 1 : images.length - 1)
+          setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1))
           break
         case 'ArrowRight':
-          setCurrentIndex(prev => prev < images.length - 1 ? prev + 1 : 0)
+          setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0))
           break
       }
     }
@@ -96,7 +102,11 @@ const ImageModal = ({ isOpen, onClose, images, initialIndex = 0, title }: ImageM
               color="white"
               bg="rgba(0, 0, 0, 0.5)"
               _hover={{ bg: 'rgba(0, 0, 0, 0.7)' }}
-              onClick={() => setCurrentIndex(prev => prev > 0 ? prev - 1 : images.length - 1)}
+              onClick={() =>
+                setCurrentIndex((prev) =>
+                  prev > 0 ? prev - 1 : images.length - 1
+                )
+              }
               zIndex={10}
             >
               <LuChevronLeft size={24} />
@@ -113,7 +123,11 @@ const ImageModal = ({ isOpen, onClose, images, initialIndex = 0, title }: ImageM
               color="white"
               bg="rgba(0, 0, 0, 0.5)"
               _hover={{ bg: 'rgba(0, 0, 0, 0.7)' }}
-              onClick={() => setCurrentIndex(prev => prev < images.length - 1 ? prev + 1 : 0)}
+              onClick={() =>
+                setCurrentIndex((prev) =>
+                  prev < images.length - 1 ? prev + 1 : 0
+                )
+              }
               zIndex={10}
             >
               <LuChevronRight size={24} />
@@ -134,7 +148,10 @@ const ImageModal = ({ isOpen, onClose, images, initialIndex = 0, title }: ImageM
               <Box
                 minW="300px"
                 minH="200px"
-                style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-tertiary)' }}
+                style={{
+                  background: 'var(--color-bg-primary)',
+                  color: 'var(--color-text-tertiary)',
+                }}
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
@@ -161,7 +178,11 @@ const ImageModal = ({ isOpen, onClose, images, initialIndex = 0, title }: ImageM
             textAlign="center"
           >
             {title && (
-              <Text fontSize="sm" fontWeight="500" mb={hasMultipleImages ? 1 : 0}>
+              <Text
+                fontSize="sm"
+                fontWeight="500"
+                mb={hasMultipleImages ? 1 : 0}
+              >
                 {title}
               </Text>
             )}
@@ -178,7 +199,11 @@ const ImageModal = ({ isOpen, onClose, images, initialIndex = 0, title }: ImageM
                       w="6px"
                       h="6px"
                       borderRadius="full"
-                      bg={index === currentIndex ? 'white' : 'rgba(255, 255, 255, 0.4)'}
+                      bg={
+                        index === currentIndex
+                          ? 'white'
+                          : 'rgba(255, 255, 255, 0.4)'
+                      }
                       cursor="pointer"
                       onClick={() => setCurrentIndex(index)}
                     />

@@ -1,4 +1,13 @@
-import { Box, Flex, VStack, HStack, Text, Button, Badge, Link } from '@chakra-ui/react'
+import {
+  Box,
+  Flex,
+  VStack,
+  HStack,
+  Text,
+  Button,
+  Badge,
+  Link,
+} from '@chakra-ui/react'
 import { LuExternalLink, LuShare2, LuInfo, LuCopy } from 'react-icons/lu'
 import { useEffect, useState, useMemo } from 'react'
 import { DndProvider } from 'react-dnd'
@@ -66,7 +75,7 @@ const SharedView = () => {
       'Last Month',
       '2 Months Ago',
       '3-6 Months Ago',
-      'Older'
+      'Older',
     ]
 
     return weekOrder
@@ -77,7 +86,7 @@ const SharedView = () => {
           const dateA = new Date(a.shared_at || a.created_at)
           const dateB = new Date(b.shared_at || b.created_at)
           return dateB.getTime() - dateA.getTime()
-        })
+        }),
       }))
   }, [sharedBookmarks])
 
@@ -109,7 +118,9 @@ const SharedView = () => {
   if (isLoading) {
     return (
       <Box p={8}>
-        <Text style={{ color: 'var(--color-text-tertiary)' }}>Loading shared bookmarks...</Text>
+        <Text style={{ color: 'var(--color-text-tertiary)' }}>
+          Loading shared bookmarks...
+        </Text>
       </Box>
     )
   }
@@ -121,18 +132,36 @@ const SharedView = () => {
         <UnifiedSidebar />
 
         {/* Main Content */}
-        <Flex flex={1} direction="column" w="100%" overflowY="auto" p={8} style={{ background: 'var(--color-bg-primary)' }}>
+        <Flex
+          flex={1}
+          direction="column"
+          w="100%"
+          overflowY="auto"
+          p={8}
+          style={{ background: 'var(--color-bg-primary)' }}
+        >
           <Box maxW="1400px" mx="auto" w="100%">
             {/* Header */}
             <Flex justifyContent="space-between" alignItems="center" mb={6}>
               <HStack gap={3}>
-                <LuShare2 size={24} style={{ color: 'var(--color-text-primary)' }} />
+                <LuShare2
+                  size={24}
+                  style={{ color: 'var(--color-text-primary)' }}
+                />
                 <VStack alignItems="flex-start" gap={0}>
-                  <Text fontSize="2xl" fontWeight="600" style={{ color: 'var(--color-text-primary)' }}>
+                  <Text
+                    fontSize="2xl"
+                    fontWeight="600"
+                    style={{ color: 'var(--color-text-primary)' }}
+                  >
                     Shared Bookmarks
                   </Text>
-                  <Text fontSize="sm" style={{ color: 'var(--color-text-tertiary)' }}>
-                    {sharedBookmarks.length} item{sharedBookmarks.length !== 1 ? 's' : ''}
+                  <Text
+                    fontSize="sm"
+                    style={{ color: 'var(--color-text-tertiary)' }}
+                  >
+                    {sharedBookmarks.length} item
+                    {sharedBookmarks.length !== 1 ? 's' : ''}
                   </Text>
                 </VStack>
               </HStack>
@@ -147,9 +176,16 @@ const SharedView = () => {
               border="1px solid var(--color-border)"
             >
               <HStack gap={2}>
-                <LuInfo size={18} style={{ color: 'var(--color-blue)', flexShrink: 0 }} />
-                <Text fontSize="sm" style={{ color: 'var(--color-text-secondary)' }}>
-                  Bookmarks you've shared are organized by week for easy reference.
+                <LuInfo
+                  size={18}
+                  style={{ color: 'var(--color-blue)', flexShrink: 0 }}
+                />
+                <Text
+                  fontSize="sm"
+                  style={{ color: 'var(--color-text-secondary)' }}
+                >
+                  Bookmarks you've shared are organized by week for easy
+                  reference.
                 </Text>
               </HStack>
             </Box>
@@ -165,11 +201,24 @@ const SharedView = () => {
                 style={{ background: 'var(--color-bg-tertiary)' }}
               >
                 <VStack gap={3}>
-                  <LuShare2 size={48} style={{ color: 'var(--color-text-tertiary)', opacity: 0.5 }} />
-                  <Text fontSize="lg" fontWeight="500" style={{ color: 'var(--color-text-secondary)' }}>
+                  <LuShare2
+                    size={48}
+                    style={{
+                      color: 'var(--color-text-tertiary)',
+                      opacity: 0.5,
+                    }}
+                  />
+                  <Text
+                    fontSize="lg"
+                    fontWeight="500"
+                    style={{ color: 'var(--color-text-secondary)' }}
+                  >
                     No shared bookmarks yet
                   </Text>
-                  <Text fontSize="sm" style={{ color: 'var(--color-text-tertiary)' }}>
+                  <Text
+                    fontSize="sm"
+                    style={{ color: 'var(--color-text-tertiary)' }}
+                  >
                     Bookmarks you share will appear here
                   </Text>
                 </VStack>
@@ -179,8 +228,17 @@ const SharedView = () => {
                 {groupedByWeek.map((group) => (
                   <Box key={group.label}>
                     {/* Week Header */}
-                    <HStack mb={3} pb={2} borderBottomWidth="1px" style={{ borderColor: 'var(--color-border)' }}>
-                      <Text fontSize="sm" fontWeight="600" style={{ color: 'var(--color-text-primary)' }}>
+                    <HStack
+                      mb={3}
+                      pb={2}
+                      borderBottomWidth="1px"
+                      style={{ borderColor: 'var(--color-border)' }}
+                    >
+                      <Text
+                        fontSize="sm"
+                        fontWeight="600"
+                        style={{ color: 'var(--color-text-primary)' }}
+                      >
                         {group.label}
                       </Text>
                       <Badge
@@ -191,7 +249,8 @@ const SharedView = () => {
                         py={1}
                         borderRadius="4px"
                       >
-                        {group.bookmarks.length} {group.bookmarks.length === 1 ? 'item' : 'items'}
+                        {group.bookmarks.length}{' '}
+                        {group.bookmarks.length === 1 ? 'item' : 'items'}
                       </Badge>
                     </HStack>
 
@@ -207,8 +266,17 @@ const SharedView = () => {
                           _hover={{ borderColor: 'var(--color-border-hover)' }}
                           transition="all 0.2s"
                         >
-                          <Flex justifyContent="space-between" alignItems="center" gap={4}>
-                            <VStack alignItems="flex-start" gap={1} flex={1} minW={0}>
+                          <Flex
+                            justifyContent="space-between"
+                            alignItems="center"
+                            gap={4}
+                          >
+                            <VStack
+                              alignItems="flex-start"
+                              gap={1}
+                              flex={1}
+                              minW={0}
+                            >
                               <Link
                                 href={bookmark.url}
                                 target="_blank"
@@ -216,11 +284,14 @@ const SharedView = () => {
                                 fontSize="sm"
                                 fontWeight="500"
                                 style={{ color: 'var(--color-text-primary)' }}
-                                _hover={{ color: 'var(--color-blue)', textDecoration: 'underline' }}
+                                _hover={{
+                                  color: 'var(--color-blue)',
+                                  textDecoration: 'underline',
+                                }}
                                 css={{
                                   overflow: 'hidden',
                                   textOverflow: 'ellipsis',
-                                  whiteSpace: 'nowrap'
+                                  whiteSpace: 'nowrap',
                                 }}
                                 w="100%"
                               >
@@ -238,12 +309,22 @@ const SharedView = () => {
                                   Shared {formatSharedTime(bookmark.shared_at)}
                                 </Badge>
                                 {bookmark.author && (
-                                  <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }}>
+                                  <Text
+                                    fontSize="xs"
+                                    style={{
+                                      color: 'var(--color-text-tertiary)',
+                                    }}
+                                  >
                                     by {bookmark.author}
                                   </Text>
                                 )}
                                 {bookmark.domain && (
-                                  <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }}>
+                                  <Text
+                                    fontSize="xs"
+                                    style={{
+                                      color: 'var(--color-text-tertiary)',
+                                    }}
+                                  >
                                     {bookmark.domain}
                                   </Text>
                                 )}
@@ -256,10 +337,19 @@ const SharedView = () => {
                                 size="sm"
                                 variant="ghost"
                                 style={{ color: 'var(--color-text-secondary)' }}
-                                _hover={{ bg: 'var(--color-bg-hover)', color: 'var(--color-text-primary)' }}
-                                _focus={{ boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.3)' }}
+                                _hover={{
+                                  bg: 'var(--color-bg-hover)',
+                                  color: 'var(--color-text-primary)',
+                                }}
+                                _focus={{
+                                  boxShadow:
+                                    '0 0 0 3px rgba(59, 130, 246, 0.3)',
+                                }}
                               >
-                                <LuCopy size={16} style={{ marginRight: '6px' }} />
+                                <LuCopy
+                                  size={16}
+                                  style={{ marginRight: '6px' }}
+                                />
                                 Copy
                               </Button>
                               <Button
@@ -268,9 +358,15 @@ const SharedView = () => {
                                 variant="ghost"
                                 style={{ color: 'var(--color-blue)' }}
                                 _hover={{ bg: 'var(--color-bg-hover)' }}
-                                _focus={{ boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.3)' }}
+                                _focus={{
+                                  boxShadow:
+                                    '0 0 0 3px rgba(59, 130, 246, 0.3)',
+                                }}
                               >
-                                <LuExternalLink size={16} style={{ marginRight: '6px' }} />
+                                <LuExternalLink
+                                  size={16}
+                                  style={{ marginRight: '6px' }}
+                                />
                                 Open
                               </Button>
                             </HStack>

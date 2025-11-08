@@ -2,7 +2,10 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { localStorageService, type StoredBookmark } from '../lib/localStorage'
 import { sanitizeBookmark, validateImportData } from '../lib/dataValidation'
-import { transformXBookmarks, validateXBookmarkData } from '../lib/xBookmarkTransform'
+import {
+  transformXBookmarks,
+  validateXBookmarkData,
+} from '../lib/xBookmarkTransform'
 import { mockBookmarks } from '../data/mockBookmarks'
 import { createErrorHandler } from '../utils/errorHandling'
 import { detectDuplicate, type DuplicateMatch } from '../lib/duplicateDetection'
@@ -16,7 +19,7 @@ import {
   saveCachedValidationResults,
   areCachedResultsFresh,
   type ValidationResult,
-  type ValidationSummary
+  type ValidationSummary,
 } from '../services/bookmarkValidationService'
 
 export interface DateRangeFilter {
@@ -123,7 +126,11 @@ interface BookmarkState {
   saveFilterPreset: (name: string, description?: string) => void
   loadFilterPreset: (presetId: string) => void
   deleteFilterPreset: (presetId: string) => void
-  updateFilterPreset: (presetId: string, name: string, description?: string) => void
+  updateFilterPreset: (
+    presetId: string,
+    name: string,
+    description?: string
+  ) => void
   setBookmarks: (bookmarks: Bookmark[]) => void
   loadBookmarks: () => Promise<void>
   addBookmark: (bookmark: BookmarkInsert) => Promise<void>
@@ -234,7 +241,7 @@ export const useBookmarkStore = create<BookmarkState>()(
         itemsPerPage: 20,
         totalItems: 0,
         hasMore: false,
-        isLoading: false
+        isLoading: false,
       },
 
       // Advanced filters initial state
@@ -249,7 +256,7 @@ export const useBookmarkStore = create<BookmarkState>()(
         authors: [],
         domains: [],
         tags: [],
-        contentTypes: ['article', 'tweet', 'video', 'image']
+        contentTypes: ['article', 'tweet', 'video', 'image'],
       },
 
       // Performance tracking for filter options
@@ -273,10 +280,16 @@ export const useBookmarkStore = create<BookmarkState>()(
         try {
           // Load saved filter presets from localStorage
           try {
-            const savedPresets = localStorage.getItem('x-bookmark-filter-presets')
+            const savedPresets = localStorage.getItem(
+              'x-bookmark-filter-presets'
+            )
             if (savedPresets) {
               const presets: SavedFilterPreset[] = JSON.parse(savedPresets)
-              set({ savedFilterPresets: presets }, false, 'initialize:loadPresets')
+              set(
+                { savedFilterPresets: presets },
+                false,
+                'initialize:loadPresets'
+              )
             }
           } catch (error) {
             console.warn('Failed to load filter presets:', error)
@@ -295,30 +308,38 @@ export const useBookmarkStore = create<BookmarkState>()(
 
           // If we have bookmarks, set them immediately without loading state
           if (bookmarks.length > 0) {
-            set({
-              bookmarks,
-              selectedTags: [], // Clear filters on startup
-              searchQuery: '', // Clear search on startup
-              activeTab: 0, // Reset to "All" tab
-              selectedBookmarks: [], // Clear selection on startup
-              isLoading: false // No loading state if we have data
-            }, false, 'initialize:immediateLoad')
+            set(
+              {
+                bookmarks,
+                selectedTags: [], // Clear filters on startup
+                searchQuery: '', // Clear search on startup
+                activeTab: 0, // Reset to "All" tab
+                selectedBookmarks: [], // Clear selection on startup
+                isLoading: false, // No loading state if we have data
+              },
+              false,
+              'initialize:immediateLoad'
+            )
 
             // Calculate filter options in background
-            Promise.resolve(get().calculateFilterOptions()).catch(error => {
+            Promise.resolve(get().calculateFilterOptions()).catch((error) => {
               console.error('Background initialization failed:', error)
             })
           } else {
             // No bookmarks in localStorage - load mock bookmarks for demo
 
-            set({
-              bookmarks: mockBookmarks,
-              selectedTags: [],
-              searchQuery: '',
-              activeTab: 0,
-              selectedBookmarks: [],
-              isLoading: false
-            }, false, 'initialize:mockData')
+            set(
+              {
+                bookmarks: mockBookmarks,
+                selectedTags: [],
+                searchQuery: '',
+                activeTab: 0,
+                selectedBookmarks: [],
+                isLoading: false,
+              },
+              false,
+              'initialize:mockData'
+            )
 
             // Calculate filter options with mock bookmarks
             get().calculateFilterOptions()
@@ -326,16 +347,21 @@ export const useBookmarkStore = create<BookmarkState>()(
 
           // Track initialization performance
           const bookmarkCount = get().bookmarks.length
-          trackOperationPerformance('bookmark_store_init', startTime, { count: bookmarkCount })
-
+          trackOperationPerformance('bookmark_store_init', startTime, {
+            count: bookmarkCount,
+          })
         } catch (error) {
           const errorHandler = createErrorHandler('BookmarkStore.initialize')
           const appError = errorHandler(error)
-          set({
-            error: appError.toUserMessage(),
-            bookmarks: [],
-            isLoading: false
-          }, false, 'initialize:error')
+          set(
+            {
+              error: appError.toUserMessage(),
+              bookmarks: [],
+              isLoading: false,
+            },
+            false,
+            'initialize:error'
+          )
         }
       },
 
@@ -359,10 +385,14 @@ export const useBookmarkStore = create<BookmarkState>()(
         } catch (error) {
           const errorHandler = createErrorHandler('BookmarkStore.loadBookmarks')
           const appError = errorHandler(error)
-          set({
-            error: appError.toUserMessage(),
-            isLoading: false
-          }, false, 'loadBookmarks:error')
+          set(
+            {
+              error: appError.toUserMessage(),
+              isLoading: false,
+            },
+            false,
+            'loadBookmarks:error'
+          )
         }
       },
 
@@ -386,10 +416,14 @@ export const useBookmarkStore = create<BookmarkState>()(
             const duplicateHandling = 'skip'
             if (duplicateHandling === 'skip') {
               // Skip adding duplicate - show notification
-              set({
-                error: 'This bookmark already exists',
-                isLoading: false
-              }, false, 'addBookmark:duplicate-skipped')
+              set(
+                {
+                  error: 'This bookmark already exists',
+                  isLoading: false,
+                },
+                false,
+                'addBookmark:duplicate-skipped'
+              )
               return
             } else if (duplicateHandling === 'replace') {
               // Replace existing bookmark
@@ -399,18 +433,23 @@ export const useBookmarkStore = create<BookmarkState>()(
               return
             } else {
               // Show dialog for manual decision (keepBoth or manual choice)
-              set({
-                duplicateMatches: duplicateResult.matches,
-                pendingBookmark: sanitizedBookmark,
-                showDuplicateDialog: true,
-                isLoading: false
-              }, false, 'addBookmark:duplicate-found')
+              set(
+                {
+                  duplicateMatches: duplicateResult.matches,
+                  pendingBookmark: sanitizedBookmark,
+                  showDuplicateDialog: true,
+                  isLoading: false,
+                },
+                false,
+                'addBookmark:duplicate-found'
+              )
               return
             }
           }
 
           // No duplicates, proceed with adding
-          const newBookmark = await localStorageService.createBookmark(sanitizedBookmark)
+          const newBookmark =
+            await localStorageService.createBookmark(sanitizedBookmark)
           set(
             (state) => ({ bookmarks: [newBookmark, ...state.bookmarks] }),
             false,
@@ -438,10 +477,15 @@ export const useBookmarkStore = create<BookmarkState>()(
             throw new Error('Invalid bookmark data')
           }
 
-          const updatedBookmark = await localStorageService.updateBookmark(id, sanitizedBookmark)
+          const updatedBookmark = await localStorageService.updateBookmark(
+            id,
+            sanitizedBookmark
+          )
           set(
             (state) => ({
-              bookmarks: state.bookmarks.map(b => b.id === id ? updatedBookmark : b)
+              bookmarks: state.bookmarks.map((b) =>
+                b.id === id ? updatedBookmark : b
+              ),
             }),
             false,
             'updateBookmark:success'
@@ -451,7 +495,16 @@ export const useBookmarkStore = create<BookmarkState>()(
           get().addActivityLog('Updated bookmark', sanitizedBookmark.title)
         } catch (error) {
           console.error('Error updating bookmark:', error)
-          set({ error: error instanceof Error ? error.message : 'Failed to update bookmark' }, false, 'updateBookmark:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to update bookmark',
+            },
+            false,
+            'updateBookmark:error'
+          )
         } finally {
           set({ isLoading: false }, false, 'updateBookmark:complete')
         }
@@ -464,7 +517,9 @@ export const useBookmarkStore = create<BookmarkState>()(
           const updatedBookmark = await localStorageService.moveToTrash(id)
           set(
             (state) => ({
-              bookmarks: state.bookmarks.map(b => b.id === id ? updatedBookmark : b)
+              bookmarks: state.bookmarks.map((b) =>
+                b.id === id ? updatedBookmark : b
+              ),
             }),
             false,
             'removeBookmark:success'
@@ -474,7 +529,16 @@ export const useBookmarkStore = create<BookmarkState>()(
           get().addActivityLog('Moved to trash', updatedBookmark.title)
         } catch (error) {
           console.error('Error removing bookmark:', error)
-          set({ error: error instanceof Error ? error.message : 'Failed to remove bookmark' }, false, 'removeBookmark:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to remove bookmark',
+            },
+            false,
+            'removeBookmark:error'
+          )
         } finally {
           set({ isLoading: false }, false, 'removeBookmark:complete')
         }
@@ -482,12 +546,13 @@ export const useBookmarkStore = create<BookmarkState>()(
 
       toggleStarBookmark: async (id) => {
         try {
-          const updatedBookmark = await localStorageService.toggleBookmarkStar(id)
+          const updatedBookmark =
+            await localStorageService.toggleBookmarkStar(id)
           set(
             (state) => ({
-              bookmarks: state.bookmarks.map(bookmark =>
+              bookmarks: state.bookmarks.map((bookmark) =>
                 bookmark.id === id ? updatedBookmark : bookmark
-              )
+              ),
             }),
             false,
             'toggleStarBookmark:success'
@@ -499,7 +564,16 @@ export const useBookmarkStore = create<BookmarkState>()(
           }
         } catch (error) {
           console.error('Error toggling bookmark star:', error)
-          set({ error: error instanceof Error ? error.message : 'Failed to toggle star' }, false, 'toggleStarBookmark:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to toggle star',
+            },
+            false,
+            'toggleStarBookmark:error'
+          )
         }
       },
 
@@ -512,12 +586,14 @@ export const useBookmarkStore = create<BookmarkState>()(
             throw new Error(`Bookmark with id ${id} not found`)
           }
 
-          const updatedBookmark = await localStorageService.updateBookmark(id, { is_archived: !bookmark.is_archived })
+          const updatedBookmark = await localStorageService.updateBookmark(id, {
+            is_archived: !bookmark.is_archived,
+          })
           set(
             (state) => ({
-              bookmarks: state.bookmarks.map(bookmark =>
+              bookmarks: state.bookmarks.map((bookmark) =>
                 bookmark.id === id ? updatedBookmark : bookmark
-              )
+              ),
             }),
             false,
             'toggleArchiveBookmark:success'
@@ -529,7 +605,16 @@ export const useBookmarkStore = create<BookmarkState>()(
           }
         } catch (error) {
           console.error('Error toggling bookmark archive:', error)
-          set({ error: error instanceof Error ? error.message : 'Failed to toggle archive' }, false, 'toggleArchiveBookmark:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to toggle archive',
+            },
+            false,
+            'toggleArchiveBookmark:error'
+          )
         }
       },
 
@@ -545,7 +630,16 @@ export const useBookmarkStore = create<BookmarkState>()(
           set({ bookmarks: results }, false, 'searchBookmarks:success')
         } catch (error) {
           console.error('Error searching bookmarks:', error)
-          set({ error: error instanceof Error ? error.message : 'Failed to search bookmarks' }, false, 'searchBookmarks:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to search bookmarks',
+            },
+            false,
+            'searchBookmarks:error'
+          )
         } finally {
           set({ isLoading: false }, false, 'searchBookmarks:complete')
         }
@@ -575,31 +669,42 @@ export const useBookmarkStore = create<BookmarkState>()(
         try {
           set({ isLoading: true }, false, 'confirmAddDuplicate:start')
 
-          const newBookmark = await localStorageService.createBookmark(pendingBookmark)
+          const newBookmark =
+            await localStorageService.createBookmark(pendingBookmark)
           set(
             (state) => ({
               bookmarks: [newBookmark, ...state.bookmarks],
               duplicateMatches: [],
               pendingBookmark: null,
               showDuplicateDialog: false,
-              isLoading: false
+              isLoading: false,
             }),
             false,
             'confirmAddDuplicate:success'
           )
         } catch (error) {
-          const errorHandler = createErrorHandler('BookmarkStore.confirmAddDuplicate')
+          const errorHandler = createErrorHandler(
+            'BookmarkStore.confirmAddDuplicate'
+          )
           const appError = errorHandler(error)
-          set({ error: appError.toUserMessage(), isLoading: false }, false, 'confirmAddDuplicate:error')
+          set(
+            { error: appError.toUserMessage(), isLoading: false },
+            false,
+            'confirmAddDuplicate:error'
+          )
         }
       },
 
       cancelAddDuplicate: () => {
-        set({
-          duplicateMatches: [],
-          pendingBookmark: null,
-          showDuplicateDialog: false
-        }, false, 'cancelAddDuplicate')
+        set(
+          {
+            duplicateMatches: [],
+            pendingBookmark: null,
+            showDuplicateDialog: false,
+          },
+          false,
+          'cancelAddDuplicate'
+        )
       },
 
       // Data management
@@ -611,11 +716,23 @@ export const useBookmarkStore = create<BookmarkState>()(
           // Export as JSON
           const data = await localStorageService.exportData()
           const jsonContent = JSON.stringify(data, null, 2)
-          downloadFile(jsonContent, `x-bookmarks-${date}.json`, 'application/json')
-
+          downloadFile(
+            jsonContent,
+            `x-bookmarks-${date}.json`,
+            'application/json'
+          )
         } catch (error) {
           console.error('Error exporting bookmarks:', error)
-          set({ error: error instanceof Error ? error.message : 'Failed to export bookmarks' }, false, 'exportBookmarks:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to export bookmarks',
+            },
+            false,
+            'exportBookmarks:error'
+          )
         }
       },
 
@@ -630,7 +747,9 @@ export const useBookmarkStore = create<BookmarkState>()(
           // Validate import data
           const validation = validateImportData(data)
           if (!validation.valid) {
-            throw new Error(`Invalid import data: ${validation.errors.join(', ')}`)
+            throw new Error(
+              `Invalid import data: ${validation.errors.join(', ')}`
+            )
           }
 
           await localStorageService.importData(data)
@@ -639,11 +758,21 @@ export const useBookmarkStore = create<BookmarkState>()(
 
           // Track successful import
           const importedCount = data.bookmarks?.length || 0
-          trackOperationPerformance('bookmark_import', startTime, { count: importedCount })
-
+          trackOperationPerformance('bookmark_import', startTime, {
+            count: importedCount,
+          })
         } catch (error) {
           console.error('Error importing bookmarks:', error)
-          set({ error: error instanceof Error ? error.message : 'Failed to import bookmarks' }, false, 'importBookmarks:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to import bookmarks',
+            },
+            false,
+            'importBookmarks:error'
+          )
         } finally {
           set({ isLoading: false }, false, 'importBookmarks:complete')
         }
@@ -656,7 +785,9 @@ export const useBookmarkStore = create<BookmarkState>()(
           // Validate X bookmark data
           const validation = validateXBookmarkData(data)
           if (!validation.valid) {
-            throw new Error(`Invalid X bookmark data: ${validation.errors.join(', ')}`)
+            throw new Error(
+              `Invalid X bookmark data: ${validation.errors.join(', ')}`
+            )
           }
 
           // Transform X bookmarks to our format
@@ -680,10 +811,18 @@ export const useBookmarkStore = create<BookmarkState>()(
           await get().loadBookmarks()
 
           // Filter options will be recalculated in loadBookmarks()
-
         } catch (error) {
           console.error('Error importing X bookmarks:', error)
-          set({ error: error instanceof Error ? error.message : 'Failed to import X bookmarks' }, false, 'importXBookmarks:error')
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to import X bookmarks',
+            },
+            false,
+            'importXBookmarks:error'
+          )
         } finally {
           set({ isLoading: false }, false, 'importXBookmarks:complete')
         }
@@ -696,19 +835,29 @@ export const useBookmarkStore = create<BookmarkState>()(
           await localStorageService.clearAllData()
 
           // Reset store to initial state
-          set({
-            bookmarks: [],
-            selectedTags: [],
-            searchQuery: '',
-            activeTab: 0,
-            viewMode: 'grid',
-            selectedBookmarks: [],
-            activeSidebarItem: 'All Bookmarks'
-          }, false, 'clearAllData:success')
-
+          set(
+            {
+              bookmarks: [],
+              selectedTags: [],
+              searchQuery: '',
+              activeTab: 0,
+              viewMode: 'grid',
+              selectedBookmarks: [],
+              activeSidebarItem: 'All Bookmarks',
+            },
+            false,
+            'clearAllData:success'
+          )
         } catch (error) {
           console.error('Error clearing data:', error)
-          set({ error: error instanceof Error ? error.message : 'Failed to clear data' }, false, 'clearAllData:error')
+          set(
+            {
+              error:
+                error instanceof Error ? error.message : 'Failed to clear data',
+            },
+            false,
+            'clearAllData:error'
+          )
         } finally {
           set({ isLoading: false }, false, 'clearAllData:complete')
         }
@@ -716,89 +865,128 @@ export const useBookmarkStore = create<BookmarkState>()(
 
       // Sync Actions (unchanged)
       setBookmarks: (bookmarks) => set({ bookmarks }, false, 'setBookmarks'),
-      setSelectedTags: (tags) => set({ selectedTags: tags }, false, 'setSelectedTags'),
-      addTag: (tag) => set(
-        (state) => ({ selectedTags: [...state.selectedTags, tag] }),
-        false,
-        'addTag'
-      ),
-      removeTag: (tag) => set(
-        (state) => ({ selectedTags: state.selectedTags.filter(t => t !== tag) }),
-        false,
-        'removeTag'
-      ),
+      setSelectedTags: (tags) =>
+        set({ selectedTags: tags }, false, 'setSelectedTags'),
+      addTag: (tag) =>
+        set(
+          (state) => ({ selectedTags: [...state.selectedTags, tag] }),
+          false,
+          'addTag'
+        ),
+      removeTag: (tag) =>
+        set(
+          (state) => ({
+            selectedTags: state.selectedTags.filter((t) => t !== tag),
+          }),
+          false,
+          'removeTag'
+        ),
       clearTags: () => set({ selectedTags: [] }, false, 'clearTags'),
-      setSearchQuery: (query) => set({ searchQuery: query }, false, 'setSearchQuery'),
+      setSearchQuery: (query) =>
+        set({ searchQuery: query }, false, 'setSearchQuery'),
       setActiveTab: (tab) => set({ activeTab: tab }, false, 'setActiveTab'),
       setViewMode: (mode) => {
         set({ viewMode: mode }, false, 'setViewMode')
         // Note: viewMode is now managed by settingsStore.display.viewMode
         // This local state is kept for immediate UI updates
       },
-      setSelectedBookmarks: (bookmarks) => set({ selectedBookmarks: bookmarks }, false, 'setSelectedBookmarks'),
-      selectBookmark: (id) => set(
-        (state) => ({ selectedBookmarks: [...new Set([...state.selectedBookmarks, id])] }),
-        false,
-        'selectBookmark'
-      ),
-      deselectBookmark: (id) => set(
-        (state) => ({ selectedBookmarks: state.selectedBookmarks.filter(bid => bid !== id) }),
-        false,
-        'deselectBookmark'
-      ),
-      toggleBookmarkSelection: (id) => set(
-        (state) => ({
-          selectedBookmarks: state.selectedBookmarks.includes(id)
-            ? state.selectedBookmarks.filter(bid => bid !== id)
-            : [...state.selectedBookmarks, id]
-        }),
-        false,
-        'toggleBookmarkSelection'
-      ),
-      clearBookmarkSelection: () => set({ selectedBookmarks: [] }, false, 'clearBookmarkSelection'),
-      setIsLoading: (loading) => set({ isLoading: loading }, false, 'setIsLoading'),
-      setAIPanelOpen: (isOpen) => set({ isAIPanelOpen: isOpen }, false, 'setAIPanelOpen'),
-      toggleAIPanel: () => set(
-        (state) => ({ isAIPanelOpen: !state.isAIPanelOpen }),
-        false,
-        'toggleAIPanel'
-      ),
-      setFiltersPanelOpen: (isOpen) => set({ isFiltersPanelOpen: isOpen }, false, 'setFiltersPanelOpen'),
-      toggleFiltersPanel: () => set(
-        (state) => ({ isFiltersPanelOpen: !state.isFiltersPanelOpen }),
-        false,
-        'toggleFiltersPanel'
-      ),
-      setMobileHeaderVisible: (isVisible) => set({ isMobileHeaderVisible: isVisible }, false, 'setMobileHeaderVisible'),
-      toggleMobileHeader: () => set(
-        (state) => ({ isMobileHeaderVisible: !state.isMobileHeaderVisible }),
-        false,
-        'toggleMobileHeader'
-      ),
-      setActiveSidebarItem: (item) => set({ activeSidebarItem: item }, false, 'setActiveSidebarItem'),
+      setSelectedBookmarks: (bookmarks) =>
+        set({ selectedBookmarks: bookmarks }, false, 'setSelectedBookmarks'),
+      selectBookmark: (id) =>
+        set(
+          (state) => ({
+            selectedBookmarks: [...new Set([...state.selectedBookmarks, id])],
+          }),
+          false,
+          'selectBookmark'
+        ),
+      deselectBookmark: (id) =>
+        set(
+          (state) => ({
+            selectedBookmarks: state.selectedBookmarks.filter(
+              (bid) => bid !== id
+            ),
+          }),
+          false,
+          'deselectBookmark'
+        ),
+      toggleBookmarkSelection: (id) =>
+        set(
+          (state) => ({
+            selectedBookmarks: state.selectedBookmarks.includes(id)
+              ? state.selectedBookmarks.filter((bid) => bid !== id)
+              : [...state.selectedBookmarks, id],
+          }),
+          false,
+          'toggleBookmarkSelection'
+        ),
+      clearBookmarkSelection: () =>
+        set({ selectedBookmarks: [] }, false, 'clearBookmarkSelection'),
+      setIsLoading: (loading) =>
+        set({ isLoading: loading }, false, 'setIsLoading'),
+      setAIPanelOpen: (isOpen) =>
+        set({ isAIPanelOpen: isOpen }, false, 'setAIPanelOpen'),
+      toggleAIPanel: () =>
+        set(
+          (state) => ({ isAIPanelOpen: !state.isAIPanelOpen }),
+          false,
+          'toggleAIPanel'
+        ),
+      setFiltersPanelOpen: (isOpen) =>
+        set({ isFiltersPanelOpen: isOpen }, false, 'setFiltersPanelOpen'),
+      toggleFiltersPanel: () =>
+        set(
+          (state) => ({ isFiltersPanelOpen: !state.isFiltersPanelOpen }),
+          false,
+          'toggleFiltersPanel'
+        ),
+      setMobileHeaderVisible: (isVisible) =>
+        set(
+          { isMobileHeaderVisible: isVisible },
+          false,
+          'setMobileHeaderVisible'
+        ),
+      toggleMobileHeader: () =>
+        set(
+          (state) => ({ isMobileHeaderVisible: !state.isMobileHeaderVisible }),
+          false,
+          'toggleMobileHeader'
+        ),
+      setActiveSidebarItem: (item) =>
+        set({ activeSidebarItem: item }, false, 'setActiveSidebarItem'),
       setError: (error) => set({ error }, false, 'setError'),
 
       // Advanced filter actions
-      setAuthorFilter: (filter) => set({ authorFilter: filter }, false, 'setAuthorFilter'),
-      setDomainFilter: (filter) => set({ domainFilter: filter }, false, 'setDomainFilter'),
-      setContentTypeFilter: (filter) => set({ contentTypeFilter: filter }, false, 'setContentTypeFilter'),
-      setDateRangeFilter: (filter) => set({ dateRangeFilter: filter }, false, 'setDateRangeFilter'),
-      toggleQuickFilter: (filter) => set(
-        (state) => ({
-          quickFilters: state.quickFilters.includes(filter)
-            ? state.quickFilters.filter(f => f !== filter)
-            : [...state.quickFilters, filter]
-        }),
-        false,
-        'toggleQuickFilter'
-      ),
-      clearAdvancedFilters: () => set({
-        authorFilter: '',
-        domainFilter: '',
-        contentTypeFilter: '',
-        dateRangeFilter: { type: 'all' },
-        quickFilters: []
-      }, false, 'clearAdvancedFilters'),
+      setAuthorFilter: (filter) =>
+        set({ authorFilter: filter }, false, 'setAuthorFilter'),
+      setDomainFilter: (filter) =>
+        set({ domainFilter: filter }, false, 'setDomainFilter'),
+      setContentTypeFilter: (filter) =>
+        set({ contentTypeFilter: filter }, false, 'setContentTypeFilter'),
+      setDateRangeFilter: (filter) =>
+        set({ dateRangeFilter: filter }, false, 'setDateRangeFilter'),
+      toggleQuickFilter: (filter) =>
+        set(
+          (state) => ({
+            quickFilters: state.quickFilters.includes(filter)
+              ? state.quickFilters.filter((f) => f !== filter)
+              : [...state.quickFilters, filter],
+          }),
+          false,
+          'toggleQuickFilter'
+        ),
+      clearAdvancedFilters: () =>
+        set(
+          {
+            authorFilter: '',
+            domainFilter: '',
+            contentTypeFilter: '',
+            dateRangeFilter: { type: 'all' },
+            quickFilters: [],
+          },
+          false,
+          'clearAdvancedFilters'
+        ),
 
       // Calculate filter options from current bookmarks (optimized with memoization)
       calculateFilterOptions: () => {
@@ -806,8 +994,16 @@ export const useBookmarkStore = create<BookmarkState>()(
         const bookmarks = state.bookmarks
 
         // Create a hash of bookmark data to check if recalculation is needed
-        const currentHash = bookmarks.length + '-' +
-          bookmarks.slice(0, 5).map(b => `${b.id}-${b.author}-${b.domain}-${(b.tags || []).join(',')}`).join('|')
+        const currentHash =
+          bookmarks.length +
+          '-' +
+          bookmarks
+            .slice(0, 5)
+            .map(
+              (b) =>
+                `${b.id}-${b.author}-${b.domain}-${(b.tags || []).join(',')}`
+            )
+            .join('|')
 
         // Only recalculate if the data has actually changed
         if (currentHash === state.filterOptionsHash) {
@@ -845,15 +1041,19 @@ export const useBookmarkStore = create<BookmarkState>()(
         const domains = Array.from(domainsSet).sort()
         const tags = Array.from(tagsSet).sort()
 
-        set({
-          filterOptions: {
-            authors,
-            domains,
-            tags,
-            contentTypes: ['article', 'tweet', 'video', 'image'] // Static content types
+        set(
+          {
+            filterOptions: {
+              authors,
+              domains,
+              tags,
+              contentTypes: ['article', 'tweet', 'video', 'image'], // Static content types
+            },
+            filterOptionsHash: currentHash,
           },
-          filterOptionsHash: currentHash
-        }, false, 'calculateFilterOptions')
+          false,
+          'calculateFilterOptions'
+        )
       },
 
       // Pagination actions
@@ -861,25 +1061,33 @@ export const useBookmarkStore = create<BookmarkState>()(
         const state = get()
         if (state.pagination.isLoading || !state.pagination.hasMore) return
 
-        set({
-          pagination: { ...state.pagination, isLoading: true }
-        }, false, 'loadMoreBookmarks:start')
+        set(
+          {
+            pagination: { ...state.pagination, isLoading: true },
+          },
+          false,
+          'loadMoreBookmarks:start'
+        )
 
         // Get filtered bookmarks and update displayed bookmarks
         get().updateDisplayedBookmarks()
       },
 
       resetPagination: () => {
-        set({
-          pagination: {
-            currentPage: 1,
-            itemsPerPage: 20,
-            totalItems: 0,
-            hasMore: false,
-            isLoading: false
+        set(
+          {
+            pagination: {
+              currentPage: 1,
+              itemsPerPage: 20,
+              totalItems: 0,
+              hasMore: false,
+              isLoading: false,
+            },
+            displayedBookmarks: [],
           },
-          displayedBookmarks: []
-        }, false, 'resetPagination')
+          false,
+          'resetPagination'
+        )
 
         // Update displayed bookmarks after reset
         get().updateDisplayedBookmarks()
@@ -887,9 +1095,17 @@ export const useBookmarkStore = create<BookmarkState>()(
 
       setItemsPerPage: (count: number) => {
         const state = get()
-        set({
-          pagination: { ...state.pagination, itemsPerPage: count, currentPage: 1 }
-        }, false, 'setItemsPerPage')
+        set(
+          {
+            pagination: {
+              ...state.pagination,
+              itemsPerPage: count,
+              currentPage: 1,
+            },
+          },
+          false,
+          'setItemsPerPage'
+        )
 
         // Reset and update displayed bookmarks
         get().updateDisplayedBookmarks()
@@ -898,12 +1114,16 @@ export const useBookmarkStore = create<BookmarkState>()(
       updateDisplayedBookmarks: () => {
         const state = get()
         // Simply stop loading without causing state updates that trigger re-renders
-        set({
-          pagination: {
-            ...state.pagination,
-            isLoading: false
-          }
-        }, false, 'updateDisplayedBookmarks')
+        set(
+          {
+            pagination: {
+              ...state.pagination,
+              isLoading: false,
+            },
+          },
+          false,
+          'updateDisplayedBookmarks'
+        )
       },
 
       // Activity tracking actions
@@ -913,11 +1133,14 @@ export const useBookmarkStore = create<BookmarkState>()(
           id: `${Date.now()}-${Math.random()}`,
           action,
           timestamp: new Date(),
-          details
+          details,
         }
 
         // Keep only the last 50 activities
-        const updatedActivity = [newActivity, ...state.recentActivity].slice(0, 50)
+        const updatedActivity = [newActivity, ...state.recentActivity].slice(
+          0,
+          50
+        )
         set({ recentActivity: updatedActivity }, false, 'addActivityLog')
       },
 
@@ -940,10 +1163,10 @@ export const useBookmarkStore = create<BookmarkState>()(
             domainFilter: state.domainFilter,
             contentTypeFilter: state.contentTypeFilter,
             dateRangeFilter: { ...state.dateRangeFilter },
-            quickFilters: [...state.quickFilters]
+            quickFilters: [...state.quickFilters],
           },
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         }
 
         const updatedPresets = [...state.savedFilterPresets, newPreset]
@@ -951,7 +1174,10 @@ export const useBookmarkStore = create<BookmarkState>()(
 
         // Persist to localStorage
         try {
-          localStorage.setItem('x-bookmark-filter-presets', JSON.stringify(updatedPresets))
+          localStorage.setItem(
+            'x-bookmark-filter-presets',
+            JSON.stringify(updatedPresets)
+          )
         } catch (error) {
           console.error('Failed to save filter presets to localStorage:', error)
         }
@@ -959,18 +1185,22 @@ export const useBookmarkStore = create<BookmarkState>()(
 
       loadFilterPreset: (presetId: string) => {
         const state = get()
-        const preset = state.savedFilterPresets.find(p => p.id === presetId)
+        const preset = state.savedFilterPresets.find((p) => p.id === presetId)
 
         if (preset) {
-          set({
-            selectedTags: [...preset.filters.selectedTags],
-            searchQuery: preset.filters.searchQuery,
-            authorFilter: preset.filters.authorFilter,
-            domainFilter: preset.filters.domainFilter,
-            contentTypeFilter: preset.filters.contentTypeFilter,
-            dateRangeFilter: { ...preset.filters.dateRangeFilter },
-            quickFilters: [...preset.filters.quickFilters]
-          }, false, 'loadFilterPreset')
+          set(
+            {
+              selectedTags: [...preset.filters.selectedTags],
+              searchQuery: preset.filters.searchQuery,
+              authorFilter: preset.filters.authorFilter,
+              domainFilter: preset.filters.domainFilter,
+              contentTypeFilter: preset.filters.contentTypeFilter,
+              dateRangeFilter: { ...preset.filters.dateRangeFilter },
+              quickFilters: [...preset.filters.quickFilters],
+            },
+            false,
+            'loadFilterPreset'
+          )
 
           // Reset pagination when filters change
           get().resetPagination()
@@ -979,26 +1209,35 @@ export const useBookmarkStore = create<BookmarkState>()(
 
       deleteFilterPreset: (presetId: string) => {
         const state = get()
-        const updatedPresets = state.savedFilterPresets.filter(p => p.id !== presetId)
+        const updatedPresets = state.savedFilterPresets.filter(
+          (p) => p.id !== presetId
+        )
         set({ savedFilterPresets: updatedPresets }, false, 'deleteFilterPreset')
 
         // Persist to localStorage
         try {
-          localStorage.setItem('x-bookmark-filter-presets', JSON.stringify(updatedPresets))
+          localStorage.setItem(
+            'x-bookmark-filter-presets',
+            JSON.stringify(updatedPresets)
+          )
         } catch (error) {
           console.error('Failed to save filter presets to localStorage:', error)
         }
       },
 
-      updateFilterPreset: (presetId: string, name: string, description?: string) => {
+      updateFilterPreset: (
+        presetId: string,
+        name: string,
+        description?: string
+      ) => {
         const state = get()
-        const updatedPresets = state.savedFilterPresets.map(p => {
+        const updatedPresets = state.savedFilterPresets.map((p) => {
           if (p.id === presetId) {
             return {
               ...p,
               name,
               description,
-              updatedAt: new Date().toISOString()
+              updatedAt: new Date().toISOString(),
             }
           }
           return p
@@ -1007,7 +1246,10 @@ export const useBookmarkStore = create<BookmarkState>()(
 
         // Persist to localStorage
         try {
-          localStorage.setItem('x-bookmark-filter-presets', JSON.stringify(updatedPresets))
+          localStorage.setItem(
+            'x-bookmark-filter-presets',
+            JSON.stringify(updatedPresets)
+          )
         } catch (error) {
           console.error('Failed to save filter presets to localStorage:', error)
         }
@@ -1021,26 +1263,38 @@ export const useBookmarkStore = create<BookmarkState>()(
         const cachedResults = loadCachedValidationResults()
         if (cachedResults.length > 0 && areCachedResultsFresh(cachedResults)) {
           const summary = getValidationSummary(cachedResults)
-          set({
-            validationResults: cachedResults,
-            validationSummary: summary
-          }, false, 'validateAllBookmarks:useCached')
+          set(
+            {
+              validationResults: cachedResults,
+              validationSummary: summary,
+            },
+            false,
+            'validateAllBookmarks:useCached'
+          )
           return
         }
 
         // Start validation
-        set({
-          isValidating: true,
-          validationProgress: { current: 0, total: state.bookmarks.length }
-        }, false, 'validateAllBookmarks:start')
+        set(
+          {
+            isValidating: true,
+            validationProgress: { current: 0, total: state.bookmarks.length },
+          },
+          false,
+          'validateAllBookmarks:start'
+        )
 
         try {
           const results = await validateBookmarks(
             state.bookmarks,
             (current, total) => {
-              set({
-                validationProgress: { current, total }
-              }, false, 'validateAllBookmarks:progress')
+              set(
+                {
+                  validationProgress: { current, total },
+                },
+                false,
+                'validateAllBookmarks:progress'
+              )
             },
             5 // concurrency
           )
@@ -1050,31 +1304,42 @@ export const useBookmarkStore = create<BookmarkState>()(
           // Save results to cache
           saveCachedValidationResults(results)
 
-          set({
-            validationResults: results,
-            validationSummary: summary,
-            isValidating: false,
-            validationProgress: null
-          }, false, 'validateAllBookmarks:complete')
+          set(
+            {
+              validationResults: results,
+              validationSummary: summary,
+              isValidating: false,
+              validationProgress: null,
+            },
+            false,
+            'validateAllBookmarks:complete'
+          )
 
           // Log activity
           if (summary.invalid > 0) {
-            get().addActivityLog('Validation complete', `Found ${summary.invalid} broken link${summary.invalid > 1 ? 's' : ''}`)
+            get().addActivityLog(
+              'Validation complete',
+              `Found ${summary.invalid} broken link${summary.invalid > 1 ? 's' : ''}`
+            )
           }
         } catch (error) {
           console.error('Error validating bookmarks:', error)
-          set({
-            isValidating: false,
-            validationProgress: null,
-            error: 'Failed to validate bookmarks'
-          }, false, 'validateAllBookmarks:error')
+          set(
+            {
+              isValidating: false,
+              validationProgress: null,
+              error: 'Failed to validate bookmarks',
+            },
+            false,
+            'validateAllBookmarks:error'
+          )
         }
       },
 
       getInvalidBookmarksCount: () => {
         const state = get()
         return state.validationSummary?.invalid || 0
-      }
+      },
     }),
     {
       name: 'bookmark-store', // Store name for devtools

@@ -19,7 +19,7 @@ import {
   BookmarkActions,
   SelectionCheckbox,
   DragIndicator,
-  BulkModeOverlay
+  BulkModeOverlay,
 } from './index'
 
 interface BookmarkCardProps {
@@ -29,12 +29,22 @@ interface BookmarkCardProps {
 const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
-  const toggleBookmarkSelection = useBookmarkStore((state) => state.toggleBookmarkSelection)
-  const clearBookmarkSelection = useBookmarkStore((state) => state.clearBookmarkSelection)
-  const toggleStarBookmark = useBookmarkStore((state) => state.toggleStarBookmark)
+  const toggleBookmarkSelection = useBookmarkStore(
+    (state) => state.toggleBookmarkSelection
+  )
+  const clearBookmarkSelection = useBookmarkStore(
+    (state) => state.clearBookmarkSelection
+  )
+  const toggleStarBookmark = useBookmarkStore(
+    (state) => state.toggleStarBookmark
+  )
   const removeBookmark = useBookmarkStore((state) => state.removeBookmark)
-  const addBookmarkToCollection = useCollectionsStore((state) => state.addBookmarkToCollection)
-  const removeBookmarkFromCollection = useCollectionsStore((state) => state.removeBookmarkFromCollection)
+  const addBookmarkToCollection = useCollectionsStore(
+    (state) => state.addBookmarkToCollection
+  )
+  const removeBookmarkFromCollection = useCollectionsStore(
+    (state) => state.removeBookmarkFromCollection
+  )
   const isMobile = useIsMobile()
 
   const [isHovered, setIsHovered] = useState(false)
@@ -52,74 +62,94 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   const isInBulkMode = selectedBookmarks.length > 0
 
   // Drag and drop functionality
-  const [{ isDragging }, drag, preview] = useDrag(() => ({
-    type: ItemTypes.BOOKMARK,
-    item: () => {
-      // If this bookmark is selected and there are multiple selected, include all selected IDs
-      const selectedIds = isSelected && selectedBookmarks.length > 1
-        ? selectedBookmarks
-        : [bookmark.id]
+  const [{ isDragging }, drag, preview] = useDrag(
+    () => ({
+      type: ItemTypes.BOOKMARK,
+      item: () => {
+        // If this bookmark is selected and there are multiple selected, include all selected IDs
+        const selectedIds =
+          isSelected && selectedBookmarks.length > 1
+            ? selectedBookmarks
+            : [bookmark.id]
 
-      return {
-        id: bookmark.id,
-        bookmark,
-        selectedIds // Include all selected bookmark IDs for bulk operations
-      }
-    },
-    end: async (item, monitor) => {
-      const dropResult = monitor.getDropResult<DropResult>()
-      if (dropResult) {
-        try {
-          const bookmarkIds = item.selectedIds || [item.id]
-          const moveCount = bookmarkIds.length
+        return {
+          id: bookmark.id,
+          bookmark,
+          selectedIds, // Include all selected bookmark IDs for bulk operations
+        }
+      },
+      end: async (item, monitor) => {
+        const dropResult = monitor.getDropResult<DropResult>()
+        if (dropResult) {
+          try {
+            const bookmarkIds = item.selectedIds || [item.id]
+            const moveCount = bookmarkIds.length
 
-          // Process all selected bookmarks
-          for (const bookmarkId of bookmarkIds) {
-            // Get current bookmark state to avoid stale data
-            const currentBookmark = bookmarks.find(b => b.id === bookmarkId)
-            const currentCollections = (currentBookmark as any)?.collections || ['uncategorized']
+            // Process all selected bookmarks
+            for (const bookmarkId of bookmarkIds) {
+              // Get current bookmark state to avoid stale data
+              const currentBookmark = bookmarks.find((b) => b.id === bookmarkId)
+              const currentCollections = (currentBookmark as any)
+                ?.collections || ['uncategorized']
 
-            // If moving TO uncategorized, remove from all other collections first
-            if (dropResult.collectionId === 'uncategorized') {
-              // Remove from all non-uncategorized collections
-              for (const collectionId of currentCollections) {
-                if (collectionId !== 'uncategorized') {
-                  await removeBookmarkFromCollection(bookmarkId, collectionId)
+              // If moving TO uncategorized, remove from all other collections first
+              if (dropResult.collectionId === 'uncategorized') {
+                // Remove from all non-uncategorized collections
+                for (const collectionId of currentCollections) {
+                  if (collectionId !== 'uncategorized') {
+                    await removeBookmarkFromCollection(bookmarkId, collectionId)
+                  }
+                }
+              } else {
+                // If moving FROM uncategorized TO another collection, remove from uncategorized
+                if (currentCollections.includes('uncategorized')) {
+                  await removeBookmarkFromCollection(
+                    bookmarkId,
+                    'uncategorized'
+                  )
                 }
               }
-            } else {
-              // If moving FROM uncategorized TO another collection, remove from uncategorized
-              if (currentCollections.includes('uncategorized')) {
-                await removeBookmarkFromCollection(bookmarkId, 'uncategorized')
-              }
+
+              // Add to the new collection
+              await addBookmarkToCollection(bookmarkId, dropResult.collectionId)
             }
 
-            // Add to the new collection
-            await addBookmarkToCollection(bookmarkId, dropResult.collectionId)
+            // Clear selection after successful bulk move
+            if (moveCount > 1) {
+              clearBookmarkSelection()
+            }
+
+            // Show success toast with count
+            const message =
+              moveCount > 1
+                ? `Moved ${moveCount} bookmarks to "${dropResult.collectionName}"`
+                : `Moved to "${dropResult.collectionName}"`
+            toast.success(message)
+          } catch (error) {
+            console.error('Failed to move bookmark(s) to collection:', error)
+
+            // Show error toast
+            toast.error(
+              `Failed to move bookmark(s): ${error instanceof Error ? error.message : 'An unexpected error occurred'}`
+            )
           }
-
-          // Clear selection after successful bulk move
-          if (moveCount > 1) {
-            clearBookmarkSelection()
-          }
-
-          // Show success toast with count
-          const message = moveCount > 1
-            ? `Moved ${moveCount} bookmarks to "${dropResult.collectionName}"`
-            : `Moved to "${dropResult.collectionName}"`
-          toast.success(message)
-        } catch (error) {
-          console.error('Failed to move bookmark(s) to collection:', error)
-
-          // Show error toast
-          toast.error(`Failed to move bookmark(s): ${error instanceof Error ? error.message : "An unexpected error occurred"}`)
         }
-      }
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
+      },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
     }),
-  }), [bookmark.id, bookmark, addBookmarkToCollection, removeBookmarkFromCollection, bookmarks, selectedBookmarks, isSelected, clearBookmarkSelection])
+    [
+      bookmark.id,
+      bookmark,
+      addBookmarkToCollection,
+      removeBookmarkFromCollection,
+      bookmarks,
+      selectedBookmarks,
+      isSelected,
+      clearBookmarkSelection,
+    ]
+  )
 
   // Hide default drag preview
   useEffect(() => {
@@ -132,54 +162,64 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   // Helper functions
   const hasMedia = () => {
     // Check for general media fields
-    const hasGeneralMedia = (bookmark as any).hasMedia || (bookmark as any).thumbnail_url
+    const hasGeneralMedia =
+      (bookmark as any).hasMedia || (bookmark as any).thumbnail_url
 
     // Check for X bookmark specific media
     const metadata = (bookmark as any).metadata
-    const hasXMedia = metadata && (
-      (metadata.images && metadata.images.length > 0) ||
-      metadata.has_video
-    )
+    const hasXMedia =
+      metadata &&
+      ((metadata.images && metadata.images.length > 0) || metadata.has_video)
 
     return hasGeneralMedia || hasXMedia
   }
 
   const getContent = useMemo(() => {
-    return (bookmark as any).content || (bookmark as any).description || 'No content available'
+    return (
+      (bookmark as any).content ||
+      (bookmark as any).description ||
+      'No content available'
+    )
   }, [(bookmark as any).content, (bookmark as any).description])
 
   // Event handlers
-  const handleCardClick = useCallback((event: React.MouseEvent) => {
-    // If in bulk mode, toggle selection instead of opening URL
-    if (isInBulkMode) {
-      event.preventDefault()
-      event.stopPropagation()
-      toggleBookmarkSelection(bookmark.id)
-    }
-    // If not in bulk mode, normal behavior (no action needed, URL opens via other handlers)
-  }, [isInBulkMode, toggleBookmarkSelection, bookmark.id])
+  const handleCardClick = useCallback(
+    (event: React.MouseEvent) => {
+      // If in bulk mode, toggle selection instead of opening URL
+      if (isInBulkMode) {
+        event.preventDefault()
+        event.stopPropagation()
+        toggleBookmarkSelection(bookmark.id)
+      }
+      // If not in bulk mode, normal behavior (no action needed, URL opens via other handlers)
+    },
+    [isInBulkMode, toggleBookmarkSelection, bookmark.id]
+  )
 
   const handleToggleSelection = useCallback(() => {
     toggleBookmarkSelection(bookmark.id)
   }, [toggleBookmarkSelection, bookmark.id])
 
   // Long press handlers
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (isInBulkMode) return // Skip long press in bulk mode
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      if (isInBulkMode) return // Skip long press in bulk mode
 
-    const touch = e.touches[0]
-    touchStartPos.current = { x: touch.clientX, y: touch.clientY }
+      const touch = e.touches[0]
+      touchStartPos.current = { x: touch.clientX, y: touch.clientY }
 
-    longPressTimer.current = setTimeout(() => {
-      // Trigger haptic feedback if available
-      if ('vibrate' in navigator) {
-        navigator.vibrate(50)
-      }
+      longPressTimer.current = setTimeout(() => {
+        // Trigger haptic feedback if available
+        if ('vibrate' in navigator) {
+          navigator.vibrate(50)
+        }
 
-      setContextMenuPosition({ x: touch.clientX, y: touch.clientY })
-      setShowContextMenu(true)
-    }, 500) // 500ms long press threshold
-  }, [isInBulkMode])
+        setContextMenuPosition({ x: touch.clientX, y: touch.clientY })
+        setShowContextMenu(true)
+      }, 500) // 500ms long press threshold
+    },
+    [isInBulkMode]
+  )
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!longPressTimer.current) return
@@ -205,30 +245,35 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   }, [])
 
   // Context menu actions
-  const handleMoveToCollection = useCallback(async (collectionId: string | null) => {
-    try {
-      const currentCollections = (bookmark as any)?.collections || ['uncategorized']
+  const handleMoveToCollection = useCallback(
+    async (collectionId: string | null) => {
+      try {
+        const currentCollections = (bookmark as any)?.collections || [
+          'uncategorized',
+        ]
 
-      // Remove from all collections first
-      for (const colId of currentCollections) {
-        if (colId !== 'uncategorized') {
-          await removeBookmarkFromCollection(bookmark.id, colId)
+        // Remove from all collections first
+        for (const colId of currentCollections) {
+          if (colId !== 'uncategorized') {
+            await removeBookmarkFromCollection(bookmark.id, colId)
+          }
         }
-      }
 
-      // Add to new collection (or uncategorized if null)
-      if (collectionId === null) {
-        await addBookmarkToCollection(bookmark.id, 'uncategorized')
-      } else {
-        await addBookmarkToCollection(bookmark.id, collectionId)
-      }
+        // Add to new collection (or uncategorized if null)
+        if (collectionId === null) {
+          await addBookmarkToCollection(bookmark.id, 'uncategorized')
+        } else {
+          await addBookmarkToCollection(bookmark.id, collectionId)
+        }
 
-      toast.success('Bookmark moved successfully')
-    } catch (error) {
-      console.error('Failed to move bookmark:', error)
-      toast.error('Failed to move bookmark')
-    }
-  }, [bookmark, addBookmarkToCollection, removeBookmarkFromCollection])
+        toast.success('Bookmark moved successfully')
+      } catch (error) {
+        console.error('Failed to move bookmark:', error)
+        toast.error('Failed to move bookmark')
+      }
+    },
+    [bookmark, addBookmarkToCollection, removeBookmarkFromCollection]
+  )
 
   const handleShare = useCallback(async () => {
     try {
@@ -264,110 +309,104 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
 
   return (
     <>
-    <Card.Root
-      ref={drag as unknown as React.Ref<HTMLDivElement>}
-      data-testid="bookmark-card"
-      {...cardStyles}
-      opacity={isDragging ? 0.5 : 1}
-      cursor={isDragging ? 'grabbing' : isInBulkMode ? 'pointer' : 'grab'}
-      position="relative"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={handleCardClick}
-      onTouchStart={isMobile ? handleTouchStart : undefined}
-      onTouchMove={isMobile ? handleTouchMove : undefined}
-      onTouchEnd={isMobile ? handleTouchEnd : undefined}
-    >
-      {/* Selection Checkbox - Always render to prevent layout shifts */}
-      <Box
-        position="absolute"
-        top={2}
-        left={2}
-        zIndex={15}
-        opacity={showCheckbox ? 1 : 0}
-        pointerEvents={showCheckbox ? 'auto' : 'none'}
-        transition="opacity 0.2s ease"
+      <Card.Root
+        ref={drag as unknown as React.Ref<HTMLDivElement>}
+        data-testid="bookmark-card"
+        {...cardStyles}
+        opacity={isDragging ? 0.5 : 1}
+        cursor={isDragging ? 'grabbing' : isInBulkMode ? 'pointer' : 'grab'}
+        position="relative"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={handleCardClick}
+        onTouchStart={isMobile ? handleTouchStart : undefined}
+        onTouchMove={isMobile ? handleTouchMove : undefined}
+        onTouchEnd={isMobile ? handleTouchEnd : undefined}
       >
-        <SelectionCheckbox
-          isSelected={isSelected}
-          onToggle={handleToggleSelection}
+        {/* Selection Checkbox - Always render to prevent layout shifts */}
+        <Box
+          position="absolute"
+          top={2}
+          left={2}
+          zIndex={15}
+          opacity={showCheckbox ? 1 : 0}
+          pointerEvents={showCheckbox ? 'auto' : 'none'}
+          transition="opacity 0.2s ease"
+        >
+          <SelectionCheckbox
+            isSelected={isSelected}
+            onToggle={handleToggleSelection}
+          />
+        </Box>
+
+        {/* Bulk Mode Overlay */}
+        <BulkModeOverlay
+          isInBulkMode={isInBulkMode}
+          onCardClick={handleCardClick}
         />
-      </Box>
 
-      {/* Bulk Mode Overlay */}
-      <BulkModeOverlay
-        isInBulkMode={isInBulkMode}
-        onCardClick={handleCardClick}
-      />
+        {/* Multi-item drag indicator */}
+        <DragIndicator
+          isDragging={isDragging}
+          selectedCount={selectedBookmarks.length}
+          isSelected={isSelected}
+        />
 
-      {/* Multi-item drag indicator */}
-      <DragIndicator
-        isDragging={isDragging}
-        selectedCount={selectedBookmarks.length}
-        isSelected={isSelected}
-      />
+        {/* Header */}
+        <BookmarkHeader
+          bookmark={bookmark}
+          isSelected={isSelected}
+          isInBulkMode={isInBulkMode}
+        />
 
-      {/* Header */}
-      <BookmarkHeader
-        bookmark={bookmark}
-        isSelected={isSelected}
-        isInBulkMode={isInBulkMode}
-      />
+        {/* Content */}
+        <BookmarkContent bookmark={bookmark} hasMedia={hasMedia()} />
 
-      {/* Content */}
-      <BookmarkContent
-        bookmark={bookmark}
-        hasMedia={hasMedia()}
-      />
+        {/* Media Display */}
+        <BookmarkMedia
+          bookmark={bookmark}
+          isInBulkMode={isInBulkMode}
+          getContent={getContent}
+        />
 
-      {/* Media Display */}
-      <BookmarkMedia
-        bookmark={bookmark}
-        isInBulkMode={isInBulkMode}
-        getContent={getContent}
-      />
+        {/* Card Footer */}
+        <BookmarkFooter
+          bookmark={bookmark}
+          isInBulkMode={isInBulkMode}
+          getContent={getContent}
+        />
 
-      {/* Card Footer */}
-      <BookmarkFooter
-        bookmark={bookmark}
-        isInBulkMode={isInBulkMode}
-        getContent={getContent}
-      />
+        {/* Actions */}
+        <BookmarkActions bookmark={bookmark} isInBulkMode={isInBulkMode} />
+      </Card.Root>
 
-      {/* Actions */}
-      <BookmarkActions
-        bookmark={bookmark}
-        isInBulkMode={isInBulkMode}
-      />
-    </Card.Root>
+      {/* Context Menu - Mobile Only */}
+      {showContextMenu && (
+        <BookmarkContextMenu
+          bookmark={bookmark}
+          position={contextMenuPosition}
+          onClose={() => setShowContextMenu(false)}
+          onMoveToCollection={() => {
+            setShowContextMenu(false)
+            setShowCollectionPicker(true)
+          }}
+          onToggleStar={() => toggleStarBookmark(bookmark.id)}
+          onShare={handleShare}
+          onDelete={handleDelete}
+          onOpenInNewTab={handleOpenInNewTab}
+        />
+      )}
 
-    {/* Context Menu - Mobile Only */}
-    {showContextMenu && (
-      <BookmarkContextMenu
-        bookmark={bookmark}
-        position={contextMenuPosition}
-        onClose={() => setShowContextMenu(false)}
-        onMoveToCollection={() => {
-          setShowContextMenu(false)
-          setShowCollectionPicker(true)
-        }}
-        onToggleStar={() => toggleStarBookmark(bookmark.id)}
-        onShare={handleShare}
-        onDelete={handleDelete}
-        onOpenInNewTab={handleOpenInNewTab}
-      />
-    )}
-
-    {/* Collection Picker Modal */}
-    {showCollectionPicker && (
-      <CollectionPickerModal
-        isOpen={showCollectionPicker}
-        onClose={() => setShowCollectionPicker(false)}
-        onSelect={handleMoveToCollection}
-        currentCollectionId={currentCollectionId}
-        title="Move to Collection"
-      />
-    )}
+      {/* Collection Picker Modal */}
+      {showCollectionPicker && (
+        <CollectionPickerModal
+          isOpen={showCollectionPicker}
+          onClose={() => setShowCollectionPicker(false)}
+          onSelect={handleMoveToCollection}
+          currentCollectionId={currentCollectionId}
+          title="Move to Collection"
+        />
+      )}
     </>
   )
 })

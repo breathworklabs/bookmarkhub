@@ -35,7 +35,10 @@ export class LearningStrategy implements TaggingStrategy {
   /**
    * Generate tag suggestions based on learned patterns
    */
-  async generateTags(bookmark: Bookmark, context: TaggingContext): Promise<TagSuggestion[]> {
+  async generateTags(
+    bookmark: Bookmark,
+    context: TaggingContext
+  ): Promise<TagSuggestion[]> {
     const suggestions: TagSuggestion[] = []
 
     // Learn from existing bookmarks if not already done
@@ -55,7 +58,9 @@ export class LearningStrategy implements TaggingStrategy {
 
     // Strategy 3: Suggest tags based on existing tags (co-occurrence)
     if (bookmark.tags && bookmark.tags.length > 0) {
-      const coOccurrenceSuggestions = this.suggestFromCoOccurrence(bookmark.tags)
+      const coOccurrenceSuggestions = this.suggestFromCoOccurrence(
+        bookmark.tags
+      )
       suggestions.push(...coOccurrenceSuggestions)
     }
 
@@ -152,7 +157,10 @@ export class LearningStrategy implements TaggingStrategy {
     }
 
     // Calculate total tags for this domain
-    const totalTags = Array.from(pattern.tags.values()).reduce((sum, count) => sum + count, 0)
+    const totalTags = Array.from(pattern.tags.values()).reduce(
+      (sum, count) => sum + count,
+      0
+    )
 
     // Suggest tags that appear frequently for this domain
     for (const [tag, count] of pattern.tags.entries()) {
@@ -191,7 +199,10 @@ export class LearningStrategy implements TaggingStrategy {
     }
 
     // Calculate total tags for this author
-    const totalTags = Array.from(pattern.tags.values()).reduce((sum, count) => sum + count, 0)
+    const totalTags = Array.from(pattern.tags.values()).reduce(
+      (sum, count) => sum + count,
+      0
+    )
 
     // Suggest tags that appear frequently for this author
     for (const [tag, count] of pattern.tags.entries()) {

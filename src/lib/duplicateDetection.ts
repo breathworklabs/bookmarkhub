@@ -97,7 +97,7 @@ export const detectDuplicate = (
   const {
     checkUrl = true,
     checkTitle = true,
-    titleSimilarityThreshold = 85
+    titleSimilarityThreshold = 85,
   } = options
 
   const matches: DuplicateMatch[] = []
@@ -109,12 +109,17 @@ export const detectDuplicate = (
     const existingTitle = normalizeTitle(existing.title)
 
     // Exact match - same URL and title
-    if (checkUrl && checkTitle && existingUrl === newUrl && existingTitle === newTitle) {
+    if (
+      checkUrl &&
+      checkTitle &&
+      existingUrl === newUrl &&
+      existingTitle === newTitle
+    ) {
       matches.push({
         bookmark: existing,
         matchType: 'exact',
         similarity: 100,
-        reason: 'Identical URL and title'
+        reason: 'Identical URL and title',
       })
       continue
     }
@@ -125,7 +130,7 @@ export const detectDuplicate = (
         bookmark: existing,
         matchType: 'url',
         similarity: 100,
-        reason: 'Same URL'
+        reason: 'Same URL',
       })
       continue
     }
@@ -136,7 +141,7 @@ export const detectDuplicate = (
         bookmark: existing,
         matchType: 'title',
         similarity: 100,
-        reason: 'Identical title'
+        reason: 'Identical title',
       })
       continue
     }
@@ -149,7 +154,7 @@ export const detectDuplicate = (
           bookmark: existing,
           matchType: 'similar',
           similarity: Math.round(similarity),
-          reason: `Similar title (${Math.round(similarity)}% match)`
+          reason: `Similar title (${Math.round(similarity)}% match)`,
         })
       }
     }
@@ -160,7 +165,7 @@ export const detectDuplicate = (
 
   return {
     isDuplicate: matches.length > 0,
-    matches
+    matches,
   }
 }
 
@@ -173,6 +178,6 @@ export const findUrlDuplicates = (
 ): Bookmark[] => {
   const normalizedUrl = normalizeUrl(url)
   return existingBookmarks.filter(
-    bookmark => normalizeUrl(bookmark.url) === normalizedUrl
+    (bookmark) => normalizeUrl(bookmark.url) === normalizedUrl
   )
 }

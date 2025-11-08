@@ -14,7 +14,10 @@ export class UrlPatternStrategy implements TaggingStrategy {
 
   private linkExtractor = new ContentLinkExtractor()
 
-  async generateTags(bookmark: Bookmark, _context: TaggingContext): Promise<TagSuggestion[]> {
+  async generateTags(
+    bookmark: Bookmark,
+    _context: TaggingContext
+  ): Promise<TagSuggestion[]> {
     const suggestions: TagSuggestion[] = []
     const processedUrls = new Set<string>()
 

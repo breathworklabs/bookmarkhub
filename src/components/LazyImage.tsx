@@ -36,7 +36,7 @@ const LazyImage = ({
   left,
   right,
   bottom,
-  zIndex
+  zIndex,
 }: LazyImageProps) => {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
@@ -101,7 +101,12 @@ const LazyImage = ({
           alignItems="center"
           justifyContent="center"
         >
-          <Box w="20px" h="20px" style={{ background: 'var(--color-border)' }} borderRadius="2px" />
+          <Box
+            w="20px"
+            h="20px"
+            style={{ background: 'var(--color-border)' }}
+            borderRadius="2px"
+          />
         </Box>
       ) : hasError ? (
         // Error fallback
@@ -129,7 +134,10 @@ const LazyImage = ({
               transform="translate(-50%, -50%)"
               zIndex={1}
             >
-              <Spinner size="sm" style={{ color: 'var(--color-text-tertiary)' }} />
+              <Spinner
+                size="sm"
+                style={{ color: 'var(--color-text-tertiary)' }}
+              />
             </Box>
           )}
 

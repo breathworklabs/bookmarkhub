@@ -10,21 +10,21 @@ export const chakraTheme = createSystem(defaultConfig, {
       colors: {
         // Primary colors - simplified for Chakra v3 compatibility
         primary: {
-          value: colors.primary[500]
+          value: colors.primary[500],
         },
 
         // Semantic colors
         success: {
-          value: colors.success[500]
+          value: colors.success[500],
         },
         warning: {
-          value: colors.warning[500]
+          value: colors.warning[500],
         },
         error: {
-          value: colors.error[500]
+          value: colors.error[500],
         },
         info: {
-          value: colors.info[500]
+          value: colors.info[500],
         },
 
         // Gray scale - use standard Chakra gray
@@ -33,8 +33,8 @@ export const chakraTheme = createSystem(defaultConfig, {
           100: { value: colors.gray[100] },
           800: { value: colors.gray[800] },
           900: { value: colors.gray[900] },
-          950: { value: colors.gray[950] }
-        }
+          950: { value: colors.gray[950] },
+        },
       },
 
       // Spacing tokens
@@ -45,7 +45,7 @@ export const chakraTheme = createSystem(defaultConfig, {
         lg: { value: '1.5rem' },
         xl: { value: '2rem' },
         '2xl': { value: '3rem' },
-        '3xl': { value: '4rem' }
+        '3xl': { value: '4rem' },
       },
 
       // Border radius tokens
@@ -55,7 +55,7 @@ export const chakraTheme = createSystem(defaultConfig, {
         lg: { value: '0.75rem' },
         xl: { value: '1rem' },
         '2xl': { value: '1.5rem' },
-        full: { value: '9999px' }
+        full: { value: '9999px' },
       },
 
       // Font size tokens
@@ -66,7 +66,7 @@ export const chakraTheme = createSystem(defaultConfig, {
         lg: { value: '1.125rem' },
         xl: { value: '1.25rem' },
         '2xl': { value: '1.5rem' },
-        '3xl': { value: '1.875rem' }
+        '3xl': { value: '1.875rem' },
       },
 
       // Font weight tokens
@@ -74,51 +74,51 @@ export const chakraTheme = createSystem(defaultConfig, {
         normal: { value: '400' },
         medium: { value: '500' },
         semibold: { value: '600' },
-        bold: { value: '700' }
+        bold: { value: '700' },
       },
 
       // Line height tokens
       lineHeights: {
         tight: { value: '1.25' },
         normal: { value: '1.5' },
-        relaxed: { value: '1.75' }
-      }
+        relaxed: { value: '1.75' },
+      },
     },
 
     semanticTokens: {
       colors: {
         // Background colors
         'bg.primary': {
-          value: colors.dark.background
+          value: colors.dark.background,
         },
         'bg.secondary': {
-          value: colors.dark.cardBg
+          value: colors.dark.cardBg,
         },
         'bg.sidebar': {
-          value: colors.dark.sidebarBg
+          value: colors.dark.sidebarBg,
         },
 
         // Text colors
         'text.primary': {
-          value: colors.dark.textPrimary
+          value: colors.dark.textPrimary,
         },
         'text.secondary': {
-          value: colors.dark.textSecondary
+          value: colors.dark.textSecondary,
         },
         'text.muted': {
-          value: colors.dark.textMuted
+          value: colors.dark.textMuted,
         },
 
         // Border colors
         'border.primary': {
-          value: colors.dark.border
+          value: colors.dark.border,
         },
         'border.hover': {
-          value: colors.dark.borderHover
-        }
-      }
-    }
-  }
+          value: colors.dark.borderHover,
+        },
+      },
+    },
+  },
 })
 
 // Export the theme for use in the app

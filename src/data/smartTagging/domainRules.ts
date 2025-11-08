@@ -542,7 +542,9 @@ export function findDomainRule(domain: string): DomainRule | undefined {
  * Find domain rule with subdomain matching
  * e.g., api.github.com → github.com
  */
-export function findDomainRuleWithSubdomain(domain: string): DomainRule | undefined {
+export function findDomainRuleWithSubdomain(
+  domain: string
+): DomainRule | undefined {
   // First try exact match
   const exactMatch = findDomainRule(domain)
   if (exactMatch) return exactMatch

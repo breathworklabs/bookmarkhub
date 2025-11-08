@@ -9,7 +9,11 @@ interface BookmarkContentProps {
 
 const BookmarkContent = memo(({ bookmark, hasMedia }: BookmarkContentProps) => {
   const getContent = useMemo(() => {
-    return (bookmark as any).content || (bookmark as any).description || 'No content available'
+    return (
+      (bookmark as any).content ||
+      (bookmark as any).description ||
+      'No content available'
+    )
   }, [(bookmark as any).content, (bookmark as any).description])
 
   return (
@@ -26,15 +30,15 @@ const BookmarkContent = memo(({ bookmark, hasMedia }: BookmarkContentProps) => {
             color: 'var(--color-accent)',
             textDecoration: 'none',
             '&:hover': {
-              textDecoration: 'underline'
-            }
+              textDecoration: 'underline',
+            },
           },
           '& .tweet-hashtag': {
-            color: 'var(--color-accent)'
+            color: 'var(--color-accent)',
           },
           '& .tweet-mention': {
-            color: 'var(--color-accent)'
-          }
+            color: 'var(--color-accent)',
+          },
         }}
       />
     </Box>

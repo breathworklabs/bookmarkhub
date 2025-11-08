@@ -32,17 +32,20 @@ export const filterBookmarks = ({
   dateRangeFilter,
   quickFilters,
   activeCollectionId,
-  collectionBookmarks
+  collectionBookmarks,
 }: FilterParams): Bookmark[] => {
   // First filter out deleted bookmarks (unless we're in a trash view)
-  let filtered = bookmarks.filter(bookmark => !bookmark.is_deleted)
+  let filtered = bookmarks.filter((bookmark) => !bookmark.is_deleted)
 
   // Filter by sidebar selection first
   switch (activeSidebarItem) {
     case 'Collections':
       if (activeCollectionId) {
-        const bookmarkIdsInCollection = collectionBookmarks[activeCollectionId] || []
-        filtered = filtered.filter(bookmark => bookmarkIdsInCollection.includes(bookmark.id))
+        const bookmarkIdsInCollection =
+          collectionBookmarks[activeCollectionId] || []
+        filtered = filtered.filter((bookmark) =>
+          bookmarkIdsInCollection.includes(bookmark.id)
+        )
       }
       break
     case 'All Bookmarks':
@@ -53,8 +56,8 @@ export const filterBookmarks = ({
 
   // Filter by selected tags
   if (selectedTags.length > 0) {
-    filtered = filtered.filter(bookmark =>
-      selectedTags.some(tag => bookmark.tags.includes(tag))
+    filtered = filtered.filter((bookmark) =>
+      selectedTags.some((tag) => bookmark.tags.includes(tag))
     )
   }
 
@@ -64,10 +67,11 @@ export const filterBookmarks = ({
       {
         const today = new Date()
         today.setHours(0, 0, 0, 0)
-        filtered = filtered.filter(bookmark => {
-          const dateToUse = bookmark.metadata && bookmark.metadata.tweet_date
-            ? bookmark.metadata.tweet_date
-            : bookmark.created_at
+        filtered = filtered.filter((bookmark) => {
+          const dateToUse =
+            bookmark.metadata && bookmark.metadata.tweet_date
+              ? bookmark.metadata.tweet_date
+              : bookmark.created_at
           return new Date(dateToUse) >= today
         })
       }
@@ -76,29 +80,32 @@ export const filterBookmarks = ({
       {
         const weekAgo = new Date()
         weekAgo.setDate(weekAgo.getDate() - 7)
-        filtered = filtered.filter(bookmark => {
-          const dateToUse = bookmark.metadata && bookmark.metadata.tweet_date
-            ? bookmark.metadata.tweet_date
-            : bookmark.created_at
+        filtered = filtered.filter((bookmark) => {
+          const dateToUse =
+            bookmark.metadata && bookmark.metadata.tweet_date
+              ? bookmark.metadata.tweet_date
+              : bookmark.created_at
           return new Date(dateToUse) >= weekAgo
         })
       }
       break
     case 3: // Threads
       // Filter bookmarks that might be threads (longer content or from twitter)
-      filtered = filtered.filter(bookmark =>
-        (bookmark.content && bookmark.content.length > 200) ||
-        bookmark.domain === 'x.com' ||
-        bookmark.domain === 'twitter.com'
+      filtered = filtered.filter(
+        (bookmark) =>
+          (bookmark.content && bookmark.content.length > 200) ||
+          bookmark.domain === 'x.com' ||
+          bookmark.domain === 'twitter.com'
       )
       break
     case 4: // Media
       // Filter bookmarks that have media
-      filtered = filtered.filter(bookmark =>
-        bookmark.thumbnail_url ||
-        bookmark.url.includes('youtube.com') ||
-        bookmark.url.includes('vimeo.com') ||
-        bookmark.url.match(/\.(jpg|jpeg|png|gif|webp|mp4|mp3)$/i)
+      filtered = filtered.filter(
+        (bookmark) =>
+          bookmark.thumbnail_url ||
+          bookmark.url.includes('youtube.com') ||
+          bookmark.url.includes('vimeo.com') ||
+          bookmark.url.match(/\.(jpg|jpeg|png|gif|webp|mp4|mp3)$/i)
       )
       break
     default: // All
@@ -108,19 +115,20 @@ export const filterBookmarks = ({
   // Filter by search query
   if (searchQuery.trim()) {
     const lowerQuery = searchQuery.toLowerCase()
-    filtered = filtered.filter(bookmark =>
-      bookmark.title.toLowerCase().includes(lowerQuery) ||
-      bookmark.content.toLowerCase().includes(lowerQuery) ||
-      bookmark.author.toLowerCase().includes(lowerQuery) ||
-      bookmark.domain.toLowerCase().includes(lowerQuery) ||
-      bookmark.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+    filtered = filtered.filter(
+      (bookmark) =>
+        bookmark.title.toLowerCase().includes(lowerQuery) ||
+        bookmark.content.toLowerCase().includes(lowerQuery) ||
+        bookmark.author.toLowerCase().includes(lowerQuery) ||
+        bookmark.domain.toLowerCase().includes(lowerQuery) ||
+        bookmark.tags.some((tag) => tag.toLowerCase().includes(lowerQuery))
     )
   }
 
   // Filter by author
   if (authorFilter.trim()) {
     const lowerAuthor = authorFilter.toLowerCase()
-    filtered = filtered.filter(bookmark =>
+    filtered = filtered.filter((bookmark) =>
       bookmark.author.toLowerCase().includes(lowerAuthor)
     )
   }
@@ -128,21 +136,26 @@ export const filterBookmarks = ({
   // Filter by domain
   if (domainFilter.trim()) {
     const lowerDomain = domainFilter.toLowerCase()
-    filtered = filtered.filter(bookmark =>
+    filtered = filtered.filter((bookmark) =>
       bookmark.domain.toLowerCase().includes(lowerDomain)
     )
   }
 
   // Filter by content type
   if (contentTypeFilter) {
-    filtered = filtered.filter(bookmark => {
+    filtered = filtered.filter((bookmark) => {
       switch (contentTypeFilter) {
         case 'article':
           return bookmark.content.length > 500
         case 'tweet':
-          return bookmark.domain === 'x.com' || bookmark.domain === 'twitter.com'
+          return (
+            bookmark.domain === 'x.com' || bookmark.domain === 'twitter.com'
+          )
         case 'video':
-          return bookmark.url.includes('youtube.com') || bookmark.url.includes('vimeo.com')
+          return (
+            bookmark.url.includes('youtube.com') ||
+            bookmark.url.includes('vimeo.com')
+          )
         default:
           return true
       }
@@ -151,10 +164,11 @@ export const filterBookmarks = ({
 
   // Filter by date range
   if (dateRangeFilter.type !== 'all') {
-    filtered = filtered.filter(bookmark => {
-      const dateToUse = bookmark.metadata && bookmark.metadata.tweet_date
-        ? bookmark.metadata.tweet_date
-        : bookmark.created_at
+    filtered = filtered.filter((bookmark) => {
+      const dateToUse =
+        bookmark.metadata && bookmark.metadata.tweet_date
+          ? bookmark.metadata.tweet_date
+          : bookmark.created_at
       const bookmarkDate = new Date(dateToUse)
 
       switch (dateRangeFilter.type) {
@@ -194,23 +208,27 @@ export const filterBookmarks = ({
 
   // Filter by quick filters
   if (quickFilters.length > 0) {
-    filtered = filtered.filter(bookmark => {
-      return quickFilters.every(filter => {
+    filtered = filtered.filter((bookmark) => {
+      return quickFilters.every((filter) => {
         switch (filter) {
           case 'starred':
             return bookmark.is_starred === true
           case 'unread':
             return bookmark.is_read === false
           case 'comments':
-            return bookmark.content?.includes('comment') || bookmark.content?.includes('reply')
+            return (
+              bookmark.content?.includes('comment') ||
+              bookmark.content?.includes('reply')
+            )
           case 'engagement':
             return bookmark.engagement_score > 100
           case 'recent':
             const recent = new Date()
             recent.setDate(recent.getDate() - 1)
-            const dateToUse = bookmark.metadata && bookmark.metadata.tweet_date
-              ? bookmark.metadata.tweet_date
-              : bookmark.created_at
+            const dateToUse =
+              bookmark.metadata && bookmark.metadata.tweet_date
+                ? bookmark.metadata.tweet_date
+                : bookmark.created_at
             return new Date(dateToUse) >= recent
           case 'archived':
             return bookmark.is_archived === true
@@ -223,12 +241,14 @@ export const filterBookmarks = ({
 
   // Sort by date descending (newest first) - use tweet_date when available
   const sorted = filtered.sort((a, b) => {
-    const dateA = a.metadata && a.metadata.tweet_date
-      ? new Date(a.metadata.tweet_date)
-      : new Date(a.created_at)
-    const dateB = b.metadata && b.metadata.tweet_date
-      ? new Date(b.metadata.tweet_date)
-      : new Date(b.created_at)
+    const dateA =
+      a.metadata && a.metadata.tweet_date
+        ? new Date(a.metadata.tweet_date)
+        : new Date(a.created_at)
+    const dateB =
+      b.metadata && b.metadata.tweet_date
+        ? new Date(b.metadata.tweet_date)
+        : new Date(b.created_at)
 
     return dateB.getTime() - dateA.getTime() // Descending order (newest first)
   })

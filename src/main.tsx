@@ -26,6 +26,4 @@ if (import.meta.env.VITE_SENTRY_DSN && import.meta.env.MODE !== 'development') {
   })
 }
 
-createRoot(document.getElementById('root')!).render(
-  <App />
-)
+createRoot(document.getElementById('root')!).render(<App />)

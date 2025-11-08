@@ -3,7 +3,12 @@
  */
 
 import { z } from 'zod'
-import type { Bookmark, BookmarkInsert, ExportData, AppMetadata } from '../types/bookmark'
+import type {
+  Bookmark,
+  BookmarkInsert,
+  ExportData,
+  AppMetadata,
+} from '../types/bookmark'
 import { DataProcessingService } from '../services/dataProcessingService'
 
 // Zod schemas
@@ -82,7 +87,9 @@ export const isValidBookmark = (bookmark: any): bookmark is Bookmark => {
   return bookmarkSchema.safeParse(bookmark).success
 }
 
-export const isValidBookmarkInsert = (bookmark: any): bookmark is BookmarkInsert => {
+export const isValidBookmarkInsert = (
+  bookmark: any
+): bookmark is BookmarkInsert => {
   return bookmarkInsertSchema.safeParse(bookmark).success
 }
 
@@ -116,7 +123,10 @@ export const migrateBookmarkData = (data: any[]): Bookmark[] => {
       url: item.url,
       description: item.description || item.content || '',
       content: item.content || item.description || '',
-      author: typeof item.author === 'string' ? item.author : item.author?.name || 'Unknown Author',
+      author:
+        typeof item.author === 'string'
+          ? item.author
+          : item.author?.name || 'Unknown Author',
       domain: item.domain || extractDomain(item.url),
       source_platform: item.source_platform || 'manual',
       engagement_score: item.engagement_score || 0,
@@ -138,9 +148,10 @@ export const migrateBookmarkData = (data: any[]): Bookmark[] => {
       migrated.push({
         ...sanitized,
         id: item.id || migrated.length + 1,
-        created_at: item.created_at || item.timestamp || new Date().toISOString(),
+        created_at:
+          item.created_at || item.timestamp || new Date().toISOString(),
         updated_at: item.updated_at || new Date().toISOString(),
-        is_deleted: item.is_deleted || false
+        is_deleted: item.is_deleted || false,
       })
     }
   }
@@ -157,11 +168,13 @@ export const createBackupData = (
     bookmarks,
     metadata,
     exportedAt: new Date().toISOString(),
-    version: '1.0.0'
+    version: '1.0.0',
   }
 }
 
-export const validateImportData = (data: any): { valid: boolean; errors: string[] } => {
+export const validateImportData = (
+  data: any
+): { valid: boolean; errors: string[] } => {
   const errors: string[] = []
 
   if (!data || typeof data !== 'object') {
@@ -174,14 +187,16 @@ export const validateImportData = (data: any): { valid: boolean; errors: string[
   }
 
   if (data.bookmarks) {
-    const invalidBookmarks = data.bookmarks.filter((bookmark: any, index: number) => {
-      const sanitized = sanitizeBookmark(bookmark)
-      if (!sanitized) {
-        errors.push(`Invalid bookmark at index ${index}`)
-        return true
+    const invalidBookmarks = data.bookmarks.filter(
+      (bookmark: any, index: number) => {
+        const sanitized = sanitizeBookmark(bookmark)
+        if (!sanitized) {
+          errors.push(`Invalid bookmark at index ${index}`)
+          return true
+        }
+        return false
       }
-      return false
-    })
+    )
 
     if (invalidBookmarks.length > 0) {
       errors.push(`Found ${invalidBookmarks.length} invalid bookmarks`)
@@ -217,7 +232,7 @@ export const checkStorageQuota = async (): Promise<{
       return {
         available: estimate.quota ? estimate.quota - (estimate.usage || 0) : 0,
         used: estimate.usage || 0,
-        quota: estimate.quota || 0
+        quota: estimate.quota || 0,
       }
     } catch {
       // Fallback for browsers that don't support the API
@@ -243,5 +258,8 @@ export const cleanupBookmarkData = (bookmarks: Bookmark[]): Bookmark[] => {
   }
 
   // Sort by creation date (newest first)
-  return cleaned.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  return cleaned.sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  )
 }

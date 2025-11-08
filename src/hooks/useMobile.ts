@@ -13,8 +13,10 @@ export const useIsMobile = (): boolean => {
       // OR if width is < 992px AND height is < 600px (landscape mobile)
       const width = window.innerWidth
       const height = window.innerHeight
-      return width < parseInt(breakpoints.md) ||
-             (width < parseInt(breakpoints.lg) && height < 600)
+      return (
+        width < parseInt(breakpoints.md) ||
+        (width < parseInt(breakpoints.lg) && height < 600)
+      )
     }
     return false
   })
@@ -25,7 +27,7 @@ export const useIsMobile = (): boolean => {
       const height = window.innerHeight
       setIsMobile(
         width < parseInt(breakpoints.md) ||
-        (width < parseInt(breakpoints.lg) && height < 600)
+          (width < parseInt(breakpoints.lg) && height < 600)
       )
     }
 
@@ -44,7 +46,9 @@ export const useIsTablet = (): boolean => {
   const [isTablet, setIsTablet] = useState(() => {
     if (typeof window !== 'undefined') {
       const width = window.innerWidth
-      return width >= parseInt(breakpoints.md) && width < parseInt(breakpoints.lg)
+      return (
+        width >= parseInt(breakpoints.md) && width < parseInt(breakpoints.lg)
+      )
     }
     return false
   })
@@ -52,7 +56,9 @@ export const useIsTablet = (): boolean => {
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth
-      setIsTablet(width >= parseInt(breakpoints.md) && width < parseInt(breakpoints.lg))
+      setIsTablet(
+        width >= parseInt(breakpoints.md) && width < parseInt(breakpoints.lg)
+      )
     }
 
     window.addEventListener('resize', handleResize)
@@ -67,15 +73,17 @@ export const useIsTablet = (): boolean => {
  * @returns 'mobile' | 'tablet' | 'desktop'
  */
 export const useScreenSize = (): 'mobile' | 'tablet' | 'desktop' => {
-  const [screenSize, setScreenSize] = useState<'mobile' | 'tablet' | 'desktop'>(() => {
-    if (typeof window !== 'undefined') {
-      const width = window.innerWidth
-      if (width < parseInt(breakpoints.md)) return 'mobile'
-      if (width < parseInt(breakpoints.lg)) return 'tablet'
+  const [screenSize, setScreenSize] = useState<'mobile' | 'tablet' | 'desktop'>(
+    () => {
+      if (typeof window !== 'undefined') {
+        const width = window.innerWidth
+        if (width < parseInt(breakpoints.md)) return 'mobile'
+        if (width < parseInt(breakpoints.lg)) return 'tablet'
+        return 'desktop'
+      }
       return 'desktop'
     }
-    return 'desktop'
-  })
+  )
 
   useEffect(() => {
     const handleResize = () => {

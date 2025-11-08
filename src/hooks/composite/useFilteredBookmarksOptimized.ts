@@ -25,7 +25,7 @@ export const useFilteredBookmarksOptimized = (): Bookmark[] => {
       dateRangeFilter: bookmarkSelectors.dateRangeFilter,
       quickFilters: bookmarkSelectors.quickFilters,
       activeCollectionId: collectionsSelectors.activeCollectionId,
-      collectionBookmarks: collectionsSelectors.collectionBookmarks
+      collectionBookmarks: collectionsSelectors.collectionBookmarks,
     })
   }, [
     bookmarkSelectors.bookmarks,
@@ -39,7 +39,7 @@ export const useFilteredBookmarksOptimized = (): Bookmark[] => {
     bookmarkSelectors.dateRangeFilter,
     bookmarkSelectors.quickFilters,
     collectionsSelectors.activeCollectionId,
-    collectionsSelectors.collectionBookmarks
+    collectionsSelectors.collectionBookmarks,
   ])
 }
 

@@ -61,7 +61,10 @@ export const trackOperationPerformance = (
 
   // Log slow operations (>2s)
   if (duration > 2000) {
-    console.warn(`[Performance] Slow operation: ${operation} took ${duration}ms`, metadata)
+    console.warn(
+      `[Performance] Slow operation: ${operation} took ${duration}ms`,
+      metadata
+    )
 
     ReactGA.event({
       category: 'Performance',
@@ -82,7 +85,9 @@ export const trackOperationPerformance = (
 export const trackPagePerformance = () => {
   if (!window.performance) return
 
-  const perfData = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+  const perfData = performance.getEntriesByType(
+    'navigation'
+  )[0] as PerformanceNavigationTiming
 
   if (!perfData) return
 
@@ -108,7 +113,8 @@ export const trackPagePerformance = () => {
   })
 
   if (import.meta.env.DEV) {
-    console.log('[Performance] Page Timing:',
+    console.log(
+      '[Performance] Page Timing:',
       Object.fromEntries(
         Object.entries(metrics).map(([k, v]) => [k, `${Math.round(v)}ms`])
       )
@@ -135,7 +141,9 @@ export const trackStorageMetrics = async () => {
 
       // Warn if storage is high
       if (percentUsed > 80) {
-        console.warn(`[Performance] High storage usage: ${Math.round(percentUsed)}%`)
+        console.warn(
+          `[Performance] High storage usage: ${Math.round(percentUsed)}%`
+        )
 
         ReactGA.event({
           category: 'Storage',
@@ -147,7 +155,9 @@ export const trackStorageMetrics = async () => {
       }
 
       if (import.meta.env.DEV) {
-        console.log(`[Performance] Storage: ${Math.round(percentUsed)}% (${Math.round((usage || 0) / 1024 / 1024)}MB / ${Math.round((quota || 0) / 1024 / 1024)}MB)`)
+        console.log(
+          `[Performance] Storage: ${Math.round(percentUsed)}% (${Math.round((usage || 0) / 1024 / 1024)}MB / ${Math.round((quota || 0) / 1024 / 1024)}MB)`
+        )
       }
     } catch (error) {
       console.error('[Performance] Failed to track storage metrics:', error)
@@ -161,15 +171,17 @@ export const trackStorageMetrics = async () => {
 export const trackResourceLoading = () => {
   if (!window.performance) return
 
-  const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[]
+  const resources = performance.getEntriesByType(
+    'resource'
+  ) as PerformanceResourceTiming[]
 
   // Track slow resources (>1s)
-  const slowResources = resources.filter(resource => {
+  const slowResources = resources.filter((resource) => {
     const duration = resource.responseEnd - resource.startTime
     return duration > 1000
   })
 
-  slowResources.forEach(resource => {
+  slowResources.forEach((resource) => {
     const duration = resource.responseEnd - resource.startTime
     const resourceName = resource.name.split('/').pop() || 'unknown'
 
@@ -182,7 +194,9 @@ export const trackResourceLoading = () => {
     })
 
     if (import.meta.env.DEV) {
-      console.warn(`[Performance] Slow resource: ${resourceName} (${Math.round(duration)}ms)`)
+      console.warn(
+        `[Performance] Slow resource: ${resourceName} (${Math.round(duration)}ms)`
+      )
     }
   })
 }
@@ -224,7 +238,8 @@ export const trackMemoryUsage = () => {
   // @ts-ignore - performance.memory is non-standard but available in Chrome
   if (window.performance && window.performance.memory) {
     // @ts-ignore
-    const { usedJSHeapSize, totalJSHeapSize, jsHeapSizeLimit } = window.performance.memory
+    const { usedJSHeapSize, totalJSHeapSize, jsHeapSizeLimit } =
+      window.performance.memory
     const percentUsed = (usedJSHeapSize / jsHeapSizeLimit) * 100
 
     ReactGA.event({
@@ -236,11 +251,15 @@ export const trackMemoryUsage = () => {
     })
 
     if (percentUsed > 80) {
-      console.warn(`[Performance] High memory usage: ${Math.round(percentUsed)}%`)
+      console.warn(
+        `[Performance] High memory usage: ${Math.round(percentUsed)}%`
+      )
     }
 
     if (import.meta.env.DEV) {
-      console.log(`[Performance] Memory: ${Math.round(usedJSHeapSize / 1024 / 1024)}MB / ${Math.round(jsHeapSizeLimit / 1024 / 1024)}MB`)
+      console.log(
+        `[Performance] Memory: ${Math.round(usedJSHeapSize / 1024 / 1024)}MB / ${Math.round(jsHeapSizeLimit / 1024 / 1024)}MB`
+      )
     }
   }
 }

@@ -7,7 +7,7 @@ export {
   getInputStyle,
   getNavigationStyle,
   getBadgeStyle,
-  getTagStyle
+  getTagStyle,
 } from './components'
 export { chakraTheme } from './chakraTheme'
 
@@ -20,7 +20,7 @@ export {
   gridConfig,
   responsiveVariants,
   getResponsiveValue,
-  createResponsiveStyles
+  createResponsiveStyles,
 } from './responsive'
 
 // Animation system
@@ -30,7 +30,7 @@ export {
   animations,
   transitions,
   animationUtils,
-  performantAnimations
+  performantAnimations,
 } from './animations'
 
 // Theme switching
@@ -40,7 +40,7 @@ export {
   defaultThemeConfig,
   themeUtils,
   createThemeTokens,
-  themes
+  themes,
 } from './themes'
 
 // Re-export all style hooks

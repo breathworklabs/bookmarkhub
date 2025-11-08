@@ -6,7 +6,9 @@ import { initGA } from '../lib/analytics'
 import { initAllPerformanceMonitoring } from '../lib/performance'
 
 export const useInitializeApp = () => {
-  const [hasExistingBookmarks, setHasExistingBookmarks] = useState<boolean | null>(null)
+  const [hasExistingBookmarks, setHasExistingBookmarks] = useState<
+    boolean | null
+  >(null)
   const isLoading = useBookmarkStore((state) => state.isLoading)
   const error = useBookmarkStore((state) => state.error)
   const collectionsLoading = useCollectionsStore((state) => state.isLoading)
@@ -45,7 +47,7 @@ export const useInitializeApp = () => {
         if (hasBookmarks) {
           Promise.all([
             useBookmarkStore.getState().initialize(),
-            useCollectionsStore.getState().initialize()
+            useCollectionsStore.getState().initialize(),
           ])
         }
       } catch (error) {
@@ -70,27 +72,35 @@ export const useInitializeApp = () => {
         // Reload bookmarks from localStorage without page reload
         Promise.all([
           useBookmarkStore.getState().initialize(),
-          useCollectionsStore.getState().initialize()
-        ]).then(() => {
-          // Phase 4: Show success toast notification (if enabled in settings)
-          if (showNotification) {
-            const message = count === 1
-              ? 'Imported 1 new bookmark from X/Twitter. Refreshing...'
-              : `Imported ${count} new bookmarks from X/Twitter. Refreshing...`
+          useCollectionsStore.getState().initialize(),
+        ])
+          .then(() => {
+            // Phase 4: Show success toast notification (if enabled in settings)
+            if (showNotification) {
+              const message =
+                count === 1
+                  ? 'Imported 1 new bookmark from X/Twitter. Refreshing...'
+                  : `Imported ${count} new bookmarks from X/Twitter. Refreshing...`
 
-            toast.success(message, { duration: 2000 })
+              toast.success(message, { duration: 2000 })
 
-            // Auto-refresh the page after a short delay to show the toast
-            setTimeout(() => {
-              window.location.reload()
-            }, 2000)
-          }
-        }).catch((error) => {
-          console.error('Error reloading stores after extension update:', error)
+              // Auto-refresh the page after a short delay to show the toast
+              setTimeout(() => {
+                window.location.reload()
+              }, 2000)
+            }
+          })
+          .catch((error) => {
+            console.error(
+              'Error reloading stores after extension update:',
+              error
+            )
 
-          // Always show error toast (regardless of notification setting)
-          toast.error('Failed to load imported bookmarks. Please refresh the page.')
-        })
+            // Always show error toast (regardless of notification setting)
+            toast.error(
+              'Failed to load imported bookmarks. Please refresh the page.'
+            )
+          })
       }
     }
 
@@ -105,7 +115,7 @@ export const useInitializeApp = () => {
       window.postMessage(
         {
           type: 'X_REQUEST_SYNC',
-          source: 'x-bookmark-manager-app'
+          source: 'x-bookmark-manager-app',
         },
         '*'
       )
@@ -120,8 +130,9 @@ export const useInitializeApp = () => {
     // Only validate if we have existing bookmarks
     if (hasExistingBookmarks === true) {
       const timer = setTimeout(() => {
-        const validateAllBookmarks = useBookmarkStore.getState().validateAllBookmarks
-        validateAllBookmarks().catch(error => {
+        const validateAllBookmarks =
+          useBookmarkStore.getState().validateAllBookmarks
+        validateAllBookmarks().catch((error) => {
           console.error('Failed to validate bookmarks on startup:', error)
         })
       }, 2000) // Delay to allow other initialization to complete
@@ -131,11 +142,12 @@ export const useInitializeApp = () => {
   }, [hasExistingBookmarks])
 
   // Only show loading when we're actually loading and have existing bookmarks
-  const showLoading = hasExistingBookmarks === true && (isLoading || collectionsLoading)
+  const showLoading =
+    hasExistingBookmarks === true && (isLoading || collectionsLoading)
 
   return {
     isLoading: showLoading,
     error: error || collectionsError,
-    hasExistingBookmarks
+    hasExistingBookmarks,
   }
 }

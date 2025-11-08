@@ -1,4 +1,16 @@
-import { Dialog, Button, VStack, HStack, Text, IconButton, For, Input, Badge, Textarea, Box } from '@chakra-ui/react'
+import {
+  Dialog,
+  Button,
+  VStack,
+  HStack,
+  Text,
+  IconButton,
+  For,
+  Input,
+  Badge,
+  Textarea,
+  Box,
+} from '@chakra-ui/react'
 import { LuBookmark, LuTrash2, LuCheck, LuX, LuPencil } from 'react-icons/lu'
 import { useState, memo, useCallback } from 'react'
 import { useBookmarkStore } from '../../store/bookmarkStore'
@@ -6,10 +18,16 @@ import { useFilterReset } from '../../utils/filterUtils'
 import type { SavedFilterPreset } from '../../store/bookmarkStore'
 
 const SavedFilterPresets = memo(() => {
-  const savedFilterPresets = useBookmarkStore((state) => state.savedFilterPresets)
+  const savedFilterPresets = useBookmarkStore(
+    (state) => state.savedFilterPresets
+  )
   const loadFilterPreset = useBookmarkStore((state) => state.loadFilterPreset)
-  const deleteFilterPreset = useBookmarkStore((state) => state.deleteFilterPreset)
-  const updateFilterPreset = useBookmarkStore((state) => state.updateFilterPreset)
+  const deleteFilterPreset = useBookmarkStore(
+    (state) => state.deleteFilterPreset
+  )
+  const updateFilterPreset = useBookmarkStore(
+    (state) => state.updateFilterPreset
+  )
   const resetFilters = useFilterReset()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -28,15 +46,21 @@ const SavedFilterPresets = memo(() => {
     setEditDescription('')
   }, [])
 
-  const handleLoadPreset = useCallback((presetId: string) => {
-    loadFilterPreset(presetId)
-    resetFilters()
-    handleCloseModal()
-  }, [loadFilterPreset, resetFilters, handleCloseModal])
+  const handleLoadPreset = useCallback(
+    (presetId: string) => {
+      loadFilterPreset(presetId)
+      resetFilters()
+      handleCloseModal()
+    },
+    [loadFilterPreset, resetFilters, handleCloseModal]
+  )
 
-  const handleDeletePreset = useCallback((presetId: string) => {
-    deleteFilterPreset(presetId)
-  }, [deleteFilterPreset])
+  const handleDeletePreset = useCallback(
+    (presetId: string) => {
+      deleteFilterPreset(presetId)
+    },
+    [deleteFilterPreset]
+  )
 
   const handleStartEdit = useCallback((preset: SavedFilterPreset) => {
     setEditingId(preset.id)
@@ -44,14 +68,21 @@ const SavedFilterPresets = memo(() => {
     setEditDescription(preset.description || '')
   }, [])
 
-  const handleSaveEdit = useCallback((presetId: string) => {
-    if (editName.trim()) {
-      updateFilterPreset(presetId, editName.trim(), editDescription.trim() || undefined)
-      setEditingId(null)
-      setEditName('')
-      setEditDescription('')
-    }
-  }, [editName, editDescription, updateFilterPreset])
+  const handleSaveEdit = useCallback(
+    (presetId: string) => {
+      if (editName.trim()) {
+        updateFilterPreset(
+          presetId,
+          editName.trim(),
+          editDescription.trim() || undefined
+        )
+        setEditingId(null)
+        setEditName('')
+        setEditDescription('')
+      }
+    },
+    [editName, editDescription, updateFilterPreset]
+  )
 
   const handleCancelEdit = useCallback(() => {
     setEditingId(null)
@@ -68,22 +99,35 @@ const SavedFilterPresets = memo(() => {
         disabled={savedFilterPresets.length === 0}
         style={{
           borderColor: 'var(--color-border)',
-          color: savedFilterPresets.length > 0 ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
-          background: 'transparent'
+          color:
+            savedFilterPresets.length > 0
+              ? 'var(--color-text-primary)'
+              : 'var(--color-text-tertiary)',
+          background: 'transparent',
         }}
         fontSize="12px"
         h="32px"
         px={3}
         gap={1}
         _hover={{
-          borderColor: savedFilterPresets.length > 0 ? 'var(--color-border-hover)' : 'var(--color-border)',
-          bg: savedFilterPresets.length > 0 ? 'var(--color-bg-tertiary)' : 'transparent'
+          borderColor:
+            savedFilterPresets.length > 0
+              ? 'var(--color-border-hover)'
+              : 'var(--color-border)',
+          bg:
+            savedFilterPresets.length > 0
+              ? 'var(--color-bg-tertiary)'
+              : 'transparent',
         }}
         _disabled={{
           opacity: 0.5,
-          cursor: 'not-allowed'
+          cursor: 'not-allowed',
         }}
-        title={savedFilterPresets.length > 0 ? 'Load saved filter preset' : 'No saved presets'}
+        title={
+          savedFilterPresets.length > 0
+            ? 'Load saved filter preset'
+            : 'No saved presets'
+        }
       >
         <LuBookmark size={14} />
         Load Preset
@@ -102,7 +146,11 @@ const SavedFilterPresets = memo(() => {
         )}
       </Button>
 
-      <Dialog.Root open={isOpen} onOpenChange={(e) => !e.open && handleCloseModal()} placement="center">
+      <Dialog.Root
+        open={isOpen}
+        onOpenChange={(e) => !e.open && handleCloseModal()}
+        placement="center"
+      >
         <Dialog.Backdrop bg="rgba(0, 0, 0, 0.85)" backdropFilter="blur(4px)" />
         <Dialog.Positioner>
           <Dialog.Content
@@ -122,7 +170,11 @@ const SavedFilterPresets = memo(() => {
               textAlign="center"
             >
               <Dialog.Title>
-                <Text fontSize="xl" fontWeight="700" style={{ color: 'var(--color-text-primary)' }}>
+                <Text
+                  fontSize="xl"
+                  fontWeight="700"
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
                   Saved Filter Presets
                 </Text>
               </Dialog.Title>
@@ -134,7 +186,11 @@ const SavedFilterPresets = memo(() => {
                     <Box color="var(--color-text-tertiary)" fontSize="48px">
                       🔖
                     </Box>
-                    <Text color="var(--color-text-tertiary)" fontSize="md" fontWeight="500">
+                    <Text
+                      color="var(--color-text-tertiary)"
+                      fontSize="md"
+                      fontWeight="500"
+                    >
                       No saved presets yet
                     </Text>
                     <Text color="var(--color-text-tertiary)" fontSize="sm">
@@ -156,24 +212,40 @@ const SavedFilterPresets = memo(() => {
                       {(preset, index) => (
                         <Box
                           key={preset.id}
-                          borderBottom={index < savedFilterPresets.length - 1 ? "1px solid rgba(42, 45, 53, 0.5)" : "none"}
+                          borderBottom={
+                            index < savedFilterPresets.length - 1
+                              ? '1px solid rgba(42, 45, 53, 0.5)'
+                              : 'none'
+                          }
                         >
                           <HStack
                             p={4}
                             justify="space-between"
                             align="center"
                             _hover={{ bg: 'rgba(42, 45, 53, 0.5)' }}
-                            cursor={editingId === preset.id ? 'default' : 'pointer'}
-                            onClick={editingId === preset.id ? undefined : () => handleLoadPreset(preset.id)}
+                            cursor={
+                              editingId === preset.id ? 'default' : 'pointer'
+                            }
+                            onClick={
+                              editingId === preset.id
+                                ? undefined
+                                : () => handleLoadPreset(preset.id)
+                            }
                             transition="background-color 0.2s ease"
                           >
                             {editingId === preset.id ? (
-                              <VStack align="stretch" gap={2} flex={1} onClick={(e) => e.stopPropagation()}>
+                              <VStack
+                                align="stretch"
+                                gap={2}
+                                flex={1}
+                                onClick={(e) => e.stopPropagation()}
+                              >
                                 <Input
                                   value={editName}
                                   onChange={(e) => setEditName(e.target.value)}
                                   onKeyDown={(e) => {
-                                    if (e.key === 'Enter') handleSaveEdit(preset.id)
+                                    if (e.key === 'Enter')
+                                      handleSaveEdit(preset.id)
                                     if (e.key === 'Escape') handleCancelEdit()
                                   }}
                                   size="sm"
@@ -185,7 +257,9 @@ const SavedFilterPresets = memo(() => {
                                 />
                                 <Textarea
                                   value={editDescription}
-                                  onChange={(e) => setEditDescription(e.target.value)}
+                                  onChange={(e) =>
+                                    setEditDescription(e.target.value)
+                                  }
                                   placeholder="Description (optional)"
                                   size="sm"
                                   bg="var(--color-border)"
@@ -202,7 +276,10 @@ const SavedFilterPresets = memo(() => {
                                     onClick={() => handleSaveEdit(preset.id)}
                                     color="var(--color-blue)"
                                     borderRadius="8px"
-                                    _hover={{ color: 'var(--color-blue-hover)', bg: 'rgba(59, 130, 246, 0.15)' }}
+                                    _hover={{
+                                      color: 'var(--color-blue-hover)',
+                                      bg: 'rgba(59, 130, 246, 0.15)',
+                                    }}
                                   >
                                     <LuCheck size={14} />
                                   </IconButton>
@@ -213,7 +290,10 @@ const SavedFilterPresets = memo(() => {
                                     onClick={handleCancelEdit}
                                     color="var(--color-text-tertiary)"
                                     borderRadius="8px"
-                                    _hover={{ color: 'var(--color-text-primary)', bg: 'rgba(42, 45, 53, 0.8)' }}
+                                    _hover={{
+                                      color: 'var(--color-text-primary)',
+                                      bg: 'rgba(42, 45, 53, 0.8)',
+                                    }}
                                   >
                                     <LuX size={14} />
                                   </IconButton>
@@ -223,19 +303,32 @@ const SavedFilterPresets = memo(() => {
                               <>
                                 <VStack align="start" gap={1.5} flex={1}>
                                   <HStack gap={2}>
-                                    <LuBookmark size={14} color="var(--color-blue)" />
-                                    <Text fontSize="sm" fontWeight="500" color="var(--color-text-primary)">
+                                    <LuBookmark
+                                      size={14}
+                                      color="var(--color-blue)"
+                                    />
+                                    <Text
+                                      fontSize="sm"
+                                      fontWeight="500"
+                                      color="var(--color-text-primary)"
+                                    >
                                       {preset.name}
                                     </Text>
                                   </HStack>
                                   {preset.description && (
-                                    <Text fontSize="xs" color="var(--color-text-secondary)" ml={5}>
+                                    <Text
+                                      fontSize="xs"
+                                      color="var(--color-text-secondary)"
+                                      ml={5}
+                                    >
                                       {preset.description}
                                     </Text>
                                   )}
-                                  {(preset.filters.selectedTags.length > 0 || preset.filters.quickFilters.length > 0) && (
+                                  {(preset.filters.selectedTags.length > 0 ||
+                                    preset.filters.quickFilters.length > 0) && (
                                     <HStack gap={1.5} ml={5}>
-                                      {preset.filters.selectedTags.length > 0 && (
+                                      {preset.filters.selectedTags.length >
+                                        0 && (
                                         <Badge
                                           bg="rgba(42, 45, 53, 0.8)"
                                           color="var(--color-text-tertiary)"
@@ -245,10 +338,12 @@ const SavedFilterPresets = memo(() => {
                                           borderRadius="full"
                                           fontWeight="500"
                                         >
-                                          {preset.filters.selectedTags.length} tags
+                                          {preset.filters.selectedTags.length}{' '}
+                                          tags
                                         </Badge>
                                       )}
-                                      {preset.filters.quickFilters.length > 0 && (
+                                      {preset.filters.quickFilters.length >
+                                        0 && (
                                         <Badge
                                           bg="rgba(42, 45, 53, 0.8)"
                                           color="var(--color-text-tertiary)"
@@ -258,22 +353,35 @@ const SavedFilterPresets = memo(() => {
                                           borderRadius="full"
                                           fontWeight="500"
                                         >
-                                          {preset.filters.quickFilters.length} filters
+                                          {preset.filters.quickFilters.length}{' '}
+                                          filters
                                         </Badge>
                                       )}
                                     </HStack>
                                   )}
                                 </VStack>
-                                <HStack gap={1} onClick={(e) => e.stopPropagation()}>
+                                <HStack
+                                  gap={1}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
                                   <IconButton
                                     size="sm"
                                     variant="ghost"
                                     aria-label="Edit preset"
                                     color="var(--color-text-tertiary)"
                                     borderRadius="8px"
-                                    _hover={{ color: 'var(--color-text-primary)', bg: 'rgba(42, 45, 53, 0.8)' }}
-                                    _focus={{ boxShadow: 'none', outline: 'none' }}
-                                    _focusVisible={{ boxShadow: 'none', outline: 'none' }}
+                                    _hover={{
+                                      color: 'var(--color-text-primary)',
+                                      bg: 'rgba(42, 45, 53, 0.8)',
+                                    }}
+                                    _focus={{
+                                      boxShadow: 'none',
+                                      outline: 'none',
+                                    }}
+                                    _focusVisible={{
+                                      boxShadow: 'none',
+                                      outline: 'none',
+                                    }}
                                     onClick={(e) => {
                                       e.stopPropagation()
                                       handleStartEdit(preset)
@@ -287,9 +395,18 @@ const SavedFilterPresets = memo(() => {
                                     aria-label="Delete preset"
                                     color="var(--color-error)"
                                     borderRadius="8px"
-                                    _hover={{ color: 'var(--color-error)', bg: 'rgba(239, 68, 68, 0.15)' }}
-                                    _focus={{ boxShadow: 'none', outline: 'none' }}
-                                    _focusVisible={{ boxShadow: 'none', outline: 'none' }}
+                                    _hover={{
+                                      color: 'var(--color-error)',
+                                      bg: 'rgba(239, 68, 68, 0.15)',
+                                    }}
+                                    _focus={{
+                                      boxShadow: 'none',
+                                      outline: 'none',
+                                    }}
+                                    _focusVisible={{
+                                      boxShadow: 'none',
+                                      outline: 'none',
+                                    }}
                                     onClick={(e) => {
                                       e.stopPropagation()
                                       handleDeletePreset(preset.id)
@@ -319,7 +436,10 @@ const SavedFilterPresets = memo(() => {
                   variant="ghost"
                   style={{ color: 'var(--color-text-tertiary)' }}
                   borderRadius="10px"
-                  _hover={{ color: 'var(--color-text-primary)', bg: 'rgba(42, 45, 53, 0.5)' }}
+                  _hover={{
+                    color: 'var(--color-text-primary)',
+                    bg: 'rgba(42, 45, 53, 0.5)',
+                  }}
                   onClick={handleCloseModal}
                 >
                   Close

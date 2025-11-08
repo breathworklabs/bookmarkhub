@@ -84,7 +84,7 @@ export const colors = {
     blue: '#4a9eff',
     purple: '#8b5cf6',
     gold: '#ffd700',
-  }
+  },
 }
 
 // Color utility functions
@@ -104,7 +104,10 @@ export const getColorValue = (colorPath: string): string => {
 }
 
 // Theme-aware color getter
-export const getThemeColor = (colorPath: string, isDark: boolean = true): string => {
+export const getThemeColor = (
+  colorPath: string,
+  isDark: boolean = true
+): string => {
   const theme = isDark ? 'dark' : 'light'
   return getColorValue(`${theme}.${colorPath}`)
 }

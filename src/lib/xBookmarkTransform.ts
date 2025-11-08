@@ -19,7 +19,10 @@ interface XBookmarkData {
 /**
  * Transform X/Twitter bookmark data to our Bookmark format
  */
-export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'local-user'): BookmarkInsert {
+export function transformXBookmark(
+  xBookmark: XBookmarkData,
+  userId: string = 'local-user'
+): BookmarkInsert {
   if (!xBookmark) {
     throw new Error('xBookmark is null or undefined')
   }
@@ -41,13 +44,14 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
   const platformTags = ['X']
 
   // Separate different types of images
-  const { normalProfileImages, biggerProfileImages, contentImages } = DataProcessingService.processImages(xBookmark.images || [])
+  const { normalProfileImages, biggerProfileImages, contentImages } =
+    DataProcessingService.processImages(xBookmark.images || [])
 
   // Calculate engagement score
   const engagementScore = DataProcessingService.calculateEngagementScore({
     content: text,
     has_video: xBookmark.has_video,
-    images: xBookmark.images
+    images: xBookmark.images,
   })
 
   const bookmark: BookmarkInsert = {
@@ -57,7 +61,10 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
     description: text,
     content: text,
     thumbnail_url: contentImages.length > 0 ? contentImages[0] : undefined,
-    favicon_url: normalProfileImages.length > 0 ? normalProfileImages[0] : `https://x.com/favicon.ico`,
+    favicon_url:
+      normalProfileImages.length > 0
+        ? normalProfileImages[0]
+        : `https://x.com/favicon.ico`,
     author: `${xBookmark.display_name} (@${xBookmark.username})`,
     domain: domain,
     source_platform: 'x.com',
@@ -76,9 +83,11 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
       display_name: xBookmark.display_name,
       has_video: xBookmark.has_video || false,
       images: contentImages, // Only content images, not profile images
-      profile_image_normal: normalProfileImages.length > 0 ? normalProfileImages[0] : undefined,
-      profile_image_bigger: biggerProfileImages.length > 0 ? biggerProfileImages[0] : undefined
-    }
+      profile_image_normal:
+        normalProfileImages.length > 0 ? normalProfileImages[0] : undefined,
+      profile_image_bigger:
+        biggerProfileImages.length > 0 ? biggerProfileImages[0] : undefined,
+    },
   }
 
   return bookmark
@@ -89,7 +98,10 @@ export function transformXBookmark(xBookmark: XBookmarkData, userId: string = 'l
  * @param xBookmarks Array of X bookmark data
  * @param limit Optional limit for testing (default: no limit)
  */
-export function transformXBookmarks(xBookmarks: XBookmarkData[], limit?: number): BookmarkInsert[] {
+export function transformXBookmarks(
+  xBookmarks: XBookmarkData[],
+  limit?: number
+): BookmarkInsert[] {
   if (!Array.isArray(xBookmarks)) {
     throw new Error('xBookmarks must be an array')
   }
@@ -102,7 +114,9 @@ export function transformXBookmarks(xBookmarks: XBookmarkData[], limit?: number)
     } catch (error) {
       console.error(`Error transforming bookmark at index ${index}:`, error)
       console.error('Bookmark data:', xBookmark)
-      throw new Error(`Failed to transform bookmark at index ${index}: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      throw new Error(
+        `Failed to transform bookmark at index ${index}: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
     }
   })
 }
@@ -110,7 +124,10 @@ export function transformXBookmarks(xBookmarks: XBookmarkData[], limit?: number)
 /**
  * Validate X bookmark data structure
  */
-export function validateXBookmarkData(data: any): { valid: boolean; errors: string[] } {
+export function validateXBookmarkData(data: any): {
+  valid: boolean
+  errors: string[]
+} {
   const errors: string[] = []
 
   if (!Array.isArray(data)) {
@@ -125,12 +142,14 @@ export function validateXBookmarkData(data: any): { valid: boolean; errors: stri
     if (!item.id) errors.push(`Item ${i}: Missing required field 'id'`)
     if (!item.url) errors.push(`Item ${i}: Missing required field 'url'`)
     if (!item.text) errors.push(`Item ${i}: Missing required field 'text'`)
-    if (!item.username) errors.push(`Item ${i}: Missing required field 'username'`)
-    if (!item.display_name) errors.push(`Item ${i}: Missing required field 'display_name'`)
+    if (!item.username)
+      errors.push(`Item ${i}: Missing required field 'username'`)
+    if (!item.display_name)
+      errors.push(`Item ${i}: Missing required field 'display_name'`)
   }
 
   return {
     valid: errors.length === 0,
-    errors
+    errors,
   }
 }

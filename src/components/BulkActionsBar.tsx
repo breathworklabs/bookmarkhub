@@ -8,11 +8,17 @@ import toast from 'react-hot-toast'
 
 export const BulkActionsBar = memo(() => {
   const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
-  const clearBookmarkSelection = useBookmarkStore((state) => state.clearBookmarkSelection)
+  const clearBookmarkSelection = useBookmarkStore(
+    (state) => state.clearBookmarkSelection
+  )
   const removeBookmark = useBookmarkStore((state) => state.removeBookmark)
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
-  const addBookmarkToCollection = useCollectionsStore((state) => state.addBookmarkToCollection)
-  const removeBookmarkFromCollection = useCollectionsStore((state) => state.removeBookmarkFromCollection)
+  const addBookmarkToCollection = useCollectionsStore(
+    (state) => state.addBookmarkToCollection
+  )
+  const removeBookmarkFromCollection = useCollectionsStore(
+    (state) => state.removeBookmarkFromCollection
+  )
 
   const [showCollectionPicker, setShowCollectionPicker] = useState(false)
 
@@ -22,8 +28,10 @@ export const BulkActionsBar = memo(() => {
     try {
       // Process all selected bookmarks
       for (const bookmarkId of selectedBookmarks) {
-        const currentBookmark = bookmarks.find(b => b.id === bookmarkId)
-        const currentCollections = (currentBookmark as any)?.collections || ['uncategorized']
+        const currentBookmark = bookmarks.find((b) => b.id === bookmarkId)
+        const currentCollections = (currentBookmark as any)?.collections || [
+          'uncategorized',
+        ]
 
         // Remove from all collections first
         for (const colId of currentCollections) {
@@ -40,7 +48,9 @@ export const BulkActionsBar = memo(() => {
         }
       }
 
-      toast.success(`Moved ${selectedBookmarks.length} bookmark${selectedBookmarks.length > 1 ? 's' : ''} successfully`)
+      toast.success(
+        `Moved ${selectedBookmarks.length} bookmark${selectedBookmarks.length > 1 ? 's' : ''} successfully`
+      )
       clearBookmarkSelection()
     } catch (error) {
       console.error('Failed to move bookmarks:', error)
@@ -49,7 +59,11 @@ export const BulkActionsBar = memo(() => {
   }
 
   const handleDeleteSelected = async () => {
-    if (!confirm(`Delete ${selectedBookmarks.length} bookmark${selectedBookmarks.length > 1 ? 's' : ''}?`)) {
+    if (
+      !confirm(
+        `Delete ${selectedBookmarks.length} bookmark${selectedBookmarks.length > 1 ? 's' : ''}?`
+      )
+    ) {
       return
     }
 
@@ -57,7 +71,9 @@ export const BulkActionsBar = memo(() => {
       for (const bookmarkId of selectedBookmarks) {
         await removeBookmark(bookmarkId)
       }
-      toast.success(`Deleted ${selectedBookmarks.length} bookmark${selectedBookmarks.length > 1 ? 's' : ''}`)
+      toast.success(
+        `Deleted ${selectedBookmarks.length} bookmark${selectedBookmarks.length > 1 ? 's' : ''}`
+      )
       clearBookmarkSelection()
     } catch (error) {
       console.error('Failed to delete bookmarks:', error)
@@ -110,7 +126,11 @@ export const BulkActionsBar = memo(() => {
             >
               {selectedBookmarks.length}
             </Box>
-            <Text fontSize="sm" fontWeight="500" color="var(--color-text-primary)">
+            <Text
+              fontSize="sm"
+              fontWeight="500"
+              color="var(--color-text-primary)"
+            >
               selected
             </Text>
           </HStack>
@@ -124,11 +144,11 @@ export const BulkActionsBar = memo(() => {
               style={{
                 borderColor: 'var(--color-border)',
                 color: 'var(--color-text-primary)',
-                background: 'transparent'
+                background: 'transparent',
               }}
               _hover={{
                 borderColor: 'var(--color-border-hover)',
-                bg: 'var(--color-bg-tertiary)'
+                bg: 'var(--color-bg-tertiary)',
               }}
               gap={2}
             >
@@ -144,11 +164,11 @@ export const BulkActionsBar = memo(() => {
               style={{
                 borderColor: 'var(--color-border)',
                 color: 'var(--color-error)',
-                background: 'transparent'
+                background: 'transparent',
               }}
               _hover={{
                 borderColor: 'var(--color-error)',
-                bg: 'rgba(239, 68, 68, 0.1)'
+                bg: 'rgba(239, 68, 68, 0.1)',
               }}
             >
               <LuTrash2 size={16} />
@@ -162,7 +182,7 @@ export const BulkActionsBar = memo(() => {
               style={{ color: 'var(--color-text-tertiary)' }}
               _hover={{
                 color: 'var(--color-text-primary)',
-                bg: 'var(--color-bg-tertiary)'
+                bg: 'var(--color-bg-tertiary)',
               }}
             >
               <LuX size={18} />

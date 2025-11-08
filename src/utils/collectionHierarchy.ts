@@ -27,20 +27,26 @@ export function buildCollectionTree(
   const nodes: CollectionTreeNode[] = []
 
   // Find all collections with the specified parent
-  const children = collections.filter(c => c.parentId === parentId)
+  const children = collections.filter((c) => c.parentId === parentId)
 
   for (const collection of children) {
-    const hasChildren = collections.some(c => c.parentId === collection.id)
+    const hasChildren = collections.some((c) => c.parentId === collection.id)
     const isExpanded = expandedIds.includes(collection.id)
 
     const node: CollectionTreeNode = {
       collection,
-      children: hasChildren && isExpanded
-        ? buildCollectionTree(collections, collection.id, depth + 1, expandedIds)
-        : [],
+      children:
+        hasChildren && isExpanded
+          ? buildCollectionTree(
+              collections,
+              collection.id,
+              depth + 1,
+              expandedIds
+            )
+          : [],
       depth,
       hasChildren,
-      isExpanded
+      isExpanded,
     }
 
     nodes.push(node)
@@ -52,7 +58,9 @@ export function buildCollectionTree(
 /**
  * Flatten a tree structure back to a flat array
  */
-export function flattenCollectionTree(tree: CollectionTreeNode[]): Collection[] {
+export function flattenCollectionTree(
+  tree: CollectionTreeNode[]
+): Collection[] {
   const result: Collection[] = []
 
   function traverse(nodes: CollectionTreeNode[]) {
@@ -75,7 +83,7 @@ export function getCollectionDepth(
   collectionId: string,
   collections: Collection[]
 ): number {
-  const collection = collections.find(c => c.id === collectionId)
+  const collection = collections.find((c) => c.id === collectionId)
   if (!collection) return 0
 
   let depth = 0
@@ -84,13 +92,15 @@ export function getCollectionDepth(
   // Traverse up the tree to count depth
   while (currentParentId) {
     depth++
-    const parent = collections.find(c => c.id === currentParentId)
+    const parent = collections.find((c) => c.id === currentParentId)
     if (!parent) break
     currentParentId = parent.parentId
 
     // Safety check: prevent infinite loops
     if (depth > 100) {
-      console.warn('Possible circular reference detected in collection hierarchy')
+      console.warn(
+        'Possible circular reference detected in collection hierarchy'
+      )
       break
     }
   }
@@ -105,14 +115,14 @@ export function getTotalDepth(
   collection: Collection,
   collections: Collection[]
 ): number {
-  const children = collections.filter(c => c.parentId === collection.id)
+  const children = collections.filter((c) => c.parentId === collection.id)
 
   if (children.length === 0) {
     return 1 // Leaf node has depth 1
   }
 
   // Recursively find max depth of children
-  const childDepths = children.map(child => getTotalDepth(child, collections))
+  const childDepths = children.map((child) => getTotalDepth(child, collections))
   return 1 + Math.max(...childDepths)
 }
 
@@ -126,7 +136,7 @@ export function isDescendantOf(
 ): boolean {
   if (childId === ancestorId) return false
 
-  const child = collections.find(c => c.id === childId)
+  const child = collections.find((c) => c.id === childId)
   if (!child || !child.parentId) return false
 
   // Traverse up the tree
@@ -145,7 +155,7 @@ export function isDescendantOf(
     }
     visited.add(currentParentId)
 
-    const parent = collections.find(c => c.id === currentParentId)
+    const parent = collections.find((c) => c.id === currentParentId)
     if (!parent) break
     currentParentId = parent.parentId
   }
@@ -161,7 +171,7 @@ export function getAncestorIds(
   collections: Collection[]
 ): string[] {
   const ancestors: string[] = []
-  const collection = collections.find(c => c.id === collectionId)
+  const collection = collections.find((c) => c.id === collectionId)
   if (!collection) return ancestors
 
   let currentParentId = collection.parentId
@@ -175,7 +185,7 @@ export function getAncestorIds(
     visited.add(currentParentId)
 
     ancestors.push(currentParentId)
-    const parent = collections.find(c => c.id === currentParentId)
+    const parent = collections.find((c) => c.id === currentParentId)
     if (!parent) break
     currentParentId = parent.parentId
   }
@@ -191,7 +201,7 @@ export function getCollectionPath(
   collections: Collection[]
 ): Collection[] {
   const path: Collection[] = []
-  const collection = collections.find(c => c.id === collectionId)
+  const collection = collections.find((c) => c.id === collectionId)
   if (!collection) return path
 
   path.unshift(collection) // Add current collection first
@@ -206,7 +216,7 @@ export function getCollectionPath(
     }
     visited.add(currentParentId)
 
-    const parent = collections.find(c => c.id === currentParentId)
+    const parent = collections.find((c) => c.id === currentParentId)
     if (!parent) break
 
     path.unshift(parent) // Add to beginning to maintain root -> leaf order
@@ -225,7 +235,7 @@ export function getCollectionPathString(
   separator: string = ' → '
 ): string {
   const path = getCollectionPath(collectionId, collections)
-  return path.map(c => c.name).join(separator)
+  return path.map((c) => c.name).join(separator)
 }
 
 /**
@@ -235,7 +245,7 @@ export function getChildCollections(
   parentId: string,
   collections: Collection[]
 ): Collection[] {
-  return collections.filter(c => c.parentId === parentId)
+  return collections.filter((c) => c.parentId === parentId)
 }
 
 /**
@@ -246,7 +256,7 @@ export function getAllDescendants(
   collections: Collection[]
 ): Collection[] {
   const descendants: Collection[] = []
-  const children = collections.filter(c => c.parentId === collectionId)
+  const children = collections.filter((c) => c.parentId === collectionId)
 
   for (const child of children) {
     descendants.push(child)
@@ -273,7 +283,7 @@ export function sortCollectionsByHierarchy(
 
     // Add parent first if it exists
     if (collection.parentId) {
-      const parent = collections.find(c => c.id === collection.parentId)
+      const parent = collections.find((c) => c.id === collection.parentId)
       if (parent) {
         addWithAncestors(parent)
       }
@@ -326,7 +336,7 @@ export function validateParentAssignment(
   }
 
   // Check if parent exists
-  const parent = collections.find(c => c.id === newParentId)
+  const parent = collections.find((c) => c.id === newParentId)
   if (!parent) {
     return { valid: false, error: 'Parent collection not found' }
   }
@@ -338,13 +348,13 @@ export function validateParentAssignment(
 
   // Check if it would exceed max depth
   const parentDepth = getCollectionDepth(newParentId, collections)
-  const collection = collections.find(c => c.id === collectionId)
+  const collection = collections.find((c) => c.id === collectionId)
   const subtreeDepth = collection ? getTotalDepth(collection, collections) : 1
 
   if (parentDepth + subtreeDepth > maxDepth) {
     return {
       valid: false,
-      error: `Would exceed maximum nesting depth of ${maxDepth} levels`
+      error: `Would exceed maximum nesting depth of ${maxDepth} levels`,
     }
   }
 
@@ -416,7 +426,7 @@ export function getBookmarkCountWithDescendants(
  * Get root collections (collections with no parent)
  */
 export function getRootCollections(collections: Collection[]): Collection[] {
-  return collections.filter(c => !c.parentId)
+  return collections.filter((c) => !c.parentId)
 }
 
 /**
@@ -427,13 +437,13 @@ export function findCollectionByPath(
   collections: Collection[],
   separator: string = '/'
 ): Collection | null {
-  const parts = path.split(separator).map(p => p.trim())
+  const parts = path.split(separator).map((p) => p.trim())
 
   let currentCollections = getRootCollections(collections)
   let found: Collection | null = null
 
   for (const part of parts) {
-    found = currentCollections.find(c => c.name === part) || null
+    found = currentCollections.find((c) => c.name === part) || null
     if (!found) return null
     currentCollections = getChildCollections(found.id, collections)
   }

@@ -7,7 +7,7 @@ export interface ExtensionSettings {
   defaultTags: string[]
   importDuplicates: 'skip' | 'replace' | 'keep-both'
   autoOpenApp: boolean
-  defaultCollection: string | null  // Default collection ID for new bookmarks
+  defaultCollection: string | null // Default collection ID for new bookmarks
 }
 
 export interface DisplaySettings {
@@ -18,9 +18,9 @@ export interface DisplaySettings {
   compactView: boolean
   mediaPreview: 'auto' | 'click' | 'off'
   animationsEnabled: boolean
-  sortBy: 'date' | 'title' | 'author' | 'domain'  // Sorting preference
-  sortOrder: 'asc' | 'desc'  // Sort direction
-  isSidebarCollapsed: boolean  // Sidebar collapse state
+  sortBy: 'date' | 'title' | 'author' | 'domain' // Sorting preference
+  sortOrder: 'asc' | 'desc' // Sort direction
+  isSidebarCollapsed: boolean // Sidebar collapse state
 }
 
 export interface PrivacySettings {
@@ -93,7 +93,9 @@ const defaultPrivacySettings: PrivacySettings = {
 // Custom storage that uses consolidated localStorage
 // Zustand v5 persist expects StorageValue<S> = { state: S, version?: number }
 const consolidatedStorage = {
-  getItem: (_name: string): { state: SettingsState; version?: number } | null => {
+  getItem: (
+    _name: string
+  ): { state: SettingsState; version?: number } | null => {
     try {
       const data = localStorage.getItem('x-bookmark-manager-data')
       if (data) {
@@ -107,13 +109,25 @@ const consolidatedStorage = {
             // Merge saved settings with defaults to handle new properties
             // Only return the data, not the actions - Zustand will add them
             const fullState = {
-              extension: { ...defaultExtensionSettings, ...(actualSettings.extension || {}) },
-              display: { ...defaultDisplaySettings, ...(actualSettings.display || {}) },
-              privacy: { ...defaultPrivacySettings, ...(actualSettings.privacy || {}) },
+              extension: {
+                ...defaultExtensionSettings,
+                ...(actualSettings.extension || {}),
+              },
+              display: {
+                ...defaultDisplaySettings,
+                ...(actualSettings.display || {}),
+              },
+              privacy: {
+                ...defaultPrivacySettings,
+                ...(actualSettings.privacy || {}),
+              },
               hasSeenSplash: actualSettings.hasSeenSplash ?? false,
             } as Partial<SettingsState>
             // Return in Zustand v5 persist format
-            return { state: fullState as SettingsState, version: settings.version || 0 }
+            return {
+              state: fullState as SettingsState,
+              version: settings.version || 0,
+            }
           }
         }
       }
@@ -122,17 +136,22 @@ const consolidatedStorage = {
     }
     return null
   },
-  setItem: (_name: string, value: { state: SettingsState; version?: number }): void => {
+  setItem: (
+    _name: string,
+    value: { state: SettingsState; version?: number }
+  ): void => {
     try {
       const data = localStorage.getItem('x-bookmark-manager-data')
-      const parsed = data ? JSON.parse(data) : {
-        bookmarks: [],
-        collections: [],
-        bookmarkCollections: [],
-        settings: {},
-        metadata: {},
-        version: '2.0.0'
-      }
+      const parsed = data
+        ? JSON.parse(data)
+        : {
+            bookmarks: [],
+            collections: [],
+            bookmarkCollections: [],
+            settings: {},
+            metadata: {},
+            version: '2.0.0',
+          }
       // Store the full StorageValue object
       parsed.extensionSettings = value
       localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
@@ -149,9 +168,12 @@ const consolidatedStorage = {
         localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
       }
     } catch (error) {
-      console.error('Failed to remove settings from consolidated storage:', error)
+      console.error(
+        'Failed to remove settings from consolidated storage:',
+        error
+      )
     }
-  }
+  },
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -231,7 +253,10 @@ export const useSettingsStore = create<SettingsState>()(
 
       toggleSidebarCollapsed: () =>
         set((state) => ({
-          display: { ...state.display, isSidebarCollapsed: !state.display.isSidebarCollapsed },
+          display: {
+            ...state.display,
+            isSidebarCollapsed: !state.display.isSidebarCollapsed,
+          },
         })),
 
       // Privacy settings actions
@@ -241,8 +266,7 @@ export const useSettingsStore = create<SettingsState>()(
         })),
 
       // App state actions
-      setHasSeenSplash: (seen) =>
-        set({ hasSeenSplash: seen }),
+      setHasSeenSplash: (seen) => set({ hasSeenSplash: seen }),
 
       // Reset actions
       resetExtensionSettings: () =>

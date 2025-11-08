@@ -5,14 +5,15 @@ import { useFilterReset } from '../utils/filterUtils'
 import { GenericFilter } from './filters/GenericFilter'
 
 const AuthorFilter = () => {
-  const { authorFilter, setAuthorFilter, filterOptions } = useBookmarkSelectors()
+  const { authorFilter, setAuthorFilter, filterOptions } =
+    useBookmarkSelectors()
   const resetFilters = useFilterReset()
 
   // Use cached authors from the store
   const authors = useMemo(() => {
-    return filterOptions.authors.map(author => ({
+    return filterOptions.authors.map((author) => ({
       label: author,
-      value: author
+      value: author,
     }))
   }, [filterOptions.authors])
 

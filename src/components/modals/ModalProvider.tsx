@@ -1,5 +1,28 @@
-import React, { createContext, useContext, useState, ReactNode, useCallback, useMemo } from 'react'
-import { Dialog, Button, HStack, Text, Box, Input, VStack, Textarea, Badge, SelectTrigger, SelectContent, SelectItem, SelectRoot, SelectValueText, createListCollection } from '@chakra-ui/react'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useCallback,
+  useMemo,
+} from 'react'
+import {
+  Dialog,
+  Button,
+  HStack,
+  Text,
+  Box,
+  Input,
+  VStack,
+  Textarea,
+  Badge,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectRoot,
+  SelectValueText,
+  createListCollection,
+} from '@chakra-ui/react'
 import type { BookmarkInsert, Bookmark } from '../../types/bookmark'
 import type { CollectionInsert } from '../../lib/localStorage'
 import { DataProcessingService } from '../../services/dataProcessingService'
@@ -8,7 +31,10 @@ import TagManagerModal from '../tags/TagManagerModal'
 import TagMergeModal from '../tags/TagMergeModal'
 import DuplicateBookmarkDialog from './DuplicateBookmarkDialog'
 import { useCollectionsStore } from '../../store/collectionsStore'
-import { getCollectionPathString, wouldCreateCircularReference } from '../../utils/collectionHierarchy'
+import {
+  getCollectionPathString,
+  wouldCreateCircularReference,
+} from '../../utils/collectionHierarchy'
 
 interface TagMergeOptions {
   initialSourceTags?: string[]
@@ -60,7 +86,7 @@ interface CreateCollectionOptions {
 }
 
 interface EditCollectionOptions {
-  collection: any  // Will use the full Collection type later
+  collection: any // Will use the full Collection type later
   onEdit: (id: string, updates: Partial<any>) => void
   onCancel?: () => void
 }
@@ -82,7 +108,15 @@ export const useModal = () => {
 }
 
 interface ModalState {
-  type: 'delete' | 'addTag' | 'addBookmark' | 'editBookmark' | 'createCollection' | 'editCollection' | 'imageModal' | null
+  type:
+    | 'delete'
+    | 'addTag'
+    | 'addBookmark'
+    | 'editBookmark'
+    | 'createCollection'
+    | 'editCollection'
+    | 'imageModal'
+    | null
   options: any
 }
 
@@ -103,19 +137,22 @@ interface TagMergeState {
 }
 
 export const ModalProvider = ({ children }: { children: ReactNode }) => {
-  const [modalState, setModalState] = useState<ModalState>({ type: null, options: null })
+  const [modalState, setModalState] = useState<ModalState>({
+    type: null,
+    options: null,
+  })
   const [imageModalState, setImageModalState] = useState<ImageModalState>({
     isOpen: false,
     images: [],
     initialIndex: 0,
-    title: undefined
+    title: undefined,
   })
   const [tagManagerState, setTagManagerState] = useState<TagManagerState>({
-    isOpen: false
+    isOpen: false,
   })
   const [tagMergeState, setTagMergeState] = useState<TagMergeState>({
     isOpen: false,
-    initialSourceTags: []
+    initialSourceTags: [],
   })
   const [tagInput, setTagInput] = useState('')
   const [bookmarkFormData, setBookmarkFormData] = useState<BookmarkInsert>({
@@ -133,38 +170,43 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     is_archived: false,
     is_shared: false,
     tags: [],
-    collections: []
+    collections: [],
   })
   const [isAddingTag, setIsAddingTag] = useState(false)
   const [newTagInput, setNewTagInput] = useState('')
-  const [collectionFormData, setCollectionFormData] = useState<CollectionInsert>({
-    name: '',
-    description: '',
-    parentId: null,
-    color: 'var(--color-blue)',
-    icon: 'folder',
-    isPrivate: false,
-    isDefault: false,
-    isSmartCollection: false,
-    userId: 'local-user'
-  })
+  const [collectionFormData, setCollectionFormData] =
+    useState<CollectionInsert>({
+      name: '',
+      description: '',
+      parentId: null,
+      color: 'var(--color-blue)',
+      icon: 'folder',
+      isPrivate: false,
+      isDefault: false,
+      isSmartCollection: false,
+      userId: 'local-user',
+    })
 
   // Get collections for parent selector
   const collections = useCollectionsStore((state) => state.collections)
 
   // Get valid parent collections (exclude current collection and its descendants when editing)
   const validParentCollections = useMemo(() => {
-    const currentCollectionId = modalState.type === 'editCollection'
-      ? modalState.options?.collection?.id
-      : undefined
+    const currentCollectionId =
+      modalState.type === 'editCollection'
+        ? modalState.options?.collection?.id
+        : undefined
 
-    return collections.filter(c => {
+    return collections.filter((c) => {
       // Exclude smart collections (they can't be parents)
       if (c.isSmartCollection) return false
 
       // When editing, exclude self and descendants
       if (currentCollectionId && c.id === currentCollectionId) return false
-      if (currentCollectionId && wouldCreateCircularReference(currentCollectionId, c.id, collections)) {
+      if (
+        currentCollectionId &&
+        wouldCreateCircularReference(currentCollectionId, c.id, collections)
+      ) {
         return false
       }
 
@@ -176,10 +218,10 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const parentCollectionOptions = useMemo(() => {
     const items = [
       { label: 'None (Root Level)', value: '__none__' },
-      ...validParentCollections.map(c => ({
+      ...validParentCollections.map((c) => ({
         label: getCollectionPathString(c.id, collections, ' → '),
-        value: c.id
-      }))
+        value: c.id,
+      })),
     ]
     return createListCollection({ items })
   }, [validParentCollections, collections])
@@ -211,7 +253,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       is_shared: false,
       tags: [],
       collections: ['uncategorized'],
-      primaryCollection: 'uncategorized'
+      primaryCollection: 'uncategorized',
     })
     setIsAddingTag(false)
     setNewTagInput('')
@@ -220,7 +262,8 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const showEditBookmark = (options: EditBookmarkOptions) => {
     setModalState({ type: 'editBookmark', options })
     setBookmarkFormData({
-      user_id: options.bookmark.user_id || 'ae879c80-f3fc-4e05-a837-384e4b9bfb28',
+      user_id:
+        options.bookmark.user_id || 'ae879c80-f3fc-4e05-a837-384e4b9bfb28',
       title: options.bookmark.title || '',
       url: options.bookmark.url || '',
       description: options.bookmark.description || '',
@@ -234,7 +277,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       is_archived: options.bookmark.is_archived || false,
       is_shared: options.bookmark.is_shared || false,
       tags: options.bookmark.tags || [],
-      collections: options.bookmark.collections || []
+      collections: options.bookmark.collections || [],
     })
     setIsAddingTag(false)
     setNewTagInput('')
@@ -259,7 +302,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       is_shared: false,
       tags: [],
       collections: ['uncategorized'],
-      primaryCollection: 'uncategorized'
+      primaryCollection: 'uncategorized',
     })
     setIsAddingTag(false)
     setNewTagInput('')
@@ -287,13 +330,16 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     closeModal()
   }
 
-  const handleTagKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleAddTag()
-    } else if (e.key === 'Escape') {
-      closeModal()
-    }
-  }, [handleAddTag, closeModal])
+  const handleTagKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        handleAddTag()
+      } else if (e.key === 'Escape') {
+        closeModal()
+      }
+    },
+    [handleAddTag, closeModal]
+  )
 
   const handleBookmarkSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -302,7 +348,8 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Prepare bookmark data using DataProcessingService
-    const bookmarkData: BookmarkInsert = DataProcessingService.prepareBookmarkForForm(bookmarkFormData)
+    const bookmarkData: BookmarkInsert =
+      DataProcessingService.prepareBookmarkForForm(bookmarkFormData)
 
     if (modalState.type === 'editBookmark') {
       modalState.options?.onEdit?.(modalState.options.bookmark.id, bookmarkData)
@@ -312,37 +359,43 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     closeModal()
   }
 
-  const handleBookmarkFormChange = useCallback((field: keyof BookmarkInsert, value: any) => {
-    setBookmarkFormData(prev => ({ ...prev, [field]: value }))
-  }, [])
+  const handleBookmarkFormChange = useCallback(
+    (field: keyof BookmarkInsert, value: any) => {
+      setBookmarkFormData((prev) => ({ ...prev, [field]: value }))
+    },
+    []
+  )
 
   const removeBookmarkTag = useCallback((tagToRemove: string) => {
-    setBookmarkFormData(prev => ({
+    setBookmarkFormData((prev) => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }))
   }, [])
 
   const handleAddBookmarkTag = useCallback(() => {
     const tag = newTagInput.trim()
     if (tag && !bookmarkFormData.tags.includes(tag)) {
-      setBookmarkFormData(prev => ({
+      setBookmarkFormData((prev) => ({
         ...prev,
-        tags: [...prev.tags, tag]
+        tags: [...prev.tags, tag],
       }))
       setNewTagInput('')
       setIsAddingTag(false)
     }
   }, [newTagInput, bookmarkFormData.tags])
 
-  const handleNewTagKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleAddBookmarkTag()
-    } else if (e.key === 'Escape') {
-      setIsAddingTag(false)
-      setNewTagInput('')
-    }
-  }, [handleAddBookmarkTag])
+  const handleNewTagKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        handleAddBookmarkTag()
+      } else if (e.key === 'Escape') {
+        setIsAddingTag(false)
+        setNewTagInput('')
+      }
+    },
+    [handleAddBookmarkTag]
+  )
 
   // Collection handlers
   const showCreateCollection = (options: CreateCollectionOptions) => {
@@ -355,7 +408,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       isPrivate: false,
       isDefault: false,
       isSmartCollection: false,
-      userId: 'local-user'
+      userId: 'local-user',
     })
   }
 
@@ -369,39 +422,48 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       isPrivate: options.collection.isPrivate || false,
       isDefault: options.collection.isDefault || false,
       isSmartCollection: options.collection.isSmartCollection || false,
-      userId: options.collection.userId || 'local-user'
+      userId: options.collection.userId || 'local-user',
     })
   }
 
-  const handleCollectionSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!collectionFormData.name.trim()) {
-      return
-    }
+  const handleCollectionSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault()
+      if (!collectionFormData.name.trim()) {
+        return
+      }
 
-    if (modalState.type === 'editCollection') {
-      modalState.options?.onEdit?.(modalState.options.collection.id, collectionFormData)
-    } else {
-      modalState.options?.onCreate?.(collectionFormData)
-    }
-    closeModal()
-  }, [collectionFormData, modalState.type, modalState.options])
+      if (modalState.type === 'editCollection') {
+        modalState.options?.onEdit?.(
+          modalState.options.collection.id,
+          collectionFormData
+        )
+      } else {
+        modalState.options?.onCreate?.(collectionFormData)
+      }
+      closeModal()
+    },
+    [collectionFormData, modalState.type, modalState.options]
+  )
 
-  const handleCollectionFormChange = useCallback((field: keyof CollectionInsert, value: any) => {
-    // Handle special "__none__" value for parentId
-    if (field === 'parentId' && value === '__none__') {
-      setCollectionFormData(prev => ({ ...prev, [field]: null }))
-    } else {
-      setCollectionFormData(prev => ({ ...prev, [field]: value }))
-    }
-  }, [])
+  const handleCollectionFormChange = useCallback(
+    (field: keyof CollectionInsert, value: any) => {
+      // Handle special "__none__" value for parentId
+      if (field === 'parentId' && value === '__none__') {
+        setCollectionFormData((prev) => ({ ...prev, [field]: null }))
+      } else {
+        setCollectionFormData((prev) => ({ ...prev, [field]: value }))
+      }
+    },
+    []
+  )
 
   const showImageModal = (options: ImageModalOptions) => {
     setImageModalState({
       isOpen: true,
       images: options.images,
       initialIndex: options.initialIndex || 0,
-      title: options.title
+      title: options.title,
     })
   }
 
@@ -410,33 +472,33 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       isOpen: false,
       images: [],
       initialIndex: 0,
-      title: undefined
+      title: undefined,
     })
   }
 
   const showTagManager = () => {
     setTagManagerState({
-      isOpen: true
+      isOpen: true,
     })
   }
 
   const closeTagManager = () => {
     setTagManagerState({
-      isOpen: false
+      isOpen: false,
     })
   }
 
   const showTagMerge = (options?: TagMergeOptions) => {
     setTagMergeState({
       isOpen: true,
-      initialSourceTags: options?.initialSourceTags || []
+      initialSourceTags: options?.initialSourceTags || [],
     })
   }
 
   const closeTagMerge = () => {
     setTagMergeState({
       isOpen: false,
-      initialSourceTags: []
+      initialSourceTags: [],
     })
   }
 
@@ -450,7 +512,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     showImageModal,
     showTagManager,
     showTagMerge,
-    closeModal
+    closeModal,
   }
 
   return (
@@ -464,7 +526,10 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
           onOpenChange={(e) => !e.open && closeModal()}
           placement="center"
         >
-          <Dialog.Backdrop bg="rgba(0, 0, 0, 0.85)" backdropFilter="blur(4px)" />
+          <Dialog.Backdrop
+            bg="rgba(0, 0, 0, 0.85)"
+            backdropFilter="blur(4px)"
+          />
           <Dialog.Positioner>
             <Dialog.Content
               style={{ background: 'var(--color-bg-primary)' }}
@@ -482,7 +547,11 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                 p={6}
               >
                 <Dialog.Title>
-                  <Text fontSize="xl" fontWeight="700" style={{ color: 'var(--color-text-primary)' }}>
+                  <Text
+                    fontSize="xl"
+                    fontWeight="700"
+                    style={{ color: 'var(--color-text-primary)' }}
+                  >
                     {modalState.options?.title || 'Confirm Delete'}
                   </Text>
                 </Dialog.Title>
@@ -493,7 +562,11 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                 </Text>
                 {modalState.options?.preview && (
                   <Box
-                    style={{ background: 'var(--color-bg-primary)', borderColor: 'var(--color-border)', color: 'var(--color-text-tertiary)' }}
+                    style={{
+                      background: 'var(--color-bg-primary)',
+                      borderColor: 'var(--color-border)',
+                      color: 'var(--color-text-tertiary)',
+                    }}
                     border="1px solid"
                     borderRadius="8px"
                     p={3}
@@ -516,7 +589,10 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                     variant="ghost"
                     style={{ color: 'var(--color-text-tertiary)' }}
                     borderRadius="10px"
-                    _hover={{ color: 'var(--color-text-primary)', bg: 'rgba(42, 45, 53, 0.5)' }}
+                    _hover={{
+                      color: 'var(--color-text-primary)',
+                      bg: 'rgba(42, 45, 53, 0.5)',
+                    }}
                     onClick={handleDeleteCancel}
                   >
                     Cancel
@@ -544,7 +620,10 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
           onOpenChange={(e) => !e.open && closeModal()}
           placement="center"
         >
-          <Dialog.Backdrop bg="rgba(0, 0, 0, 0.85)" backdropFilter="blur(4px)" />
+          <Dialog.Backdrop
+            bg="rgba(0, 0, 0, 0.85)"
+            backdropFilter="blur(4px)"
+          />
           <Dialog.Positioner>
             <Dialog.Content
               style={{ background: 'var(--color-bg-primary)' }}
@@ -562,18 +641,27 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                 p={6}
               >
                 <Dialog.Title>
-                  <Text fontSize="xl" fontWeight="700" style={{ color: 'var(--color-text-primary)' }}>
+                  <Text
+                    fontSize="xl"
+                    fontWeight="700"
+                    style={{ color: 'var(--color-text-primary)' }}
+                  >
                     Add New Tag
                   </Text>
                 </Dialog.Title>
               </Dialog.Header>
               <Dialog.Body px={6} py={6}>
                 <Input
-                  placeholder={modalState.options?.placeholder || "Enter tag name..."}
+                  placeholder={
+                    modalState.options?.placeholder || 'Enter tag name...'
+                  }
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={handleTagKeyDown}
-                  style={{ background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
+                  style={{
+                    background: 'var(--color-bg-tertiary)',
+                    color: 'var(--color-text-primary)',
+                  }}
                   border="1px solid var(--color-border)"
                   borderRadius="12px"
                   fontSize="14px"
@@ -583,7 +671,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                   _focus={{
                     borderColor: 'var(--color-blue)',
                     boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)',
-                    outline: 'none'
+                    outline: 'none',
                   }}
                   autoFocus
                 />
@@ -599,7 +687,10 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                     variant="ghost"
                     style={{ color: 'var(--color-text-tertiary)' }}
                     borderRadius="10px"
-                    _hover={{ color: 'var(--color-text-primary)', bg: 'rgba(42, 45, 53, 0.5)' }}
+                    _hover={{
+                      color: 'var(--color-text-primary)',
+                      bg: 'rgba(42, 45, 53, 0.5)',
+                    }}
                     onClick={handleAddTagCancel}
                   >
                     Cancel
@@ -609,11 +700,16 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                     color="white"
                     borderRadius="10px"
                     _hover={{ bg: 'var(--color-blue-hover)' }}
-                    disabled={!tagInput.trim() || modalState.options?.existingTags?.includes(tagInput.trim())}
+                    disabled={
+                      !tagInput.trim() ||
+                      modalState.options?.existingTags?.includes(
+                        tagInput.trim()
+                      )
+                    }
                     _disabled={{
                       bg: 'var(--color-border-hover)',
                       color: 'var(--color-text-tertiary)',
-                      cursor: 'not-allowed'
+                      cursor: 'not-allowed',
                     }}
                     onClick={handleAddTag}
                   >
@@ -627,13 +723,17 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       )}
 
       {/* Add/Edit Bookmark Modal */}
-      {(modalState.type === 'addBookmark' || modalState.type === 'editBookmark') && (
+      {(modalState.type === 'addBookmark' ||
+        modalState.type === 'editBookmark') && (
         <Dialog.Root
           open={true}
           onOpenChange={(e) => !e.open && closeModal()}
           placement="center"
         >
-          <Dialog.Backdrop bg="rgba(0, 0, 0, 0.85)" backdropFilter="blur(4px)" />
+          <Dialog.Backdrop
+            bg="rgba(0, 0, 0, 0.85)"
+            backdropFilter="blur(4px)"
+          />
           <Dialog.Positioner>
             <Dialog.Content
               style={{ background: 'var(--color-bg-primary)' }}
@@ -653,8 +753,14 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                   p={6}
                 >
                   <Dialog.Title>
-                    <Text fontSize="xl" fontWeight="700" style={{ color: 'var(--color-text-primary)' }}>
-                      {modalState.type === 'editBookmark' ? 'Edit Bookmark' : 'Add New Bookmark'}
+                    <Text
+                      fontSize="xl"
+                      fontWeight="700"
+                      style={{ color: 'var(--color-text-primary)' }}
+                    >
+                      {modalState.type === 'editBookmark'
+                        ? 'Edit Bookmark'
+                        : 'Add New Bookmark'}
                     </Text>
                   </Dialog.Title>
                 </Dialog.Header>
@@ -662,73 +768,118 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                 <Dialog.Body px={6} pb={4}>
                   <VStack gap={4} align="stretch">
                     <VStack gap={2} align="stretch">
-                      <Text fontSize="sm" color="var(--color-text-secondary)">Title *</Text>
+                      <Text fontSize="sm" color="var(--color-text-secondary)">
+                        Title *
+                      </Text>
                       <Input
                         value={bookmarkFormData.title}
-                        onChange={(e) => handleBookmarkFormChange('title', e.target.value)}
+                        onChange={(e) =>
+                          handleBookmarkFormChange('title', e.target.value)
+                        }
                         placeholder="Enter bookmark title"
                         required
-                        style={{ background: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                        style={{
+                          background: 'var(--color-border)',
+                          color: 'var(--color-text-primary)',
+                        }}
                         border="1px solid var(--color-border-hover)"
                         _hover={{ borderColor: 'var(--color-border-hover)' }}
-                        _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
+                        _focus={{
+                          borderColor: 'var(--color-blue)',
+                          boxShadow: '0 0 0 1px var(--color-blue)',
+                        }}
                         _placeholder={{ color: 'var(--color-text-tertiary)' }}
                       />
                     </VStack>
 
                     <VStack gap={2} align="stretch">
-                      <Text fontSize="sm" color="var(--color-text-secondary)">URL *</Text>
+                      <Text fontSize="sm" color="var(--color-text-secondary)">
+                        URL *
+                      </Text>
                       <Input
                         type="url"
                         value={bookmarkFormData.url}
-                        onChange={(e) => handleBookmarkFormChange('url', e.target.value)}
+                        onChange={(e) =>
+                          handleBookmarkFormChange('url', e.target.value)
+                        }
                         placeholder="https://example.com"
                         required
-                        style={{ background: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                        style={{
+                          background: 'var(--color-border)',
+                          color: 'var(--color-text-primary)',
+                        }}
                         border="1px solid var(--color-border-hover)"
                         _hover={{ borderColor: 'var(--color-border-hover)' }}
-                        _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
+                        _focus={{
+                          borderColor: 'var(--color-blue)',
+                          boxShadow: '0 0 0 1px var(--color-blue)',
+                        }}
                         _placeholder={{ color: 'var(--color-text-tertiary)' }}
                       />
                     </VStack>
 
                     <VStack gap={2} align="stretch">
-                      <Text fontSize="sm" color="var(--color-text-secondary)">Author</Text>
+                      <Text fontSize="sm" color="var(--color-text-secondary)">
+                        Author
+                      </Text>
                       <Input
                         value={bookmarkFormData.author}
-                        onChange={(e) => handleBookmarkFormChange('author', e.target.value)}
+                        onChange={(e) =>
+                          handleBookmarkFormChange('author', e.target.value)
+                        }
                         placeholder="Author name"
-                        style={{ background: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                        style={{
+                          background: 'var(--color-border)',
+                          color: 'var(--color-text-primary)',
+                        }}
                         border="1px solid var(--color-border-hover)"
                         _hover={{ borderColor: 'var(--color-border-hover)' }}
-                        _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
+                        _focus={{
+                          borderColor: 'var(--color-blue)',
+                          boxShadow: '0 0 0 1px var(--color-blue)',
+                        }}
                         _placeholder={{ color: 'var(--color-text-tertiary)' }}
                       />
                     </VStack>
 
                     <VStack gap={2} align="stretch">
-                      <Text fontSize="sm" color="var(--color-text-secondary)">Content</Text>
+                      <Text fontSize="sm" color="var(--color-text-secondary)">
+                        Content
+                      </Text>
                       <Textarea
                         value={bookmarkFormData.content}
-                        onChange={(e) => handleBookmarkFormChange('content', e.target.value)}
+                        onChange={(e) =>
+                          handleBookmarkFormChange('content', e.target.value)
+                        }
                         placeholder="Bookmark description or content preview"
                         rows={3}
-                        style={{ background: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                        style={{
+                          background: 'var(--color-border)',
+                          color: 'var(--color-text-primary)',
+                        }}
                         border="1px solid var(--color-border-hover)"
                         _hover={{ borderColor: 'var(--color-border-hover)' }}
-                        _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
+                        _focus={{
+                          borderColor: 'var(--color-blue)',
+                          boxShadow: '0 0 0 1px var(--color-blue)',
+                        }}
                         _placeholder={{ color: 'var(--color-text-tertiary)' }}
                       />
                     </VStack>
 
                     <VStack gap={2} align="stretch">
-                      <Text fontSize="sm" color="var(--color-text-secondary)">Tags</Text>
+                      <Text fontSize="sm" color="var(--color-text-secondary)">
+                        Tags
+                      </Text>
                       {bookmarkFormData.tags.length > 0 && (
                         <HStack wrap="wrap" gap={2}>
-                          {bookmarkFormData.tags.map(tag => (
+                          {bookmarkFormData.tags.map((tag) => (
                             <Badge
                               key={tag}
-                              style={{ background: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                              style={{
+                                background: 'var(--color-border)',
+                                color: 'var(--color-text-primary)',
+                              }}
                               px={3}
                               py={1}
                               borderRadius="full"
@@ -754,7 +905,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                           _hover={{
                             bg: 'var(--color-bg-tertiary)',
                             color: 'var(--color-text-primary)',
-                            borderColor: 'var(--color-border-hover)'
+                            borderColor: 'var(--color-border-hover)',
                           }}
                         >
                           + Add Tag
@@ -767,11 +918,21 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                             onKeyDown={handleNewTagKeyDown}
                             placeholder="Enter tag name..."
                             size="sm"
-                            style={{ background: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                            style={{
+                              background: 'var(--color-border)',
+                              color: 'var(--color-text-primary)',
+                            }}
                             border="1px solid var(--color-border-hover)"
-                            _hover={{ borderColor: 'var(--color-border-hover)' }}
-                            _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 1px var(--color-blue)' }}
-                            _placeholder={{ color: 'var(--color-text-tertiary)' }}
+                            _hover={{
+                              borderColor: 'var(--color-border-hover)',
+                            }}
+                            _focus={{
+                              borderColor: 'var(--color-blue)',
+                              boxShadow: '0 0 0 1px var(--color-blue)',
+                            }}
+                            _placeholder={{
+                              color: 'var(--color-text-tertiary)',
+                            }}
                             autoFocus
                           />
                           <Button
@@ -811,7 +972,10 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                       variant="ghost"
                       style={{ color: 'var(--color-text-tertiary)' }}
                       borderRadius="10px"
-                      _hover={{ color: 'var(--color-text-primary)', bg: 'rgba(42, 45, 53, 0.5)' }}
+                      _hover={{
+                        color: 'var(--color-text-primary)',
+                        bg: 'rgba(42, 45, 53, 0.5)',
+                      }}
                       onClick={closeModal}
                     >
                       Cancel
@@ -824,12 +988,17 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                       _disabled={{
                         bg: 'var(--color-border-hover)',
                         color: 'var(--color-text-tertiary)',
-                        cursor: 'not-allowed'
+                        cursor: 'not-allowed',
                       }}
                       type="submit"
-                      disabled={!bookmarkFormData.title.trim() || !bookmarkFormData.url.trim()}
+                      disabled={
+                        !bookmarkFormData.title.trim() ||
+                        !bookmarkFormData.url.trim()
+                      }
                     >
-                      {modalState.type === 'editBookmark' ? 'Edit Bookmark' : 'Add Bookmark'}
+                      {modalState.type === 'editBookmark'
+                        ? 'Edit Bookmark'
+                        : 'Add Bookmark'}
                     </Button>
                   </HStack>
                 </Dialog.Footer>
@@ -840,13 +1009,17 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       )}
 
       {/* Create/Edit Collection Modal */}
-      {(modalState.type === 'createCollection' || modalState.type === 'editCollection') && (
+      {(modalState.type === 'createCollection' ||
+        modalState.type === 'editCollection') && (
         <Dialog.Root
           open={true}
           onOpenChange={(e) => !e.open && closeModal()}
           placement="center"
         >
-          <Dialog.Backdrop bg="rgba(0, 0, 0, 0.85)" backdropFilter="blur(4px)" />
+          <Dialog.Backdrop
+            bg="rgba(0, 0, 0, 0.85)"
+            backdropFilter="blur(4px)"
+          />
           <Dialog.Positioner>
             <Dialog.Content
               style={{ background: 'var(--color-bg-primary)' }}
@@ -866,8 +1039,14 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                   p={6}
                 >
                   <Dialog.Title>
-                    <Text fontSize="xl" fontWeight="700" style={{ color: 'var(--color-text-primary)' }}>
-                      {modalState.type === 'editCollection' ? 'Edit Collection' : 'Create Collection'}
+                    <Text
+                      fontSize="xl"
+                      fontWeight="700"
+                      style={{ color: 'var(--color-text-primary)' }}
+                    >
+                      {modalState.type === 'editCollection'
+                        ? 'Edit Collection'
+                        : 'Create Collection'}
                     </Text>
                   </Dialog.Title>
                 </Dialog.Header>
@@ -875,47 +1054,81 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                 <Dialog.Body px={6} py={6}>
                   <VStack gap={4} align="stretch">
                     <VStack gap={2} align="stretch">
-                      <Text fontSize="sm" color="var(--color-text-secondary)">Name *</Text>
+                      <Text fontSize="sm" color="var(--color-text-secondary)">
+                        Name *
+                      </Text>
                       <Input
                         value={collectionFormData.name}
-                        onChange={(e) => handleCollectionFormChange('name', e.target.value)}
+                        onChange={(e) =>
+                          handleCollectionFormChange('name', e.target.value)
+                        }
                         placeholder="Collection name"
                         required
-                        style={{ background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
+                        style={{
+                          background: 'var(--color-bg-tertiary)',
+                          color: 'var(--color-text-primary)',
+                        }}
                         border="1px solid var(--color-border)"
                         borderRadius="12px"
                         _hover={{ borderColor: 'var(--color-border-hover)' }}
-                        _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)' }}
+                        _focus={{
+                          borderColor: 'var(--color-blue)',
+                          boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)',
+                        }}
                         _placeholder={{ color: 'var(--color-text-tertiary)' }}
                       />
                     </VStack>
 
                     <VStack gap={2} align="stretch">
-                      <Text fontSize="sm" color="var(--color-text-secondary)">Description</Text>
+                      <Text fontSize="sm" color="var(--color-text-secondary)">
+                        Description
+                      </Text>
                       <Textarea
                         value={collectionFormData.description}
-                        onChange={(e) => handleCollectionFormChange('description', e.target.value)}
+                        onChange={(e) =>
+                          handleCollectionFormChange(
+                            'description',
+                            e.target.value
+                          )
+                        }
                         placeholder="Collection description (optional)"
                         rows={2}
-                        style={{ background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
+                        style={{
+                          background: 'var(--color-bg-tertiary)',
+                          color: 'var(--color-text-primary)',
+                        }}
                         border="1px solid var(--color-border)"
                         borderRadius="12px"
                         _hover={{ borderColor: 'var(--color-border-hover)' }}
-                        _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)' }}
+                        _focus={{
+                          borderColor: 'var(--color-blue)',
+                          boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)',
+                        }}
                         _placeholder={{ color: 'var(--color-text-tertiary)' }}
                       />
                     </VStack>
 
                     <VStack gap={2} align="stretch">
-                      <Text fontSize="sm" color="var(--color-text-secondary)">Parent Collection</Text>
+                      <Text fontSize="sm" color="var(--color-text-secondary)">
+                        Parent Collection
+                      </Text>
                       <SelectRoot
                         collection={parentCollectionOptions}
-                        value={collectionFormData.parentId ? [collectionFormData.parentId] : ['__none__']}
-                        onValueChange={(e) => handleCollectionFormChange('parentId', e.value[0])}
+                        value={
+                          collectionFormData.parentId
+                            ? [collectionFormData.parentId]
+                            : ['__none__']
+                        }
+                        onValueChange={(e) =>
+                          handleCollectionFormChange('parentId', e.value[0])
+                        }
                         size="md"
                       >
                         <SelectTrigger
-                          style={{ background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
+                          style={{
+                            background: 'var(--color-bg-tertiary)',
+                            color: 'var(--color-text-primary)',
+                          }}
                           border="1px solid var(--color-border)"
                           borderRadius="12px"
                           _hover={{ borderColor: 'var(--color-border-hover)' }}
@@ -923,7 +1136,10 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                           <SelectValueText placeholder="None (Root Level)" />
                         </SelectTrigger>
                         <SelectContent
-                          style={{ background: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)' }}
+                          style={{
+                            background: 'var(--color-bg-secondary)',
+                            color: 'var(--color-text-primary)',
+                          }}
                           border="1px solid var(--color-border)"
                           borderRadius="8px"
                         >
@@ -935,7 +1151,8 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                         </SelectContent>
                       </SelectRoot>
                       <Text fontSize="xs" color="var(--color-text-tertiary)">
-                        Create a sub-collection by selecting a parent, or leave as root level
+                        Create a sub-collection by selecting a parent, or leave
+                        as root level
                       </Text>
                     </VStack>
                   </VStack>
@@ -952,7 +1169,10 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                       variant="ghost"
                       style={{ color: 'var(--color-text-tertiary)' }}
                       borderRadius="10px"
-                      _hover={{ color: 'var(--color-text-primary)', bg: 'rgba(42, 45, 53, 0.5)' }}
+                      _hover={{
+                        color: 'var(--color-text-primary)',
+                        bg: 'rgba(42, 45, 53, 0.5)',
+                      }}
                       onClick={closeModal}
                     >
                       Cancel
@@ -965,12 +1185,14 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                       _disabled={{
                         bg: 'var(--color-border-hover)',
                         color: 'var(--color-text-tertiary)',
-                        cursor: 'not-allowed'
+                        cursor: 'not-allowed',
                       }}
                       type="submit"
                       disabled={!collectionFormData.name.trim()}
                     >
-                      {modalState.type === 'editCollection' ? 'Update Collection' : 'Create Collection'}
+                      {modalState.type === 'editCollection'
+                        ? 'Update Collection'
+                        : 'Create Collection'}
                     </Button>
                   </HStack>
                 </Dialog.Footer>

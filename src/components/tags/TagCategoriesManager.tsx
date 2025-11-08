@@ -1,4 +1,16 @@
-import { Box, VStack, HStack, Text, Button, Input, For, Badge, IconButton, Wrap, WrapItem } from '@chakra-ui/react'
+import {
+  Box,
+  VStack,
+  HStack,
+  Text,
+  Button,
+  Input,
+  For,
+  Badge,
+  IconButton,
+  Wrap,
+  WrapItem,
+} from '@chakra-ui/react'
 import { LuPlus, LuPencil, LuTrash2, LuCheck, LuX, LuTag } from 'react-icons/lu'
 import { useState, useCallback, memo } from 'react'
 import { useTagCategoriesStore } from '../../store/tagCategoriesStore'
@@ -22,14 +34,19 @@ const TagCategoriesManager = memo(() => {
     resetCategories,
     getTagsInCategory,
     assignTagToCategory,
-    removeTagFromCategory
+    removeTagFromCategory,
   } = useTagCategoriesStore()
 
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
 
   const [isCreating, setIsCreating] = useState(false)
-  const [editingCategory, setEditingCategory] = useState<EditingCategory | null>(null)
-  const [newCategory, setNewCategory] = useState({ name: '', color: '#3b82f6', description: '' })
+  const [editingCategory, setEditingCategory] =
+    useState<EditingCategory | null>(null)
+  const [newCategory, setNewCategory] = useState({
+    name: '',
+    color: '#3b82f6',
+    description: '',
+  })
   const [managingTagsFor, setManagingTagsFor] = useState<string | null>(null)
 
   // Available colors for categories
@@ -43,7 +60,7 @@ const TagCategoriesManager = memo(() => {
     '#6b7280', // Gray
     '#14b8a6', // Teal
     '#f97316', // Orange
-    '#84cc16'  // Lime
+    '#84cc16', // Lime
   ]
 
   const handleCreateCategory = useCallback(() => {
@@ -51,7 +68,7 @@ const TagCategoriesManager = memo(() => {
       addCategory({
         name: newCategory.name.trim(),
         color: newCategory.color,
-        description: newCategory.description.trim() || undefined
+        description: newCategory.description.trim() || undefined,
       })
       setNewCategory({ name: '', color: '#3b82f6', description: '' })
       setIsCreating(false)
@@ -63,7 +80,7 @@ const TagCategoriesManager = memo(() => {
       id: category.id,
       name: category.name,
       color: category.color,
-      description: category.description || ''
+      description: category.description || '',
     })
   }, [])
 
@@ -72,7 +89,7 @@ const TagCategoriesManager = memo(() => {
       updateCategory(editingCategory.id, {
         name: editingCategory.name.trim(),
         color: editingCategory.color,
-        description: editingCategory.description?.trim() || undefined
+        description: editingCategory.description?.trim() || undefined,
       })
       setEditingCategory(null)
     }
@@ -82,14 +99,25 @@ const TagCategoriesManager = memo(() => {
     setEditingCategory(null)
   }, [])
 
-  const handleDeleteCategory = useCallback((categoryId: string) => {
-    if (confirm('Are you sure you want to delete this category? Tags assigned to this category will become uncategorized.')) {
-      deleteCategory(categoryId)
-    }
-  }, [deleteCategory])
+  const handleDeleteCategory = useCallback(
+    (categoryId: string) => {
+      if (
+        confirm(
+          'Are you sure you want to delete this category? Tags assigned to this category will become uncategorized.'
+        )
+      ) {
+        deleteCategory(categoryId)
+      }
+    },
+    [deleteCategory]
+  )
 
   const handleResetCategories = useCallback(() => {
-    if (confirm('Are you sure you want to reset all categories to defaults? This will remove any custom categories and assignments.')) {
+    if (
+      confirm(
+        'Are you sure you want to reset all categories to defaults? This will remove any custom categories and assignments.'
+      )
+    ) {
       resetCategories()
     }
   }, [resetCategories])
@@ -97,8 +125,8 @@ const TagCategoriesManager = memo(() => {
   // Get all unique tags from bookmarks
   const allTags = useCallback(() => {
     const tags = new Set<string>()
-    bookmarks.forEach(bookmark => {
-      bookmark.tags?.forEach(tag => {
+    bookmarks.forEach((bookmark) => {
+      bookmark.tags?.forEach((tag) => {
         if (tag && typeof tag === 'string') {
           tags.add(tag)
         }
@@ -107,19 +135,25 @@ const TagCategoriesManager = memo(() => {
     return Array.from(tags).sort()
   }, [bookmarks])
 
-  const handleToggleTagAssignment = useCallback((tag: string, categoryId: string) => {
-    const categoryTags = getTagsInCategory(categoryId)
-    if (categoryTags.includes(tag)) {
-      removeTagFromCategory(tag)
-    } else {
-      assignTagToCategory(tag, categoryId)
-    }
-  }, [assignTagToCategory, removeTagFromCategory, getTagsInCategory])
+  const handleToggleTagAssignment = useCallback(
+    (tag: string, categoryId: string) => {
+      const categoryTags = getTagsInCategory(categoryId)
+      if (categoryTags.includes(tag)) {
+        removeTagFromCategory(tag)
+      } else {
+        assignTagToCategory(tag, categoryId)
+      }
+    },
+    [assignTagToCategory, removeTagFromCategory, getTagsInCategory]
+  )
 
-  const getUnassignedTags = useCallback((categoryId: string) => {
-    const categoryTags = getTagsInCategory(categoryId)
-    return allTags().filter(tag => !categoryTags.includes(tag))
-  }, [allTags, getTagsInCategory])
+  const getUnassignedTags = useCallback(
+    (categoryId: string) => {
+      const categoryTags = getTagsInCategory(categoryId)
+      return allTags().filter((tag) => !categoryTags.includes(tag))
+    },
+    [allTags, getTagsInCategory]
+  )
 
   return (
     <VStack align="stretch" gap={4}>
@@ -136,7 +170,11 @@ const TagCategoriesManager = memo(() => {
               bg="transparent"
               border="1px solid var(--color-border)"
               color="var(--color-text-tertiary)"
-              _hover={{ bg: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border-hover)' }}
+              _hover={{
+                bg: 'var(--color-bg-tertiary)',
+                color: 'var(--color-text-primary)',
+                borderColor: 'var(--color-border-hover)',
+              }}
               onClick={() => setIsCreating(true)}
             >
               <HStack gap={1}>
@@ -149,7 +187,10 @@ const TagCategoriesManager = memo(() => {
             size="sm"
             variant="ghost"
             color="var(--color-text-tertiary)"
-            _hover={{ color: 'var(--color-text-primary)', bg: 'var(--color-border)' }}
+            _hover={{
+              color: 'var(--color-text-primary)',
+              bg: 'var(--color-border)',
+            }}
             onClick={handleResetCategories}
           >
             Reset to Defaults
@@ -159,13 +200,20 @@ const TagCategoriesManager = memo(() => {
 
       {/* Create new category form */}
       {isCreating && (
-        <Box p={3} bg="var(--color-bg-tertiary)" border="1px solid var(--color-border)" borderRadius="8px">
+        <Box
+          p={3}
+          bg="var(--color-bg-tertiary)"
+          border="1px solid var(--color-border)"
+          borderRadius="8px"
+        >
           <VStack align="stretch" gap={3}>
             <HStack gap={2}>
               <Input
                 placeholder="Category name"
                 value={newCategory.name}
-                onChange={(e) => setNewCategory(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setNewCategory((prev) => ({ ...prev, name: e.target.value }))
+                }
                 bg="var(--color-bg-primary)"
                 border="1px solid var(--color-border)"
                 color="var(--color-text-primary)"
@@ -174,7 +222,9 @@ const TagCategoriesManager = memo(() => {
                 flex={1}
               />
               <HStack gap={1}>
-                <Text fontSize="sm" color="var(--color-text-tertiary)">Color:</Text>
+                <Text fontSize="sm" color="var(--color-text-tertiary)">
+                  Color:
+                </Text>
                 <For each={availableColors.slice(0, 5)}>
                   {(color) => (
                     <Box
@@ -184,8 +234,14 @@ const TagCategoriesManager = memo(() => {
                       bg={color}
                       borderRadius="4px"
                       cursor="pointer"
-                      border={newCategory.color === color ? '2px solid var(--color-text-primary)' : '1px solid var(--color-border)'}
-                      onClick={() => setNewCategory(prev => ({ ...prev, color }))}
+                      border={
+                        newCategory.color === color
+                          ? '2px solid var(--color-text-primary)'
+                          : '1px solid var(--color-border)'
+                      }
+                      onClick={() =>
+                        setNewCategory((prev) => ({ ...prev, color }))
+                      }
                     />
                   )}
                 </For>
@@ -194,7 +250,12 @@ const TagCategoriesManager = memo(() => {
             <Input
               placeholder="Description (optional)"
               value={newCategory.description}
-              onChange={(e) => setNewCategory(prev => ({ ...prev, description: e.target.value }))}
+              onChange={(e) =>
+                setNewCategory((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
               bg="var(--color-bg-primary)"
               border="1px solid var(--color-border)"
               color="var(--color-text-primary)"
@@ -219,10 +280,17 @@ const TagCategoriesManager = memo(() => {
                 size="sm"
                 variant="ghost"
                 color="var(--color-text-tertiary)"
-                _hover={{ color: 'var(--color-text-primary)', bg: 'var(--color-border)' }}
+                _hover={{
+                  color: 'var(--color-text-primary)',
+                  bg: 'var(--color-border)',
+                }}
                 onClick={() => {
                   setIsCreating(false)
-                  setNewCategory({ name: '', color: '#3b82f6', description: '' })
+                  setNewCategory({
+                    name: '',
+                    color: '#3b82f6',
+                    description: '',
+                  })
                 }}
               >
                 <HStack gap={1}>
@@ -256,7 +324,11 @@ const TagCategoriesManager = memo(() => {
                     <HStack gap={2}>
                       <Input
                         value={editingCategory.name}
-                        onChange={(e) => setEditingCategory(prev => prev ? ({ ...prev, name: e.target.value }) : null)}
+                        onChange={(e) =>
+                          setEditingCategory((prev) =>
+                            prev ? { ...prev, name: e.target.value } : null
+                          )
+                        }
                         bg="var(--color-bg-primary)"
                         border="1px solid var(--color-border)"
                         color="var(--color-text-primary)"
@@ -273,8 +345,16 @@ const TagCategoriesManager = memo(() => {
                               bg={color}
                               borderRadius="4px"
                               cursor="pointer"
-                              border={editingCategory.color === color ? '2px solid var(--color-text-primary)' : '1px solid var(--color-border)'}
-                              onClick={() => setEditingCategory(prev => prev ? ({ ...prev, color }) : null)}
+                              border={
+                                editingCategory.color === color
+                                  ? '2px solid var(--color-text-primary)'
+                                  : '1px solid var(--color-border)'
+                              }
+                              onClick={() =>
+                                setEditingCategory((prev) =>
+                                  prev ? { ...prev, color } : null
+                                )
+                              }
                             />
                           )}
                         </For>
@@ -283,7 +363,11 @@ const TagCategoriesManager = memo(() => {
                     <Input
                       placeholder="Description (optional)"
                       value={editingCategory.description}
-                      onChange={(e) => setEditingCategory(prev => prev ? ({ ...prev, description: e.target.value }) : null)}
+                      onChange={(e) =>
+                        setEditingCategory((prev) =>
+                          prev ? { ...prev, description: e.target.value } : null
+                        )
+                      }
                       bg="var(--color-bg-primary)"
                       border="1px solid var(--color-border)"
                       color="var(--color-text-primary)"
@@ -308,7 +392,10 @@ const TagCategoriesManager = memo(() => {
                         size="sm"
                         variant="ghost"
                         color="var(--color-text-tertiary)"
-                        _hover={{ color: 'var(--color-text-primary)', bg: 'var(--color-border)' }}
+                        _hover={{
+                          color: 'var(--color-text-primary)',
+                          bg: 'var(--color-border)',
+                        }}
                         onClick={handleCancelEdit}
                       >
                         <HStack gap={1}>
@@ -331,7 +418,11 @@ const TagCategoriesManager = memo(() => {
                       />
                       <VStack align="flex-start" gap={1} flex={1}>
                         <HStack gap={2} align="center">
-                          <Text fontSize="sm" fontWeight="500" color="var(--color-text-primary)">
+                          <Text
+                            fontSize="sm"
+                            fontWeight="500"
+                            color="var(--color-text-primary)"
+                          >
                             {category.name}
                           </Text>
                           <Badge
@@ -346,7 +437,10 @@ const TagCategoriesManager = memo(() => {
                           </Badge>
                         </HStack>
                         {category.description && (
-                          <Text fontSize="xs" color="var(--color-text-tertiary)">
+                          <Text
+                            fontSize="xs"
+                            color="var(--color-text-tertiary)"
+                          >
                             {category.description}
                           </Text>
                         )}
@@ -359,8 +453,16 @@ const TagCategoriesManager = memo(() => {
                         bg="transparent"
                         border="1px solid var(--color-border)"
                         color="var(--color-text-tertiary)"
-                        _hover={{ bg: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border-hover)' }}
-                        onClick={() => setManagingTagsFor(managingTagsFor === category.id ? null : category.id)}
+                        _hover={{
+                          bg: 'var(--color-bg-tertiary)',
+                          color: 'var(--color-text-primary)',
+                          borderColor: 'var(--color-border-hover)',
+                        }}
+                        onClick={() =>
+                          setManagingTagsFor(
+                            managingTagsFor === category.id ? null : category.id
+                          )
+                        }
                       >
                         <HStack gap={1}>
                           <LuTag size={12} />
@@ -372,7 +474,10 @@ const TagCategoriesManager = memo(() => {
                         variant="ghost"
                         aria-label="Edit category"
                         color="var(--color-text-tertiary)"
-                        _hover={{ color: 'var(--color-text-primary)', bg: 'var(--color-border)' }}
+                        _hover={{
+                          color: 'var(--color-text-primary)',
+                          bg: 'var(--color-border)',
+                        }}
                         onClick={() => handleStartEdit(category)}
                       >
                         <LuPencil size={14} />
@@ -382,7 +487,10 @@ const TagCategoriesManager = memo(() => {
                         variant="ghost"
                         aria-label="Delete category"
                         color="var(--color-error)"
-                        _hover={{ color: 'var(--color-error-hover)', bg: 'var(--color-border)' }}
+                        _hover={{
+                          color: 'var(--color-error-hover)',
+                          bg: 'var(--color-border)',
+                        }}
                         onClick={() => handleDeleteCategory(category.id)}
                       >
                         <LuTrash2 size={14} />
@@ -393,14 +501,30 @@ const TagCategoriesManager = memo(() => {
 
                 {/* Tag Assignment Section */}
                 {managingTagsFor === category.id && (
-                  <VStack align="stretch" gap={3} mt={3} pt={3} borderTop="1px solid var(--color-border)">
-                    <Text fontSize="sm" fontWeight="500" color="var(--color-text-primary)">
+                  <VStack
+                    align="stretch"
+                    gap={3}
+                    mt={3}
+                    pt={3}
+                    borderTop="1px solid var(--color-border)"
+                  >
+                    <Text
+                      fontSize="sm"
+                      fontWeight="500"
+                      color="var(--color-text-primary)"
+                    >
                       Assign Tags to Category
                     </Text>
 
                     {/* Assigned Tags */}
                     <VStack align="stretch" gap={2}>
-                      <Text fontSize="xs" color="var(--color-text-tertiary)" fontWeight="500">ASSIGNED TAGS</Text>
+                      <Text
+                        fontSize="xs"
+                        color="var(--color-text-tertiary)"
+                        fontWeight="500"
+                      >
+                        ASSIGNED TAGS
+                      </Text>
                       <Wrap>
                         <For each={getTagsInCategory(category.id)}>
                           {(tag) => (
@@ -411,13 +535,19 @@ const TagCategoriesManager = memo(() => {
                                 isRemovable={true}
                                 variant="editable"
                                 size="sm"
-                                onRemove={() => handleToggleTagAssignment(tag, category.id)}
+                                onRemove={() =>
+                                  handleToggleTagAssignment(tag, category.id)
+                                }
                               />
                             </WrapItem>
                           )}
                         </For>
                         {getTagsInCategory(category.id).length === 0 && (
-                          <Text fontSize="xs" color="var(--color-text-tertiary)" fontStyle="italic">
+                          <Text
+                            fontSize="xs"
+                            color="var(--color-text-tertiary)"
+                            fontStyle="italic"
+                          >
                             No tags assigned to this category
                           </Text>
                         )}
@@ -426,7 +556,13 @@ const TagCategoriesManager = memo(() => {
 
                     {/* Available Tags */}
                     <VStack align="stretch" gap={2}>
-                      <Text fontSize="xs" color="var(--color-text-tertiary)" fontWeight="500">AVAILABLE TAGS</Text>
+                      <Text
+                        fontSize="xs"
+                        color="var(--color-text-tertiary)"
+                        fontWeight="500"
+                      >
+                        AVAILABLE TAGS
+                      </Text>
                       <Wrap>
                         <For each={getUnassignedTags(category.id)}>
                           {(tag) => (
@@ -437,13 +573,19 @@ const TagCategoriesManager = memo(() => {
                                 isRemovable={false}
                                 variant="default"
                                 size="sm"
-                                onClick={() => handleToggleTagAssignment(tag, category.id)}
+                                onClick={() =>
+                                  handleToggleTagAssignment(tag, category.id)
+                                }
                               />
                             </WrapItem>
                           )}
                         </For>
                         {getUnassignedTags(category.id).length === 0 && (
-                          <Text fontSize="xs" color="var(--color-text-tertiary)" fontStyle="italic">
+                          <Text
+                            fontSize="xs"
+                            color="var(--color-text-tertiary)"
+                            fontStyle="italic"
+                          >
                             All tags are assigned to categories
                           </Text>
                         )}

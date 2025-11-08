@@ -1,5 +1,18 @@
-import { Box, HStack, Input, Button, Spacer, Badge, IconButton } from '@chakra-ui/react'
-import { LuMenu, LuLayoutGrid, LuLayoutList, LuBookmarkPlus } from 'react-icons/lu'
+import {
+  Box,
+  HStack,
+  Input,
+  Button,
+  Spacer,
+  Badge,
+  IconButton,
+} from '@chakra-ui/react'
+import {
+  LuMenu,
+  LuLayoutGrid,
+  LuLayoutList,
+  LuBookmarkPlus,
+} from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'
@@ -15,29 +28,44 @@ interface SearchHeaderProps {
 // Optimized selector to get all filter data at once
 const useFilterData = () => {
   const searchQuery = useBookmarkStore((state) => state.searchQuery)
-  const isFiltersPanelOpen = useBookmarkStore((state) => state.isFiltersPanelOpen)
+  const isFiltersPanelOpen = useBookmarkStore(
+    (state) => state.isFiltersPanelOpen
+  )
   const authorFilter = useBookmarkStore((state) => state.authorFilter)
   const domainFilter = useBookmarkStore((state) => state.domainFilter)
   const contentTypeFilter = useBookmarkStore((state) => state.contentTypeFilter)
   const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)
   const quickFilters = useBookmarkStore((state) => state.quickFilters)
 
-  return useMemo(() => ({
-    searchQuery,
-    isFiltersPanelOpen,
-    authorFilter,
-    domainFilter,
-    contentTypeFilter,
-    dateRangeFilter,
-    quickFilters
-  }), [searchQuery, isFiltersPanelOpen, authorFilter, domainFilter, contentTypeFilter, dateRangeFilter, quickFilters])
+  return useMemo(
+    () => ({
+      searchQuery,
+      isFiltersPanelOpen,
+      authorFilter,
+      domainFilter,
+      contentTypeFilter,
+      dateRangeFilter,
+      quickFilters,
+    }),
+    [
+      searchQuery,
+      isFiltersPanelOpen,
+      authorFilter,
+      domainFilter,
+      contentTypeFilter,
+      dateRangeFilter,
+      quickFilters,
+    ]
+  )
 }
 
 const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
   const filterData = useFilterData()
   const setSearchQuery = useBookmarkStore((state) => state.setSearchQuery)
   const addBookmark = useBookmarkStore((state) => state.addBookmark)
-  const toggleFiltersPanel = useBookmarkStore((state) => state.toggleFiltersPanel)
+  const toggleFiltersPanel = useBookmarkStore(
+    (state) => state.toggleFiltersPanel
+  )
   const viewMode = useBookmarkStore((state) => state.viewMode)
   const setViewMode = useBookmarkStore((state) => state.setViewMode)
   const { showAddBookmark } = useModal()
@@ -54,22 +82,26 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
     if (filterData.authorFilter.trim()) count++
     if (filterData.domainFilter.trim()) count++
     if (filterData.contentTypeFilter.trim()) count++
-    if (filterData.quickFilters.length > 0) count += filterData.quickFilters.length
+    if (filterData.quickFilters.length > 0)
+      count += filterData.quickFilters.length
     return count
   }, [
     filterData.dateRangeFilter.type,
     filterData.authorFilter,
     filterData.domainFilter,
     filterData.contentTypeFilter,
-    filterData.quickFilters.length
+    filterData.quickFilters.length,
   ])
 
   const importXBookmarks = useBookmarkStore((state) => state.importXBookmarks)
 
   // Memoized event handlers
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value)
-  }, [setSearchQuery])
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value)
+    },
+    [setSearchQuery]
+  )
 
   const handleToggleFilters = useCallback(() => {
     toggleFiltersPanel()
@@ -78,28 +110,74 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
   const handleImportXBookmarks = useCallback(() => {
     const input = document.createElement('input')
     input.type = 'file'
-    input.accept = '.json'
+    input.accept = '.json,.zip'
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0]
       if (file) {
         try {
-          const text = await file.text()
-          const data = JSON.parse(text)
+          // Detect file type
+          const isZip = file.name.toLowerCase().endsWith('.zip')
+          const isJson = file.name.toLowerCase().endsWith('.json')
 
-          // Check if this looks like X bookmark data (array with tweet-like structure)
-          if (Array.isArray(data) && data.length > 0 && data[0].tweet_id && data[0].username) {
-            await importXBookmarks(data) // Import all bookmarks
+          if (isZip) {
+            // Handle Twitter Archive ZIP import
+            const { importTwitterArchive } = await import(
+              '../services/twitterArchiveImport'
+            )
+            const { sanitizeBookmark } = await import('../lib/dataValidation')
+            const { localStorageService } = await import('../lib/localStorage')
+
+            const result = await importTwitterArchive(file, 'local-user')
+
+            if (!result.success) {
+              throw new Error(result.errors.join(', '))
+            }
+
+            if (result.bookmarks && result.bookmarks.length > 0) {
+              // Save bookmarks to storage
+              for (const bookmark of result.bookmarks) {
+                const sanitized = sanitizeBookmark(bookmark)
+                if (sanitized) {
+                  await localStorageService.createBookmark(sanitized)
+                }
+              }
+
+              // Reload and refresh
+              await useBookmarkStore.getState().loadBookmarks()
+              window.location.reload()
+            } else {
+              alert('No bookmarks found in archive')
+            }
+          } else if (isJson) {
+            // Handle JSON import (X bookmarks or regular export)
+            const text = await file.text()
+            const data = JSON.parse(text)
+
+            // Check if this looks like X bookmark data (array with tweet-like structure)
+            if (
+              Array.isArray(data) &&
+              data.length > 0 &&
+              data[0].tweet_id &&
+              data[0].username
+            ) {
+              await importXBookmarks(data) // Import all bookmarks
+            } else {
+              // Fall back to regular import
+              const importBookmarks =
+                useBookmarkStore.getState().importBookmarks
+              await importBookmarks(file)
+            }
+
+            // Only refresh on successful import
+            window.location.reload()
           } else {
-            // Fall back to regular import
-            const importBookmarks = useBookmarkStore.getState().importBookmarks
-            await importBookmarks(file)
+            alert('Invalid file type. Please upload a .json or .zip file.')
           }
-
-          // Only refresh on successful import
-          window.location.reload()
         } catch (error) {
           console.error('Import failed:', error)
-          alert(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+          alert(
+            `Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+          )
         }
       }
     }
@@ -117,7 +195,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
         } catch (error) {
           console.error('Failed to add bookmark:', error)
         }
-      }
+      },
     })
   }, [showAddBookmark, addBookmark])
   return (
@@ -131,7 +209,10 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
             size="sm"
             onClick={onMenuClick}
             style={{ color: 'var(--color-text-secondary)' }}
-            _hover={{ bg: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+            _hover={{
+              bg: 'var(--color-border)',
+              color: 'var(--color-text-primary)',
+            }}
           >
             <LuMenu size={20} />
           </IconButton>
@@ -140,9 +221,25 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
         {/* Search Area */}
         <Box position="relative" maxW={{ base: '100%', md: '400px' }} flex={1}>
           <HStack {...componentStyles.input.search} gap={2}>
-            <Box w="16px" h="16px" style={{ color: 'var(--color-text-tertiary)' }}>
-              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+            <Box
+              w="16px"
+              h="16px"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              <svg
+                width="16"
+                height="16"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </Box>
             <Input
@@ -160,7 +257,12 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
         <HStack gap={{ base: 2, md: 3 }}>
           {/* View Toggle - Hide on mobile */}
           {!isMobile && (
-            <HStack gap={0} bg="var(--color-bg-secondary)" borderRadius="8px" p="2px">
+            <HStack
+              gap={0}
+              bg="var(--color-bg-secondary)"
+              borderRadius="8px"
+              p="2px"
+            >
               <Button
                 {...secondaryButtonStyles}
                 size="sm"
@@ -169,13 +271,22 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
                 minW="auto"
                 data-testid="view-toggle-grid"
                 style={{
-                  background: viewMode === 'grid' ? 'var(--color-bg-tertiary)' : 'transparent',
-                  color: viewMode === 'grid' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
-                  border: 'none'
+                  background:
+                    viewMode === 'grid'
+                      ? 'var(--color-bg-tertiary)'
+                      : 'transparent',
+                  color:
+                    viewMode === 'grid'
+                      ? 'var(--color-text-primary)'
+                      : 'var(--color-text-tertiary)',
+                  border: 'none',
                 }}
                 _hover={{
-                  bg: viewMode === 'grid' ? 'var(--color-bg-tertiary)' : 'var(--color-bg-hover)',
-                  color: 'var(--color-text-primary)'
+                  bg:
+                    viewMode === 'grid'
+                      ? 'var(--color-bg-tertiary)'
+                      : 'var(--color-bg-hover)',
+                  color: 'var(--color-text-primary)',
                 }}
                 onClick={() => setViewMode('grid')}
                 title="Grid View"
@@ -190,13 +301,22 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
                 minW="auto"
                 data-testid="view-toggle-list"
                 style={{
-                  background: viewMode === 'list' ? 'var(--color-bg-tertiary)' : 'transparent',
-                  color: viewMode === 'list' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
-                  border: 'none'
+                  background:
+                    viewMode === 'list'
+                      ? 'var(--color-bg-tertiary)'
+                      : 'transparent',
+                  color:
+                    viewMode === 'list'
+                      ? 'var(--color-text-primary)'
+                      : 'var(--color-text-tertiary)',
+                  border: 'none',
                 }}
                 _hover={{
-                  bg: viewMode === 'list' ? 'var(--color-bg-tertiary)' : 'var(--color-bg-hover)',
-                  color: 'var(--color-text-primary)'
+                  bg:
+                    viewMode === 'list'
+                      ? 'var(--color-bg-tertiary)'
+                      : 'var(--color-bg-hover)',
+                  color: 'var(--color-text-primary)',
                 }}
                 onClick={() => setViewMode('list')}
                 title="List View"
@@ -215,15 +335,27 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
               onClick={handleToggleFilters}
               position="relative"
               style={{
-                background: filterData.isFiltersPanelOpen ? 'var(--color-blue)' : 'transparent',
-                color: filterData.isFiltersPanelOpen ? 'white' : 'var(--color-text-tertiary)',
-                borderColor: filterData.isFiltersPanelOpen ? 'var(--color-blue)' : 'var(--color-border)',
-                border: '1px solid'
+                background: filterData.isFiltersPanelOpen
+                  ? 'var(--color-blue)'
+                  : 'transparent',
+                color: filterData.isFiltersPanelOpen
+                  ? 'white'
+                  : 'var(--color-text-tertiary)',
+                borderColor: filterData.isFiltersPanelOpen
+                  ? 'var(--color-blue)'
+                  : 'var(--color-border)',
+                border: '1px solid',
               }}
               _hover={{
-                bg: filterData.isFiltersPanelOpen ? 'var(--color-blue-hover)' : 'var(--color-bg-tertiary)',
-                color: filterData.isFiltersPanelOpen ? 'white' : 'var(--color-text-primary)',
-                borderColor: filterData.isFiltersPanelOpen ? 'var(--color-blue-hover)' : 'var(--color-border-hover)'
+                bg: filterData.isFiltersPanelOpen
+                  ? 'var(--color-blue-hover)'
+                  : 'var(--color-bg-tertiary)',
+                color: filterData.isFiltersPanelOpen
+                  ? 'white'
+                  : 'var(--color-text-primary)',
+                borderColor: filterData.isFiltersPanelOpen
+                  ? 'var(--color-blue-hover)'
+                  : 'var(--color-border-hover)',
               }}
             >
               <LuMenu size={16} />
@@ -250,14 +382,26 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
             <Button
               {...secondaryButtonStyles}
               style={{
-                background: filterData.isFiltersPanelOpen ? 'var(--color-blue)' : 'transparent',
-                color: filterData.isFiltersPanelOpen ? 'white' : 'var(--color-text-tertiary)',
-                borderColor: filterData.isFiltersPanelOpen ? 'var(--color-blue)' : 'var(--color-border)'
+                background: filterData.isFiltersPanelOpen
+                  ? 'var(--color-blue)'
+                  : 'transparent',
+                color: filterData.isFiltersPanelOpen
+                  ? 'white'
+                  : 'var(--color-text-tertiary)',
+                borderColor: filterData.isFiltersPanelOpen
+                  ? 'var(--color-blue)'
+                  : 'var(--color-border)',
               }}
               _hover={{
-                bg: filterData.isFiltersPanelOpen ? 'var(--color-blue-hover)' : 'var(--color-bg-tertiary)',
-                color: filterData.isFiltersPanelOpen ? 'white' : 'var(--color-text-primary)',
-                borderColor: filterData.isFiltersPanelOpen ? 'var(--color-blue-hover)' : 'var(--color-border-hover)'
+                bg: filterData.isFiltersPanelOpen
+                  ? 'var(--color-blue-hover)'
+                  : 'var(--color-bg-tertiary)',
+                color: filterData.isFiltersPanelOpen
+                  ? 'white'
+                  : 'var(--color-text-primary)',
+                borderColor: filterData.isFiltersPanelOpen
+                  ? 'var(--color-blue-hover)'
+                  : 'var(--color-border-hover)',
               }}
               onClick={handleToggleFilters}
               position="relative"
@@ -297,8 +441,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
             </IconButton>
           ) : (
             <Button {...secondaryButtonStyles} onClick={handleImportXBookmarks}>
-              +
-              Import
+              + Import
             </Button>
           )}
 
@@ -314,8 +457,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
             </IconButton>
           ) : (
             <Button {...primaryButtonStyles} onClick={handleAddBookmark}>
-              +
-              Add Bookmark
+              + Add Bookmark
             </Button>
           )}
         </HStack>

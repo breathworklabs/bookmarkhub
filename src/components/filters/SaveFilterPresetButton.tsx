@@ -1,4 +1,12 @@
-import { Button, Dialog, Input, VStack, Text, HStack, Textarea } from '@chakra-ui/react'
+import {
+  Button,
+  Dialog,
+  Input,
+  VStack,
+  Text,
+  HStack,
+  Textarea,
+} from '@chakra-ui/react'
 import { LuSave } from 'react-icons/lu'
 import { useState, useCallback, memo } from 'react'
 import { useBookmarkStore } from '../../store/bookmarkStore'
@@ -49,29 +57,43 @@ const SaveFilterPresetButton = memo(() => {
         disabled={!hasActiveFilters}
         style={{
           borderColor: 'var(--color-border)',
-          color: hasActiveFilters ? 'var(--color-blue)' : 'var(--color-text-tertiary)',
-          background: 'transparent'
+          color: hasActiveFilters
+            ? 'var(--color-blue)'
+            : 'var(--color-text-tertiary)',
+          background: 'transparent',
         }}
         fontSize="12px"
         h="32px"
         px={3}
         gap={1}
         _hover={{
-          borderColor: hasActiveFilters ? 'var(--color-blue)' : 'var(--color-border-hover)',
-          color: hasActiveFilters ? 'var(--color-blue-hover)' : 'var(--color-text-primary)',
-          bg: 'var(--color-bg-tertiary)'
+          borderColor: hasActiveFilters
+            ? 'var(--color-blue)'
+            : 'var(--color-border-hover)',
+          color: hasActiveFilters
+            ? 'var(--color-blue-hover)'
+            : 'var(--color-text-primary)',
+          bg: 'var(--color-bg-tertiary)',
         }}
         _disabled={{
           opacity: 0.5,
-          cursor: 'not-allowed'
+          cursor: 'not-allowed',
         }}
-        title={hasActiveFilters ? 'Save current filter combination' : 'Apply some filters first'}
+        title={
+          hasActiveFilters
+            ? 'Save current filter combination'
+            : 'Apply some filters first'
+        }
       >
         <LuSave size={14} />
         Save Filters
       </Button>
 
-      <Dialog.Root open={isOpen} onOpenChange={(e) => !e.open && handleClose()} placement="center">
+      <Dialog.Root
+        open={isOpen}
+        onOpenChange={(e) => !e.open && handleClose()}
+        placement="center"
+      >
         <Dialog.Backdrop bg="rgba(0, 0, 0, 0.85)" backdropFilter="blur(4px)" />
         <Dialog.Positioner>
           <Dialog.Content
@@ -90,27 +112,43 @@ const SaveFilterPresetButton = memo(() => {
               p={6}
             >
               <Dialog.Title>
-                <Text fontSize="xl" fontWeight="700" style={{ color: 'var(--color-text-primary)' }}>
+                <Text
+                  fontSize="xl"
+                  fontWeight="700"
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
                   Save Filter Preset
                 </Text>
               </Dialog.Title>
             </Dialog.Header>
             <Dialog.Body px={6} py={6}>
               <VStack alignItems="stretch" gap={4}>
-                <Text fontSize="sm" style={{ color: 'var(--color-text-secondary)' }}>
+                <Text
+                  fontSize="sm"
+                  style={{ color: 'var(--color-text-secondary)' }}
+                >
                   Save your current filter combination for quick access later.
                 </Text>
                 <VStack alignItems="stretch" gap={2}>
-                  <Text fontSize="sm" color="var(--color-text-secondary)">Name *</Text>
+                  <Text fontSize="sm" color="var(--color-text-secondary)">
+                    Name *
+                  </Text>
                   <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g., Work Articles, Starred Tweets..."
-                    style={{ background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
+                    style={{
+                      background: 'var(--color-bg-tertiary)',
+                      color: 'var(--color-text-primary)',
+                    }}
                     border="1px solid var(--color-border)"
                     borderRadius="12px"
                     _hover={{ borderColor: 'var(--color-border-hover)' }}
-                    _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)', outline: 'none' }}
+                    _focus={{
+                      borderColor: 'var(--color-blue)',
+                      boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)',
+                      outline: 'none',
+                    }}
                     _placeholder={{ color: 'var(--color-text-tertiary)' }}
                     autoFocus
                     onKeyDown={(e) => {
@@ -123,17 +161,26 @@ const SaveFilterPresetButton = memo(() => {
                   />
                 </VStack>
                 <VStack alignItems="stretch" gap={2}>
-                  <Text fontSize="sm" color="var(--color-text-secondary)">Description (optional)</Text>
+                  <Text fontSize="sm" color="var(--color-text-secondary)">
+                    Description (optional)
+                  </Text>
                   <Textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Add a description..."
                     rows={3}
-                    style={{ background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
+                    style={{
+                      background: 'var(--color-bg-tertiary)',
+                      color: 'var(--color-text-primary)',
+                    }}
                     border="1px solid var(--color-border)"
                     borderRadius="12px"
                     _hover={{ borderColor: 'var(--color-border-hover)' }}
-                    _focus={{ borderColor: 'var(--color-blue)', boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)', outline: 'none' }}
+                    _focus={{
+                      borderColor: 'var(--color-blue)',
+                      boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)',
+                      outline: 'none',
+                    }}
                     _placeholder={{ color: 'var(--color-text-tertiary)' }}
                   />
                 </VStack>
@@ -150,7 +197,10 @@ const SaveFilterPresetButton = memo(() => {
                   variant="ghost"
                   style={{ color: 'var(--color-text-tertiary)' }}
                   borderRadius="10px"
-                  _hover={{ color: 'var(--color-text-primary)', bg: 'rgba(42, 45, 53, 0.5)' }}
+                  _hover={{
+                    color: 'var(--color-text-primary)',
+                    bg: 'rgba(42, 45, 53, 0.5)',
+                  }}
                   onClick={handleClose}
                 >
                   Cancel
@@ -165,7 +215,7 @@ const SaveFilterPresetButton = memo(() => {
                   _disabled={{
                     bg: 'var(--color-border-hover)',
                     color: 'var(--color-text-tertiary)',
-                    cursor: 'not-allowed'
+                    cursor: 'not-allowed',
                   }}
                 >
                   Save

@@ -26,7 +26,13 @@ export interface TagSuggestion {
 /**
  * Source of a tag suggestion
  */
-export type TagSource = 'domain' | 'url' | 'nlp' | 'learning' | 'content' | 'history'
+export type TagSource =
+  | 'domain'
+  | 'url'
+  | 'nlp'
+  | 'learning'
+  | 'content'
+  | 'history'
 
 /**
  * Result of tag generation
@@ -203,7 +209,12 @@ export interface SimilarityScore {
 /**
  * Field used for similarity matching
  */
-export type SimilarityField = 'domain' | 'author' | 'title' | 'description' | 'tags'
+export type SimilarityField =
+  | 'domain'
+  | 'author'
+  | 'title'
+  | 'description'
+  | 'tags'
 
 // ==================== Normalization ====================
 

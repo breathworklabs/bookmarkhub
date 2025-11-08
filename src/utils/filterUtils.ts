@@ -9,8 +9,12 @@ import { useCollectionsStore } from '../store/collectionsStore'
  * that appears in 29 locations across 9 files
  */
 export const useFilterReset = () => {
-  const setActiveSidebarItem = useBookmarkStore(state => state.setActiveSidebarItem)
-  const setActiveCollection = useCollectionsStore(state => state.setActiveCollection)
+  const setActiveSidebarItem = useBookmarkStore(
+    (state) => state.setActiveSidebarItem
+  )
+  const setActiveCollection = useCollectionsStore(
+    (state) => state.setActiveCollection
+  )
 
   return useCallback(() => {
     setActiveSidebarItem('All Bookmarks')
@@ -23,12 +27,18 @@ export const useFilterReset = () => {
  * More comprehensive reset that clears all filter states
  */
 export const useFullFilterReset = () => {
-  const setActiveSidebarItem = useBookmarkStore(state => state.setActiveSidebarItem)
-  const setActiveCollection = useCollectionsStore(state => state.setActiveCollection)
-  const clearAdvancedFilters = useBookmarkStore(state => state.clearAdvancedFilters)
-  const clearTags = useBookmarkStore(state => state.clearTags)
-  const setSearchQuery = useBookmarkStore(state => state.setSearchQuery)
-  const setActiveTab = useBookmarkStore(state => state.setActiveTab)
+  const setActiveSidebarItem = useBookmarkStore(
+    (state) => state.setActiveSidebarItem
+  )
+  const setActiveCollection = useCollectionsStore(
+    (state) => state.setActiveCollection
+  )
+  const clearAdvancedFilters = useBookmarkStore(
+    (state) => state.clearAdvancedFilters
+  )
+  const clearTags = useBookmarkStore((state) => state.clearTags)
+  const setSearchQuery = useBookmarkStore((state) => state.setSearchQuery)
+  const setActiveTab = useBookmarkStore((state) => state.setActiveTab)
 
   return useCallback(() => {
     setActiveSidebarItem('All Bookmarks')
@@ -43,6 +53,6 @@ export const useFullFilterReset = () => {
     clearAdvancedFilters,
     clearTags,
     setSearchQuery,
-    setActiveTab
+    setActiveTab,
   ])
 }

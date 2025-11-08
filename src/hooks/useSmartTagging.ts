@@ -43,12 +43,15 @@ export function useSmartTagging(
   const [metrics, setMetrics] = useState<TaggingResult['metrics'] | null>(null)
 
   // Memoize options to prevent re-creating on every render
-  const memoizedOptions = useMemo(() => options, [
-    options.autoApplyThreshold,
-    options.maxSuggestions,
-    options.enabledStrategies?.join(','),
-    options.customDomainRules?.length,
-  ])
+  const memoizedOptions = useMemo(
+    () => options,
+    [
+      options.autoApplyThreshold,
+      options.maxSuggestions,
+      options.enabledStrategies?.join(','),
+      options.customDomainRules?.length,
+    ]
+  )
 
   // Create service instance (memoized)
   const service = useMemo(() => new SmartTaggingService(), [])
@@ -62,13 +65,18 @@ export function useSmartTagging(
       setError(null)
 
       try {
-        const result = await service.generateTags(bookmark, allBookmarks, memoizedOptions)
+        const result = await service.generateTags(
+          bookmark,
+          allBookmarks,
+          memoizedOptions
+        )
 
         setSuggestions(result.suggestions)
         setAutoApply(result.autoApply)
         setMetrics(result.metrics)
       } catch (err) {
-        const error = err instanceof Error ? err : new Error('Failed to generate tags')
+        const error =
+          err instanceof Error ? err : new Error('Failed to generate tags')
         setError(error)
         console.error('Error generating tags:', error)
       } finally {
@@ -140,12 +148,12 @@ export function useSmartTagging(
 export function useTaggingOptions(initialOptions: TaggingOptions = {}) {
   const [options, setOptions] = useState<TaggingOptions>(initialOptions)
 
-  const updateOption = useCallback(<K extends keyof TaggingOptions>(
-    key: K,
-    value: TaggingOptions[K]
-  ) => {
-    setOptions((prev) => ({ ...prev, [key]: value }))
-  }, [])
+  const updateOption = useCallback(
+    <K extends keyof TaggingOptions>(key: K, value: TaggingOptions[K]) => {
+      setOptions((prev) => ({ ...prev, [key]: value }))
+    },
+    []
+  )
 
   const toggleStrategy = useCallback((strategyName: string) => {
     setOptions((prev) => {

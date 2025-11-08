@@ -1,4 +1,13 @@
-import { Box, Flex, VStack, HStack, Text, Button, Heading, Link } from '@chakra-ui/react'
+import {
+  Box,
+  Flex,
+  VStack,
+  HStack,
+  Text,
+  Button,
+  Heading,
+  Link,
+} from '@chakra-ui/react'
 import { useNavigate, Link as RouterLink } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { LuCheck } from 'react-icons/lu'
@@ -13,7 +22,13 @@ interface FeatureShowcaseProps {
   index: number
 }
 
-const FeatureShowcase = ({ badge, title, description, highlights, index }: FeatureShowcaseProps) => {
+const FeatureShowcase = ({
+  badge,
+  title,
+  description,
+  highlights,
+  index,
+}: FeatureShowcaseProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(false)
 
@@ -42,13 +57,21 @@ const FeatureShowcase = ({ badge, title, description, highlights, index }: Featu
       gap={{ base: 6, md: 16 }}
       align="center"
       mb={{ base: 16, md: 32 }}
-      direction={{ base: 'column', md: index % 2 === 0 ? 'row' : 'row-reverse' }}
+      direction={{
+        base: 'column',
+        md: index % 2 === 0 ? 'row' : 'row-reverse',
+      }}
       opacity={isVisible ? 1 : 0}
       transform={isVisible ? 'translateY(0)' : 'translateY(30px)'}
       transition="opacity 0.8s ease, transform 0.8s ease"
     >
       {/* Feature Content */}
-      <VStack align="flex-start" flex={1} gap={6} minW={{ base: 'auto', md: '300px' }}>
+      <VStack
+        align="flex-start"
+        flex={1}
+        gap={6}
+        minW={{ base: 'auto', md: '300px' }}
+      >
         <Box
           display="inline-block"
           px={4}
@@ -74,15 +97,17 @@ const FeatureShowcase = ({ badge, title, description, highlights, index }: Featu
           {title}
         </Heading>
 
-        <Text
-          fontSize="1.1rem"
-          lineHeight="1.8"
-          color="#a0a0a0"
-        >
+        <Text fontSize="1.1rem" lineHeight="1.8" color="#a0a0a0">
           {description}
         </Text>
 
-        <VStack as="ul" align="flex-start" gap={3} pl={0} css={{ listStyle: 'none' }}>
+        <VStack
+          as="ul"
+          align="flex-start"
+          gap={3}
+          pl={0}
+          css={{ listStyle: 'none' }}
+        >
           {highlights.map((highlight, i) => (
             <HStack key={i} align="flex-start" gap={3}>
               <Box color="#667eea" fontSize="1.2rem" mt={1}>
@@ -97,11 +122,7 @@ const FeatureShowcase = ({ badge, title, description, highlights, index }: Featu
       </VStack>
 
       {/* Feature Image Placeholder */}
-      <Box
-        flex={1}
-        minW={{ base: 'auto', md: '300px' }}
-        w="100%"
-      >
+      <Box flex={1} minW={{ base: 'auto', md: '300px' }} w="100%">
         <Box
           w="100%"
           aspectRatio="16/10"
@@ -148,7 +169,8 @@ const SplashPage = () => {
       position="relative"
       color="white"
       css={{
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif',
+        fontFamily:
+          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif',
         backgroundColor: '#0a0a0a',
         backgroundImage: `
           radial-gradient(circle at 20% 50%, rgba(120, 40, 200, 0.15) 0%, transparent 50%),
@@ -159,12 +181,18 @@ const SplashPage = () => {
         backgroundPosition: 'center',
         backgroundSize: 'cover',
         '&::-webkit-scrollbar': { width: '8px' },
-        '&::-webkit-scrollbar-track': { background: 'rgba(255, 255, 255, 0.05)' },
-        '&::-webkit-scrollbar-thumb': { background: 'rgba(255, 255, 255, 0.2)', borderRadius: '4px' },
-        '&::-webkit-scrollbar-thumb:hover': { background: 'rgba(255, 255, 255, 0.3)' },
+        '&::-webkit-scrollbar-track': {
+          background: 'rgba(255, 255, 255, 0.05)',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: 'rgba(255, 255, 255, 0.2)',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          background: 'rgba(255, 255, 255, 0.3)',
+        },
       }}
     >
-
       {/* Navigation */}
       <Flex
         justify="space-between"
@@ -293,9 +321,24 @@ const SplashPage = () => {
               gap={2}
               zIndex={1}
             >
-              <Box w="12px" h="12px" borderRadius="50%" bg="rgba(255, 95, 86, 0.8)" />
-              <Box w="12px" h="12px" borderRadius="50%" bg="rgba(255, 189, 46, 0.8)" />
-              <Box w="12px" h="12px" borderRadius="50%" bg="rgba(40, 201, 64, 0.8)" />
+              <Box
+                w="12px"
+                h="12px"
+                borderRadius="50%"
+                bg="rgba(255, 95, 86, 0.8)"
+              />
+              <Box
+                w="12px"
+                h="12px"
+                borderRadius="50%"
+                bg="rgba(255, 189, 46, 0.8)"
+              />
+              <Box
+                w="12px"
+                h="12px"
+                borderRadius="50%"
+                bg="rgba(40, 201, 64, 0.8)"
+              />
             </HStack>
 
             {/* Screenshot Placeholder */}
@@ -333,7 +376,8 @@ const SplashPage = () => {
                   fontSize="2rem"
                   fontWeight="700"
                   css={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    background:
+                      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
@@ -417,11 +461,7 @@ const SplashPage = () => {
       </Box>
 
       {/* Footer */}
-      <Box
-        px="5%"
-        py={12}
-        borderTop="1px solid rgba(255, 255, 255, 0.1)"
-      >
+      <Box px="5%" py={12} borderTop="1px solid rgba(255, 255, 255, 0.1)">
         <VStack gap={6}>
           {/* Links */}
           <HStack

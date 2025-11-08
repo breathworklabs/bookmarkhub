@@ -12,13 +12,8 @@ import { componentStyles } from '../styles/components'
 const FILTER_TABS = ['All', 'Today', 'This Week', 'Threads', 'Media']
 
 const FilterBar = memo(() => {
-  const {
-    activeTab,
-    setActiveTab,
-    selectedTags,
-    removeTag,
-    addTag
-  } = useBookmarkSelectors()
+  const { activeTab, setActiveTab, selectedTags, removeTag, addTag } =
+    useBookmarkSelectors()
 
   const resetFilters = useFilterReset()
   const { showAddTag, showTagManager } = useModal()
@@ -26,23 +21,29 @@ const FilterBar = memo(() => {
   // Memoized event handlers
   const handleAddTag = useCallback(() => {
     showAddTag({
-      placeholder: "Enter tag name...",
+      placeholder: 'Enter tag name...',
       existingTags: selectedTags,
       onAdd: (tagName: string) => {
         addTag(tagName)
         resetFilters()
-      }
+      },
     })
   }, [showAddTag, selectedTags, addTag, resetFilters])
 
-  const handleTabClick = useCallback((index: number) => {
-    setActiveTab(index)
-    resetFilters()
-  }, [setActiveTab, resetFilters])
+  const handleTabClick = useCallback(
+    (index: number) => {
+      setActiveTab(index)
+      resetFilters()
+    },
+    [setActiveTab, resetFilters]
+  )
 
-  const handleRemoveTag = useCallback((tag: string) => {
-    removeTag(tag)
-  }, [removeTag])
+  const handleRemoveTag = useCallback(
+    (tag: string) => {
+      removeTag(tag)
+    },
+    [removeTag]
+  )
 
   return (
     <Box {...componentStyles.container.filterBar}>
@@ -56,10 +57,10 @@ const FilterBar = memo(() => {
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           '&::-webkit-scrollbar': {
-            display: 'none'
+            display: 'none',
           },
           // Enable momentum scrolling on iOS
-          WebkitOverflowScrolling: 'touch'
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         {/* Filter Tabs */}
@@ -120,8 +121,7 @@ const FilterBar = memo(() => {
             flexShrink={0}
             whiteSpace="nowrap"
           >
-            +
-            Add Tag
+            + Add Tag
           </Button>
 
           {/* Manage Tags Button */}
@@ -142,7 +142,6 @@ const FilterBar = memo(() => {
           </Button>
         </HStack>
       </HStack>
-
     </Box>
   )
 })

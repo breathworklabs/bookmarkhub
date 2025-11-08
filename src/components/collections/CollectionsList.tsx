@@ -16,37 +16,50 @@ const CollectionsList = memo(() => {
     error,
     setActiveCollection,
     toggleCollectionExpansion,
-    createCollection
+    createCollection,
   } = useCollectionsStore()
 
   const navigate = useNavigate()
-  const setActiveSidebarItem = useBookmarkStore((state) => state.setActiveSidebarItem)
+  const setActiveSidebarItem = useBookmarkStore(
+    (state) => state.setActiveSidebarItem
+  )
   const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
   const { showCreateCollection } = useModal()
 
   // Handler for collection clicks
-  const handleCollectionClick = useCallback((collectionId: string) => {
-    const isCurrentlyActive = activeSidebarItem === 'Collections' && activeCollectionId === collectionId
-    const newActiveId = isCurrentlyActive ? null : collectionId
-    setActiveCollection(newActiveId)
+  const handleCollectionClick = useCallback(
+    (collectionId: string) => {
+      const isCurrentlyActive =
+        activeSidebarItem === 'Collections' &&
+        activeCollectionId === collectionId
+      const newActiveId = isCurrentlyActive ? null : collectionId
+      setActiveCollection(newActiveId)
 
-    // Clear selected bookmarks when switching collections
-    useBookmarkStore.getState().clearBookmarkSelection()
+      // Clear selected bookmarks when switching collections
+      useBookmarkStore.getState().clearBookmarkSelection()
 
-    // Navigate to home page when clicking collections
-    navigate('/')
+      // Navigate to home page when clicking collections
+      navigate('/')
 
-    // Also update the main sidebar state to show we're in collections mode
-    if (newActiveId) {
-      setActiveSidebarItem('Collections')
-    } else {
-      setActiveSidebarItem('All Bookmarks')
-    }
-  }, [activeSidebarItem, activeCollectionId, setActiveCollection, setActiveSidebarItem, navigate])
+      // Also update the main sidebar state to show we're in collections mode
+      if (newActiveId) {
+        setActiveSidebarItem('Collections')
+      } else {
+        setActiveSidebarItem('All Bookmarks')
+      }
+    },
+    [
+      activeSidebarItem,
+      activeCollectionId,
+      setActiveCollection,
+      setActiveSidebarItem,
+      navigate,
+    ]
+  )
 
   // Memoized collection categories
-  const userCollections = useMemo(() =>
-    collections.filter(c => !c.isDefault),
+  const userCollections = useMemo(
+    () => collections.filter((c) => !c.isDefault),
     [collections]
   )
 
@@ -99,21 +112,25 @@ const CollectionsList = memo(() => {
           borderRadius="md"
           mt={2}
         >
-          <Text mb={2} fontSize="xs">No collections yet</Text>
+          <Text mb={2} fontSize="xs">
+            No collections yet
+          </Text>
           <Button
             size="sm"
             variant="ghost"
             color="var(--color-blue)"
             _hover={{ bg: 'var(--color-bg-hover)' }}
-            onClick={() => showCreateCollection({
-              onCreate: async (collectionData) => {
-                try {
-                  await createCollection(collectionData)
-                } catch (error) {
-                  console.error('Failed to create collection:', error)
-                }
-              }
-            })}
+            onClick={() =>
+              showCreateCollection({
+                onCreate: async (collectionData) => {
+                  try {
+                    await createCollection(collectionData)
+                  } catch (error) {
+                    console.error('Failed to create collection:', error)
+                  }
+                },
+              })
+            }
             fontSize="xs"
           >
             Create your first
