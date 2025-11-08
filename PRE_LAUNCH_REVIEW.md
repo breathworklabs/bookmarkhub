@@ -138,45 +138,57 @@ src/services/smartTagging/strategies/UrlPatternStrategy.ts
 
 ## MEDIUM PRIORITY - Should Fix Before Launch
 
-### 5. Stale Roadmap Documentation (NEXT_STEPS.md)
+### 5. Stale Roadmap Documentation (NEXT_STEPS.md) ✅ RESOLVED
 
-**Priority:** MEDIUM
-**Status:** OUTDATED
+**Priority:** ✅ COMPLETE
+**Impact:** Documentation now accurate and up-to-date
+**Status:** FIXED (Nov 8, 2025)
 
-**Issues:**
-- **Last updated:** October 8, 2025 (over a month old)
-- **Section: Critical Issues (Lines 28-39)** - References 14 failed tests, but all tests pass now
-- **Section: High Priority (Lines 42-89)** - Tasks marked as "To Do" but status unknown
-- **Example (Lines 69-89):** Tasks show checkboxes with `[ ]` (unchecked) but unclear if actually pending
+**Resolution:**
+- ✅ Updated date to "Nov 8, 2025 - Updated"
+- ✅ Reorganized all tasks by actual priority and status
+- ✅ Moved completed items to "Recently Completed Features"
+- ✅ Changed misleading "CRITICAL" labels to "Optional Enhancements"
+- ✅ Added clear production-ready summary at top
+- ✅ Updated success metrics to show what's achieved vs optional
+- ✅ Added deployment readiness checklist showing all items complete
+- ✅ Clarified that remaining tasks are post-launch enhancements
 
-**Specific outdated items:**
-- Line 30: "Tests need updating for `is_deleted` field" - Already done or still pending?
-- Line 44: "Fix Test Suite (Priority: CRITICAL)" - Tests pass now, so is this done?
-- Line 207-276: Success metrics show many unchecked items - is this still the plan?
-
-**Action Required:**
-- [ ] Update NEXT_STEPS.md with current status (October 2025 is old)
-- [ ] Clarify which tasks are completed vs. pending
-- [ ] Add new tasks discovered during documentation review
-- [ ] Set realistic timelines for pre-launch
-- [ ] Move completed tasks to completed section
+**Changes made:**
+- All critical blockers marked as resolved
+- Trash tests marked as optional (feature works without them)
+- Documentation now reflects production-ready status
+- Clear messaging: "App can be deployed at any time"
 
 ---
 
-### 6. Deployment Script Issue
+### 6. Deployment Script Documentation ✅ RESOLVED
 
-**Priority:** MEDIUM
-**Status:** INCOMPLETE
+**Priority:** ✅ COMPLETE
+**Impact:** Clear deployment instructions for Railway
+**Status:** FIXED (Nov 8, 2025)
 
-**Issues:**
-- `package.json:11` defines `vercel-build`: `"npm run test -- --run && npm run build"`
-- But DEPLOYMENT.md doesn't mention that tests must pass
-- No documentation about what happens if tests fail during deployment
+**Resolution:**
+- ✅ Added comprehensive Railway deployment guide (primary platform)
+- ✅ Documented deployment script behavior for different platforms
+- ✅ Added pre-deployment checklist with current status
+- ✅ Created environment variables reference table
+- ✅ Clarified that no environment variables are required (local storage only)
+- ✅ Added deployment commands reference section
+- ✅ Documented difference between `npm run build` and `npm run vercel-build`
 
-**Action Required:**
-- [ ] Document that deployment requires passing tests
-- [ ] Clarify test requirements before going live
-- [ ] Add pre-deployment checklist to DEPLOYMENT.md
+**New sections added:**
+1. **Railway Quick Setup** - Step-by-step Railway deployment
+2. **Deployment Script Behavior** - Explains build commands for different platforms
+3. **Pre-Deployment Checklist** - Verify before deploying
+4. **Environment Variables Reference** - Clear table showing optional variables
+5. **Deployment Commands Reference** - All relevant npm commands
+
+**Key clarifications:**
+- Railway uses `npm run build` (fast, no tests)
+- Vercel uses `npm run vercel-build` (tests + build)
+- All environment variables are optional (app uses local storage)
+- Custom domain setup: `bookmarkx.breathworklabs.com`
 
 ---
 
