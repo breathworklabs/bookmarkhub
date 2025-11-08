@@ -1,4 +1,5 @@
 import { Box, VStack, HStack, Text, Button, Input, For, IconButton } from '@chakra-ui/react'
+import { Tooltip } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LuTag, LuX } from 'react-icons/lu'
 import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
@@ -154,38 +155,59 @@ const AdvancedFilters = () => {
               </Text>
               <HStack gap={2} wrap="wrap">
                 <For each={[
-                  { label: 'Starred Only', value: 'starred' },
-                  { label: 'Unread', value: 'unread' },
-                  { label: 'Has Comments', value: 'comments' },
-                  { label: 'High Engagement', value: 'engagement' },
-                  { label: 'Recently Added', value: 'recent' },
-                  { label: 'Archived', value: 'archived' }
+                  { label: 'Starred Only', value: 'starred', tooltip: "Bookmarks you've marked with a star" },
+                  { label: 'Unread', value: 'unread', tooltip: "Bookmarks you haven't read yet" },
+                  { label: 'Has Comments', value: 'comments', tooltip: 'Bookmarks containing comments or replies in the content' },
+                  { label: 'High Engagement', value: 'engagement', tooltip: 'Bookmarks with engagement score > 100 (likes + retweets + replies)' },
+                  { label: 'Recently Added', value: 'recent', tooltip: 'Bookmarks added in the last 24 hours' },
+                  { label: 'Archived', value: 'archived', tooltip: "Bookmarks you've archived" }
                 ]}>
                   {(filter) => (
-                    <Button
+                    <Tooltip.Root
                       key={filter.value}
-                      size="xs"
-                      variant="outline"
-                      bg={quickFilters.includes(filter.value) ? 'var(--color-blue)' : 'transparent'}
-                      border="1px solid var(--color-border)"
-                      color={quickFilters.includes(filter.value) ? 'white' : 'var(--color-text-tertiary)'}
-                      fontSize="11px"
-                      fontWeight="500"
-                      px={2}
-                      h="24px"
-                      borderRadius="12px"
-                      _hover={{
-                        bg: quickFilters.includes(filter.value) ? 'var(--color-blue-hover)' : 'var(--color-bg-tertiary)',
-                        color: quickFilters.includes(filter.value) ? 'white' : 'var(--color-text-primary)',
-                        borderColor: 'var(--color-border-hover)'
-                      }}
-                      onClick={() => {
-                        toggleQuickFilter(filter.value)
-                        resetFilters()
-                      }}
+                      positioning={{ placement: 'top' }}
+                      openDelay={300}
+                      closeOnClick={false}
                     >
-                      {filter.label}
-                    </Button>
+                      <Tooltip.Trigger asChild>
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          bg={quickFilters.includes(filter.value) ? 'var(--color-blue)' : 'transparent'}
+                          border="1px solid var(--color-border)"
+                          color={quickFilters.includes(filter.value) ? 'white' : 'var(--color-text-tertiary)'}
+                          fontSize="11px"
+                          fontWeight="500"
+                          px={2}
+                          h="24px"
+                          borderRadius="12px"
+                          _hover={{
+                            bg: quickFilters.includes(filter.value) ? 'var(--color-blue-hover)' : 'var(--color-bg-tertiary)',
+                            color: quickFilters.includes(filter.value) ? 'white' : 'var(--color-text-primary)',
+                            borderColor: 'var(--color-border-hover)'
+                          }}
+                          onClick={() => {
+                            toggleQuickFilter(filter.value)
+                            resetFilters()
+                          }}
+                        >
+                          {filter.label}
+                        </Button>
+                      </Tooltip.Trigger>
+                      <Tooltip.Content
+                        bg="var(--color-bg-primary)"
+                        color="var(--color-text-primary)"
+                        border="1px solid var(--color-border)"
+                        borderRadius="6px"
+                        px={3}
+                        py={2}
+                        fontSize="12px"
+                        maxW="250px"
+                        boxShadow="0 4px 12px rgba(0, 0, 0, 0.15)"
+                      >
+                        {filter.tooltip}
+                      </Tooltip.Content>
+                    </Tooltip.Root>
                   )}
                 </For>
               </HStack>
