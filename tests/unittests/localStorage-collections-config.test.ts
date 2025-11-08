@@ -37,11 +37,11 @@ describe('localStorage Default Collections Configuration', () => {
 
     const smartCollections = defaultCollections.filter(c => c.isSmartCollection)
 
-    // Should have exactly 3 smart collections: starred, recent, archived
-    expect(smartCollections).toHaveLength(3)
+    // Should have exactly 4 smart collections: uncategorized, starred, recent, archived
+    expect(smartCollections).toHaveLength(4)
 
     const smartCollectionIds = smartCollections.map(c => c.id).sort()
-    expect(smartCollectionIds).toEqual(['archived', 'recent', 'starred'])
+    expect(smartCollectionIds).toEqual(['archived', 'recent', 'starred', 'uncategorized'])
   })
 
   it('should have consistent naming between collection id and smartCriteria type', async () => {

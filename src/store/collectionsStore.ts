@@ -263,13 +263,10 @@ export const useCollectionsStore = create<CollectionsStore>()(
             'collections:addBookmark:success'
           )
 
-          // Reload bookmarks to refresh their collections data
-          const { useBookmarkStore } = await import('./bookmarkStore')
-          await useBookmarkStore.getState().loadBookmarks()
-
           // Log activity
           const collection = get().collections.find(c => c.id === collectionId)
           const collectionName = collection?.name || 'collection'
+          const { useBookmarkStore } = await import('./bookmarkStore')
           useBookmarkStore.getState().addActivityLog('Added to collection', collectionName)
         } catch (error) {
           console.error('Error adding bookmark to collection:', error)
@@ -295,13 +292,10 @@ export const useCollectionsStore = create<CollectionsStore>()(
             'collections:removeBookmark:success'
           )
 
-          // Reload bookmarks to refresh their collections data
-          const { useBookmarkStore } = await import('./bookmarkStore')
-          await useBookmarkStore.getState().loadBookmarks()
-
           // Log activity
           const collection = get().collections.find(c => c.id === collectionId)
           const collectionName = collection?.name || 'collection'
+          const { useBookmarkStore } = await import('./bookmarkStore')
           useBookmarkStore.getState().addActivityLog('Removed from collection', collectionName)
         } catch (error) {
           console.error('Error removing bookmark from collection:', error)
