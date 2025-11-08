@@ -165,9 +165,14 @@ const AdvancedFilters = () => {
                   {(filter) => (
                     <Tooltip.Root
                       key={filter.value}
-                      positioning={{ placement: 'top' }}
+                      positioning={{
+                        placement: 'top',
+                        strategy: 'fixed',
+                        offset: { mainAxis: 8 }
+                      }}
                       openDelay={300}
                       closeOnClick={false}
+                      portalled
                     >
                       <Tooltip.Trigger asChild>
                         <Button
@@ -195,15 +200,21 @@ const AdvancedFilters = () => {
                         </Button>
                       </Tooltip.Trigger>
                       <Tooltip.Content
-                        bg="var(--color-bg-primary)"
-                        color="var(--color-text-primary)"
-                        border="1px solid var(--color-border)"
-                        borderRadius="6px"
-                        px={3}
-                        py={2}
-                        fontSize="12px"
-                        maxW="250px"
-                        boxShadow="0 4px 12px rgba(0, 0, 0, 0.15)"
+                        bg="rgba(0, 0, 0, 0.85)"
+                        color="rgba(255, 255, 255, 0.95)"
+                        border="1px solid rgba(255, 255, 255, 0.1)"
+                        borderRadius="4px"
+                        px={2}
+                        py={1}
+                        fontSize="11px"
+                        fontWeight="400"
+                        maxW="200px"
+                        boxShadow="0 2px 8px rgba(0, 0, 0, 0.2)"
+                        zIndex={9999}
+                        style={{
+                          backdropFilter: 'blur(8px)',
+                          WebkitBackdropFilter: 'blur(8px)'
+                        }}
                       >
                         {filter.tooltip}
                       </Tooltip.Content>
