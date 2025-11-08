@@ -1,9 +1,10 @@
 import { Box, VStack, HStack, Text, Badge, Separator, IconButton, Button, Image } from '@chakra-ui/react'
-import { LuMenu, LuStar, LuExternalLink, LuFolderPlus, LuSettings, LuTrash2, LuLayoutGrid, LuLayoutList } from 'react-icons/lu'
+import { LuMenu, LuStar, LuExternalLink, LuFolderPlus, LuSettings, LuTrash2, LuLayoutGrid, LuLayoutList, LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
+import { useSettingsStore } from '../store/settingsStore'
 import { useModal } from './modals/ModalProvider'
 import { useIsMobile } from '../hooks/useMobile'
 import CollectionsList from './collections/CollectionsList'
@@ -45,6 +46,9 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
   const toggleAIPanel = useBookmarkStore((state) => state.toggleAIPanel)
   const viewMode = useBookmarkStore((state) => state.viewMode)
   const setViewMode = useBookmarkStore((state) => state.setViewMode)
+  const isSidebarCollapsed = useSettingsStore((state) => state.display.isSidebarCollapsed)
+  // Don't select the function from state - call it directly from getState()
+  const toggleSidebarCollapsed = () => useSettingsStore.getState().toggleSidebarCollapsed()
   const bookmarkCounts = useBookmarkCounts()
   const { showCreateCollection } = useModal()
   const createCollection = useCollectionsStore((state) => state.createCollection)
@@ -89,11 +93,92 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
     return activeSidebarItem === label
   }, [activeSidebarItem, location.pathname])
 
+  // Helper component for navigation items with tooltip
+  const NavItem = ({ icon, label, badge, badgeBg, badgeColor, onClick, active }: {
+    icon: React.ReactNode
+    label: string
+    badge?: number | string
+    badgeBg?: string
+    badgeColor?: string
+    onClick: () => void
+    active: boolean
+  }) => {
+    const content = (
+      <HStack
+        {...useNavigationStyles(active)}
+        p={isSidebarCollapsed ? 2.5 : 3}
+        borderRadius="12px"
+        cursor="pointer"
+        fontSize="14px"
+        onClick={onClick}
+        justifyContent={isSidebarCollapsed ? 'center' : 'flex-start'}
+        position="relative"
+      >
+        <Box w={isSidebarCollapsed ? "20px" : "18px"} h={isSidebarCollapsed ? "20px" : "18px"} flexShrink={0}>
+          {icon}
+        </Box>
+        {!isSidebarCollapsed && (
+          <>
+            <Text flex={1}>{label}</Text>
+            {badge !== undefined && (
+              <Badge
+                bg={badgeBg || (active ? 'rgba(255,255,255,0.2)' : 'var(--color-border)')}
+                color={badgeColor || (active ? 'white' : 'var(--color-text-secondary)')}
+                fontSize="11px"
+                px={2}
+                py={1}
+                borderRadius="6px"
+              >
+                {typeof badge === 'number' ? badge.toLocaleString() : badge}
+              </Badge>
+            )}
+          </>
+        )}
+        {/* Show badge indicator dot when collapsed and badge exists */}
+        {isSidebarCollapsed && badge !== undefined && (
+          <Box
+            position="absolute"
+            top="4px"
+            right="4px"
+            w="6px"
+            h="6px"
+            borderRadius="full"
+            bg={badgeBg || 'var(--color-blue)'}
+          />
+        )}
+      </HStack>
+    )
+
+    // Add title attribute for native tooltip when collapsed
+    if (isSidebarCollapsed) {
+      const tooltipText = badge !== undefined ? `${label} (${badge})` : label
+      return (
+        <Box title={tooltipText}>
+          {content}
+        </Box>
+      )
+    }
+
+    return content
+  }
+
   return (
-    <Box {...componentStyles.container.sidebar}>
+    <Box
+      {...componentStyles.container.sidebar}
+      w={isSidebarCollapsed ? '80px' : '320px'}
+      transition="width 0.2s ease"
+      overflow="hidden"
+      px={isSidebarCollapsed ? 2 : 5}
+    >
       <VStack alignItems="stretch" gap={6} h="full">
         {/* Logo */}
-        <HStack gap={3} pb={4} borderBottomWidth="1px" style={{ borderColor: 'var(--color-border)' }}>
+        <HStack
+          gap={3}
+          pb={4}
+          borderBottomWidth="1px"
+          style={{ borderColor: 'var(--color-border)' }}
+          justifyContent={isSidebarCollapsed ? 'center' : 'flex-start'}
+        >
           <Image
             src={logoImage}
             alt="BookmarkX Logo"
@@ -102,101 +187,53 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
             borderRadius="lg"
             objectFit="contain"
           />
-          <Text fontSize="lg" fontWeight="bold" style={{ color: 'var(--color-text-primary)' }}>
-            BookmarkX
-          </Text>
+          {!isSidebarCollapsed && (
+            <Text fontSize="lg" fontWeight="bold" style={{ color: 'var(--color-text-primary)' }}>
+              BookmarkX
+            </Text>
+          )}
         </HStack>
 
         {/* Main Navigation */}
         <VStack alignItems="stretch" gap={2}>
-          <HStack
-            {...useNavigationStyles(isActive('All Bookmarks'))}
-            p={3}
-            borderRadius="12px"
-            cursor="pointer"
-            fontSize="14px"
+          <NavItem
+            icon={<LuMenu size={18} />}
+            label="All Bookmarks"
+            badge={bookmarkCounts.total}
             onClick={() => handleNavItemClick('All Bookmarks')}
-          >
-            <Box w="18px" h="18px">
-              <LuMenu size={18} />
-            </Box>
-            <Text flex={1}>All Bookmarks</Text>
-            <Badge
-              bg={isActive('All Bookmarks') ? 'rgba(255,255,255,0.2)' : 'var(--color-border)'}
-              color={isActive('All Bookmarks') ? 'white' : 'var(--color-text-secondary)'}
-              fontSize="11px"
-              px={2}
-              py={1}
-              borderRadius="6px"
-            >
-              {bookmarkCounts.total.toLocaleString()}
-            </Badge>
-          </HStack>
+            active={isActive('All Bookmarks')}
+          />
         </VStack>
 
-        {/* Collections Section */}
-        <VStack alignItems="stretch" gap={0} flex={1} minH={0}>
-          <Box
-            borderTopWidth="1px"
-            borderBottomWidth="1px"
-            style={{ borderColor: 'var(--color-border)' }}
-            mb={2}
-          >
-            <HStack justify="space-between" align="center" px={3} py={3}>
-              <Text
-                fontWeight="600"
-                fontSize="11px"
-                letterSpacing="0.8px"
-                textTransform="uppercase"
-                style={{ color: 'var(--color-text-tertiary)' }}
-              >
-                Collections
-              </Text>
-              <IconButton
-                size="xs"
-                variant="ghost"
-                aria-label="Create collection"
-                style={{ color: 'var(--color-text-tertiary)' }}
-                _hover={{ bg: 'var(--color-border)', color: 'var(--color-text-primary)' }}
-                _focus={{ boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)', outline: 'none' }}
-                minW="24px"
-                h="24px"
-                onClick={() => showCreateCollection({
-                  onCreate: async (collectionData) => {
-                    try {
-                      await createCollection(collectionData)
-                    } catch (error) {
-                      console.error('Failed to create collection:', error)
-                    }
-                  }
-                })}
-              >
-                <LuFolderPlus size={14} />
-              </IconButton>
-            </HStack>
-          </Box>
-
-          <Box flex={1} overflowY="auto">
-            <CollectionsList />
-          </Box>
-
-          {/* Create Collection Button - Mobile Only */}
-          {isMobile && (
-            <Box px={3} pb={2}>
-              <Button
-                size="sm"
-                width="100%"
-                fontSize="13px"
-                fontWeight="500"
-                style={{
-                  background: 'var(--color-blue)',
-                  color: 'white'
-                }}
-                _hover={{
-                  bg: 'var(--color-blue-hover)'
-                }}
-                onClick={() => {
-                  showCreateCollection({
+        {/* Collections Section - or Spacer when collapsed */}
+        {!isSidebarCollapsed ? (
+          <VStack alignItems="stretch" gap={0} flex={1} minH={0}>
+            <Box
+              borderTopWidth="1px"
+              borderBottomWidth="1px"
+              style={{ borderColor: 'var(--color-border)' }}
+              mb={2}
+            >
+              <HStack justify="space-between" align="center" px={3} py={3}>
+                <Text
+                  fontWeight="600"
+                  fontSize="11px"
+                  letterSpacing="0.8px"
+                  textTransform="uppercase"
+                  style={{ color: 'var(--color-text-tertiary)' }}
+                >
+                  Collections
+                </Text>
+                <IconButton
+                  size="xs"
+                  variant="ghost"
+                  aria-label="Create collection"
+                  style={{ color: 'var(--color-text-tertiary)' }}
+                  _hover={{ bg: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                  _focus={{ boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)', outline: 'none' }}
+                  minW="24px"
+                  h="24px"
+                  onClick={() => showCreateCollection({
                     onCreate: async (collectionData) => {
                       try {
                         await createCollection(collectionData)
@@ -204,125 +241,99 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
                         console.error('Failed to create collection:', error)
                       }
                     }
-                  })
-                  onItemClick?.()
-                }}
-                gap={2}
-              >
-                <LuFolderPlus size={16} />
-                Create Collection
-              </Button>
+                  })}
+                >
+                  <LuFolderPlus size={14} />
+                </IconButton>
+              </HStack>
             </Box>
-          )}
-        </VStack>
+
+            <Box flex={1} overflowY="auto">
+              <CollectionsList />
+            </Box>
+
+            {/* Create Collection Button - Mobile Only */}
+            {isMobile && (
+              <Box px={3} pb={2}>
+                <Button
+                  size="sm"
+                  width="100%"
+                  fontSize="13px"
+                  fontWeight="500"
+                  style={{
+                    background: 'var(--color-blue)',
+                    color: 'white'
+                  }}
+                  _hover={{
+                    bg: 'var(--color-blue-hover)'
+                  }}
+                  onClick={() => {
+                    showCreateCollection({
+                      onCreate: async (collectionData) => {
+                        try {
+                          await createCollection(collectionData)
+                        } catch (error) {
+                          console.error('Failed to create collection:', error)
+                        }
+                      }
+                    })
+                    onItemClick?.()
+                  }}
+                  gap={2}
+                >
+                  <LuFolderPlus size={16} />
+                  Create Collection
+                </Button>
+              </Box>
+            )}
+          </VStack>
+        ) : (
+          // Spacer when collapsed to push bottom section down
+          <Box flex={1} />
+        )}
 
         {/* Bottom Navigation */}
         <VStack alignItems="stretch" gap={2}>
           <Separator style={{ borderColor: 'var(--color-border)' }} />
 
-          <HStack
-            {...useNavigationStyles(isActive('AI Insights'))}
-            p={3}
-            borderRadius="12px"
-            cursor="pointer"
-            fontSize="14px"
+          <NavItem
+            icon={<LuStar size={18} />}
+            label="AI Insights"
+            badge="New"
+            badgeBg="var(--color-error)"
+            badgeColor="white"
             onClick={() => handleNavItemClick('AI Insights')}
-          >
-            <Box w="18px" h="18px">
-              <LuStar size={18} />
-            </Box>
-            <Text flex={1}>AI Insights</Text>
-            <Badge
-              style={{ background: 'var(--color-error)' }}
-              color="white"
-              fontSize="10px"
-              px={2}
-              py={1}
-              borderRadius="6px"
-            >
-              New
-            </Badge>
-          </HStack>
+            active={isActive('AI Insights')}
+          />
 
-
-          <HStack
-            p={3}
-            borderRadius="12px"
-            cursor="pointer"
-            bg={isActive('Shared') ? 'var(--color-blue)' : 'transparent'}
-            color={isActive('Shared') ? 'white' : 'var(--color-text-tertiary)'}
-            fontSize="14px"
-            fontWeight={isActive('Shared') ? '600' : '500'}
-            _hover={{
-              bg: isActive('Shared') ? 'var(--color-blue-hover)' : 'var(--color-border)',
-              color: isActive('Shared') ? 'white' : 'var(--color-text-primary)'
-            }}
-            transition="all 0.2s"
+          <NavItem
+            icon={<LuExternalLink size={18} />}
+            label="Shared"
+            badge={bookmarkCounts.shared > 0 ? bookmarkCounts.shared : undefined}
             onClick={() => {
               setActiveCollection(null)
               useBookmarkStore.getState().clearBookmarkSelection()
               navigate('/shared')
               onItemClick?.()
             }}
-          >
-            <Box w="18px" h="18px">
-              <LuExternalLink size={18} />
-            </Box>
-            <Text flex={1}>Shared</Text>
-            {bookmarkCounts.shared > 0 && (
-              <Badge
-                bg={isActive('Shared') ? 'rgba(255,255,255,0.2)' : 'var(--color-border)'}
-                color={isActive('Shared') ? 'white' : 'var(--color-text-secondary)'}
-                fontSize="11px"
-                px={2}
-                py={1}
-                borderRadius="6px"
-              >
-                {bookmarkCounts.shared}
-              </Badge>
-            )}
-          </HStack>
+            active={isActive('Shared')}
+          />
 
-          <HStack
-            p={3}
-            borderRadius="12px"
-            cursor="pointer"
-            bg={isActive('Trash') ? 'var(--color-blue)' : 'transparent'}
-            color={isActive('Trash') ? 'white' : 'var(--color-text-tertiary)'}
-            fontSize="14px"
-            fontWeight={isActive('Trash') ? '600' : '500'}
-            _hover={{
-              bg: isActive('Trash') ? 'var(--color-blue-hover)' : 'var(--color-border)',
-              color: isActive('Trash') ? 'white' : 'var(--color-text-primary)'
-            }}
-            transition="all 0.2s"
+          <NavItem
+            icon={<LuTrash2 size={18} />}
+            label="Trash"
+            badge={bookmarkCounts.deleted > 0 ? bookmarkCounts.deleted : undefined}
             onClick={() => {
               setActiveCollection(null)
               useBookmarkStore.getState().clearBookmarkSelection()
               navigate('/trash')
               onItemClick?.()
             }}
-          >
-            <Box w="18px" h="18px">
-              <LuTrash2 size={18} />
-            </Box>
-            <Text flex={1}>Trash</Text>
-            {bookmarkCounts.deleted > 0 && (
-              <Badge
-                bg={isActive('Trash') ? 'rgba(255,255,255,0.2)' : 'var(--color-border)'}
-                color={isActive('Trash') ? 'white' : 'var(--color-text-secondary)'}
-                fontSize="11px"
-                px={2}
-                py={1}
-                borderRadius="6px"
-              >
-                {bookmarkCounts.deleted}
-              </Badge>
-            )}
-          </HStack>
+            active={isActive('Trash')}
+          />
 
           {/* View Mode Toggle - Mobile Only */}
-          {isMobile && (
+          {isMobile && !isSidebarCollapsed && (
             <VStack alignItems="stretch" borderTopWidth="1px" style={{ borderColor: 'var(--color-border)' }} pt={4} pb={2} gap={2}>
               <Text fontSize="11px" fontWeight="600" textTransform="uppercase" letterSpacing="0.5px" style={{ color: 'var(--color-text-tertiary)' }} px={3}>
                 View Mode
@@ -380,31 +391,51 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
 
           {/* Settings */}
           <VStack alignItems="stretch" borderTopWidth="1px" style={{ borderColor: 'var(--color-border)' }} pt={4} gap={2}>
-            <HStack
-              p={3}
-              borderRadius="12px"
-              cursor="pointer"
-              bg={isActive('Settings') ? 'var(--color-blue)' : 'transparent'}
-              color={isActive('Settings') ? 'white' : 'var(--color-text-tertiary)'}
-              fontSize="14px"
-              fontWeight={isActive('Settings') ? '600' : '500'}
-              _hover={{
-                bg: isActive('Settings') ? 'var(--color-blue-hover)' : 'var(--color-border)',
-                color: isActive('Settings') ? 'white' : 'var(--color-text-primary)'
-              }}
-              transition="all 0.2s"
+            <NavItem
+              icon={<LuSettings size={18} />}
+              label="Settings"
               onClick={() => {
                 setActiveCollection(null)
                 useBookmarkStore.getState().clearBookmarkSelection()
                 navigate('/settings')
                 onItemClick?.()
               }}
-            >
-              <Box w="18px" h="18px">
-                <LuSettings size={18} />
-              </Box>
-              <Text>Settings</Text>
-            </HStack>
+              active={isActive('Settings')}
+            />
+
+            {/* Toggle Collapse Button - Desktop Only */}
+            {!isMobile && (
+              <HStack
+                as="button"
+                onClick={toggleSidebarCollapsed}
+                w="full"
+                p={isSidebarCollapsed ? 2.5 : 3}
+                borderRadius="12px"
+                cursor="pointer"
+                justifyContent={isSidebarCollapsed ? 'center' : 'flex-start'}
+                gap={isSidebarCollapsed ? 0 : 2}
+                style={{
+                  color: 'var(--color-text-tertiary)',
+                  border: '1px solid var(--color-border)'
+                }}
+                _hover={{
+                  bg: 'var(--color-bg-secondary)',
+                  color: 'var(--color-text-primary)',
+                  borderColor: 'var(--color-border-hover)'
+                }}
+                transition="all 0.15s"
+                title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                <Box w="18px" h="18px">
+                  {isSidebarCollapsed ? <LuChevronRight size={18} /> : <LuChevronLeft size={18} />}
+                </Box>
+                {!isSidebarCollapsed && (
+                  <Text fontSize="13px" fontWeight="500">
+                    Collapse
+                  </Text>
+                )}
+              </HStack>
+            )}
           </VStack>
         </VStack>
       </VStack>

@@ -20,6 +20,7 @@ export interface DisplaySettings {
   animationsEnabled: boolean
   sortBy: 'date' | 'title' | 'author' | 'domain'  // Sorting preference
   sortOrder: 'asc' | 'desc'  // Sort direction
+  isSidebarCollapsed: boolean  // Sidebar collapse state
 }
 
 export interface PrivacySettings {
@@ -49,6 +50,7 @@ export interface SettingsState {
   setViewMode: (mode: DisplaySettings['viewMode']) => void
   setSortBy: (sortBy: DisplaySettings['sortBy']) => void
   setSortOrder: (sortOrder: DisplaySettings['sortOrder']) => void
+  toggleSidebarCollapsed: () => void
 
   // Privacy settings actions
   updatePrivacySettings: (settings: Partial<PrivacySettings>) => void
@@ -80,6 +82,7 @@ const defaultDisplaySettings: DisplaySettings = {
   animationsEnabled: true,
   sortBy: 'date',
   sortOrder: 'desc',
+  isSidebarCollapsed: false,
 }
 
 const defaultPrivacySettings: PrivacySettings = {
@@ -102,40 +105,21 @@ const consolidatedStorage = {
             // Handle Zustand's persist wrapper format {state, version}
             const actualSettings = settings.state || settings
             // Merge saved settings with defaults to handle new properties
-            const fullState: SettingsState = {
+            // Only return the data, not the actions - Zustand will add them
+            const fullState = {
               extension: { ...defaultExtensionSettings, ...(actualSettings.extension || {}) },
               display: { ...defaultDisplaySettings, ...(actualSettings.display || {}) },
               privacy: { ...defaultPrivacySettings, ...(actualSettings.privacy || {}) },
               hasSeenSplash: actualSettings.hasSeenSplash ?? false,
-              // Include all action functions (they won't be persisted)
-              updateExtensionSettings: () => {},
-              setAutoSyncInterval: () => {},
-              setSyncNotifications: () => {},
-              setDefaultTags: () => {},
-              setImportDuplicates: () => {},
-              setAutoOpenApp: () => {},
-              setDefaultCollection: () => {},
-              updateDisplaySettings: () => {},
-              setTheme: () => {},
-              setFontSize: () => {},
-              setViewMode: () => {},
-              setSortBy: () => {},
-              setSortOrder: () => {},
-              updatePrivacySettings: () => {},
-              setHasSeenSplash: () => {},
-              resetExtensionSettings: () => {},
-              resetAllSettings: () => {},
-            }
-            console.log('Loading settings from storage:', fullState)
+            } as Partial<SettingsState>
             // Return in Zustand v5 persist format
-            return { state: fullState, version: settings.version || 0 }
+            return { state: fullState as SettingsState, version: settings.version || 0 }
           }
         }
       }
     } catch (error) {
       console.error('Failed to get settings from consolidated storage:', error)
     }
-    console.log('No settings found in storage, using defaults')
     return null
   },
   setItem: (_name: string, value: { state: SettingsState; version?: number }): void => {
@@ -151,7 +135,6 @@ const consolidatedStorage = {
       }
       // Store the full StorageValue object
       parsed.extensionSettings = value
-      console.log('Saving settings to storage:', value)
       localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
     } catch (error) {
       console.error('Failed to save settings to consolidated storage:', error)
@@ -244,6 +227,11 @@ export const useSettingsStore = create<SettingsState>()(
       setSortOrder: (sortOrder) =>
         set((state) => ({
           display: { ...state.display, sortOrder },
+        })),
+
+      toggleSidebarCollapsed: () =>
+        set((state) => ({
+          display: { ...state.display, isSidebarCollapsed: !state.display.isSidebarCollapsed },
         })),
 
       // Privacy settings actions

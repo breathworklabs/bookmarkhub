@@ -89,10 +89,15 @@ const InfiniteBookmarkGrid = memo(() => {
       {/* Bookmarks Display - Grid or List */}
       {viewMode === 'grid' ? (
         <SimpleGrid
-          columns={{ base: 1, md: 2, lg: 3, xl: 4, "2xl": 5 }}
+          columns={{ base: 1, md: 2, lg: 3, xl: 4 }}
           gap={{ base: 3, md: 4 }}
           w="full"
           mb={4}
+          css={{
+            '@media (min-width: 1920px)': {
+              gridTemplateColumns: 'repeat(5, minmax(0, 1fr))'
+            }
+          }}
         >
           <For each={bookmarks}>
             {(bookmark) => (

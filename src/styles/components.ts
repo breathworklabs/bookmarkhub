@@ -296,12 +296,23 @@ export const componentStyles = {
     },
 
     sidebar: {
-      w: '320px',
       bg: colors.dark.sidebarBg,
       borderRightWidth: '1px',
       borderColor: colors.dark.border,
       py: 5,
-      px: 5
+      px: 5,
+      position: 'relative' as const,
+      flexShrink: 0
+    },
+
+    sidebarCollapsed: {
+      bg: colors.dark.sidebarBg,
+      borderRightWidth: '1px',
+      borderColor: colors.dark.border,
+      py: 5,
+      px: 2,
+      position: 'relative' as const,
+      flexShrink: 0
     },
 
     header: {
@@ -348,4 +359,8 @@ export const getBadgeStyle = (variant: 'base' | 'count' | 'active' | 'error' = '
 
 export const getTagStyle = (variant: 'base' | 'active' | 'filter' = 'base') => {
   return componentStyles.tag[variant]
+}
+
+export const getSidebarStyle = (isCollapsed: boolean) => {
+  return isCollapsed ? componentStyles.container.sidebarCollapsed : componentStyles.container.sidebar
 }

@@ -1,4 +1,4 @@
-import { ChakraProvider, defaultSystem, Box, Spinner, Text, VStack } from '@chakra-ui/react'
+import { ChakraProvider, Box, Spinner, Text, VStack } from '@chakra-ui/react'
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useEffect } from 'react'
@@ -18,6 +18,7 @@ import * as Sentry from '@sentry/react'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { initGA, trackPageView } from './lib/analytics'
 import { useSettingsStore } from './store/settingsStore'
+import { chakraTheme } from './styles/chakraTheme'
 // import { AuthDebug } from './components/debug/AuthDebug'
 
 // Component to track page views
@@ -40,7 +41,7 @@ const SentryRoutes = Sentry.withSentryRouting(Routes)
 
 function App() {
   return (
-    <ChakraProvider value={defaultSystem}>
+    <ChakraProvider value={chakraTheme}>
       <ThemeProvider>
         <BrowserRouter>
           <AnalyticsTracker />

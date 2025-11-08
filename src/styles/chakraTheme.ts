@@ -1,9 +1,11 @@
 import { createSystem, defaultConfig } from '@chakra-ui/react'
 import { colors } from './colors'
+import { breakpoints } from './responsive'
 
 // Chakra UI v3 theme configuration
 export const chakraTheme = createSystem(defaultConfig, {
   theme: {
+    breakpoints,
     tokens: {
       colors: {
         // Primary colors - simplified for Chakra v3 compatibility

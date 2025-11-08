@@ -81,13 +81,41 @@ export const CollectionTreeItem = memo<CollectionTreeItemProps>(({
   const hasChildren = children.length > 0
   const isAtMaxDepth = maxDepth !== undefined && depth >= maxDepth
 
-  // Update widths when collection name changes
+  // Update widths when collection name changes with proper measurement
   useEffect(() => {
-    if (containerRef.current && contentRef.current) {
-      setContainerWidth(containerRef.current.offsetWidth)
-      setContentWidth(contentRef.current.offsetWidth)
+    // Use requestAnimationFrame to ensure layout is complete
+    const measureWidths = () => {
+      requestAnimationFrame(() => {
+        if (containerRef.current && contentRef.current) {
+          // Use getBoundingClientRect for more accurate measurements
+          const containerRect = containerRef.current.getBoundingClientRect()
+          const contentRect = contentRef.current.getBoundingClientRect()
+
+          setContainerWidth(Math.floor(containerRect.width))
+          setContentWidth(Math.ceil(contentRect.width))
+        }
+      })
+    }
+
+    measureWidths()
+
+    // Set up ResizeObserver to track container size changes
+    const resizeObserver = new ResizeObserver(() => {
+      measureWidths()
+    })
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current)
+    }
+
+    return () => {
+      resizeObserver.disconnect()
     }
   }, [collection.name])
+
+  // Check if content genuinely overflows with a reasonable threshold
+  // Use 8px threshold to account for measurement variations and prevent false positives
+  const shouldScroll = contentWidth > containerWidth + 8
 
   // Calculate visual indicators
   const totalDepth = useMemo(
@@ -366,10 +394,10 @@ export const CollectionTreeItem = memo<CollectionTreeItemProps>(({
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => setIsHovering(false)}
               css={{
-                maskImage: contentWidth > containerWidth + 2
+                maskImage: shouldScroll
                   ? 'linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) calc(100% - 20px), rgba(0,0,0,0) 100%)'
                   : undefined,
-                WebkitMaskImage: contentWidth > containerWidth + 2
+                WebkitMaskImage: shouldScroll
                   ? 'linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) calc(100% - 20px), rgba(0,0,0,0) 100%)'
                   : undefined,
               }}
@@ -381,10 +409,10 @@ export const CollectionTreeItem = memo<CollectionTreeItemProps>(({
                 display="inline-block"
                 whiteSpace="nowrap"
                 css={{
-                  transform: isHovering && contentWidth > containerWidth + 2
+                  transform: isHovering && shouldScroll
                     ? `translateX(-${contentWidth - containerWidth + 30}px)`
                     : 'translateX(0)',
-                  transition: contentWidth > containerWidth + 2
+                  transition: shouldScroll
                     ? `transform ${(contentWidth / 150).toFixed(2)}s ease`
                     : 'none',
                 }}
