@@ -201,21 +201,17 @@ const AdvancedFilters = () => {
                       </Tooltip.Trigger>
                       <Tooltip.Positioner>
                         <Tooltip.Content
-                          bg="rgba(0, 0, 0, 0.85)"
-                          color="rgba(255, 255, 255, 0.95)"
-                          border="1px solid rgba(255, 255, 255, 0.1)"
+                          bg="var(--color-bg-tertiary)"
+                          color="var(--color-text-secondary)"
+                          border="1px solid var(--color-border)"
                           borderRadius="4px"
                           px={2}
                           py={1}
                           fontSize="11px"
                           fontWeight="400"
                           maxW="200px"
-                          boxShadow="0 2px 8px rgba(0, 0, 0, 0.2)"
+                          boxShadow="0 1px 4px rgba(0, 0, 0, 0.1)"
                           zIndex={9999}
-                          style={{
-                            backdropFilter: 'blur(8px)',
-                            WebkitBackdropFilter: 'blur(8px)'
-                          }}
                         >
                           {filter.tooltip}
                         </Tooltip.Content>
