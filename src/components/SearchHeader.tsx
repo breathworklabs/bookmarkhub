@@ -7,13 +7,16 @@ import {
   Badge,
   IconButton,
 } from '@chakra-ui/react'
+import { Tooltip } from '@chakra-ui/react'
 import {
   LuMenu,
   LuLayoutGrid,
   LuLayoutList,
   LuBookmarkPlus,
+  LuInfo,
 } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'
 import { sanitizeBookmark } from '../lib/dataValidation'
@@ -70,6 +73,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
   const setViewMode = useBookmarkStore((state) => state.setViewMode)
   const { showAddBookmark } = useModal()
   const isMobile = useIsMobile()
+  const navigate = useNavigate()
 
   // Call hooks unconditionally to avoid "Rendered fewer hooks" error
   const secondaryButtonStyles = useButtonStyles('secondary')
@@ -198,6 +202,11 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
       },
     })
   }, [showAddBookmark, addBookmark])
+
+  const handleHelpClick = useCallback(() => {
+    navigate('/help')
+  }, [navigate])
+
   return (
     <Box {...componentStyles.container.header}>
       <HStack gap={{ base: 2, md: 6 }} alignItems="center">
@@ -325,6 +334,54 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
               </Button>
             </HStack>
           )}
+
+          {/* Help Button with Tooltip */}
+          <Tooltip.Root
+            positioning={{
+              placement: 'bottom',
+              strategy: 'fixed',
+              offset: { mainAxis: 8 },
+            }}
+            openDelay={300}
+            closeOnClick={false}
+          >
+            <Tooltip.Trigger asChild>
+              <IconButton
+                aria-label="Help & Documentation"
+                variant="ghost"
+                size="sm"
+                onClick={handleHelpClick}
+                style={{
+                  color: 'var(--color-text-tertiary)',
+                  border: '1px solid var(--color-border)',
+                }}
+                _hover={{
+                  bg: 'var(--color-bg-tertiary)',
+                  color: 'var(--color-text-primary)',
+                  borderColor: 'var(--color-border-hover)',
+                }}
+              >
+                <LuInfo size={16} />
+              </IconButton>
+            </Tooltip.Trigger>
+            <Tooltip.Positioner>
+              <Tooltip.Content
+                bg="var(--color-bg-tertiary)"
+                color="var(--color-text-secondary)"
+                border="1px solid var(--color-border)"
+                borderRadius="4px"
+                px={2}
+                py={1}
+                fontSize="11px"
+                fontWeight="400"
+                maxW="200px"
+                boxShadow="0 1px 4px rgba(0, 0, 0, 0.1)"
+                zIndex={9999}
+              >
+                Help & Documentation
+              </Tooltip.Content>
+            </Tooltip.Positioner>
+          </Tooltip.Root>
 
           {/* Filters Button - Icon only on mobile */}
           {isMobile ? (
