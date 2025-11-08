@@ -1,52 +1,86 @@
-# GitHub Organization Setup
+# GitHub Repository Setup for BookmarkX
 
-## Step 1: Create Breathwork Labs Organization
+## Project Information
+
+- **Project Name:** bookmarkx
+- **Production Domain:** bookmarkx.breathworklabs.com
+- **Repository:** Can be under personal account or organization
+
+## Option A: Personal Repository (Simpler)
+
+### Step 1: Create Repository
+
+1. Go to [github.com/new](https://github.com/new)
+
+2. **Configure repository:**
+   - Repository name: `bookmarkx`
+   - Description: `Privacy-focused bookmark manager for X/Twitter`
+   - Visibility: **Public** or **Private** (your choice)
+   - **DO NOT** initialize with README (you already have files)
+   - **DO NOT** add .gitignore (you already have one)
+
+3. Click **"Create repository"**
+
+### Step 2: Push Your Code
+
+```bash
+# Check current remote (if any)
+git remote -v
+
+# Remove existing remote if present
+git remote remove origin
+
+# Add new remote (replace YOUR_USERNAME)
+git remote add origin https://github.com/YOUR_USERNAME/bookmarkx.git
+
+# Ensure you're on master/main branch
+git branch -M master
+
+# Push your code
+git push -u origin master
+```
+
+---
+
+## Option B: Organization Repository (If you want breathworklabs org)
+
+### Step 1: Create Breathwork Labs Organization
 
 1. Go to [github.com/organizations/new](https://github.com/organizations/new)
 
 2. **Fill in organization details:**
    - Organization account name: `breathworklabs`
-   - Contact email: `hello@breathworklabs.com`
+   - Contact email: `your-email@example.com`
    - This organization belongs to: **My personal account**
    - Plan: **Free** (unlimited private repos)
 
-3. Click **"Next"**
+3. Click **"Next"** → Skip team invitation → **"Complete setup"**
 
-4. **Skip team invitation** (you can add members later)
-
-5. Click **"Complete setup"**
-
-## Step 2: Configure Organization Profile
+### Step 2: Configure Organization Profile
 
 1. Go to `github.com/breathworklabs`
 2. Click **"Edit profile"**
 3. Add:
    - Display name: **Breathwork Labs**
    - Description: *Building privacy-focused productivity tools*
-   - Website: `https://breathworklabs.com`
-   - Email: `hello@breathworklabs.com`
+   - Website: `https://bookmarkx.breathworklabs.com`
 4. Upload a logo/avatar (optional)
 5. Click **"Save"**
 
-## Step 3: Create Private Repository
+### Step 3: Create Repository
 
 1. Go to `github.com/organizations/breathworklabs/repositories/new`
-   - Or click **"New repository"** from your organization page
 
 2. **Configure repository:**
    - Owner: **breathworklabs**
-   - Repository name: `x-bookmark-manager`
+   - Repository name: `bookmarkx`
    - Description: `Privacy-focused bookmark manager for X/Twitter`
-   - Visibility: **Private** ✅
+   - Visibility: **Public** or **Private** (your choice)
    - **DO NOT** initialize with README (you already have files)
-   - **DO NOT** add .gitignore (you already have one)
-   - **DO NOT** choose a license yet (can add later)
 
 3. Click **"Create repository"**
 
-## Step 4: Push Your Code
-
-After creating the repository, GitHub will show you instructions. Run these commands in your project directory:
+### Step 4: Push Your Code (for Option B)
 
 ```bash
 # Check current remote (if any)
@@ -56,18 +90,22 @@ git remote -v
 git remote remove origin
 
 # Add new remote to Breathwork Labs organization
-git remote add origin https://github.com/breathworklabs/x-bookmark-manager.git
+git remote add origin https://github.com/breathworklabs/bookmarkx.git
 
-# Ensure you're on main branch
-git branch -M main
+# Ensure you're on master branch
+git branch -M master
 
 # Push your code
-git push -u origin main
+git push -u origin master
 ```
 
-## Step 5: Configure Repository Settings
+---
 
-1. Go to `github.com/breathworklabs/x-bookmark-manager/settings`
+## Repository Configuration (Both Options)
+
+### Configure Repository Settings
+
+1. Go to your repository settings
 
 2. **General Settings:**
    - Disable Wiki (unless you want it)
@@ -76,24 +114,24 @@ git push -u origin main
    - Enable Discussions (optional)
 
 3. **Branches:**
-   - Set `main` as default branch
+   - Set `master` as default branch
    - Consider adding branch protection rules:
      - Go to Settings → Branches → Add rule
-     - Branch name pattern: `main`
+     - Branch name pattern: `master`
      - Enable "Require status checks to pass before merging"
 
 4. **Secrets (for CI/CD later):**
    - Settings → Secrets and variables → Actions
    - Add secrets for environment variables (when needed)
 
-## Step 6: Connect to Vercel
+### Connect to Vercel
 
 1. Go to [vercel.com/new](https://vercel.com/new)
 2. Click **"Import Git Repository"**
 3. Select **GitHub**
-4. Authorize Vercel to access **breathworklabs** organization
-5. Select `breathworklabs/x-bookmark-manager`
-6. Follow Vercel deployment steps from DEPLOYMENT.md
+4. Select your `bookmarkx` repository
+5. Follow Vercel deployment steps from DEPLOYMENT.md
+6. Configure custom domain: `bookmarkx.breathworklabs.com`
 
 ## Optional: Add Collaborators
 
@@ -113,9 +151,9 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   test:
@@ -138,8 +176,11 @@ jobs:
 ## Quick Command Reference
 
 ```bash
-# Clone repo (after setup)
-git clone https://github.com/breathworklabs/x-bookmark-manager.git
+# Clone repo (after setup) - Personal
+git clone https://github.com/YOUR_USERNAME/bookmarkx.git
+
+# Clone repo (after setup) - Organization
+git clone https://github.com/breathworklabs/bookmarkx.git
 
 # Check remote
 git remote -v
@@ -147,7 +188,7 @@ git remote -v
 # Push changes
 git add .
 git commit -m "Your message"
-git push origin main
+git push origin master
 
 # Create new branch
 git checkout -b feature-name
@@ -156,6 +197,6 @@ git push -u origin feature-name
 
 ---
 
-**Your organization URL:** `github.com/breathworklabs`
-
-**Your repository URL:** `github.com/breathworklabs/x-bookmark-manager`
+**Project Name:** bookmarkx
+**Production Domain:** bookmarkx.breathworklabs.com
+**Repository Name:** bookmarkx (not x-bookmark-manager)

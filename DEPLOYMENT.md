@@ -30,8 +30,8 @@ Vercel is the recommended hosting platform for this application, optimized for R
 
 ### After First Deploy
 
-- You'll get a free `.vercel.app` subdomain
-- **Add custom domain:** Project Settings → Domains → Add `breathworklabs.com`
+- You'll get a free `.vercel.app` subdomain (e.g., `bookmarksx.vercel.app`)
+- **Add custom domain:** Project Settings → Domains → Add `bookmarkx.breathworklabs.com`
 - **Auto-deploys:** Every push to main branch deploys automatically
 - **Preview URLs:** Every PR gets its own preview URL
 

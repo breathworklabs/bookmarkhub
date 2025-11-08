@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "author": "Breathwork Labs <hello@breathworklabs.com>",
-  "homepage": "https://breathworklabs.com",
+  "homepage": "https://bookmarkx.breathworklabs.com",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
