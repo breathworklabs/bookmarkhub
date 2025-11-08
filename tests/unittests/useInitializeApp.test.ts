@@ -11,16 +11,16 @@ import * as performance from '../../src/lib/performance'
 vi.mock('react-hot-toast', () => ({
   default: {
     success: vi.fn(),
-    error: vi.fn()
-  }
+    error: vi.fn(),
+  },
 }))
 
 vi.mock('../../src/lib/analytics', () => ({
-  initGA: vi.fn()
+  initGA: vi.fn(),
 }))
 
 vi.mock('../../src/lib/performance', () => ({
-  initAllPerformanceMonitoring: vi.fn()
+  initAllPerformanceMonitoring: vi.fn(),
 }))
 
 describe('useInitializeApp', () => {
@@ -32,13 +32,13 @@ describe('useInitializeApp', () => {
     useBookmarkStore.setState({
       bookmarks: [],
       isLoading: false,
-      error: null
+      error: null,
     })
 
     useCollectionsStore.setState({
       collections: [],
       isLoading: false,
-      error: null
+      error: null,
     })
 
     // Mock localStorage
@@ -55,25 +55,29 @@ describe('useInitializeApp', () => {
         localStorageData = {}
       }),
       length: 0,
-      key: vi.fn()
+      key: vi.fn(),
     } as any
 
     // Mock window.addEventListener for message events
     messageListeners = []
-    vi.spyOn(window, 'addEventListener').mockImplementation((event, handler) => {
-      if (event === 'message') {
-        messageListeners.push(handler as any)
-      }
-    })
-
-    vi.spyOn(window, 'removeEventListener').mockImplementation((event, handler) => {
-      if (event === 'message') {
-        const index = messageListeners.indexOf(handler as any)
-        if (index > -1) {
-          messageListeners.splice(index, 1)
+    vi.spyOn(window, 'addEventListener').mockImplementation(
+      (event, handler) => {
+        if (event === 'message') {
+          messageListeners.push(handler as any)
         }
       }
-    })
+    )
+
+    vi.spyOn(window, 'removeEventListener').mockImplementation(
+      (event, handler) => {
+        if (event === 'message') {
+          const index = messageListeners.indexOf(handler as any)
+          if (index > -1) {
+            messageListeners.splice(index, 1)
+          }
+        }
+      }
+    )
 
     // Mock window.postMessage
     vi.spyOn(window, 'postMessage').mockImplementation(() => {})
@@ -81,7 +85,7 @@ describe('useInitializeApp', () => {
     // Mock window.location.reload
     Object.defineProperty(window, 'location', {
       writable: true,
-      value: { reload: vi.fn() }
+      value: { reload: vi.fn() },
     })
 
     // Clear all mocks
@@ -104,8 +108,8 @@ describe('useInitializeApp', () => {
     it('should detect existing bookmarks in localStorage', () => {
       localStorageData['x-bookmark-manager-data'] = JSON.stringify({
         bookmarks: [
-          { id: 1, title: 'Test Bookmark', url: 'https://example.com' }
-        ]
+          { id: 1, title: 'Test Bookmark', url: 'https://example.com' },
+        ],
       })
 
       const { result } = renderHook(() => useInitializeApp())
@@ -115,7 +119,7 @@ describe('useInitializeApp', () => {
 
     it('should handle empty bookmarks array', () => {
       localStorageData['x-bookmark-manager-data'] = JSON.stringify({
-        bookmarks: []
+        bookmarks: [],
       })
 
       const { result } = renderHook(() => useInitializeApp())
@@ -139,11 +143,17 @@ describe('useInitializeApp', () => {
     })
 
     it('should initialize stores when bookmarks exist', async () => {
-      const initBookmarksSpy = vi.spyOn(useBookmarkStore.getState(), 'initialize')
-      const initCollectionsSpy = vi.spyOn(useCollectionsStore.getState(), 'initialize')
+      const initBookmarksSpy = vi.spyOn(
+        useBookmarkStore.getState(),
+        'initialize'
+      )
+      const initCollectionsSpy = vi.spyOn(
+        useCollectionsStore.getState(),
+        'initialize'
+      )
 
       localStorageData['x-bookmark-manager-data'] = JSON.stringify({
-        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }]
+        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }],
       })
 
       renderHook(() => useInitializeApp())
@@ -188,12 +198,19 @@ describe('useInitializeApp', () => {
     it('should listen for extension messages', () => {
       renderHook(() => useInitializeApp())
 
-      expect(window.addEventListener).toHaveBeenCalledWith('message', expect.any(Function))
+      expect(window.addEventListener).toHaveBeenCalledWith(
+        'message',
+        expect.any(Function)
+      )
     })
 
     it('should handle X_BOOKMARKS_UPDATED message', async () => {
-      const initBookmarksSpy = vi.spyOn(useBookmarkStore.getState(), 'initialize').mockResolvedValue()
-      const initCollectionsSpy = vi.spyOn(useCollectionsStore.getState(), 'initialize').mockResolvedValue()
+      const initBookmarksSpy = vi
+        .spyOn(useBookmarkStore.getState(), 'initialize')
+        .mockResolvedValue()
+      const initCollectionsSpy = vi
+        .spyOn(useCollectionsStore.getState(), 'initialize')
+        .mockResolvedValue()
 
       renderHook(() => useInitializeApp())
 
@@ -202,12 +219,12 @@ describe('useInitializeApp', () => {
           type: 'X_BOOKMARKS_UPDATED',
           source: 'x-bookmark-manager-extension',
           count: 5,
-          showNotification: true
-        }
+          showNotification: true,
+        },
       })
 
       act(() => {
-        messageListeners.forEach(listener => listener(message))
+        messageListeners.forEach((listener) => listener(message))
       })
 
       await waitFor(() => {
@@ -227,12 +244,12 @@ describe('useInitializeApp', () => {
           type: 'X_BOOKMARKS_UPDATED',
           source: 'x-bookmark-manager-extension',
           count: 1,
-          showNotification: true
-        }
+          showNotification: true,
+        },
       })
 
       act(() => {
-        messageListeners.forEach(listener => listener(message))
+        messageListeners.forEach((listener) => listener(message))
       })
 
       await waitFor(() => {
@@ -254,12 +271,12 @@ describe('useInitializeApp', () => {
           type: 'X_BOOKMARKS_UPDATED',
           source: 'x-bookmark-manager-extension',
           count: 5,
-          showNotification: true
-        }
+          showNotification: true,
+        },
       })
 
       act(() => {
-        messageListeners.forEach(listener => listener(message))
+        messageListeners.forEach((listener) => listener(message))
       })
 
       await waitFor(() => {
@@ -281,12 +298,12 @@ describe('useInitializeApp', () => {
           type: 'X_BOOKMARKS_UPDATED',
           source: 'x-bookmark-manager-extension',
           count: 5,
-          showNotification: false
-        }
+          showNotification: false,
+        },
       })
 
       act(() => {
-        messageListeners.forEach(listener => listener(message))
+        messageListeners.forEach((listener) => listener(message))
       })
 
       await waitFor(() => {
@@ -308,12 +325,12 @@ describe('useInitializeApp', () => {
           type: 'X_BOOKMARKS_UPDATED',
           source: 'x-bookmark-manager-extension',
           count: 3,
-          showNotification: true
-        }
+          showNotification: true,
+        },
       })
 
       await act(async () => {
-        messageListeners.forEach(listener => listener(message))
+        messageListeners.forEach((listener) => listener(message))
         // Wait for promises to resolve
         await Promise.resolve()
         await Promise.resolve()
@@ -332,7 +349,9 @@ describe('useInitializeApp', () => {
 
     it('should show error toast on initialization failure', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      vi.spyOn(useBookmarkStore.getState(), 'initialize').mockRejectedValue(new Error('Init failed'))
+      vi.spyOn(useBookmarkStore.getState(), 'initialize').mockRejectedValue(
+        new Error('Init failed')
+      )
 
       renderHook(() => useInitializeApp())
 
@@ -340,12 +359,12 @@ describe('useInitializeApp', () => {
         data: {
           type: 'X_BOOKMARKS_UPDATED',
           source: 'x-bookmark-manager-extension',
-          count: 3
-        }
+          count: 3,
+        },
       })
 
       await act(async () => {
-        messageListeners.forEach(listener => listener(message))
+        messageListeners.forEach((listener) => listener(message))
         // Wait for promise rejection to be handled
         await Promise.resolve()
         await Promise.resolve()
@@ -372,12 +391,12 @@ describe('useInitializeApp', () => {
         data: {
           type: 'WRONG_TYPE',
           source: 'x-bookmark-manager-extension',
-          count: 5
-        }
+          count: 5,
+        },
       })
 
       act(() => {
-        messageListeners.forEach(listener => listener(message))
+        messageListeners.forEach((listener) => listener(message))
       })
 
       expect(initSpy).not.toHaveBeenCalled()
@@ -392,12 +411,12 @@ describe('useInitializeApp', () => {
         data: {
           type: 'X_BOOKMARKS_UPDATED',
           source: 'wrong-source',
-          count: 5
-        }
+          count: 5,
+        },
       })
 
       act(() => {
-        messageListeners.forEach(listener => listener(message))
+        messageListeners.forEach((listener) => listener(message))
       })
 
       expect(initSpy).not.toHaveBeenCalled()
@@ -408,7 +427,10 @@ describe('useInitializeApp', () => {
 
       unmount()
 
-      expect(window.removeEventListener).toHaveBeenCalledWith('message', expect.any(Function))
+      expect(window.removeEventListener).toHaveBeenCalledWith(
+        'message',
+        expect.any(Function)
+      )
     })
   })
 
@@ -425,7 +447,7 @@ describe('useInitializeApp', () => {
       expect(window.postMessage).toHaveBeenCalledWith(
         {
           type: 'X_REQUEST_SYNC',
-          source: 'x-bookmark-manager-app'
+          source: 'x-bookmark-manager-app',
         },
         '*'
       )
@@ -454,11 +476,12 @@ describe('useInitializeApp', () => {
     it('should validate bookmarks when existing bookmarks exist', async () => {
       vi.useFakeTimers()
 
-      const validateSpy = vi.spyOn(useBookmarkStore.getState(), 'validateAllBookmarks')
+      const validateSpy = vi
+        .spyOn(useBookmarkStore.getState(), 'validateAllBookmarks')
         .mockResolvedValue()
 
       localStorageData['x-bookmark-manager-data'] = JSON.stringify({
-        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }]
+        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }],
       })
 
       renderHook(() => useInitializeApp())
@@ -476,7 +499,10 @@ describe('useInitializeApp', () => {
     it('should not validate when no bookmarks exist', () => {
       vi.useFakeTimers()
 
-      const validateSpy = vi.spyOn(useBookmarkStore.getState(), 'validateAllBookmarks')
+      const validateSpy = vi.spyOn(
+        useBookmarkStore.getState(),
+        'validateAllBookmarks'
+      )
 
       renderHook(() => useInitializeApp())
 
@@ -493,11 +519,13 @@ describe('useInitializeApp', () => {
       vi.useFakeTimers()
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-      vi.spyOn(useBookmarkStore.getState(), 'validateAllBookmarks')
-        .mockRejectedValue(new Error('Validation failed'))
+      vi.spyOn(
+        useBookmarkStore.getState(),
+        'validateAllBookmarks'
+      ).mockRejectedValue(new Error('Validation failed'))
 
       localStorageData['x-bookmark-manager-data'] = JSON.stringify({
-        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }]
+        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }],
       })
 
       renderHook(() => useInitializeApp())
@@ -521,10 +549,13 @@ describe('useInitializeApp', () => {
       vi.useFakeTimers()
 
       localStorageData['x-bookmark-manager-data'] = JSON.stringify({
-        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }]
+        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }],
       })
 
-      const validateSpy = vi.spyOn(useBookmarkStore.getState(), 'validateAllBookmarks')
+      const validateSpy = vi.spyOn(
+        useBookmarkStore.getState(),
+        'validateAllBookmarks'
+      )
 
       const { unmount } = renderHook(() => useInitializeApp())
 
@@ -543,7 +574,7 @@ describe('useInitializeApp', () => {
   describe('loading and error states', () => {
     it('should show loading when stores are loading and bookmarks exist', () => {
       localStorageData['x-bookmark-manager-data'] = JSON.stringify({
-        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }]
+        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }],
       })
 
       useBookmarkStore.setState({ isLoading: true })
@@ -563,7 +594,7 @@ describe('useInitializeApp', () => {
 
     it('should show loading when collections are loading', () => {
       localStorageData['x-bookmark-manager-data'] = JSON.stringify({
-        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }]
+        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }],
       })
 
       useCollectionsStore.setState({ isLoading: true })

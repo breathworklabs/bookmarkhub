@@ -22,7 +22,7 @@ const createTestBookmark = (overrides: Partial<Bookmark> = {}): Bookmark => ({
   collections: [],
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
-  ...overrides
+  ...overrides,
 })
 
 describe('bookmarkStore - state management', () => {
@@ -45,7 +45,7 @@ describe('bookmarkStore - state management', () => {
       dateRangeFilter: { type: 'all' },
       quickFilters: [],
       filterPresets: [],
-      showAdvancedFilters: false
+      showAdvancedFilters: false,
     })
     vi.clearAllMocks()
   })
@@ -54,14 +54,20 @@ describe('bookmarkStore - state management', () => {
     it('should set selected tags', () => {
       useBookmarkStore.getState().setSelectedTags(['react', 'javascript'])
 
-      expect(useBookmarkStore.getState().selectedTags).toEqual(['react', 'javascript'])
+      expect(useBookmarkStore.getState().selectedTags).toEqual([
+        'react',
+        'javascript',
+      ])
     })
 
     it('should add a tag', () => {
       useBookmarkStore.setState({ selectedTags: ['react'] })
       useBookmarkStore.getState().addTag('javascript')
 
-      expect(useBookmarkStore.getState().selectedTags).toEqual(['react', 'javascript'])
+      expect(useBookmarkStore.getState().selectedTags).toEqual([
+        'react',
+        'javascript',
+      ])
     })
 
     it('should not add duplicate tag', () => {
@@ -73,10 +79,15 @@ describe('bookmarkStore - state management', () => {
     })
 
     it('should remove a tag', () => {
-      useBookmarkStore.setState({ selectedTags: ['react', 'javascript', 'typescript'] })
+      useBookmarkStore.setState({
+        selectedTags: ['react', 'javascript', 'typescript'],
+      })
       useBookmarkStore.getState().removeTag('javascript')
 
-      expect(useBookmarkStore.getState().selectedTags).toEqual(['react', 'typescript'])
+      expect(useBookmarkStore.getState().selectedTags).toEqual([
+        'react',
+        'typescript',
+      ])
     })
 
     it('should clear all tags', () => {
@@ -247,7 +258,7 @@ describe('bookmarkStore - state management', () => {
         authorFilter: 'John',
         domainFilter: 'example.com',
         contentTypeFilter: 'article',
-        dateRangeFilter: { type: 'week' }
+        dateRangeFilter: { type: 'week' },
       })
 
       useBookmarkStore.getState().clearAdvancedFilters()
@@ -255,7 +266,9 @@ describe('bookmarkStore - state management', () => {
       expect(useBookmarkStore.getState().authorFilter).toBe('')
       expect(useBookmarkStore.getState().domainFilter).toBe('')
       expect(useBookmarkStore.getState().contentTypeFilter).toBe('')
-      expect(useBookmarkStore.getState().dateRangeFilter).toEqual({ type: 'all' })
+      expect(useBookmarkStore.getState().dateRangeFilter).toEqual({
+        type: 'all',
+      })
     })
   })
 
@@ -282,7 +295,9 @@ describe('bookmarkStore - state management', () => {
     })
 
     it('should clear all quick filters via clearAdvancedFilters', () => {
-      useBookmarkStore.setState({ quickFilters: ['starred', 'unread', 'archived'] })
+      useBookmarkStore.setState({
+        quickFilters: ['starred', 'unread', 'archived'],
+      })
       useBookmarkStore.getState().clearAdvancedFilters()
 
       expect(useBookmarkStore.getState().quickFilters).toEqual([])
@@ -293,7 +308,7 @@ describe('bookmarkStore - state management', () => {
     it('should set bookmarks', () => {
       const bookmarks = [
         createTestBookmark({ id: 1 }),
-        createTestBookmark({ id: 2 })
+        createTestBookmark({ id: 2 }),
       ]
 
       useBookmarkStore.getState().setBookmarks(bookmarks)
@@ -303,14 +318,12 @@ describe('bookmarkStore - state management', () => {
     })
 
     it('should update bookmark in state', () => {
-      const bookmarks = [
-        createTestBookmark({ id: 1, title: 'Original' })
-      ]
+      const bookmarks = [createTestBookmark({ id: 1, title: 'Original' })]
       useBookmarkStore.setState({ bookmarks })
 
       const updated = createTestBookmark({ id: 1, title: 'Updated' })
       useBookmarkStore.setState({
-        bookmarks: bookmarks.map(b => b.id === 1 ? updated : b)
+        bookmarks: bookmarks.map((b) => (b.id === 1 ? updated : b)),
       })
 
       expect(useBookmarkStore.getState().bookmarks[0].title).toBe('Updated')
@@ -319,12 +332,12 @@ describe('bookmarkStore - state management', () => {
     it('should remove bookmark from state', () => {
       const bookmarks = [
         createTestBookmark({ id: 1 }),
-        createTestBookmark({ id: 2 })
+        createTestBookmark({ id: 2 }),
       ]
       useBookmarkStore.setState({ bookmarks })
 
       useBookmarkStore.setState({
-        bookmarks: bookmarks.filter(b => b.id !== 1)
+        bookmarks: bookmarks.filter((b) => b.id !== 1),
       })
 
       expect(useBookmarkStore.getState().bookmarks).toHaveLength(1)
@@ -349,7 +362,7 @@ describe('bookmarkStore - state management', () => {
     it('should maintain state consistency across updates', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, tags: ['react'] }),
-        createTestBookmark({ id: 2, tags: ['python'] })
+        createTestBookmark({ id: 2, tags: ['python'] }),
       ]
       useBookmarkStore.setState({ bookmarks })
 
@@ -357,14 +370,19 @@ describe('bookmarkStore - state management', () => {
       useBookmarkStore.getState().setSelectedTags(['react'])
 
       // Update bookmark
-      const updated = createTestBookmark({ id: 1, tags: ['react', 'javascript'] })
+      const updated = createTestBookmark({
+        id: 1,
+        tags: ['react', 'javascript'],
+      })
       useBookmarkStore.setState({
-        bookmarks: bookmarks.map(b => b.id === 1 ? updated : b)
+        bookmarks: bookmarks.map((b) => (b.id === 1 ? updated : b)),
       })
 
       // Filter should still be active
       expect(useBookmarkStore.getState().selectedTags).toEqual(['react'])
-      expect(useBookmarkStore.getState().bookmarks[0].tags).toContain('javascript')
+      expect(useBookmarkStore.getState().bookmarks[0].tags).toContain(
+        'javascript'
+      )
     })
   })
 

@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { filterBookmarks, type FilterParams } from '../../src/utils/bookmarkFiltering'
+import {
+  filterBookmarks,
+  type FilterParams,
+} from '../../src/utils/bookmarkFiltering'
 import type { Bookmark } from '../../src/types/bookmark'
 import type { DateRangeFilter } from '../../src/store/bookmarkStore'
 
@@ -23,10 +26,12 @@ const createTestBookmark = (overrides: Partial<Bookmark> = {}): Bookmark => ({
   collections: [],
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
-  ...overrides
+  ...overrides,
 })
 
-const createDefaultParams = (overrides: Partial<FilterParams> = {}): FilterParams => ({
+const createDefaultParams = (
+  overrides: Partial<FilterParams> = {}
+): FilterParams => ({
   bookmarks: [],
   selectedTags: [],
   searchQuery: '',
@@ -39,7 +44,7 @@ const createDefaultParams = (overrides: Partial<FilterParams> = {}): FilterParam
   quickFilters: [],
   activeCollectionId: null,
   collectionBookmarks: {},
-  ...overrides
+  ...overrides,
 })
 
 describe('bookmarkFiltering', () => {
@@ -49,15 +54,27 @@ describe('bookmarkFiltering', () => {
       const earlier = new Date(now.getTime() - 1000)
 
       const bookmarks = [
-        createTestBookmark({ id: 1, is_deleted: false, created_at: earlier.toISOString() }),
-        createTestBookmark({ id: 2, is_deleted: true, created_at: now.toISOString() }),
-        createTestBookmark({ id: 3, is_deleted: false, created_at: now.toISOString() })
+        createTestBookmark({
+          id: 1,
+          is_deleted: false,
+          created_at: earlier.toISOString(),
+        }),
+        createTestBookmark({
+          id: 2,
+          is_deleted: true,
+          created_at: now.toISOString(),
+        }),
+        createTestBookmark({
+          id: 3,
+          is_deleted: false,
+          created_at: now.toISOString(),
+        }),
       ]
 
       const result = filterBookmarks(createDefaultParams({ bookmarks }))
 
       expect(result).toHaveLength(2)
-      expect(result.map(b => b.id)).toEqual([3, 1]) // Sorted by date descending
+      expect(result.map((b) => b.id)).toEqual([3, 1]) // Sorted by date descending
     })
   })
 
@@ -65,13 +82,15 @@ describe('bookmarkFiltering', () => {
     it('should show all bookmarks for "All Bookmarks" sidebar item', () => {
       const bookmarks = [
         createTestBookmark({ id: 1 }),
-        createTestBookmark({ id: 2 })
+        createTestBookmark({ id: 2 }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        activeSidebarItem: 'All Bookmarks'
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          activeSidebarItem: 'All Bookmarks',
+        })
+      )
 
       expect(result).toHaveLength(2)
     })
@@ -80,29 +99,33 @@ describe('bookmarkFiltering', () => {
       const bookmarks = [
         createTestBookmark({ id: 1 }),
         createTestBookmark({ id: 2 }),
-        createTestBookmark({ id: 3 })
+        createTestBookmark({ id: 3 }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        activeSidebarItem: 'Collections',
-        activeCollectionId: 'my-collection',
-        collectionBookmarks: { 'my-collection': [1, 3] }
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          activeSidebarItem: 'Collections',
+          activeCollectionId: 'my-collection',
+          collectionBookmarks: { 'my-collection': [1, 3] },
+        })
+      )
 
       expect(result).toHaveLength(2)
-      expect(result.map(b => b.id).sort()).toEqual([1, 3])
+      expect(result.map((b) => b.id).sort()).toEqual([1, 3])
     })
 
     it('should handle missing collection gracefully', () => {
       const bookmarks = [createTestBookmark({ id: 1 })]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        activeSidebarItem: 'Collections',
-        activeCollectionId: 'non-existent',
-        collectionBookmarks: {}
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          activeSidebarItem: 'Collections',
+          activeCollectionId: 'non-existent',
+          collectionBookmarks: {},
+        })
+      )
 
       expect(result).toHaveLength(0)
     })
@@ -113,41 +136,47 @@ describe('bookmarkFiltering', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, tags: ['react', 'javascript'] }),
         createTestBookmark({ id: 2, tags: ['python'] }),
-        createTestBookmark({ id: 3, tags: ['react', 'typescript'] })
+        createTestBookmark({ id: 3, tags: ['react', 'typescript'] }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        selectedTags: ['react']
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          selectedTags: ['react'],
+        })
+      )
 
       expect(result).toHaveLength(2)
-      expect(result.map(b => b.id).sort()).toEqual([1, 3])
+      expect(result.map((b) => b.id).sort()).toEqual([1, 3])
     })
 
     it('should filter by multiple tags (OR logic)', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, tags: ['react'] }),
         createTestBookmark({ id: 2, tags: ['python'] }),
-        createTestBookmark({ id: 3, tags: ['javascript'] })
+        createTestBookmark({ id: 3, tags: ['javascript'] }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        selectedTags: ['react', 'python']
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          selectedTags: ['react', 'python'],
+        })
+      )
 
       expect(result).toHaveLength(2)
-      expect(result.map(b => b.id).sort()).toEqual([1, 2])
+      expect(result.map((b) => b.id).sort()).toEqual([1, 2])
     })
 
     it('should handle empty tags array', () => {
       const bookmarks = [createTestBookmark({ id: 1, tags: [] })]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        selectedTags: ['react']
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          selectedTags: ['react'],
+        })
+      )
 
       expect(result).toHaveLength(0)
     })
@@ -157,13 +186,15 @@ describe('bookmarkFiltering', () => {
     it('should show all bookmarks for tab 0', () => {
       const bookmarks = [
         createTestBookmark({ id: 1 }),
-        createTestBookmark({ id: 2 })
+        createTestBookmark({ id: 2 }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        activeTab: 0
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          activeTab: 0,
+        })
+      )
 
       expect(result).toHaveLength(2)
     })
@@ -175,13 +206,15 @@ describe('bookmarkFiltering', () => {
 
       const bookmarks = [
         createTestBookmark({ id: 1, created_at: today.toISOString() }),
-        createTestBookmark({ id: 2, created_at: yesterday.toISOString() })
+        createTestBookmark({ id: 2, created_at: yesterday.toISOString() }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        activeTab: 1
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          activeTab: 1,
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -196,13 +229,15 @@ describe('bookmarkFiltering', () => {
 
       const bookmarks = [
         createTestBookmark({ id: 1, created_at: fiveDaysAgo.toISOString() }),
-        createTestBookmark({ id: 2, created_at: tenDaysAgo.toISOString() })
+        createTestBookmark({ id: 2, created_at: tenDaysAgo.toISOString() }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        activeTab: 2
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          activeTab: 2,
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -210,36 +245,52 @@ describe('bookmarkFiltering', () => {
 
     it('should filter threads for tab 3', () => {
       const bookmarks = [
-        createTestBookmark({ id: 1, content: 'Short content', domain: 'example.com' }),
-        createTestBookmark({ id: 2, content: 'A'.repeat(300), domain: 'example.com' }),
+        createTestBookmark({
+          id: 1,
+          content: 'Short content',
+          domain: 'example.com',
+        }),
+        createTestBookmark({
+          id: 2,
+          content: 'A'.repeat(300),
+          domain: 'example.com',
+        }),
         createTestBookmark({ id: 3, content: 'Short', domain: 'x.com' }),
-        createTestBookmark({ id: 4, content: 'Short', domain: 'twitter.com' })
+        createTestBookmark({ id: 4, content: 'Short', domain: 'twitter.com' }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        activeTab: 3
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          activeTab: 3,
+        })
+      )
 
       expect(result).toHaveLength(3)
-      expect(result.map(b => b.id).sort()).toEqual([2, 3, 4])
+      expect(result.map((b) => b.id).sort()).toEqual([2, 3, 4])
     })
 
     it('should filter media for tab 4', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, url: 'https://example.com/page' }),
-        createTestBookmark({ id: 2, url: 'https://youtube.com/watch?v=123', thumbnail_url: 'thumb.jpg' }),
+        createTestBookmark({
+          id: 2,
+          url: 'https://youtube.com/watch?v=123',
+          thumbnail_url: 'thumb.jpg',
+        }),
         createTestBookmark({ id: 3, url: 'https://example.com/image.jpg' }),
-        createTestBookmark({ id: 4, url: 'https://vimeo.com/123456' })
+        createTestBookmark({ id: 4, url: 'https://vimeo.com/123456' }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        activeTab: 4
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          activeTab: 4,
+        })
+      )
 
       expect(result).toHaveLength(3)
-      expect(result.map(b => b.id).sort()).toEqual([2, 3, 4])
+      expect(result.map((b) => b.id).sort()).toEqual([2, 3, 4])
     })
   })
 
@@ -247,27 +298,29 @@ describe('bookmarkFiltering', () => {
     it('should filter by title', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, title: 'React Tutorial' }),
-        createTestBookmark({ id: 2, title: 'Python Guide' })
+        createTestBookmark({ id: 2, title: 'Python Guide' }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        searchQuery: 'React'
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          searchQuery: 'React',
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
     })
 
     it('should be case insensitive', () => {
-      const bookmarks = [
-        createTestBookmark({ id: 1, title: 'React Tutorial' })
-      ]
+      const bookmarks = [createTestBookmark({ id: 1, title: 'React Tutorial' })]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        searchQuery: 'react'
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          searchQuery: 'react',
+        })
+      )
 
       expect(result).toHaveLength(1)
     })
@@ -275,13 +328,15 @@ describe('bookmarkFiltering', () => {
     it('should filter by content', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, content: 'Learn React hooks' }),
-        createTestBookmark({ id: 2, content: 'Python basics' })
+        createTestBookmark({ id: 2, content: 'Python basics' }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        searchQuery: 'hooks'
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          searchQuery: 'hooks',
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -290,13 +345,15 @@ describe('bookmarkFiltering', () => {
     it('should filter by author', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, author: 'John Doe' }),
-        createTestBookmark({ id: 2, author: 'Jane Smith' })
+        createTestBookmark({ id: 2, author: 'Jane Smith' }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        searchQuery: 'John'
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          searchQuery: 'John',
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -305,13 +362,15 @@ describe('bookmarkFiltering', () => {
     it('should filter by domain', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, domain: 'github.com' }),
-        createTestBookmark({ id: 2, domain: 'example.com' })
+        createTestBookmark({ id: 2, domain: 'example.com' }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        searchQuery: 'github'
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          searchQuery: 'github',
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -320,13 +379,15 @@ describe('bookmarkFiltering', () => {
     it('should filter by tags', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, tags: ['react', 'javascript'] }),
-        createTestBookmark({ id: 2, tags: ['python'] })
+        createTestBookmark({ id: 2, tags: ['python'] }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        searchQuery: 'javascript'
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          searchQuery: 'javascript',
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -335,13 +396,15 @@ describe('bookmarkFiltering', () => {
     it('should handle empty search query', () => {
       const bookmarks = [
         createTestBookmark({ id: 1 }),
-        createTestBookmark({ id: 2 })
+        createTestBookmark({ id: 2 }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        searchQuery: '   '
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          searchQuery: '   ',
+        })
+      )
 
       expect(result).toHaveLength(2)
     })
@@ -351,27 +414,29 @@ describe('bookmarkFiltering', () => {
     it('should filter by author', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, author: 'John Doe' }),
-        createTestBookmark({ id: 2, author: 'Jane Smith' })
+        createTestBookmark({ id: 2, author: 'Jane Smith' }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        authorFilter: 'John'
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          authorFilter: 'John',
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
     })
 
     it('should be case insensitive', () => {
-      const bookmarks = [
-        createTestBookmark({ id: 1, author: 'John Doe' })
-      ]
+      const bookmarks = [createTestBookmark({ id: 1, author: 'John Doe' })]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        authorFilter: 'JOHN'
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          authorFilter: 'JOHN',
+        })
+      )
 
       expect(result).toHaveLength(1)
     })
@@ -381,13 +446,15 @@ describe('bookmarkFiltering', () => {
     it('should filter by domain', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, domain: 'github.com' }),
-        createTestBookmark({ id: 2, domain: 'example.com' })
+        createTestBookmark({ id: 2, domain: 'example.com' }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        domainFilter: 'github'
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          domainFilter: 'github',
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -398,13 +465,15 @@ describe('bookmarkFiltering', () => {
     it('should filter articles', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, content: 'A'.repeat(600) }),
-        createTestBookmark({ id: 2, content: 'Short' })
+        createTestBookmark({ id: 2, content: 'Short' }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        contentTypeFilter: 'article'
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          contentTypeFilter: 'article',
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -414,32 +483,36 @@ describe('bookmarkFiltering', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, domain: 'x.com' }),
         createTestBookmark({ id: 2, domain: 'twitter.com' }),
-        createTestBookmark({ id: 3, domain: 'example.com' })
+        createTestBookmark({ id: 3, domain: 'example.com' }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        contentTypeFilter: 'tweet'
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          contentTypeFilter: 'tweet',
+        })
+      )
 
       expect(result).toHaveLength(2)
-      expect(result.map(b => b.id).sort()).toEqual([1, 2])
+      expect(result.map((b) => b.id).sort()).toEqual([1, 2])
     })
 
     it('should filter videos', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, url: 'https://youtube.com/watch' }),
         createTestBookmark({ id: 2, url: 'https://vimeo.com/123' }),
-        createTestBookmark({ id: 3, url: 'https://example.com' })
+        createTestBookmark({ id: 3, url: 'https://example.com' }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        contentTypeFilter: 'video'
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          contentTypeFilter: 'video',
+        })
+      )
 
       expect(result).toHaveLength(2)
-      expect(result.map(b => b.id).sort()).toEqual([1, 2])
+      expect(result.map((b) => b.id).sort()).toEqual([1, 2])
     })
   })
 
@@ -451,13 +524,15 @@ describe('bookmarkFiltering', () => {
 
       const bookmarks = [
         createTestBookmark({ id: 1, created_at: today.toISOString() }),
-        createTestBookmark({ id: 2, created_at: yesterday.toISOString() })
+        createTestBookmark({ id: 2, created_at: yesterday.toISOString() }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        dateRangeFilter: { type: 'today' }
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          dateRangeFilter: { type: 'today' },
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -472,13 +547,15 @@ describe('bookmarkFiltering', () => {
 
       const bookmarks = [
         createTestBookmark({ id: 1, created_at: fiveDaysAgo.toISOString() }),
-        createTestBookmark({ id: 2, created_at: tenDaysAgo.toISOString() })
+        createTestBookmark({ id: 2, created_at: tenDaysAgo.toISOString() }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        dateRangeFilter: { type: 'week' }
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          dateRangeFilter: { type: 'week' },
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -493,13 +570,15 @@ describe('bookmarkFiltering', () => {
 
       const bookmarks = [
         createTestBookmark({ id: 1, created_at: fifteenDaysAgo.toISOString() }),
-        createTestBookmark({ id: 2, created_at: fortyDaysAgo.toISOString() })
+        createTestBookmark({ id: 2, created_at: fortyDaysAgo.toISOString() }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        dateRangeFilter: { type: 'month' }
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          dateRangeFilter: { type: 'month' },
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -509,17 +588,19 @@ describe('bookmarkFiltering', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, created_at: '2024-01-15T00:00:00.000Z' }),
         createTestBookmark({ id: 2, created_at: '2024-01-05T00:00:00.000Z' }),
-        createTestBookmark({ id: 3, created_at: '2024-01-25T00:00:00.000Z' })
+        createTestBookmark({ id: 3, created_at: '2024-01-25T00:00:00.000Z' }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        dateRangeFilter: {
-          type: 'custom',
-          customStart: new Date('2024-01-10'),
-          customEnd: new Date('2024-01-20')
-        }
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          dateRangeFilter: {
+            type: 'custom',
+            customStart: new Date('2024-01-10'),
+            customEnd: new Date('2024-01-20'),
+          },
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -528,16 +609,18 @@ describe('bookmarkFiltering', () => {
     it('should handle custom range without end date', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, created_at: '2024-01-15T00:00:00.000Z' }),
-        createTestBookmark({ id: 2, created_at: '2024-01-05T00:00:00.000Z' })
+        createTestBookmark({ id: 2, created_at: '2024-01-05T00:00:00.000Z' }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        dateRangeFilter: {
-          type: 'custom',
-          customStart: new Date('2024-01-10')
-        }
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          dateRangeFilter: {
+            type: 'custom',
+            customStart: new Date('2024-01-10'),
+          },
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -548,13 +631,15 @@ describe('bookmarkFiltering', () => {
     it('should filter starred bookmarks', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, is_starred: true }),
-        createTestBookmark({ id: 2, is_starred: false })
+        createTestBookmark({ id: 2, is_starred: false }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        quickFilters: ['starred']
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          quickFilters: ['starred'],
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -563,13 +648,15 @@ describe('bookmarkFiltering', () => {
     it('should filter unread bookmarks', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, is_read: false }),
-        createTestBookmark({ id: 2, is_read: true })
+        createTestBookmark({ id: 2, is_read: true }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        quickFilters: ['unread']
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          quickFilters: ['unread'],
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -578,13 +665,15 @@ describe('bookmarkFiltering', () => {
     it('should filter archived bookmarks', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, is_archived: true }),
-        createTestBookmark({ id: 2, is_archived: false })
+        createTestBookmark({ id: 2, is_archived: false }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        quickFilters: ['archived']
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          quickFilters: ['archived'],
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -593,13 +682,15 @@ describe('bookmarkFiltering', () => {
     it('should filter by engagement', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, engagement_score: 150 }),
-        createTestBookmark({ id: 2, engagement_score: 50 })
+        createTestBookmark({ id: 2, engagement_score: 50 }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        quickFilters: ['engagement']
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          quickFilters: ['engagement'],
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -612,13 +703,15 @@ describe('bookmarkFiltering', () => {
 
       const bookmarks = [
         createTestBookmark({ id: 1, created_at: now.toISOString() }),
-        createTestBookmark({ id: 2, created_at: twoDaysAgo.toISOString() })
+        createTestBookmark({ id: 2, created_at: twoDaysAgo.toISOString() }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        quickFilters: ['recent']
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          quickFilters: ['recent'],
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -628,13 +721,15 @@ describe('bookmarkFiltering', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, is_starred: true, is_read: false }),
         createTestBookmark({ id: 2, is_starred: true, is_read: true }),
-        createTestBookmark({ id: 3, is_starred: false, is_read: false })
+        createTestBookmark({ id: 3, is_starred: false, is_read: false }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        quickFilters: ['starred', 'unread']
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          quickFilters: ['starred', 'unread'],
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)
@@ -646,12 +741,12 @@ describe('bookmarkFiltering', () => {
       const bookmarks = [
         createTestBookmark({ id: 1, created_at: '2024-01-15T00:00:00.000Z' }),
         createTestBookmark({ id: 2, created_at: '2024-01-20T00:00:00.000Z' }),
-        createTestBookmark({ id: 3, created_at: '2024-01-10T00:00:00.000Z' })
+        createTestBookmark({ id: 3, created_at: '2024-01-10T00:00:00.000Z' }),
       ]
 
       const result = filterBookmarks(createDefaultParams({ bookmarks }))
 
-      expect(result.map(b => b.id)).toEqual([2, 1, 3])
+      expect(result.map((b) => b.id)).toEqual([2, 1, 3])
     })
 
     it('should use tweet_date from metadata when available', () => {
@@ -659,14 +754,14 @@ describe('bookmarkFiltering', () => {
         createTestBookmark({
           id: 1,
           created_at: '2024-01-10T00:00:00.000Z',
-          metadata: { tweet_date: '2024-01-20T00:00:00.000Z' }
+          metadata: { tweet_date: '2024-01-20T00:00:00.000Z' },
         }),
-        createTestBookmark({ id: 2, created_at: '2024-01-15T00:00:00.000Z' })
+        createTestBookmark({ id: 2, created_at: '2024-01-15T00:00:00.000Z' }),
       ]
 
       const result = filterBookmarks(createDefaultParams({ bookmarks }))
 
-      expect(result.map(b => b.id)).toEqual([1, 2]) // id:1 has newer tweet_date
+      expect(result.map((b) => b.id)).toEqual([1, 2]) // id:1 has newer tweet_date
     })
   })
 
@@ -681,7 +776,7 @@ describe('bookmarkFiltering', () => {
           author: 'John Doe',
           domain: 'example.com',
           is_starred: true,
-          created_at: today.toISOString()
+          created_at: today.toISOString(),
         }),
         createTestBookmark({
           id: 2,
@@ -690,18 +785,20 @@ describe('bookmarkFiltering', () => {
           author: 'Jane Smith',
           domain: 'test.com',
           is_starred: false,
-          created_at: today.toISOString()
-        })
+          created_at: today.toISOString(),
+        }),
       ]
 
-      const result = filterBookmarks(createDefaultParams({
-        bookmarks,
-        selectedTags: ['react'],
-        searchQuery: 'Tutorial',
-        authorFilter: 'John',
-        domainFilter: 'example',
-        quickFilters: ['starred']
-      }))
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          selectedTags: ['react'],
+          searchQuery: 'Tutorial',
+          authorFilter: 'John',
+          domainFilter: 'example',
+          quickFilters: ['starred'],
+        })
+      )
 
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(1)

@@ -3,7 +3,9 @@ import { useCollectionsStore } from '../../src/store/collectionsStore'
 import { localStorageService } from '../../src/lib/localStorage'
 import type { Collection } from '../../src/types/collections'
 
-const createTestCollection = (overrides: Partial<Collection> = {}): Collection => ({
+const createTestCollection = (
+  overrides: Partial<Collection> = {}
+): Collection => ({
   id: 'col-1',
   name: 'Test Collection',
   description: 'Test description',
@@ -18,7 +20,7 @@ const createTestCollection = (overrides: Partial<Collection> = {}): Collection =
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   userId: 'test-user',
-  ...overrides
+  ...overrides,
 })
 
 describe('collectionsStore - Comprehensive', () => {
@@ -32,7 +34,7 @@ describe('collectionsStore - Comprehensive', () => {
       expandedCollections: [],
       collapsedSections: [],
       isLoading: false,
-      error: null
+      error: null,
     })
     vi.clearAllMocks()
   })
@@ -60,41 +62,51 @@ describe('collectionsStore - Comprehensive', () => {
     it('should toggle collection expansion on', () => {
       useCollectionsStore.getState().toggleCollectionExpansion('col-1')
 
-      expect(useCollectionsStore.getState().expandedCollections).toContain('col-1')
+      expect(useCollectionsStore.getState().expandedCollections).toContain(
+        'col-1'
+      )
     })
 
     it('should toggle collection expansion off', () => {
       useCollectionsStore.setState({ expandedCollections: ['col-1'] })
       useCollectionsStore.getState().toggleCollectionExpansion('col-1')
 
-      expect(useCollectionsStore.getState().expandedCollections).not.toContain('col-1')
+      expect(useCollectionsStore.getState().expandedCollections).not.toContain(
+        'col-1'
+      )
     })
 
     it('should expand collection', () => {
       useCollectionsStore.getState().expandCollection('col-1')
 
-      expect(useCollectionsStore.getState().expandedCollections).toContain('col-1')
+      expect(useCollectionsStore.getState().expandedCollections).toContain(
+        'col-1'
+      )
     })
 
     it('should not duplicate expanded collection', () => {
       useCollectionsStore.setState({ expandedCollections: ['col-1'] })
       useCollectionsStore.getState().expandCollection('col-1')
 
-      expect(useCollectionsStore.getState().expandedCollections).toEqual(['col-1'])
+      expect(useCollectionsStore.getState().expandedCollections).toEqual([
+        'col-1',
+      ])
     })
 
     it('should collapse collection', () => {
       useCollectionsStore.setState({ expandedCollections: ['col-1', 'col-2'] })
       useCollectionsStore.getState().collapseCollection('col-1')
 
-      expect(useCollectionsStore.getState().expandedCollections).toEqual(['col-2'])
+      expect(useCollectionsStore.getState().expandedCollections).toEqual([
+        'col-2',
+      ])
     })
 
     it('should expand all collections', () => {
       const collections = [
         createTestCollection({ id: 'col-1' }),
         createTestCollection({ id: 'col-2' }),
-        createTestCollection({ id: 'col-3' })
+        createTestCollection({ id: 'col-3' }),
       ]
 
       useCollectionsStore.setState({ collections })
@@ -108,7 +120,7 @@ describe('collectionsStore - Comprehensive', () => {
 
     it('should collapse all collections', () => {
       useCollectionsStore.setState({
-        expandedCollections: ['col-1', 'col-2', 'col-3']
+        expandedCollections: ['col-1', 'col-2', 'col-3'],
       })
 
       useCollectionsStore.getState().collapseAll()
@@ -121,7 +133,9 @@ describe('collectionsStore - Comprehensive', () => {
     it('should toggle section collapse on', () => {
       useCollectionsStore.getState().toggleSectionCollapse('smart-collections')
 
-      expect(useCollectionsStore.getState().collapsedSections).toContain('smart-collections')
+      expect(useCollectionsStore.getState().collapsedSections).toContain(
+        'smart-collections'
+      )
     })
 
     it('should toggle section collapse off', () => {
@@ -134,8 +148,12 @@ describe('collectionsStore - Comprehensive', () => {
     it('should check if section is collapsed', () => {
       useCollectionsStore.setState({ collapsedSections: ['smart-collections'] })
 
-      expect(useCollectionsStore.getState().isSectionCollapsed('smart-collections')).toBe(true)
-      expect(useCollectionsStore.getState().isSectionCollapsed('user-collections')).toBe(false)
+      expect(
+        useCollectionsStore.getState().isSectionCollapsed('smart-collections')
+      ).toBe(true)
+      expect(
+        useCollectionsStore.getState().isSectionCollapsed('user-collections')
+      ).toBe(false)
     })
   })
 
@@ -186,11 +204,16 @@ describe('collectionsStore - Comprehensive', () => {
     it('should load collections successfully', async () => {
       const collections = [
         createTestCollection({ id: 'col-1' }),
-        createTestCollection({ id: 'col-2' })
+        createTestCollection({ id: 'col-2' }),
       ]
 
-      vi.spyOn(localStorageService, 'getCollections').mockResolvedValue(collections)
-      vi.spyOn(localStorageService, 'getBookmarksByCollection').mockResolvedValue([])
+      vi.spyOn(localStorageService, 'getCollections').mockResolvedValue(
+        collections
+      )
+      vi.spyOn(
+        localStorageService,
+        'getBookmarksByCollection'
+      ).mockResolvedValue([])
 
       await useCollectionsStore.getState().loadCollections()
 
@@ -225,10 +248,13 @@ describe('collectionsStore - Comprehensive', () => {
       const collections = [createTestCollection({ id: 'col-1' })]
       const bookmarks = [{ id: 1 }, { id: 2 }]
 
-      vi.spyOn(localStorageService, 'getCollections').mockResolvedValue(collections)
-      vi.spyOn(localStorageService, 'getBookmarksByCollection').mockResolvedValue(
-        bookmarks as any
+      vi.spyOn(localStorageService, 'getCollections').mockResolvedValue(
+        collections
       )
+      vi.spyOn(
+        localStorageService,
+        'getBookmarksByCollection'
+      ).mockResolvedValue(bookmarks as any)
 
       await useCollectionsStore.getState().loadCollections()
 
@@ -241,8 +267,13 @@ describe('collectionsStore - Comprehensive', () => {
     it('should initialize collections quickly', async () => {
       const collections = [createTestCollection({ id: 'col-1' })]
 
-      vi.spyOn(localStorageService, 'getCollections').mockResolvedValue(collections)
-      vi.spyOn(localStorageService, 'getBookmarksByCollection').mockResolvedValue([])
+      vi.spyOn(localStorageService, 'getCollections').mockResolvedValue(
+        collections
+      )
+      vi.spyOn(
+        localStorageService,
+        'getBookmarksByCollection'
+      ).mockResolvedValue([])
 
       await useCollectionsStore.getState().initialize()
 
@@ -277,15 +308,22 @@ describe('collectionsStore - Comprehensive', () => {
     it('should create collection successfully', async () => {
       const newCollection = createTestCollection({ id: 'new-col' })
 
-      vi.spyOn(localStorageService, 'createCollection').mockResolvedValue(newCollection)
-      vi.spyOn(localStorageService, 'getCollections').mockResolvedValue([newCollection])
-      vi.spyOn(localStorageService, 'getBookmarksByCollection').mockResolvedValue([])
+      vi.spyOn(localStorageService, 'createCollection').mockResolvedValue(
+        newCollection
+      )
+      vi.spyOn(localStorageService, 'getCollections').mockResolvedValue([
+        newCollection,
+      ])
+      vi.spyOn(
+        localStorageService,
+        'getBookmarksByCollection'
+      ).mockResolvedValue([])
 
       await useCollectionsStore.getState().createCollection({
         name: 'New Collection',
         description: 'Test',
         color: '#3b82f6',
-        userId: 'test'
+        userId: 'test',
       })
 
       // Should reload collections
@@ -301,7 +339,7 @@ describe('collectionsStore - Comprehensive', () => {
         name: 'New Collection',
         description: 'Test',
         color: '#3b82f6',
-        userId: 'test'
+        userId: 'test',
       })
 
       const state = useCollectionsStore.getState()
@@ -313,12 +351,19 @@ describe('collectionsStore - Comprehensive', () => {
     it('should update collection successfully', async () => {
       const updated = createTestCollection({ id: 'col-1', name: 'Updated' })
 
-      vi.spyOn(localStorageService, 'updateCollection').mockResolvedValue(updated)
-      vi.spyOn(localStorageService, 'getCollections').mockResolvedValue([updated])
-      vi.spyOn(localStorageService, 'getBookmarksByCollection').mockResolvedValue([])
+      vi.spyOn(localStorageService, 'updateCollection').mockResolvedValue(
+        updated
+      )
+      vi.spyOn(localStorageService, 'getCollections').mockResolvedValue([
+        updated,
+      ])
+      vi.spyOn(
+        localStorageService,
+        'getBookmarksByCollection'
+      ).mockResolvedValue([])
 
       await useCollectionsStore.getState().updateCollection('col-1', {
-        name: 'Updated'
+        name: 'Updated',
       })
 
       expect(localStorageService.updateCollection).toHaveBeenCalled()
@@ -330,7 +375,7 @@ describe('collectionsStore - Comprehensive', () => {
       )
 
       await useCollectionsStore.getState().updateCollection('col-1', {
-        name: 'Updated'
+        name: 'Updated',
       })
 
       const state = useCollectionsStore.getState()
@@ -340,23 +385,39 @@ describe('collectionsStore - Comprehensive', () => {
 
   describe('delete collection', () => {
     it('should delete collection with flatten mode', async () => {
-      vi.spyOn(localStorageService, 'deleteCollection').mockResolvedValue(undefined)
+      vi.spyOn(localStorageService, 'deleteCollection').mockResolvedValue(
+        undefined
+      )
       vi.spyOn(localStorageService, 'getCollections').mockResolvedValue([])
-      vi.spyOn(localStorageService, 'getBookmarksByCollection').mockResolvedValue([])
+      vi.spyOn(
+        localStorageService,
+        'getBookmarksByCollection'
+      ).mockResolvedValue([])
 
       await useCollectionsStore.getState().deleteCollection('col-1', 'flatten')
 
-      expect(localStorageService.deleteCollection).toHaveBeenCalledWith('col-1', 'flatten')
+      expect(localStorageService.deleteCollection).toHaveBeenCalledWith(
+        'col-1',
+        'flatten'
+      )
     })
 
     it('should delete collection with cascade mode', async () => {
-      vi.spyOn(localStorageService, 'deleteCollection').mockResolvedValue(undefined)
+      vi.spyOn(localStorageService, 'deleteCollection').mockResolvedValue(
+        undefined
+      )
       vi.spyOn(localStorageService, 'getCollections').mockResolvedValue([])
-      vi.spyOn(localStorageService, 'getBookmarksByCollection').mockResolvedValue([])
+      vi.spyOn(
+        localStorageService,
+        'getBookmarksByCollection'
+      ).mockResolvedValue([])
 
       await useCollectionsStore.getState().deleteCollection('col-1', 'cascade')
 
-      expect(localStorageService.deleteCollection).toHaveBeenCalledWith('col-1', 'cascade')
+      expect(localStorageService.deleteCollection).toHaveBeenCalledWith(
+        'col-1',
+        'cascade'
+      )
     })
 
     it('should handle delete error', async () => {
@@ -373,26 +434,40 @@ describe('collectionsStore - Comprehensive', () => {
 
   describe('bookmark-collection operations', () => {
     it('should add bookmark to collection', async () => {
-      vi.spyOn(localStorageService, 'addBookmarkToCollection').mockResolvedValue(undefined)
+      vi.spyOn(
+        localStorageService,
+        'addBookmarkToCollection'
+      ).mockResolvedValue(undefined)
 
       await useCollectionsStore.getState().addBookmarkToCollection(1, 'col-1')
 
-      expect(localStorageService.addBookmarkToCollection).toHaveBeenCalledWith(1, 'col-1')
+      expect(localStorageService.addBookmarkToCollection).toHaveBeenCalledWith(
+        1,
+        'col-1'
+      )
     })
 
     it('should remove bookmark from collection', async () => {
-      vi.spyOn(localStorageService, 'removeBookmarkFromCollection').mockResolvedValue(undefined)
+      vi.spyOn(
+        localStorageService,
+        'removeBookmarkFromCollection'
+      ).mockResolvedValue(undefined)
 
-      await useCollectionsStore.getState().removeBookmarkFromCollection(1, 'col-1')
+      await useCollectionsStore
+        .getState()
+        .removeBookmarkFromCollection(1, 'col-1')
 
-      expect(localStorageService.removeBookmarkFromCollection).toHaveBeenCalledWith(1, 'col-1')
+      expect(
+        localStorageService.removeBookmarkFromCollection
+      ).toHaveBeenCalledWith(1, 'col-1')
     })
 
     it('should get bookmarks by collection', async () => {
       const bookmarks = [{ id: 1 }, { id: 2 }]
-      vi.spyOn(localStorageService, 'getBookmarksByCollection').mockResolvedValue(
-        bookmarks as any
-      )
+      vi.spyOn(
+        localStorageService,
+        'getBookmarksByCollection'
+      ).mockResolvedValue(bookmarks as any)
 
       await useCollectionsStore.getState().getBookmarksByCollection('col-1')
 
@@ -401,41 +476,71 @@ describe('collectionsStore - Comprehensive', () => {
     })
 
     it('should move multiple bookmarks', async () => {
-      vi.spyOn(localStorageService, 'addBookmarkToCollection').mockResolvedValue(undefined)
+      vi.spyOn(
+        localStorageService,
+        'addBookmarkToCollection'
+      ).mockResolvedValue(undefined)
 
-      await useCollectionsStore.getState().moveMultipleBookmarks([1, 2, 3], 'col-target')
+      await useCollectionsStore
+        .getState()
+        .moveMultipleBookmarks([1, 2, 3], 'col-target')
 
-      expect(localStorageService.addBookmarkToCollection).toHaveBeenCalledTimes(3)
+      expect(localStorageService.addBookmarkToCollection).toHaveBeenCalledTimes(
+        3
+      )
     })
   })
 
   describe('move collection', () => {
     it('should move collection to new parent', async () => {
-      const updated = createTestCollection({ id: 'col-1', parentId: 'new-parent' })
+      const updated = createTestCollection({
+        id: 'col-1',
+        parentId: 'new-parent',
+      })
 
-      vi.spyOn(localStorageService, 'updateCollection').mockResolvedValue(updated)
-      vi.spyOn(localStorageService, 'getCollections').mockResolvedValue([updated])
-      vi.spyOn(localStorageService, 'getBookmarksByCollection').mockResolvedValue([])
+      vi.spyOn(localStorageService, 'updateCollection').mockResolvedValue(
+        updated
+      )
+      vi.spyOn(localStorageService, 'getCollections').mockResolvedValue([
+        updated,
+      ])
+      vi.spyOn(
+        localStorageService,
+        'getBookmarksByCollection'
+      ).mockResolvedValue([])
 
       await useCollectionsStore.getState().moveCollection('col-1', 'new-parent')
 
-      expect(localStorageService.updateCollection).toHaveBeenCalledWith('col-1', {
-        parentId: 'new-parent'
-      })
+      expect(localStorageService.updateCollection).toHaveBeenCalledWith(
+        'col-1',
+        {
+          parentId: 'new-parent',
+        }
+      )
     })
 
     it('should move collection to root', async () => {
       const updated = createTestCollection({ id: 'col-1', parentId: null })
 
-      vi.spyOn(localStorageService, 'updateCollection').mockResolvedValue(updated)
-      vi.spyOn(localStorageService, 'getCollections').mockResolvedValue([updated])
-      vi.spyOn(localStorageService, 'getBookmarksByCollection').mockResolvedValue([])
+      vi.spyOn(localStorageService, 'updateCollection').mockResolvedValue(
+        updated
+      )
+      vi.spyOn(localStorageService, 'getCollections').mockResolvedValue([
+        updated,
+      ])
+      vi.spyOn(
+        localStorageService,
+        'getBookmarksByCollection'
+      ).mockResolvedValue([])
 
       await useCollectionsStore.getState().moveCollection('col-1', null)
 
-      expect(localStorageService.updateCollection).toHaveBeenCalledWith('col-1', {
-        parentId: null
-      })
+      expect(localStorageService.updateCollection).toHaveBeenCalledWith(
+        'col-1',
+        {
+          parentId: null,
+        }
+      )
     })
   })
 

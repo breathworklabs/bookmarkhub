@@ -9,16 +9,18 @@ import type { Bookmark } from '../../src/types/bookmark'
 // Create mock bookmarks with specific configurations for testing
 const mockBookmarks: Bookmark[] = createMockBookmarks(4, [
   { is_starred: false, is_archived: false, tags: ['tag1'] }, // Bookmark 1
-  { is_starred: true, is_archived: false, tags: ['tag2'] },  // Bookmark 2
-  { is_starred: false, is_archived: true, tags: ['tag3'] },  // Bookmark 3
-  { is_starred: true, is_archived: false, tags: ['tag1', 'tag2'] } // Bookmark 4
+  { is_starred: true, is_archived: false, tags: ['tag2'] }, // Bookmark 2
+  { is_starred: false, is_archived: true, tags: ['tag3'] }, // Bookmark 3
+  { is_starred: true, is_archived: false, tags: ['tag1', 'tag2'] }, // Bookmark 4
 ])
 
 describe('useFilteredBookmarksOptimized', () => {
   beforeEach(() => {
     // Reset store state before each test
     const { result } = renderHook(() => useBookmarkStore())
-    const { result: collectionsResult } = renderHook(() => useCollectionsStore())
+    const { result: collectionsResult } = renderHook(() =>
+      useCollectionsStore()
+    )
     act(() => {
       result.current.setBookmarks([])
       result.current.setSelectedTags([])
@@ -30,7 +32,9 @@ describe('useFilteredBookmarksOptimized', () => {
 
   it('should return all bookmarks when activeSidebarItem is "All Bookmarks"', () => {
     const { result } = renderHook(() => useBookmarkStore())
-    const { result: hookResult } = renderHook(() => useFilteredBookmarksOptimized())
+    const { result: hookResult } = renderHook(() =>
+      useFilteredBookmarksOptimized()
+    )
 
     act(() => {
       result.current.setBookmarks(mockBookmarks)
@@ -39,13 +43,14 @@ describe('useFilteredBookmarksOptimized', () => {
 
     expect(hookResult.current).toHaveLength(4)
     // Bookmarks should be sorted by date descending (newest first)
-    expect(hookResult.current.map(b => b.id)).toEqual([4, 3, 2, 1])
+    expect(hookResult.current.map((b) => b.id)).toEqual([4, 3, 2, 1])
   })
-
 
   it('should combine sidebar filtering with tag filtering', () => {
     const { result } = renderHook(() => useBookmarkStore())
-    const { result: hookResult } = renderHook(() => useFilteredBookmarksOptimized())
+    const { result: hookResult } = renderHook(() =>
+      useFilteredBookmarksOptimized()
+    )
 
     act(() => {
       result.current.setBookmarks(mockBookmarks)
@@ -54,13 +59,15 @@ describe('useFilteredBookmarksOptimized', () => {
     })
 
     expect(hookResult.current).toHaveLength(2) // Both bookmark 2 and 4 have tag2
-    expect(hookResult.current.map(b => b.id).sort()).toEqual([2, 4])
-    expect(hookResult.current.every(b => b.tags.includes('tag2'))).toBe(true)
+    expect(hookResult.current.map((b) => b.id).sort()).toEqual([2, 4])
+    expect(hookResult.current.every((b) => b.tags.includes('tag2'))).toBe(true)
   })
 
   it('should combine sidebar filtering with tab filtering', () => {
     const { result } = renderHook(() => useBookmarkStore())
-    const { result: hookResult } = renderHook(() => useFilteredBookmarksOptimized())
+    const { result: hookResult } = renderHook(() =>
+      useFilteredBookmarksOptimized()
+    )
 
     act(() => {
       result.current.setBookmarks(mockBookmarks)
@@ -77,8 +84,12 @@ describe('useFilteredBookmarksOptimized', () => {
     // This test verifies that collection filtering logic is in place
     // In real usage, collections would be loaded and activeCollectionId would filter bookmarks
     const { result } = renderHook(() => useBookmarkStore())
-    const { result: collectionsResult } = renderHook(() => useCollectionsStore())
-    const { result: hookResult } = renderHook(() => useFilteredBookmarksOptimized())
+    const { result: collectionsResult } = renderHook(() =>
+      useCollectionsStore()
+    )
+    const { result: hookResult } = renderHook(() =>
+      useFilteredBookmarksOptimized()
+    )
 
     act(() => {
       result.current.setBookmarks(mockBookmarks)
@@ -92,7 +103,9 @@ describe('useFilteredBookmarksOptimized', () => {
 
   it('should return empty array when no bookmarks match sidebar filter', () => {
     const { result } = renderHook(() => useBookmarkStore())
-    const { result: hookResult } = renderHook(() => useFilteredBookmarksOptimized())
+    const { result: hookResult } = renderHook(() =>
+      useFilteredBookmarksOptimized()
+    )
 
     act(() => {
       result.current.setBookmarks(mockBookmarks)
@@ -104,7 +117,9 @@ describe('useFilteredBookmarksOptimized', () => {
 
   it('should update filtering when activeSidebarItem changes', () => {
     const { result } = renderHook(() => useBookmarkStore())
-    const { result: hookResult } = renderHook(() => useFilteredBookmarksOptimized())
+    const { result: hookResult } = renderHook(() =>
+      useFilteredBookmarksOptimized()
+    )
 
     act(() => {
       result.current.setBookmarks(mockBookmarks)

@@ -33,7 +33,7 @@ describe('useClickOutside', () => {
 
     // Attach ref to the container
     if (result.current.current === null) {
-      (result.current as any).current = container
+      ;(result.current as any).current = container
     }
 
     // Click outside
@@ -49,7 +49,7 @@ describe('useClickOutside', () => {
 
     // Attach ref to the container
     if (result.current.current === null) {
-      (result.current as any).current = container
+      ;(result.current as any).current = container
     }
 
     // Click inside
@@ -65,7 +65,7 @@ describe('useClickOutside', () => {
 
     // Attach ref to the container
     if (result.current.current === null) {
-      (result.current as any).current = container
+      ;(result.current as any).current = container
     }
 
     // Click on the element itself
@@ -81,7 +81,7 @@ describe('useClickOutside', () => {
 
     // Attach ref to the container
     if (result.current.current === null) {
-      (result.current as any).current = container
+      ;(result.current as any).current = container
     }
 
     // Click outside
@@ -100,7 +100,7 @@ describe('useClickOutside', () => {
 
     // Attach ref to the container
     if (result.current.current === null) {
-      (result.current as any).current = container
+      ;(result.current as any).current = container
     }
 
     // Click outside while disabled
@@ -126,7 +126,7 @@ describe('useClickOutside', () => {
 
     // Attach ref to the container
     if (result.current.current === null) {
-      (result.current as any).current = container
+      ;(result.current as any).current = container
     }
 
     // Disable the hook
@@ -147,7 +147,10 @@ describe('useClickOutside', () => {
 
     unmount()
 
-    expect(removeEventListenerSpy).toHaveBeenCalledWith('mousedown', expect.any(Function))
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      'mousedown',
+      expect.any(Function)
+    )
 
     removeEventListenerSpy.mockRestore()
   })
@@ -168,14 +171,13 @@ describe('useClickOutside', () => {
     const callback1 = vi.fn()
     const callback2 = vi.fn()
 
-    const { result, rerender } = renderHook(
-      ({ cb }) => useClickOutside(cb),
-      { initialProps: { cb: callback1 } }
-    )
+    const { result, rerender } = renderHook(({ cb }) => useClickOutside(cb), {
+      initialProps: { cb: callback1 },
+    })
 
     // Attach ref to the container
     if (result.current.current === null) {
-      (result.current as any).current = container
+      ;(result.current as any).current = container
     }
 
     // Click outside with first callback
@@ -203,7 +205,7 @@ describe('useClickOutside', () => {
 
     // Attach ref to the container
     if (result.current.current === null) {
-      (result.current as any).current = container
+      ;(result.current as any).current = container
     }
 
     // Click on nested child (should not trigger)
@@ -223,7 +225,7 @@ describe('useClickOutside', () => {
 
     // Attach ref to the container
     if (result.current.current === null) {
-      (result.current as any).current = container
+      ;(result.current as any).current = container
     }
 
     // Multiple rapid clicks

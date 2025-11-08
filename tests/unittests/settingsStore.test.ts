@@ -15,12 +15,12 @@ const localStorageMock = (() => {
     },
     clear: () => {
       store = {}
-    }
+    },
   }
 })()
 
 Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock
+  value: localStorageMock,
 })
 
 describe('SettingsStore', () => {
@@ -47,7 +47,7 @@ describe('SettingsStore', () => {
 
       updateExtensionSettings({
         syncNotifications: false,
-        autoOpenApp: true
+        autoOpenApp: true,
       })
 
       const { extension } = useSettingsStore.getState()
@@ -118,21 +118,24 @@ describe('SettingsStore', () => {
       const { setDefaultCollection } = useSettingsStore.getState()
 
       setDefaultCollection('collection-123')
-      expect(useSettingsStore.getState().extension.defaultCollection).toBe('collection-123')
+      expect(useSettingsStore.getState().extension.defaultCollection).toBe(
+        'collection-123'
+      )
 
       setDefaultCollection(null)
       expect(useSettingsStore.getState().extension.defaultCollection).toBeNull()
     })
 
     it('should reset extension settings to defaults', () => {
-      const { updateExtensionSettings, resetExtensionSettings } = useSettingsStore.getState()
+      const { updateExtensionSettings, resetExtensionSettings } =
+        useSettingsStore.getState()
 
       // Change some settings
       updateExtensionSettings({
         autoSyncInterval: '1hour',
         syncNotifications: false,
         defaultTags: ['test'],
-        autoOpenApp: true
+        autoOpenApp: true,
       })
 
       // Reset
@@ -167,7 +170,7 @@ describe('SettingsStore', () => {
       updateDisplaySettings({
         theme: 'light',
         compactView: true,
-        cardsPerPage: 50
+        cardsPerPage: 50,
       })
 
       const { display } = useSettingsStore.getState()
@@ -243,7 +246,7 @@ describe('SettingsStore', () => {
 
       updatePrivacySettings({
         analyticsEnabled: true,
-        searchHistoryEnabled: false
+        searchHistoryEnabled: false,
       })
 
       const { privacy } = useSettingsStore.getState()
@@ -255,7 +258,7 @@ describe('SettingsStore', () => {
       const { updatePrivacySettings } = useSettingsStore.getState()
 
       updatePrivacySettings({
-        analyticsEnabled: true
+        analyticsEnabled: true,
       })
 
       const { privacy } = useSettingsStore.getState()
@@ -270,23 +273,23 @@ describe('SettingsStore', () => {
         updateExtensionSettings,
         updateDisplaySettings,
         updatePrivacySettings,
-        resetAllSettings
+        resetAllSettings,
       } = useSettingsStore.getState()
 
       // Change all settings
       updateExtensionSettings({
         autoSyncInterval: '1hour',
         syncNotifications: false,
-        defaultTags: ['test']
+        defaultTags: ['test'],
       })
       updateDisplaySettings({
         theme: 'light',
         viewMode: 'list',
-        fontSize: 'large'
+        fontSize: 'large',
       })
       updatePrivacySettings({
         analyticsEnabled: true,
-        searchHistoryEnabled: false
+        searchHistoryEnabled: false,
       })
 
       // Verify changes were applied
@@ -314,11 +317,20 @@ describe('SettingsStore', () => {
   describe('Edge Cases and Complex Scenarios', () => {
     it('should handle all sync interval options', () => {
       const { setAutoSyncInterval } = useSettingsStore.getState()
-      const intervals = ['off', '5min', '15min', '30min', '1hour', 'manual'] as const
+      const intervals = [
+        'off',
+        '5min',
+        '15min',
+        '30min',
+        '1hour',
+        'manual',
+      ] as const
 
-      intervals.forEach(interval => {
+      intervals.forEach((interval) => {
         setAutoSyncInterval(interval)
-        expect(useSettingsStore.getState().extension.autoSyncInterval).toBe(interval)
+        expect(useSettingsStore.getState().extension.autoSyncInterval).toBe(
+          interval
+        )
       })
     })
 
@@ -326,9 +338,11 @@ describe('SettingsStore', () => {
       const { setImportDuplicates } = useSettingsStore.getState()
       const options = ['skip', 'replace', 'keep-both'] as const
 
-      options.forEach(option => {
+      options.forEach((option) => {
         setImportDuplicates(option)
-        expect(useSettingsStore.getState().extension.importDuplicates).toBe(option)
+        expect(useSettingsStore.getState().extension.importDuplicates).toBe(
+          option
+        )
       })
     })
 
@@ -336,7 +350,7 @@ describe('SettingsStore', () => {
       const { setSortBy } = useSettingsStore.getState()
       const sortOptions = ['date', 'title', 'author', 'domain'] as const
 
-      sortOptions.forEach(option => {
+      sortOptions.forEach((option) => {
         setSortBy(option)
         expect(useSettingsStore.getState().display.sortBy).toBe(option)
       })
@@ -354,7 +368,9 @@ describe('SettingsStore', () => {
       const manyTags = Array.from({ length: 100 }, (_, i) => `tag-${i}`)
 
       setDefaultTags(manyTags)
-      expect(useSettingsStore.getState().extension.defaultTags).toEqual(manyTags)
+      expect(useSettingsStore.getState().extension.defaultTags).toEqual(
+        manyTags
+      )
       expect(useSettingsStore.getState().extension.defaultTags.length).toBe(100)
     })
 
@@ -379,18 +395,19 @@ describe('SettingsStore', () => {
     })
 
     it('should preserve unrelated settings when updating', () => {
-      const { updateExtensionSettings, updateDisplaySettings } = useSettingsStore.getState()
+      const { updateExtensionSettings, updateDisplaySettings } =
+        useSettingsStore.getState()
 
       // Set extension settings
       updateExtensionSettings({
         autoSyncInterval: '1hour',
-        syncNotifications: false
+        syncNotifications: false,
       })
 
       // Update display settings
       updateDisplaySettings({
         theme: 'light',
-        viewMode: 'list'
+        viewMode: 'list',
       })
 
       const state = useSettingsStore.getState()
@@ -431,7 +448,8 @@ describe('SettingsStore', () => {
     })
 
     it('should handle setting and resetting default tags', () => {
-      const { setDefaultTags, resetExtensionSettings } = useSettingsStore.getState()
+      const { setDefaultTags, resetExtensionSettings } =
+        useSettingsStore.getState()
 
       const tags = ['tag1', 'tag2']
       setDefaultTags(tags)

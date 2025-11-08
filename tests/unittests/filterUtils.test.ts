@@ -31,7 +31,9 @@ describe('filterUtils', () => {
         result.current()
       })
 
-      expect(useBookmarkStore.getState().activeSidebarItem).toBe('All Bookmarks')
+      expect(useBookmarkStore.getState().activeSidebarItem).toBe(
+        'All Bookmarks'
+      )
     })
 
     it('should clear active collection', () => {
@@ -42,7 +44,9 @@ describe('filterUtils', () => {
         useCollectionsStore.getState().setActiveCollection('test-collection-id')
       })
 
-      expect(useCollectionsStore.getState().activeCollectionId).toBe('test-collection-id')
+      expect(useCollectionsStore.getState().activeCollectionId).toBe(
+        'test-collection-id'
+      )
 
       // Reset filters
       act(() => {
@@ -62,14 +66,18 @@ describe('filterUtils', () => {
       })
 
       expect(useBookmarkStore.getState().activeSidebarItem).toBe('Favorites')
-      expect(useCollectionsStore.getState().activeCollectionId).toBe('test-collection-id')
+      expect(useCollectionsStore.getState().activeCollectionId).toBe(
+        'test-collection-id'
+      )
 
       // Reset filters
       act(() => {
         result.current()
       })
 
-      expect(useBookmarkStore.getState().activeSidebarItem).toBe('All Bookmarks')
+      expect(useBookmarkStore.getState().activeSidebarItem).toBe(
+        'All Bookmarks'
+      )
       expect(useCollectionsStore.getState().activeCollectionId).toBeNull()
     })
 
@@ -99,7 +107,9 @@ describe('filterUtils', () => {
 
       // Verify states are set
       expect(useBookmarkStore.getState().activeSidebarItem).toBe('Favorites')
-      expect(useCollectionsStore.getState().activeCollectionId).toBe('test-collection-id')
+      expect(useCollectionsStore.getState().activeCollectionId).toBe(
+        'test-collection-id'
+      )
       expect(useBookmarkStore.getState().searchQuery).toBe('test query')
       expect(useBookmarkStore.getState().selectedTags).toEqual(['tag1', 'tag2'])
       expect(useBookmarkStore.getState().activeTab).toBe(1)
@@ -110,7 +120,9 @@ describe('filterUtils', () => {
       })
 
       // Verify all states are reset
-      expect(useBookmarkStore.getState().activeSidebarItem).toBe('All Bookmarks')
+      expect(useBookmarkStore.getState().activeSidebarItem).toBe(
+        'All Bookmarks'
+      )
       expect(useCollectionsStore.getState().activeCollectionId).toBeNull()
       expect(useBookmarkStore.getState().searchQuery).toBe('')
       expect(useBookmarkStore.getState().selectedTags).toEqual([])
@@ -136,7 +148,9 @@ describe('filterUtils', () => {
         useBookmarkStore.getState().setSearchQuery('complex search query')
       })
 
-      expect(useBookmarkStore.getState().searchQuery).toBe('complex search query')
+      expect(useBookmarkStore.getState().searchQuery).toBe(
+        'complex search query'
+      )
 
       act(() => {
         result.current()

@@ -36,16 +36,16 @@ const createConsolidatedStorage = (overrides: any = {}) => {
       autoBackup: true,
       exportFormat: 'json',
       defaultCollection: null,
-      duplicateHandling: 'skip'
+      duplicateHandling: 'skip',
     },
     metadata: {
       version: '1.0.0',
       totalBookmarks: 0,
       createdAt: new Date().toISOString(),
-      lastUpdate: new Date().toISOString()
+      lastUpdate: new Date().toISOString(),
     },
     version: '2.0.0',
-    ...overrides
+    ...overrides,
   }
   return JSON.stringify(defaultStorage)
 }
@@ -62,10 +62,20 @@ describe('Collections localStorage persistence', () => {
     localStorageMock.clear.mockReset()
 
     // Restore original implementations
-    localStorageMock.getItem.mockImplementation((key: string) => mockStorage[key] || null)
-    localStorageMock.setItem.mockImplementation((key: string, value: string) => { mockStorage[key] = value })
-    localStorageMock.removeItem.mockImplementation((key: string) => { delete mockStorage[key] })
-    localStorageMock.clear.mockImplementation(() => { mockStorage = {} })
+    localStorageMock.getItem.mockImplementation(
+      (key: string) => mockStorage[key] || null
+    )
+    localStorageMock.setItem.mockImplementation(
+      (key: string, value: string) => {
+        mockStorage[key] = value
+      }
+    )
+    localStorageMock.removeItem.mockImplementation((key: string) => {
+      delete mockStorage[key]
+    })
+    localStorageMock.clear.mockImplementation(() => {
+      mockStorage = {}
+    })
 
     mockStorage = {}
     // Initialize with default consolidated storage
@@ -80,11 +90,11 @@ describe('Collections localStorage persistence', () => {
       collectionFilter: 'all',
       expandedCollections: [],
       isLoading: false,
-      error: null
+      error: null,
     })
 
     // Wait a tick to ensure state is properly reset
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
   })
 
   describe('localStorage service', () => {
@@ -98,7 +108,7 @@ describe('Collections localStorage persistence', () => {
         isPrivate: false,
         isDefault: false,
         isSmartCollection: false,
-        userId: 'local-user'
+        userId: 'local-user',
       }
 
       const result = await localStorageService.createCollection(testCollection)
@@ -111,7 +121,7 @@ describe('Collections localStorage persistence', () => {
         isPrivate: false,
         isDefault: false,
         isSmartCollection: false,
-        userId: 'local-user'
+        userId: 'local-user',
       })
 
       expect(result.id).toBeDefined()
@@ -139,17 +149,21 @@ describe('Collections localStorage persistence', () => {
           userId: 'local-user',
           createdAt: '2023-01-01T00:00:00.000Z',
           updatedAt: '2023-01-01T00:00:00.000Z',
-          bookmarkCount: 0
-        }
+          bookmarkCount: 0,
+        },
       ]
 
-      mockStorage['x-bookmark-manager-data'] = createConsolidatedStorage({ collections: mockCollections })
+      mockStorage['x-bookmark-manager-data'] = createConsolidatedStorage({
+        collections: mockCollections,
+      })
 
       const result = await localStorageService.getCollections()
 
       expect(result).toHaveLength(1)
       expect(result[0]).toMatchObject(mockCollections[0])
-      expect(localStorageMock.getItem).toHaveBeenCalledWith('x-bookmark-manager-data')
+      expect(localStorageMock.getItem).toHaveBeenCalledWith(
+        'x-bookmark-manager-data'
+      )
     })
 
     it('should initialize default collections when localStorage is empty', async () => {
@@ -162,7 +176,7 @@ describe('Collections localStorage persistence', () => {
       expect(result.length).toBeGreaterThan(0)
 
       // Should contain default collections
-      const defaultNames = result.map(c => c.name)
+      const defaultNames = result.map((c) => c.name)
       expect(defaultNames).toContain('Starred')
       expect(defaultNames).toContain('Recent')
       expect(defaultNames).toContain('Archived')
@@ -188,7 +202,7 @@ describe('Collections localStorage persistence', () => {
         isPrivate: false,
         isDefault: false,
         isSmartCollection: false,
-        userId: 'local-user'
+        userId: 'local-user',
       }
 
       await store.createCollection(testCollection)
@@ -213,14 +227,14 @@ describe('Collections localStorage persistence', () => {
           userId: 'local-user',
           createdAt: '2023-01-01T00:00:00.000Z',
           updatedAt: '2023-01-01T00:00:00.000Z',
-          bookmarkCount: 0
-        }
+          bookmarkCount: 0,
+        },
       ]
 
       // Set up consolidated storage with the test collection
       mockStorage['x-bookmark-manager-data'] = createConsolidatedStorage({
         collections: mockCollections,
-        bookmarkCollections: []
+        bookmarkCollections: [],
       })
 
       // Test the localStorage service directly first
@@ -260,7 +274,7 @@ describe('Collections localStorage persistence', () => {
         isPrivate: false,
         isDefault: false,
         isSmartCollection: false,
-        userId: 'local-user'
+        userId: 'local-user',
       })
 
       // The collection should now be in mockStorage along with default collections
@@ -272,7 +286,9 @@ describe('Collections localStorage persistence', () => {
       expect(state.collections.length).toBeGreaterThan(0)
 
       // Verify our custom collection is there
-      const customCollection = state.collections.find(c => c.name === 'Collection 1')
+      const customCollection = state.collections.find(
+        (c) => c.name === 'Collection 1'
+      )
       expect(customCollection).toBeDefined()
       expect(customCollection?.description).toBe('First collection')
     })
@@ -293,8 +309,8 @@ describe('Collections localStorage persistence', () => {
           userId: 'local-user',
           createdAt: '2023-01-01T00:00:00.000Z',
           updatedAt: '2023-01-01T00:00:00.000Z',
-          bookmarkCount: 0
-        }
+          bookmarkCount: 0,
+        },
       ]
 
       // Mock localStorage to return collections but no bookmarks

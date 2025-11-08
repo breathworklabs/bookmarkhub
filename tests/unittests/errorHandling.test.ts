@@ -14,7 +14,7 @@ import {
   isAppError,
   isErrorClass,
   safeGetErrorInfo,
-  createSafeErrorHandler
+  createSafeErrorHandler,
 } from '../../src/utils/errorHandling'
 
 describe('errorHandling', () => {
@@ -38,7 +38,7 @@ describe('errorHandling', () => {
       const context: ErrorContext = {
         component: 'BookmarkList',
         action: 'delete',
-        metadata: { id: '123' }
+        metadata: { id: '123' },
       }
 
       const error = new AppError('Test error', 'TEST_ERROR', context)
@@ -58,17 +58,23 @@ describe('errorHandling', () => {
 
     it('should return user-friendly message', () => {
       const error1 = new AppError('Technical message', 'NOT_FOUND')
-      expect(error1.toUserMessage()).toBe('The requested item could not be found')
+      expect(error1.toUserMessage()).toBe(
+        'The requested item could not be found'
+      )
 
       const error2 = new AppError('Technical message', 'STORAGE_FULL')
-      expect(error2.toUserMessage()).toBe('Storage is full. Please free up some space and try again')
+      expect(error2.toUserMessage()).toBe(
+        'Storage is full. Please free up some space and try again'
+      )
 
       const error3 = new AppError('Custom message', 'CUSTOM_CODE')
       expect(error3.toUserMessage()).toBe('Custom message')
     })
 
     it('should convert to standard error format', () => {
-      const error = new AppError('Test error', 'TEST_ERROR', { component: 'TestComponent' })
+      const error = new AppError('Test error', 'TEST_ERROR', {
+        component: 'TestComponent',
+      })
       const standardError: StandardError = error.toStandardError()
 
       expect(standardError.message).toBe('Test error')
@@ -78,7 +84,9 @@ describe('errorHandling', () => {
     })
 
     it('should add context with withContext method', () => {
-      const error = new AppError('Test error', 'TEST_ERROR', { component: 'Component1' })
+      const error = new AppError('Test error', 'TEST_ERROR', {
+        component: 'Component1',
+      })
       const enhancedError = error.withContext({ action: 'delete' })
 
       expect(enhancedError.context.component).toBe('Component1')
@@ -129,7 +137,9 @@ describe('errorHandling', () => {
       expect(error.message).toBe('Storage is full')
       expect(error.code).toBe('STORAGE_FULL')
       expect(error.context.action).toBe('save_bookmark')
-      expect(error.toUserMessage()).toBe('Storage is full. Please free up some space and try again')
+      expect(error.toUserMessage()).toBe(
+        'Storage is full. Please free up some space and try again'
+      )
     })
 
     it('should create storageUnavailable error with factory method', () => {
@@ -138,7 +148,9 @@ describe('errorHandling', () => {
       expect(error.message).toBe('Storage is unavailable')
       expect(error.code).toBe('STORAGE_UNAVAILABLE')
       expect(error.context.action).toBe('access_storage')
-      expect(error.toUserMessage()).toBe('Storage is currently unavailable. Please try again later')
+      expect(error.toUserMessage()).toBe(
+        'Storage is currently unavailable. Please try again later'
+      )
     })
 
     it('should default to INVALID_DATA code', () => {
@@ -222,7 +234,9 @@ describe('errorHandling', () => {
     it('should create fileTooLarge error with factory method', () => {
       const error = ImportExportError.fileTooLarge(10000000, 5000000)
 
-      expect(error.message).toBe('File too large: 10000000 bytes (max: 5000000 bytes)')
+      expect(error.message).toBe(
+        'File too large: 10000000 bytes (max: 5000000 bytes)'
+      )
       expect(error.code).toBe('FILE_TOO_LARGE')
       expect(error.context.action).toBe('validate_file_size')
       expect(error.context.metadata?.size).toBe(10000000)
@@ -251,7 +265,9 @@ describe('errorHandling', () => {
       expect(error.message).toBe('Network connection failed')
       expect(error.code).toBe('NETWORK_ERROR')
       expect(error.context.action).toBe('network_request')
-      expect(error.toUserMessage()).toBe('Network connection failed. Please check your internet connection')
+      expect(error.toUserMessage()).toBe(
+        'Network connection failed. Please check your internet connection'
+      )
     })
 
     it('should default to NETWORK_ERROR code', () => {
@@ -294,7 +310,9 @@ describe('errorHandling', () => {
 
   describe('Error chaining and context', () => {
     it('should chain errors with withContext', () => {
-      const error = new AppError('Initial error', 'TEST_ERROR', { component: 'Component1' })
+      const error = new AppError('Initial error', 'TEST_ERROR', {
+        component: 'Component1',
+      })
       const step2 = error.withContext({ action: 'step2' })
       const step3 = step2.withContext({ metadata: { step: 3 } })
 
@@ -341,21 +359,36 @@ describe('errorHandling', () => {
     })
 
     it('should map standard error codes to friendly messages', () => {
-      expect(createUserFriendlyMessage({ message: 'Test', code: 'NOT_FOUND', context: {} }))
-        .toBe('The requested item could not be found')
+      expect(
+        createUserFriendlyMessage({
+          message: 'Test',
+          code: 'NOT_FOUND',
+          context: {},
+        })
+      ).toBe('The requested item could not be found')
 
-      expect(createUserFriendlyMessage({ message: 'Test', code: 'STORAGE_FULL', context: {} }))
-        .toBe('Storage is full. Please free up some space and try again')
+      expect(
+        createUserFriendlyMessage({
+          message: 'Test',
+          code: 'STORAGE_FULL',
+          context: {},
+        })
+      ).toBe('Storage is full. Please free up some space and try again')
 
-      expect(createUserFriendlyMessage({ message: 'Test', code: 'NETWORK_ERROR', context: {} }))
-        .toBe('Network connection failed. Please check your internet connection')
+      expect(
+        createUserFriendlyMessage({
+          message: 'Test',
+          code: 'NETWORK_ERROR',
+          context: {},
+        })
+      ).toBe('Network connection failed. Please check your internet connection')
     })
 
     it('should return original message if code not mapped', () => {
       const message = createUserFriendlyMessage({
         message: 'Custom error',
         code: 'CUSTOM_CODE',
-        context: {}
+        context: {},
       })
 
       expect(message).toBe('Custom error')
@@ -375,7 +408,11 @@ describe('errorHandling', () => {
       const operation = vi.fn(async () => {
         throw new Error('Operation failed')
       })
-      const result = await withErrorHandling(operation, 'test-context', 'fallback')
+      const result = await withErrorHandling(
+        operation,
+        'test-context',
+        'fallback'
+      )
 
       expect(result).toBe('fallback')
     })
@@ -432,9 +469,9 @@ describe('errorHandling', () => {
         throw new Error('Permanent failure')
       })
 
-      await expect(
-        withRetry(operation, 'test-context', 2, 10)
-      ).rejects.toThrow(AppError)
+      await expect(withRetry(operation, 'test-context', 2, 10)).rejects.toThrow(
+        AppError
+      )
 
       expect(operation).toHaveBeenCalledTimes(3) // Initial + 2 retries
     })
@@ -443,7 +480,10 @@ describe('errorHandling', () => {
       const delays: number[] = []
       const originalSetTimeout = global.setTimeout
 
-      vi.spyOn(global, 'setTimeout').mockImplementation(((callback: Function, delay: number) => {
+      vi.spyOn(global, 'setTimeout').mockImplementation(((
+        callback: Function,
+        delay: number
+      ) => {
         delays.push(delay)
         callback()
         return 0 as any

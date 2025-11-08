@@ -23,7 +23,7 @@ const createTestBookmark = (overrides: Partial<Bookmark> = {}): Bookmark => ({
   collections: [],
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
-  ...overrides
+  ...overrides,
 })
 
 describe('bookmarkStore - Extended Actions', () => {
@@ -42,20 +42,20 @@ describe('bookmarkStore - Extended Actions', () => {
         itemsPerPage: 20,
         totalItems: 0,
         hasMore: false,
-        isLoading: false
+        isLoading: false,
       },
       filterOptions: {
         authors: [],
         domains: [],
         tags: [],
-        contentTypes: []
+        contentTypes: [],
       },
       filterOptionsHash: '',
       recentActivity: [],
       validationResults: [],
       validationSummary: null,
       isValidating: false,
-      validationProgress: null
+      validationProgress: null,
     })
     vi.clearAllMocks()
   })
@@ -130,8 +130,8 @@ describe('bookmarkStore - Extended Actions', () => {
         {
           bookmark: createTestBookmark({ id: 1 }),
           score: 0.95,
-          reason: 'Exact URL match'
-        }
+          reason: 'Exact URL match',
+        },
       ]
 
       useBookmarkStore.getState().setDuplicateMatches(matches)
@@ -155,7 +155,7 @@ describe('bookmarkStore - Extended Actions', () => {
         is_archived: false,
         is_shared: false,
         tags: [],
-        collections: []
+        collections: [],
       }
 
       useBookmarkStore.getState().setPendingBookmark(bookmark)
@@ -185,13 +185,13 @@ describe('bookmarkStore - Extended Actions', () => {
         is_archived: false,
         is_shared: false,
         tags: [],
-        collections: []
+        collections: [],
       }
 
       useBookmarkStore.setState({
         pendingBookmark: bookmark,
         showDuplicateDialog: true,
-        duplicateMatches: []
+        duplicateMatches: [],
       })
 
       useBookmarkStore.getState().cancelAddDuplicate()
@@ -210,8 +210,8 @@ describe('bookmarkStore - Extended Actions', () => {
           itemsPerPage: 20,
           totalItems: 100,
           hasMore: true,
-          isLoading: false
-        }
+          isLoading: false,
+        },
       })
 
       useBookmarkStore.getState().resetPagination()
@@ -240,8 +240,8 @@ describe('bookmarkStore - Extended Actions', () => {
           itemsPerPage: 20,
           totalItems: 20,
           hasMore: false,
-          isLoading: false
-        }
+          isLoading: false,
+        },
       })
 
       useBookmarkStore.getState().loadMoreBookmarks()
@@ -254,7 +254,9 @@ describe('bookmarkStore - Extended Actions', () => {
 
   describe('activity logging', () => {
     it('should add activity log', () => {
-      useBookmarkStore.getState().addActivityLog('bookmark_created', 'Created new bookmark')
+      useBookmarkStore
+        .getState()
+        .addActivityLog('bookmark_created', 'Created new bookmark')
 
       const activity = useBookmarkStore.getState().recentActivity
       expect(activity).toHaveLength(1)
@@ -301,9 +303,24 @@ describe('bookmarkStore - Extended Actions', () => {
   describe('filter options calculation', () => {
     it('should calculate filter options from bookmarks', () => {
       const bookmarks = [
-        createTestBookmark({ id: 1, author: 'John Doe', domain: 'example.com', tags: ['react', 'javascript'] }),
-        createTestBookmark({ id: 2, author: 'Jane Smith', domain: 'test.com', tags: ['python'] }),
-        createTestBookmark({ id: 3, author: 'John Doe', domain: 'example.com', tags: ['react', 'typescript'] })
+        createTestBookmark({
+          id: 1,
+          author: 'John Doe',
+          domain: 'example.com',
+          tags: ['react', 'javascript'],
+        }),
+        createTestBookmark({
+          id: 2,
+          author: 'Jane Smith',
+          domain: 'test.com',
+          tags: ['python'],
+        }),
+        createTestBookmark({
+          id: 3,
+          author: 'John Doe',
+          domain: 'example.com',
+          tags: ['react', 'typescript'],
+        }),
       ]
 
       useBookmarkStore.setState({ bookmarks })
@@ -313,7 +330,12 @@ describe('bookmarkStore - Extended Actions', () => {
 
       expect(options.authors).toEqual(['Jane Smith', 'John Doe']) // Sorted
       expect(options.domains).toEqual(['example.com', 'test.com']) // Sorted
-      expect(options.tags.sort()).toEqual(['javascript', 'python', 'react', 'typescript']) // Unique and sorted
+      expect(options.tags.sort()).toEqual([
+        'javascript',
+        'python',
+        'react',
+        'typescript',
+      ]) // Unique and sorted
     })
 
     it('should handle empty bookmarks', () => {
@@ -341,7 +363,7 @@ describe('bookmarkStore - Extended Actions', () => {
     it('should set validation results', () => {
       const results = [
         { bookmarkId: 1, isValid: true, errors: [] },
-        { bookmarkId: 2, isValid: false, errors: ['Invalid URL'] }
+        { bookmarkId: 2, isValid: false, errors: ['Invalid URL'] },
       ]
 
       useBookmarkStore.setState({ validationResults: results })
@@ -355,7 +377,7 @@ describe('bookmarkStore - Extended Actions', () => {
         validBookmarks: 8,
         invalidBookmarks: 2,
         invalid: 2, // getInvalidBookmarksCount uses validationSummary.invalid
-        validationDate: new Date().toISOString()
+        validationDate: new Date().toISOString(),
       }
 
       useBookmarkStore.setState({ validationSummary: summary })
@@ -376,7 +398,7 @@ describe('bookmarkStore - Extended Actions', () => {
         totalBookmarks: 10,
         validBookmarks: 8,
         invalidBookmarks: 2,
-        validationDate: new Date().toISOString()
+        validationDate: new Date().toISOString(),
       }
 
       useBookmarkStore.setState({ validationSummary: summary })
@@ -387,7 +409,7 @@ describe('bookmarkStore - Extended Actions', () => {
     it('should track validation progress', () => {
       useBookmarkStore.setState({
         isValidating: true,
-        validationProgress: { current: 50, total: 100 }
+        validationProgress: { current: 50, total: 100 },
       })
 
       const state = useBookmarkStore.getState()
@@ -406,10 +428,12 @@ describe('bookmarkStore - Extended Actions', () => {
         domainFilter: 'example.com',
         contentTypeFilter: 'article',
         dateRangeFilter: { type: 'week' },
-        quickFilters: ['starred']
+        quickFilters: ['starred'],
       })
 
-      useBookmarkStore.getState().saveFilterPreset('My Preset', 'Test description')
+      useBookmarkStore
+        .getState()
+        .saveFilterPreset('My Preset', 'Test description')
 
       const presets = useBookmarkStore.getState().savedFilterPresets
       expect(presets).toHaveLength(1)
@@ -432,10 +456,10 @@ describe('bookmarkStore - Extended Actions', () => {
           domainFilter: '',
           contentTypeFilter: '',
           dateRangeFilter: { type: 'all' as const },
-          quickFilters: []
+          quickFilters: [],
         },
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       }
 
       useBookmarkStore.setState({ savedFilterPresets: [preset] })
@@ -457,23 +481,27 @@ describe('bookmarkStore - Extended Actions', () => {
           domainFilter: '',
           contentTypeFilter: '',
           dateRangeFilter: { type: 'all' as const },
-          quickFilters: []
+          quickFilters: [],
         },
         createdAt: oldTimestamp,
-        updatedAt: oldTimestamp
+        updatedAt: oldTimestamp,
       }
 
       useBookmarkStore.setState({ savedFilterPresets: [preset] })
 
       // Wait a tiny bit to ensure timestamp changes
-      await new Promise(resolve => setTimeout(resolve, 10))
+      await new Promise((resolve) => setTimeout(resolve, 10))
 
-      useBookmarkStore.getState().updateFilterPreset('preset-1', 'New Name', 'New desc')
+      useBookmarkStore
+        .getState()
+        .updateFilterPreset('preset-1', 'New Name', 'New desc')
 
       const updated = useBookmarkStore.getState().savedFilterPresets[0]
       expect(updated.name).toBe('New Name')
       expect(updated.description).toBe('New desc')
-      expect(new Date(updated.updatedAt).getTime()).toBeGreaterThan(new Date(oldTimestamp).getTime())
+      expect(new Date(updated.updatedAt).getTime()).toBeGreaterThan(
+        new Date(oldTimestamp).getTime()
+      )
     })
 
     it('should load filter preset', () => {
@@ -487,10 +515,10 @@ describe('bookmarkStore - Extended Actions', () => {
           domainFilter: 'example.com',
           contentTypeFilter: 'article',
           dateRangeFilter: { type: 'month' as const },
-          quickFilters: ['starred', 'unread']
+          quickFilters: ['starred', 'unread'],
         },
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       }
 
       useBookmarkStore.setState({ savedFilterPresets: [preset] })

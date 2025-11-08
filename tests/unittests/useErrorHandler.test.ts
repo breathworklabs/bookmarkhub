@@ -25,7 +25,7 @@ describe('useErrorHandler', () => {
     const { result } = renderHook(() => useErrorHandler('TestComponent'))
 
     const error = result.current.handleError(new Error('Test error'), {
-      action: 'save_data'
+      action: 'save_data',
     })
 
     expect(error.context.component).toBe('TestComponent')

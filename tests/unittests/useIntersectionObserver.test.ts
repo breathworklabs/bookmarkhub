@@ -4,12 +4,13 @@ import {
   useIntersectionObserver,
   useLazyImageObserver,
   useInfiniteScrollObserver,
-  clearObserverPool
+  clearObserverPool,
 } from '../../src/hooks/useIntersectionObserver'
 
 describe('useIntersectionObserver', () => {
   let mockIntersectionObserver: any
-  let observeCallback: ((entries: IntersectionObserverEntry[]) => void) | null = null
+  let observeCallback: ((entries: IntersectionObserverEntry[]) => void) | null =
+    null
 
   beforeEach(() => {
     // Mock IntersectionObserver
@@ -19,7 +20,7 @@ describe('useIntersectionObserver', () => {
         observe: vi.fn(),
         unobserve: vi.fn(),
         disconnect: vi.fn(),
-        takeRecords: vi.fn(() => [])
+        takeRecords: vi.fn(() => []),
       }
     })
 
@@ -57,7 +58,7 @@ describe('useIntersectionObserver', () => {
       useIntersectionObserver({
         onIntersect,
         rootMargin: '100px',
-        threshold: 0.5
+        threshold: 0.5,
       })
     )
 
@@ -73,7 +74,7 @@ describe('useIntersectionObserver', () => {
     renderHook(() =>
       useIntersectionObserver({
         onIntersect,
-        enabled: false
+        enabled: false,
       })
     )
 
@@ -95,7 +96,7 @@ describe('useIntersectionObserver', () => {
       const mockEntry = {
         target: mockElement,
         isIntersecting: true,
-        intersectionRatio: 1
+        intersectionRatio: 1,
       } as IntersectionObserverEntry
 
       observeCallback([mockEntry])
@@ -164,7 +165,7 @@ describe('useIntersectionObserver', () => {
       renderHook(() =>
         useIntersectionObserver({
           onIntersect: onIntersect2,
-          threshold: 0.5
+          threshold: 0.5,
         })
       )
 

@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { useIsMobile, useIsTablet, useScreenSize } from '../../src/hooks/useMobile'
+import {
+  useIsMobile,
+  useIsTablet,
+  useScreenSize,
+} from '../../src/hooks/useMobile'
 
 describe('useMobile', () => {
   let originalInnerWidth: number
@@ -15,12 +19,12 @@ describe('useMobile', () => {
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,
-      value: originalInnerWidth
+      value: originalInnerWidth,
     })
     Object.defineProperty(window, 'innerHeight', {
       writable: true,
       configurable: true,
-      value: originalInnerHeight
+      value: originalInnerHeight,
     })
   })
 
@@ -28,12 +32,12 @@ describe('useMobile', () => {
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,
-      value: width
+      value: width,
     })
     Object.defineProperty(window, 'innerHeight', {
       writable: true,
       configurable: true,
-      value: height
+      value: height,
     })
   }
 
@@ -94,7 +98,10 @@ describe('useMobile', () => {
 
       unmount()
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function))
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'resize',
+        expect.any(Function)
+      )
       removeEventListenerSpy.mockRestore()
     })
   })
@@ -156,7 +163,10 @@ describe('useMobile', () => {
 
       unmount()
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function))
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'resize',
+        expect.any(Function)
+      )
       removeEventListenerSpy.mockRestore()
     })
   })
@@ -232,7 +242,10 @@ describe('useMobile', () => {
 
       unmount()
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function))
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'resize',
+        expect.any(Function)
+      )
       removeEventListenerSpy.mockRestore()
     })
 

@@ -26,7 +26,9 @@ describe('TagCategoriesStore', () => {
       const updatedCategories = useTagCategoriesStore.getState().categories
       expect(updatedCategories.length).toBe(DEFAULT_TAG_CATEGORIES.length + 1)
 
-      const newCategory = updatedCategories.find(cat => cat.name === 'Custom Category')
+      const newCategory = updatedCategories.find(
+        (cat) => cat.name === 'Custom Category'
+      )
       expect(newCategory).toBeDefined()
       expect(newCategory?.id).toBe('custom-category')
       expect(newCategory?.color).toBe('#FF5733')
@@ -38,18 +40,19 @@ describe('TagCategoriesStore', () => {
 
       updateCategory(firstCategoryId, {
         name: 'Updated Name',
-        color: '#123456'
+        color: '#123456',
       })
 
-      const updatedCategory = useTagCategoriesStore.getState().categories.find(
-        cat => cat.id === firstCategoryId
-      )
+      const updatedCategory = useTagCategoriesStore
+        .getState()
+        .categories.find((cat) => cat.id === firstCategoryId)
       expect(updatedCategory?.name).toBe('Updated Name')
       expect(updatedCategory?.color).toBe('#123456')
     })
 
     it('should delete a category and remove associated tag mappings', () => {
-      const { addCategory, assignTagToCategory, deleteCategory } = useTagCategoriesStore.getState()
+      const { addCategory, assignTagToCategory, deleteCategory } =
+        useTagCategoriesStore.getState()
 
       // Add a custom category
       addCategory({
@@ -74,7 +77,7 @@ describe('TagCategoriesStore', () => {
 
       // Verify category is deleted
       const categories = useTagCategoriesStore.getState().categories
-      expect(categories.find(cat => cat.id === categoryId)).toBeUndefined()
+      expect(categories.find((cat) => cat.id === categoryId)).toBeUndefined()
 
       // Verify tag mappings are removed
       mappings = useTagCategoriesStore.getState().tagCategoryMappings
@@ -83,7 +86,8 @@ describe('TagCategoriesStore', () => {
     })
 
     it('should reset categories to defaults', () => {
-      const { addCategory, assignTagToCategory, resetCategories } = useTagCategoriesStore.getState()
+      const { addCategory, assignTagToCategory, resetCategories } =
+        useTagCategoriesStore.getState()
 
       // Make some changes
       addCategory({
@@ -104,7 +108,8 @@ describe('TagCategoriesStore', () => {
 
   describe('Tag-Category Mapping', () => {
     it('should assign a tag to a category', () => {
-      const { assignTagToCategory, categories } = useTagCategoriesStore.getState()
+      const { assignTagToCategory, categories } =
+        useTagCategoriesStore.getState()
       const categoryId = categories[0].id
 
       assignTagToCategory('test-tag', categoryId)
@@ -114,7 +119,8 @@ describe('TagCategoriesStore', () => {
     })
 
     it('should remove a tag from a category', () => {
-      const { assignTagToCategory, removeTagFromCategory, categories } = useTagCategoriesStore.getState()
+      const { assignTagToCategory, removeTagFromCategory, categories } =
+        useTagCategoriesStore.getState()
       const categoryId = categories[0].id
 
       assignTagToCategory('test-tag', categoryId)
@@ -129,7 +135,8 @@ describe('TagCategoriesStore', () => {
     })
 
     it('should get all tags in a category', () => {
-      const { assignTagToCategory, getTagsInCategory, categories } = useTagCategoriesStore.getState()
+      const { assignTagToCategory, getTagsInCategory, categories } =
+        useTagCategoriesStore.getState()
       const categoryId = categories[0].id
 
       assignTagToCategory('tag1', categoryId)
@@ -144,23 +151,29 @@ describe('TagCategoriesStore', () => {
     })
 
     it('should reassign a tag to a different category', () => {
-      const { assignTagToCategory, categories } = useTagCategoriesStore.getState()
+      const { assignTagToCategory, categories } =
+        useTagCategoriesStore.getState()
       const category1Id = categories[0].id
       const category2Id = categories[1].id
 
       // Initially assign to category1
       assignTagToCategory('test-tag', category1Id)
-      expect(useTagCategoriesStore.getState().tagCategoryMappings['test-tag']).toBe(category1Id)
+      expect(
+        useTagCategoriesStore.getState().tagCategoryMappings['test-tag']
+      ).toBe(category1Id)
 
       // Reassign to category2
       assignTagToCategory('test-tag', category2Id)
-      expect(useTagCategoriesStore.getState().tagCategoryMappings['test-tag']).toBe(category2Id)
+      expect(
+        useTagCategoriesStore.getState().tagCategoryMappings['test-tag']
+      ).toBe(category2Id)
     })
   })
 
   describe('Helper Functions', () => {
     it('should get category for tag with explicit assignment', () => {
-      const { assignTagToCategory, getCategoryForTag, categories } = useTagCategoriesStore.getState()
+      const { assignTagToCategory, getCategoryForTag, categories } =
+        useTagCategoriesStore.getState()
       const categoryId = categories[0].id
 
       assignTagToCategory('test-tag', categoryId)
@@ -178,7 +191,8 @@ describe('TagCategoriesStore', () => {
     })
 
     it('should get tag with category information', () => {
-      const { assignTagToCategory, getTagWithCategory, categories } = useTagCategoriesStore.getState()
+      const { assignTagToCategory, getTagWithCategory, categories } =
+        useTagCategoriesStore.getState()
       const categoryId = categories[0].id
       const lastUsed = new Date()
 
@@ -216,7 +230,7 @@ describe('TagCategoriesStore', () => {
       })
 
       const categories = useTagCategoriesStore.getState().categories
-      const emptyCategory = categories.find(cat => cat.name === '')
+      const emptyCategory = categories.find((cat) => cat.name === '')
       expect(emptyCategory).toBeDefined()
       expect(emptyCategory?.id).toBe('') // ID will be empty string
     })
@@ -231,7 +245,9 @@ describe('TagCategoriesStore', () => {
       })
 
       const categories = useTagCategoriesStore.getState().categories
-      const specialCategory = categories.find(cat => cat.name === 'Special!@#$%Category')
+      const specialCategory = categories.find(
+        (cat) => cat.name === 'Special!@#$%Category'
+      )
       expect(specialCategory).toBeDefined()
       // ID should be normalized
       expect(specialCategory?.id).toBe('special!@#$%category')

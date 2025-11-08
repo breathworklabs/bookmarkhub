@@ -14,9 +14,11 @@ describe('localStorage Default Collections Configuration', () => {
     const defaultCollections = await localStorageService.getCollections()
 
     // Find each default collection
-    const starredCollection = defaultCollections.find(c => c.id === 'starred')
-    const recentCollection = defaultCollections.find(c => c.id === 'recent')
-    const archivedCollection = defaultCollections.find(c => c.id === 'archived')
+    const starredCollection = defaultCollections.find((c) => c.id === 'starred')
+    const recentCollection = defaultCollections.find((c) => c.id === 'recent')
+    const archivedCollection = defaultCollections.find(
+      (c) => c.id === 'archived'
+    )
 
     // Verify starred collection
     expect(starredCollection).toBeDefined()
@@ -35,21 +37,30 @@ describe('localStorage Default Collections Configuration', () => {
   it('should create collections with proper isSmartCollection flags', async () => {
     const defaultCollections = await localStorageService.getCollections()
 
-    const smartCollections = defaultCollections.filter(c => c.isSmartCollection)
+    const smartCollections = defaultCollections.filter(
+      (c) => c.isSmartCollection
+    )
 
     // Should have exactly 4 smart collections: uncategorized, starred, recent, archived
     expect(smartCollections).toHaveLength(4)
 
-    const smartCollectionIds = smartCollections.map(c => c.id).sort()
-    expect(smartCollectionIds).toEqual(['archived', 'recent', 'starred', 'uncategorized'])
+    const smartCollectionIds = smartCollections.map((c) => c.id).sort()
+    expect(smartCollectionIds).toEqual([
+      'archived',
+      'recent',
+      'starred',
+      'uncategorized',
+    ])
   })
 
   it('should have consistent naming between collection id and smartCriteria type', async () => {
     const defaultCollections = await localStorageService.getCollections()
 
-    const smartCollections = defaultCollections.filter(c => c.isSmartCollection)
+    const smartCollections = defaultCollections.filter(
+      (c) => c.isSmartCollection
+    )
 
-    smartCollections.forEach(collection => {
+    smartCollections.forEach((collection) => {
       // The collection ID should match the smartCriteria type
       // This rule would have caught the bug where archived had type: 'recent'
       expect(collection.smartCriteria?.type).toBe(collection.id)
@@ -59,18 +70,22 @@ describe('localStorage Default Collections Configuration', () => {
   it('should create archived collection with correct properties', async () => {
     const defaultCollections = await localStorageService.getCollections()
 
-    const archivedCollection = defaultCollections.find(c => c.id === 'archived')
+    const archivedCollection = defaultCollections.find(
+      (c) => c.id === 'archived'
+    )
 
-    expect(archivedCollection).toEqual(expect.objectContaining({
-      id: 'archived',
-      name: 'Archived',
-      description: 'Archived bookmarks',
-      isPrivate: false,
-      isDefault: true,
-      isSmartCollection: true,
-      smartCriteria: { type: 'archived' }, // This is the critical check
-      bookmarkCount: 0,
-      userId: 'local-user'
-    }))
+    expect(archivedCollection).toEqual(
+      expect.objectContaining({
+        id: 'archived',
+        name: 'Archived',
+        description: 'Archived bookmarks',
+        isPrivate: false,
+        isDefault: true,
+        isSmartCollection: true,
+        smartCriteria: { type: 'archived' }, // This is the critical check
+        bookmarkCount: 0,
+        userId: 'local-user',
+      })
+    )
   })
 })

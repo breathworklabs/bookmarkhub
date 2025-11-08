@@ -5,17 +5,17 @@ import type { Bookmark } from '../../src/types/bookmark'
 function getBookmarkCount(collectionId: string, bookmarks: Bookmark[]) {
   // Handle smart collections with dynamic counts
   if (collectionId === 'starred') {
-    return bookmarks.filter(bookmark => bookmark.is_starred).length
+    return bookmarks.filter((bookmark) => bookmark.is_starred).length
   }
   if (collectionId === 'archived') {
-    return bookmarks.filter(bookmark => bookmark.is_archived).length
+    return bookmarks.filter((bookmark) => bookmark.is_archived).length
   }
   if (collectionId === 'recent') {
     // Recent: bookmarks from last 7 days
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-    return bookmarks.filter(bookmark =>
-      new Date(bookmark.created_at) > sevenDaysAgo
+    return bookmarks.filter(
+      (bookmark) => new Date(bookmark.created_at) > sevenDaysAgo
     ).length
   }
 
@@ -28,7 +28,7 @@ const createRealImportData = (): Bookmark[] => [
   {
     id: 7,
     user_id: 'ae879c80-f3fc-4e05-a837-384e4b9bfb28',
-    title: 'React 19 Beta Features - What\'s New',
+    title: "React 19 Beta Features - What's New",
     url: 'https://react.dev/blog/2024/04/25/react-19',
     description: 'React 19 features',
     content: 'React 19 content...',
@@ -44,7 +44,7 @@ const createRealImportData = (): Bookmark[] => [
     collections: ['uncategorized'],
     is_deleted: false,
     created_at: new Date().toISOString(),
-    updated_at: '2025-09-21T02:22:53.277Z'
+    updated_at: '2025-09-21T02:22:53.277Z',
   },
   {
     id: 8,
@@ -65,7 +65,7 @@ const createRealImportData = (): Bookmark[] => [
     collections: ['uncategorized'],
     is_deleted: false,
     created_at: new Date().toISOString(),
-    updated_at: '2025-09-21T02:22:53.277Z'
+    updated_at: '2025-09-21T02:22:53.277Z',
   },
   {
     id: 9,
@@ -86,7 +86,7 @@ const createRealImportData = (): Bookmark[] => [
     collections: ['uncategorized'],
     is_deleted: false,
     created_at: new Date().toISOString(),
-    updated_at: '2025-09-21T02:22:53.277Z'
+    updated_at: '2025-09-21T02:22:53.277Z',
   },
   {
     id: 10,
@@ -107,7 +107,7 @@ const createRealImportData = (): Bookmark[] => [
     collections: ['uncategorized'],
     is_deleted: false,
     created_at: new Date().toISOString(),
-    updated_at: '2025-09-21T02:22:53.277Z'
+    updated_at: '2025-09-21T02:22:53.277Z',
   },
   {
     id: 11,
@@ -128,7 +128,7 @@ const createRealImportData = (): Bookmark[] => [
     collections: ['uncategorized'],
     is_deleted: false,
     created_at: new Date().toISOString(),
-    updated_at: '2025-09-21T02:22:53.277Z'
+    updated_at: '2025-09-21T02:22:53.277Z',
   },
   {
     id: 12,
@@ -149,8 +149,8 @@ const createRealImportData = (): Bookmark[] => [
     collections: ['uncategorized'],
     is_deleted: false,
     created_at: new Date().toISOString(),
-    updated_at: '2025-09-21T02:22:53.277Z'
-  }
+    updated_at: '2025-09-21T02:22:53.277Z',
+  },
 ]
 
 describe('Archived Count Logic Bug Test', () => {
@@ -161,7 +161,9 @@ describe('Archived Count Logic Bug Test', () => {
     expect(bookmarks).toHaveLength(6)
 
     // Manual count for verification
-    const manualArchivedCount = bookmarks.filter(b => b.is_archived === true).length
+    const manualArchivedCount = bookmarks.filter(
+      (b) => b.is_archived === true
+    ).length
 
     // Should have exactly 1 archived bookmark
     expect(manualArchivedCount).toBe(1)
@@ -178,7 +180,9 @@ describe('Archived Count Logic Bug Test', () => {
     const bookmarks = createRealImportData()
 
     // Manual count for verification
-    const manualStarredCount = bookmarks.filter(b => b.is_starred === true).length
+    const manualStarredCount = bookmarks.filter(
+      (b) => b.is_starred === true
+    ).length
 
     expect(manualStarredCount).toBe(3) // React 19, Next.js, Zustand vs Redux
 
@@ -208,13 +212,22 @@ describe('Archived Count Logic Bug Test', () => {
     const bookmarks = createRealImportData()
 
     // Test with all archived
-    const allArchivedBookmarks = bookmarks.map(b => ({ ...b, is_archived: true }))
+    const allArchivedBookmarks = bookmarks.map((b) => ({
+      ...b,
+      is_archived: true,
+    }))
     const allArchivedCount = getBookmarkCount('archived', allArchivedBookmarks)
     expect(allArchivedCount).toBe(6)
 
     // Test with none archived
-    const noneArchivedBookmarks = bookmarks.map(b => ({ ...b, is_archived: false }))
-    const noneArchivedCount = getBookmarkCount('archived', noneArchivedBookmarks)
+    const noneArchivedBookmarks = bookmarks.map((b) => ({
+      ...b,
+      is_archived: false,
+    }))
+    const noneArchivedCount = getBookmarkCount(
+      'archived',
+      noneArchivedBookmarks
+    )
     expect(noneArchivedCount).toBe(0)
   })
 
@@ -229,10 +242,10 @@ describe('Archived Count Logic Bug Test', () => {
 
     // Test different filter approaches to identify the bug
     const filterResults = {
-      strict: bookmarks.filter(b => b.is_archived === true).length,
-      truthy: bookmarks.filter(b => !!b.is_archived).length,
-      simple: bookmarks.filter(b => b.is_archived).length,
-      string: bookmarks.filter(b => (b.is_archived as any) === 'true').length
+      strict: bookmarks.filter((b) => b.is_archived === true).length,
+      truthy: bookmarks.filter((b) => !!b.is_archived).length,
+      simple: bookmarks.filter((b) => b.is_archived).length,
+      string: bookmarks.filter((b) => (b.is_archived as any) === 'true').length,
     }
 
     // Verify all filter approaches work correctly
@@ -244,7 +257,9 @@ describe('Archived Count Logic Bug Test', () => {
     expect(filterResults.string).toBe(0) // No string 'true' values
 
     // If any return 6, that indicates the bug
-    const buggyResults = Object.values(filterResults).filter(count => count === 6)
+    const buggyResults = Object.values(filterResults).filter(
+      (count) => count === 6
+    )
     // Ensure no filter approach returns incorrect count
     expect(buggyResults).toHaveLength(0)
   })
@@ -252,21 +267,26 @@ describe('Archived Count Logic Bug Test', () => {
   it('should test with potentially buggy data that could cause 6 archived', () => {
     // Create data where all bookmarks have truthy is_archived values but only 1 should be true
     const buggyBookmarks = createRealImportData().map((bookmark, index) => {
-      if (index === 3) { // Keep the Supabase one as properly archived
+      if (index === 3) {
+        // Keep the Supabase one as properly archived
         return { ...bookmark, is_archived: true }
       }
       // These could be the problem - truthy but not boolean true
       return {
         ...bookmark,
-        is_archived: bookmark.is_archived ? 'true' : 'false' // Convert to strings
+        is_archived: bookmark.is_archived ? 'true' : 'false', // Convert to strings
       }
     })
 
     // Testing with potentially buggy data (mixed types)
 
     // Test the exact filter logic from CollectionsSidebar
-    const componentFilterResult = buggyBookmarks.filter(bookmark => bookmark.is_archived).length
-    const strictFilterResult = buggyBookmarks.filter(bookmark => bookmark.is_archived === true).length
+    const componentFilterResult = buggyBookmarks.filter(
+      (bookmark) => bookmark.is_archived
+    ).length
+    const strictFilterResult = buggyBookmarks.filter(
+      (bookmark) => bookmark.is_archived === true
+    ).length
 
     // This should reveal if string 'true' values are being counted as archived
     // Truthy filtering will count string 'true' as truthy (6 bookmarks)

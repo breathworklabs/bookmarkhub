@@ -1,8 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { useBookmarkStore } from '../../src/store/bookmarkStore'
-import { localStorageService, type StoredBookmark } from '../../src/lib/localStorage'
+import {
+  localStorageService,
+  type StoredBookmark,
+} from '../../src/lib/localStorage'
 
-const makeStored = (overrides: Partial<StoredBookmark> = {}): StoredBookmark => ({
+const makeStored = (
+  overrides: Partial<StoredBookmark> = {}
+): StoredBookmark => ({
   id: overrides.id ?? 1,
   user_id: 'local',
   title: overrides.title ?? 'Title',
@@ -22,7 +27,7 @@ const makeStored = (overrides: Partial<StoredBookmark> = {}): StoredBookmark => 
   collections: ['uncategorized'],
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
-  ...overrides
+  ...overrides,
 })
 
 describe('bookmarkStore actions', () => {
@@ -33,7 +38,9 @@ describe('bookmarkStore actions', () => {
 
   it('addBookmark adds a bookmark (happy path)', async () => {
     const created = makeStored({ id: 10, title: 'New' })
-    vi.spyOn(localStorageService, 'createBookmark').mockResolvedValueOnce(created)
+    vi.spyOn(localStorageService, 'createBookmark').mockResolvedValueOnce(
+      created
+    )
 
     await useBookmarkStore.getState().addBookmark({
       ...created,
@@ -51,12 +58,14 @@ describe('bookmarkStore actions', () => {
 
     // seed
     useBookmarkStore.setState({ bookmarks: [existing] })
-    vi.spyOn(localStorageService, 'updateBookmark').mockResolvedValueOnce(updated)
+    vi.spyOn(localStorageService, 'updateBookmark').mockResolvedValueOnce(
+      updated
+    )
 
     await useBookmarkStore.getState().updateBookmark(1, updated)
 
     const state = useBookmarkStore.getState()
-    expect(state.bookmarks.find(b => b.id === 1)?.title).toBe('Updated')
+    expect(state.bookmarks.find((b) => b.id === 1)?.title).toBe('Updated')
   })
 
   it('removeBookmark removes a bookmark (soft delete)', async () => {
@@ -64,13 +73,17 @@ describe('bookmarkStore actions', () => {
     const b = makeStored({ id: 2 })
     useBookmarkStore.setState({ bookmarks: [a, b] })
 
-    const deletedA = { ...a, is_deleted: true, deleted_at: new Date().toISOString() }
+    const deletedA = {
+      ...a,
+      is_deleted: true,
+      deleted_at: new Date().toISOString(),
+    }
     vi.spyOn(localStorageService, 'moveToTrash').mockResolvedValueOnce(deletedA)
 
     await useBookmarkStore.getState().removeBookmark(1)
 
     const state = useBookmarkStore.getState()
-    const bookmark1 = state.bookmarks.find(bm => bm.id === 1)
+    const bookmark1 = state.bookmarks.find((bm) => bm.id === 1)
     expect(bookmark1?.is_deleted).toBe(true)
     expect(bookmark1?.deleted_at).toBeDefined()
   })
@@ -80,7 +93,9 @@ describe('bookmarkStore actions', () => {
     const toggled = { ...existing, is_starred: true }
     useBookmarkStore.setState({ bookmarks: [existing] })
 
-    vi.spyOn(localStorageService, 'toggleBookmarkStar').mockResolvedValueOnce(toggled)
+    vi.spyOn(localStorageService, 'toggleBookmarkStar').mockResolvedValueOnce(
+      toggled
+    )
 
     await useBookmarkStore.getState().toggleStarBookmark(5)
     expect(useBookmarkStore.getState().bookmarks[0]?.is_starred).toBe(true)
@@ -91,12 +106,14 @@ describe('bookmarkStore actions', () => {
     const updated = { ...existing, is_archived: true }
     useBookmarkStore.setState({ bookmarks: [existing] })
 
-    vi.spyOn(localStorageService, 'getBookmarks').mockResolvedValueOnce([existing])
-    vi.spyOn(localStorageService, 'updateBookmark').mockResolvedValueOnce(updated)
+    vi.spyOn(localStorageService, 'getBookmarks').mockResolvedValueOnce([
+      existing,
+    ])
+    vi.spyOn(localStorageService, 'updateBookmark').mockResolvedValueOnce(
+      updated
+    )
 
     await useBookmarkStore.getState().toggleArchiveBookmark(7)
     expect(useBookmarkStore.getState().bookmarks[0]?.is_archived).toBe(true)
   })
 })
-
-

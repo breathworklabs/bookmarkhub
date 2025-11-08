@@ -31,7 +31,7 @@ const mockBookmarks: Bookmark[] = [
     thumbnail_url: '',
     favicon_url: '',
     engagement_score: 75,
-    collections: []
+    collections: [],
   },
   {
     id: 2,
@@ -54,7 +54,7 @@ const mockBookmarks: Bookmark[] = [
     thumbnail_url: 'https://example.com/thumb.jpg',
     favicon_url: '',
     engagement_score: 90,
-    collections: []
+    collections: [],
   },
   {
     id: 3,
@@ -77,8 +77,8 @@ const mockBookmarks: Bookmark[] = [
     thumbnail_url: '',
     favicon_url: '',
     engagement_score: 60,
-    collections: []
-  }
+    collections: [],
+  },
 ]
 
 const mockUseBookmarkStore = vi.mocked(useBookmarkStore)
@@ -101,7 +101,7 @@ describe('Filter Functionality', () => {
         domainFilter: '',
         contentTypeFilter: '',
         dateRangeFilter: { type: 'all' as const },
-        quickFilters: []
+        quickFilters: [],
       }
       return selector(state as any)
     })
@@ -109,7 +109,7 @@ describe('Filter Functionality', () => {
     mockUseCollectionsStore.mockImplementation((selector) => {
       const state = {
         activeCollectionId: null,
-        collectionBookmarks: {}
+        collectionBookmarks: {},
       }
       return selector(state as any)
     })
@@ -128,7 +128,7 @@ describe('Filter Functionality', () => {
           domainFilter: '',
           contentTypeFilter: '',
           dateRangeFilter: { type: 'all' as const },
-          quickFilters: []
+          quickFilters: [],
         }
         return selector(state as any)
       })
@@ -136,7 +136,9 @@ describe('Filter Functionality', () => {
       const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
       expect(result.current).toHaveLength(1)
-      expect(result.current[0].author).toBe('The Kobeissi Letter (@KobeissiLetter)')
+      expect(result.current[0].author).toBe(
+        'The Kobeissi Letter (@KobeissiLetter)'
+      )
       expect(result.current[0].id).toBe(2)
     })
 
@@ -152,7 +154,7 @@ describe('Filter Functionality', () => {
           domainFilter: '',
           contentTypeFilter: '',
           dateRangeFilter: { type: 'all' as const },
-          quickFilters: []
+          quickFilters: [],
         }
         return selector(state as any)
       })
@@ -176,7 +178,7 @@ describe('Filter Functionality', () => {
           domainFilter: '',
           contentTypeFilter: '',
           dateRangeFilter: { type: 'all' as const },
-          quickFilters: []
+          quickFilters: [],
         }
         return selector(state as any)
       })
@@ -199,7 +201,7 @@ describe('Filter Functionality', () => {
           domainFilter: 'x.com',
           contentTypeFilter: '',
           dateRangeFilter: { type: 'all' as const },
-          quickFilters: []
+          quickFilters: [],
         }
         return selector(state as any)
       })
@@ -223,7 +225,7 @@ describe('Filter Functionality', () => {
           domainFilter: 'github', // Partial match
           contentTypeFilter: '',
           dateRangeFilter: { type: 'all' as const },
-          quickFilters: []
+          quickFilters: [],
         }
         return selector(state as any)
       })
@@ -249,7 +251,7 @@ describe('Filter Functionality', () => {
           domainFilter: 'x.com',
           contentTypeFilter: '',
           dateRangeFilter: { type: 'all' as const },
-          quickFilters: []
+          quickFilters: [],
         }
         return selector(state as any)
       })
@@ -257,7 +259,9 @@ describe('Filter Functionality', () => {
       const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
       expect(result.current).toHaveLength(1)
-      expect(result.current[0].author).toBe('The Kobeissi Letter (@KobeissiLetter)')
+      expect(result.current[0].author).toBe(
+        'The Kobeissi Letter (@KobeissiLetter)'
+      )
       expect(result.current[0].domain).toBe('x.com')
     })
 
@@ -273,7 +277,7 @@ describe('Filter Functionality', () => {
           domainFilter: 'github.com', // Different domain
           contentTypeFilter: '',
           dateRangeFilter: { type: 'all' as const },
-          quickFilters: []
+          quickFilters: [],
         }
         return selector(state as any)
       })
@@ -296,7 +300,7 @@ describe('Filter Functionality', () => {
           domainFilter: '',
           contentTypeFilter: '',
           dateRangeFilter: { type: 'all' as const },
-          quickFilters: []
+          quickFilters: [],
         }
         return selector(state as any)
       })
@@ -322,7 +326,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['starred']
+            quickFilters: ['starred'],
           }
           return selector(state as any)
         })
@@ -346,7 +350,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['archived']
+            quickFilters: ['archived'],
           }
           return selector(state as any)
         })
@@ -363,18 +367,18 @@ describe('Filter Functionality', () => {
           {
             ...mockBookmarks[0],
             id: 10,
-            is_read: false
+            is_read: false,
           },
           {
             ...mockBookmarks[1],
             id: 11,
-            is_read: true
+            is_read: true,
           },
           {
             ...mockBookmarks[2],
             id: 12,
-            is_read: false
-          }
+            is_read: false,
+          },
         ]
 
         mockUseBookmarkStore.mockImplementation((selector) => {
@@ -388,7 +392,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['unread']
+            quickFilters: ['unread'],
           }
           return selector(state as any)
         })
@@ -396,9 +400,9 @@ describe('Filter Functionality', () => {
         const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
         expect(result.current).toHaveLength(2)
-        expect(result.current.every(b => b.is_read === false)).toBe(true)
+        expect(result.current.every((b) => b.is_read === false)).toBe(true)
         // Results are sorted by date descending, so we check both are present
-        expect(result.current.map(b => b.id).sort()).toEqual([10, 12])
+        expect(result.current.map((b) => b.id).sort()).toEqual([10, 12])
       })
 
       it('should filter bookmarks with comments', () => {
@@ -406,18 +410,18 @@ describe('Filter Functionality', () => {
           {
             ...mockBookmarks[0],
             id: 20,
-            content: 'Check out this comment on the issue'
+            content: 'Check out this comment on the issue',
           },
           {
             ...mockBookmarks[1],
             id: 21,
-            content: 'Great reply to the thread'
+            content: 'Great reply to the thread',
           },
           {
             ...mockBookmarks[2],
             id: 22,
-            content: 'Just a regular post without keywords'
-          }
+            content: 'Just a regular post without keywords',
+          },
         ]
 
         mockUseBookmarkStore.mockImplementation((selector) => {
@@ -431,7 +435,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['comments']
+            quickFilters: ['comments'],
           }
           return selector(state as any)
         })
@@ -440,7 +444,7 @@ describe('Filter Functionality', () => {
 
         expect(result.current).toHaveLength(2)
         // Results are sorted by date descending, so we check both are present
-        expect(result.current.map(b => b.id).sort()).toEqual([20, 21])
+        expect(result.current.map((b) => b.id).sort()).toEqual([20, 21])
       })
 
       it('should filter bookmarks with high engagement', () => {
@@ -448,18 +452,18 @@ describe('Filter Functionality', () => {
           {
             ...mockBookmarks[0],
             id: 30,
-            engagement_score: 50
+            engagement_score: 50,
           },
           {
             ...mockBookmarks[1],
             id: 31,
-            engagement_score: 150
+            engagement_score: 150,
           },
           {
             ...mockBookmarks[2],
             id: 32,
-            engagement_score: 101
-          }
+            engagement_score: 101,
+          },
         ]
 
         mockUseBookmarkStore.mockImplementation((selector) => {
@@ -473,7 +477,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['engagement']
+            quickFilters: ['engagement'],
           }
           return selector(state as any)
         })
@@ -481,9 +485,9 @@ describe('Filter Functionality', () => {
         const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
         expect(result.current).toHaveLength(2)
-        expect(result.current.every(b => b.engagement_score > 100)).toBe(true)
+        expect(result.current.every((b) => b.engagement_score > 100)).toBe(true)
         // Results are sorted by date descending, so we check both are present
-        expect(result.current.map(b => b.id).sort()).toEqual([31, 32])
+        expect(result.current.map((b) => b.id).sort()).toEqual([31, 32])
       })
 
       it('should filter recent bookmarks (last 24 hours)', () => {
@@ -495,18 +499,18 @@ describe('Filter Functionality', () => {
           {
             ...mockBookmarks[0],
             id: 40,
-            created_at: twelveHoursAgo.toISOString()
+            created_at: twelveHoursAgo.toISOString(),
           },
           {
             ...mockBookmarks[1],
             id: 41,
-            created_at: twentyFiveHoursAgo.toISOString()
+            created_at: twentyFiveHoursAgo.toISOString(),
           },
           {
             ...mockBookmarks[2],
             id: 42,
-            created_at: now.toISOString()
-          }
+            created_at: now.toISOString(),
+          },
         ]
 
         mockUseBookmarkStore.mockImplementation((selector) => {
@@ -520,7 +524,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['recent']
+            quickFilters: ['recent'],
           }
           return selector(state as any)
         })
@@ -528,7 +532,7 @@ describe('Filter Functionality', () => {
         const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
         expect(result.current).toHaveLength(2)
-        expect(result.current.map(b => b.id)).toEqual([42, 40])
+        expect(result.current.map((b) => b.id)).toEqual([42, 40])
       })
     })
 
@@ -539,20 +543,20 @@ describe('Filter Functionality', () => {
             ...mockBookmarks[0],
             id: 50,
             is_starred: true,
-            is_read: false
+            is_read: false,
           },
           {
             ...mockBookmarks[1],
             id: 51,
             is_starred: true,
-            is_read: true // starred but read
+            is_read: true, // starred but read
           },
           {
             ...mockBookmarks[2],
             id: 52,
             is_starred: false,
-            is_read: false // unread but not starred
-          }
+            is_read: false, // unread but not starred
+          },
         ]
 
         mockUseBookmarkStore.mockImplementation((selector) => {
@@ -566,7 +570,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['starred', 'unread']
+            quickFilters: ['starred', 'unread'],
           }
           return selector(state as any)
         })
@@ -585,20 +589,20 @@ describe('Filter Functionality', () => {
             ...mockBookmarks[0],
             id: 60,
             engagement_score: 150,
-            content: 'Great comment on this'
+            content: 'Great comment on this',
           },
           {
             ...mockBookmarks[1],
             id: 61,
             engagement_score: 150,
-            content: 'High engagement but no keywords' // high engagement but no comment
+            content: 'High engagement but no keywords', // high engagement but no comment
           },
           {
             ...mockBookmarks[2],
             id: 62,
             engagement_score: 50,
-            content: 'A reply without engagement' // has comment but low engagement
-          }
+            content: 'A reply without engagement', // has comment but low engagement
+          },
         ]
 
         mockUseBookmarkStore.mockImplementation((selector) => {
@@ -612,7 +616,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['engagement', 'comments']
+            quickFilters: ['engagement', 'comments'],
           }
           return selector(state as any)
         })
@@ -636,22 +640,22 @@ describe('Filter Functionality', () => {
             id: 70,
             is_starred: true,
             engagement_score: 150,
-            created_at: twelveHoursAgo.toISOString() // matches all
+            created_at: twelveHoursAgo.toISOString(), // matches all
           },
           {
             ...mockBookmarks[1],
             id: 71,
             is_starred: true,
             engagement_score: 150,
-            created_at: twentyFiveHoursAgo.toISOString() // not recent
+            created_at: twentyFiveHoursAgo.toISOString(), // not recent
           },
           {
             ...mockBookmarks[2],
             id: 72,
             is_starred: true,
             engagement_score: 50,
-            created_at: twelveHoursAgo.toISOString() // low engagement
-          }
+            created_at: twelveHoursAgo.toISOString(), // low engagement
+          },
         ]
 
         mockUseBookmarkStore.mockImplementation((selector) => {
@@ -665,7 +669,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['starred', 'engagement', 'recent']
+            quickFilters: ['starred', 'engagement', 'recent'],
           }
           return selector(state as any)
         })
@@ -682,14 +686,14 @@ describe('Filter Functionality', () => {
             ...mockBookmarks[0],
             id: 80,
             is_starred: true,
-            is_read: true // starred but read
+            is_read: true, // starred but read
           },
           {
             ...mockBookmarks[1],
             id: 81,
             is_starred: false,
-            is_read: false // unread but not starred
-          }
+            is_read: false, // unread but not starred
+          },
         ]
 
         mockUseBookmarkStore.mockImplementation((selector) => {
@@ -703,7 +707,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['starred', 'unread']
+            quickFilters: ['starred', 'unread'],
           }
           return selector(state as any)
         })
@@ -727,7 +731,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: []
+            quickFilters: [],
           }
           return selector(state as any)
         })
@@ -742,18 +746,18 @@ describe('Filter Functionality', () => {
           {
             ...mockBookmarks[0],
             id: 90,
-            content: 'This is a Comment with capital C'
+            content: 'This is a Comment with capital C',
           },
           {
             ...mockBookmarks[1],
             id: 91,
-            content: 'This is a Reply with capital R'
+            content: 'This is a Reply with capital R',
           },
           {
             ...mockBookmarks[2],
             id: 92,
-            content: 'COMMENT in all caps'
-          }
+            content: 'COMMENT in all caps',
+          },
         ]
 
         mockUseBookmarkStore.mockImplementation((selector) => {
@@ -767,7 +771,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['comments']
+            quickFilters: ['comments'],
           }
           return selector(state as any)
         })
@@ -787,8 +791,8 @@ describe('Filter Functionality', () => {
           {
             ...mockBookmarks[0],
             id: 100,
-            created_at: almostOneDayAgo.toISOString()
-          }
+            created_at: almostOneDayAgo.toISOString(),
+          },
         ]
 
         mockUseBookmarkStore.mockImplementation((selector) => {
@@ -802,7 +806,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['recent']
+            quickFilters: ['recent'],
           }
           return selector(state as any)
         })
@@ -818,13 +822,13 @@ describe('Filter Functionality', () => {
           {
             ...mockBookmarks[0],
             id: 110,
-            engagement_score: 100
+            engagement_score: 100,
           },
           {
             ...mockBookmarks[1],
             id: 111,
-            engagement_score: 101
-          }
+            engagement_score: 101,
+          },
         ]
 
         mockUseBookmarkStore.mockImplementation((selector) => {
@@ -838,7 +842,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['engagement']
+            quickFilters: ['engagement'],
           }
           return selector(state as any)
         })
@@ -855,13 +859,13 @@ describe('Filter Functionality', () => {
           {
             ...mockBookmarks[0],
             id: 120,
-            engagement_score: undefined as any
+            engagement_score: undefined as any,
           },
           {
             ...mockBookmarks[1],
             id: 121,
-            engagement_score: 150
-          }
+            engagement_score: 150,
+          },
         ]
 
         mockUseBookmarkStore.mockImplementation((selector) => {
@@ -875,7 +879,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['engagement']
+            quickFilters: ['engagement'],
           }
           return selector(state as any)
         })
@@ -892,13 +896,13 @@ describe('Filter Functionality', () => {
           {
             ...mockBookmarks[0],
             id: 130,
-            content: undefined as any
+            content: undefined as any,
           },
           {
             ...mockBookmarks[1],
             id: 131,
-            content: 'Has a comment here'
-          }
+            content: 'Has a comment here',
+          },
         ]
 
         mockUseBookmarkStore.mockImplementation((selector) => {
@@ -912,7 +916,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['comments']
+            quickFilters: ['comments'],
           }
           return selector(state as any)
         })
@@ -935,9 +939,9 @@ describe('Filter Functionality', () => {
             id: 140,
             created_at: twentyFiveHoursAgo.toISOString(), // old created_at
             metadata: {
-              tweet_date: twelveHoursAgo.toISOString() // recent tweet_date
-            }
-          }
+              tweet_date: twelveHoursAgo.toISOString(), // recent tweet_date
+            },
+          },
         ]
 
         mockUseBookmarkStore.mockImplementation((selector) => {
@@ -951,7 +955,7 @@ describe('Filter Functionality', () => {
             domainFilter: '',
             contentTypeFilter: '',
             dateRangeFilter: { type: 'all' as const },
-            quickFilters: ['recent']
+            quickFilters: ['recent'],
           }
           return selector(state as any)
         })
@@ -978,7 +982,7 @@ describe('Filter Functionality', () => {
           domainFilter: '',
           contentTypeFilter: '',
           dateRangeFilter: { type: 'all' as const },
-          quickFilters: []
+          quickFilters: [],
         }
         return selector(state as any)
       })
@@ -986,7 +990,9 @@ describe('Filter Functionality', () => {
       const { result } = renderHook(() => useFilteredBookmarksOptimized())
 
       expect(result.current).toHaveLength(2) // Both bookmark 1 and 2 have 'X' tag
-      expect(result.current.every(bookmark => bookmark.tags.includes('X'))).toBe(true)
+      expect(
+        result.current.every((bookmark) => bookmark.tags.includes('X'))
+      ).toBe(true)
     })
   })
 })
