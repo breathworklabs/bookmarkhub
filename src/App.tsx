@@ -17,6 +17,7 @@ import SharedView from './components/SharedView'
 import TermsOfService from './components/legal/TermsOfService'
 import PrivacyPolicy from './components/legal/PrivacyPolicy'
 import CookiePolicy from './components/legal/CookiePolicy'
+import HelpPage from './pages/HelpPage'
 import { useInitializeApp } from './hooks/useInitializeApp'
 import { ModalProvider } from './components/modals/ModalProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -81,6 +82,7 @@ function App() {
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/trash" element={<TrashView />} />
                 <Route path="/shared" element={<SharedView />} />
+                <Route path="/help" element={<HelpPage />} />
                 <Route path="/terms" element={<TermsOfService />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/cookies" element={<CookiePolicy />} />
