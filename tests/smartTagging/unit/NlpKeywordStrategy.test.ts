@@ -5,7 +5,10 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { NlpKeywordStrategy } from '../../../src/services/smartTagging/strategies/NlpKeywordStrategy'
 import type { TaggingContext } from '../../../src/services/smartTagging/types'
-import { createMockBookmark, createTwitterBookmarkWithLink } from '../fixtures/mockBookmarks'
+import {
+  createMockBookmark,
+  createTwitterBookmarkWithLink,
+} from '../fixtures/mockBookmarks'
 
 describe('NlpKeywordStrategy', () => {
   let strategy: NlpKeywordStrategy
@@ -300,9 +303,7 @@ describe('NlpKeywordStrategy', () => {
       const suggestions = await strategy.generateTags(bookmark, context)
 
       // NLP proper nouns and topics should have lower confidence (0.55-0.6)
-      const nlpSuggestions = suggestions.filter(
-        (s) => s.confidence < 0.7
-      )
+      const nlpSuggestions = suggestions.filter((s) => s.confidence < 0.7)
       expect(nlpSuggestions.length).toBeGreaterThan(0)
     })
 
@@ -332,8 +333,8 @@ describe('NlpKeywordStrategy', () => {
       const suggestions = await strategy.generateTags(bookmark, context)
 
       // NLP proper nouns and topics should have lower confidence
-      const nlpSuggestions = suggestions.filter(
-        (s) => s.reasoning?.includes('extracted from content')
+      const nlpSuggestions = suggestions.filter((s) =>
+        s.reasoning?.includes('extracted from content')
       )
       nlpSuggestions.forEach((suggestion) => {
         expect(suggestion.confidence).toBeLessThanOrEqual(0.6)

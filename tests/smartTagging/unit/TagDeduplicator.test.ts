@@ -131,7 +131,9 @@ describe('TagDeduplicator', () => {
 
       // Should only appear once
       const reasoningParts = result[0].reasoning?.split(';') || []
-      expect(reasoningParts.filter((r) => r.includes('From GitHub'))).toHaveLength(1)
+      expect(
+        reasoningParts.filter((r) => r.includes('From GitHub'))
+      ).toHaveLength(1)
     })
 
     it('should handle suggestions without reasoning', () => {
@@ -248,7 +250,11 @@ describe('TagDeduplicator', () => {
         { tag: 'medium', confidence: 0.7, sources: ['url'] },
       ]
 
-      const result = deduplicator.combineAndDeduplicate([array1, array2, array3])
+      const result = deduplicator.combineAndDeduplicate([
+        array1,
+        array2,
+        array3,
+      ])
 
       expect(result[0].tag).toBe('high')
       expect(result[1].tag).toBe('medium')

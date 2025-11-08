@@ -12,21 +12,12 @@ function TestInitComponent() {
   const error = useBookmarkStore((state) => state.error)
   const initialize = useBookmarkStore((state) => state.initialize)
 
-
   return (
     <ChakraProvider value={defaultSystem}>
       <div>
-        <div data-testid="bookmarks-count">
-          Bookmarks: {bookmarks.length}
-        </div>
-        <div data-testid="loading-status">
-          Loading: {isLoading.toString()}
-        </div>
-        {error && (
-          <div data-testid="error-status">
-            Error: {error}
-          </div>
-        )}
+        <div data-testid="bookmarks-count">Bookmarks: {bookmarks.length}</div>
+        <div data-testid="loading-status">Loading: {isLoading.toString()}</div>
+        {error && <div data-testid="error-status">Error: {error}</div>}
         <button
           data-testid="initialize-btn"
           onClick={() => {
@@ -64,11 +55,17 @@ describe('Local Storage Initialization Flow', () => {
     render(<RenderCounterWrapper />)
 
     // Check initial state
-    expect(screen.getByTestId('bookmarks-count')).toHaveTextContent('Bookmarks: 0')
-    expect(screen.getByTestId('loading-status')).toHaveTextContent('Loading: false')
+    expect(screen.getByTestId('bookmarks-count')).toHaveTextContent(
+      'Bookmarks: 0'
+    )
+    expect(screen.getByTestId('loading-status')).toHaveTextContent(
+      'Loading: false'
+    )
 
     // Wait a bit to see if there are additional renders
-    await new Promise(resolve => setTimeout(resolve, TEST_CONSTANTS.TIMEOUT_DELAY * 10))
+    await new Promise((resolve) =>
+      setTimeout(resolve, TEST_CONSTANTS.TIMEOUT_DELAY * 10)
+    )
 
     // Should have rendered a reasonable number of times
     expect(renderCount).toBeLessThan(TEST_CONSTANTS.MAX_RENDER_COUNT)
@@ -87,7 +84,7 @@ describe('Local Storage Initialization Flow', () => {
           throw new Error(`Too many initialize calls: ${initializeCallCount}`)
         }
         return originalInitialize()
-      })
+      }),
     })
 
     render(<TestInitComponent />)

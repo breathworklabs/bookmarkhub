@@ -8,32 +8,42 @@ test.describe('Settings Dropdowns', () => {
         bookmarks: [
           {
             id: 1,
-            user_id: "local-user",
-            title: "Sample Bookmark",
-            url: "https://example.com",
-            description: "Test bookmark",
-            content: "Test content",
-            author: "Test Author",
-            domain: "example.com",
-            source_platform: "manual",
+            user_id: 'local-user',
+            title: 'Sample Bookmark',
+            url: 'https://example.com',
+            description: 'Test bookmark',
+            content: 'Test content',
+            author: 'Test Author',
+            domain: 'example.com',
+            source_platform: 'manual',
             engagement_score: 0,
             is_starred: false,
             is_read: false,
             is_archived: false,
-            tags: ["test"],
-            collections: ["uncategorized"],
-            primaryCollection: "uncategorized",
+            tags: ['test'],
+            collections: ['uncategorized'],
+            primaryCollection: 'uncategorized',
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }
+            updated_at: new Date().toISOString(),
+          },
         ],
         collections: [
-          { id: "uncategorized", name: "Uncategorized", isPrivate: false, isDefault: true, isSmartCollection: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), bookmarkCount: 1, userId: "local-user" }
+          {
+            id: 'uncategorized',
+            name: 'Uncategorized',
+            isPrivate: false,
+            isDefault: true,
+            isSmartCollection: false,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            bookmarkCount: 1,
+            userId: 'local-user',
+          },
         ],
         bookmarkCollections: [],
         settings: {},
-        metadata: { version: "2.0.0" },
-        version: "2.0.0"
+        metadata: { version: '2.0.0' },
+        version: '2.0.0',
       }
       localStorage.setItem('x-bookmark-manager-data', JSON.stringify(mockData))
     })
@@ -63,13 +73,17 @@ test.describe('Settings Dropdowns', () => {
 
   test('should open and select auto-sync interval', async ({ page }) => {
     // Find the auto-sync combobox
-    const syncCombobox = page.getByRole('combobox').filter({ hasText: 'Manual only' })
+    const syncCombobox = page
+      .getByRole('combobox')
+      .filter({ hasText: 'Manual only' })
 
     await syncCombobox.click()
     await page.waitForSelector('[role="option"]')
 
     // Select "Every 15 minutes"
-    const fifteenMinOption = page.getByRole('option', { name: 'Every 15 minutes' })
+    const fifteenMinOption = page.getByRole('option', {
+      name: 'Every 15 minutes',
+    })
     await fifteenMinOption.click()
 
     // Verify selection
@@ -78,13 +92,17 @@ test.describe('Settings Dropdowns', () => {
 
   test('should open and select duplicate handling option', async ({ page }) => {
     // Find duplicate handling combobox
-    const duplicateCombobox = page.getByRole('combobox').filter({ hasText: 'Skip duplicate' })
+    const duplicateCombobox = page
+      .getByRole('combobox')
+      .filter({ hasText: 'Skip duplicate' })
 
     await duplicateCombobox.click()
     await page.waitForSelector('[role="option"]')
 
     // Select "Replace with new version"
-    const replaceOption = page.getByRole('option', { name: 'Replace with new version' })
+    const replaceOption = page.getByRole('option', {
+      name: 'Replace with new version',
+    })
     await replaceOption.click()
 
     // Verify selection
@@ -93,7 +111,9 @@ test.describe('Settings Dropdowns', () => {
 
   test('should open and select default sorting', async ({ page }) => {
     // Find sorting combobox
-    const sortCombobox = page.getByRole('combobox').filter({ hasText: 'Date (Newest first)' })
+    const sortCombobox = page
+      .getByRole('combobox')
+      .filter({ hasText: 'Date (Newest first)' })
 
     await sortCombobox.click()
     await page.waitForSelector('[role="option"]')
@@ -108,7 +128,9 @@ test.describe('Settings Dropdowns', () => {
 
   test('should open and select export format', async ({ page }) => {
     // Find export format combobox
-    const exportCombobox = page.getByRole('combobox').filter({ hasText: 'JSON (Full data' })
+    const exportCombobox = page
+      .getByRole('combobox')
+      .filter({ hasText: 'JSON (Full data' })
 
     await exportCombobox.click()
     await page.waitForSelector('[role="option"]')
@@ -138,7 +160,9 @@ test.describe('Settings Dropdowns', () => {
     await page.waitForLoadState('networkidle')
 
     // Check if Light is still selected after reload
-    const themeComboboxAfterReload = page.getByRole('combobox').filter({ hasText: 'Light' })
+    const themeComboboxAfterReload = page
+      .getByRole('combobox')
+      .filter({ hasText: 'Light' })
     await expect(themeComboboxAfterReload).toBeVisible()
   })
 

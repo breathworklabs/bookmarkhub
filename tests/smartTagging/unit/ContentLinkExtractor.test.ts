@@ -72,7 +72,8 @@ describe('ContentLinkExtractor', () => {
 
     it('should give higher confidence to links with introductory context', () => {
       const bookmarkWithContext = createMockBookmark({
-        description: 'Here is the official documentation: https://docs.example.com/guide',
+        description:
+          'Here is the official documentation: https://docs.example.com/guide',
       })
 
       const bookmarkWithoutContext = createMockBookmark({
@@ -248,7 +249,8 @@ describe('ContentLinkExtractor', () => {
   describe('confidence calculation', () => {
     it('should give higher confidence to links with "check out" phrase', () => {
       const bookmark = createMockBookmark({
-        description: 'Check out this amazing tutorial: https://example.com/tutorial',
+        description:
+          'Check out this amazing tutorial: https://example.com/tutorial',
       })
 
       const links = extractor.extractLinks(bookmark)
@@ -286,7 +288,9 @@ describe('ContentLinkExtractor', () => {
       const shortLinks = extractor.extractLinks(shortUrl)
 
       if (shortLinks.length > 0) {
-        expect(fullLinks[0].confidence).toBeGreaterThan(shortLinks[0].confidence)
+        expect(fullLinks[0].confidence).toBeGreaterThan(
+          shortLinks[0].confidence
+        )
       }
     })
 
@@ -335,7 +339,8 @@ describe('ContentLinkExtractor', () => {
 
     it('should handle URLs with special characters', () => {
       const bookmark = createMockBookmark({
-        description: 'Check https://example.com/path?query=value&other=123#anchor',
+        description:
+          'Check https://example.com/path?query=value&other=123#anchor',
       })
 
       const links = extractor.extractLinks(bookmark)

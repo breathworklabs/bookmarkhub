@@ -27,7 +27,7 @@ export const mockBookmarks = [
     tags: ['react', 'javascript'],
     created_at: '2024-01-01T00:00:00Z',
     is_deleted: false,
-    updated_at: '2024-01-01T00:00:00Z'
+    updated_at: '2024-01-01T00:00:00Z',
   },
   {
     id: 2,
@@ -46,8 +46,8 @@ export const mockBookmarks = [
     tags: ['typescript'],
     created_at: '2024-01-02T00:00:00Z',
     is_deleted: false,
-    updated_at: '2024-01-02T00:00:00Z'
-  }
+    updated_at: '2024-01-02T00:00:00Z',
+  },
 ]
 
 // Mock bookmark factory function
@@ -76,10 +76,14 @@ export interface CreateBookmarkOptions {
   metadata?: any
 }
 
-export const createMockBookmark = (options: CreateBookmarkOptions = {}): Bookmark => {
+export const createMockBookmark = (
+  options: CreateBookmarkOptions = {}
+): Bookmark => {
   const id = options.id ?? Math.floor(Math.random() * 10000)
   const baseDate = new Date('2024-01-01T00:00:00Z')
-  const createdDate = options.created_at ?? new Date(baseDate.getTime() + id * 86400000).toISOString()
+  const createdDate =
+    options.created_at ??
+    new Date(baseDate.getTime() + id * 86400000).toISOString()
 
   return {
     id,
@@ -91,7 +95,8 @@ export const createMockBookmark = (options: CreateBookmarkOptions = {}): Bookmar
     author: options.author ?? `Author ${id}`,
     domain: options.domain ?? `example${id}.com`,
     source_platform: options.source_platform ?? 'manual',
-    engagement_score: options.engagement_score ?? Math.floor(Math.random() * 100),
+    engagement_score:
+      options.engagement_score ?? Math.floor(Math.random() * 100),
     is_starred: options.is_starred ?? false,
     is_read: options.is_read ?? false,
     is_archived: options.is_archived ?? false,
@@ -108,7 +113,10 @@ export const createMockBookmark = (options: CreateBookmarkOptions = {}): Bookmar
   }
 }
 
-export const createMockBookmarks = (count: number, options: CreateBookmarkOptions[] = []): Bookmark[] => {
+export const createMockBookmarks = (
+  count: number,
+  options: CreateBookmarkOptions[] = []
+): Bookmark[] => {
   return Array.from({ length: count }, (_, index) => {
     const customOptions = options[index] || {}
     return createMockBookmark({
@@ -120,24 +128,36 @@ export const createMockBookmarks = (count: number, options: CreateBookmarkOption
 
 // Preset bookmark configurations for common test scenarios
 export const createStarredBookmarks = (count: number): Bookmark[] => {
-  return createMockBookmarks(count, Array.from({ length: count }, (_, i) => ({
-    is_starred: true,
-    title: `Starred Bookmark ${i + 1}`,
-  })))
+  return createMockBookmarks(
+    count,
+    Array.from({ length: count }, (_, i) => ({
+      is_starred: true,
+      title: `Starred Bookmark ${i + 1}`,
+    }))
+  )
 }
 
 export const createArchivedBookmarks = (count: number): Bookmark[] => {
-  return createMockBookmarks(count, Array.from({ length: count }, (_, i) => ({
-    is_archived: true,
-    title: `Archived Bookmark ${i + 1}`,
-  })))
+  return createMockBookmarks(
+    count,
+    Array.from({ length: count }, (_, i) => ({
+      is_archived: true,
+      title: `Archived Bookmark ${i + 1}`,
+    }))
+  )
 }
 
-export const createTaggedBookmarks = (tag: string, count: number): Bookmark[] => {
-  return createMockBookmarks(count, Array.from({ length: count }, (_, i) => ({
-    tags: [tag, `othertag${i}`],
-    title: `${tag} Bookmark ${i + 1}`,
-  })))
+export const createTaggedBookmarks = (
+  tag: string,
+  count: number
+): Bookmark[] => {
+  return createMockBookmarks(
+    count,
+    Array.from({ length: count }, (_, i) => ({
+      tags: [tag, `othertag${i}`],
+      title: `${tag} Bookmark ${i + 1}`,
+    }))
+  )
 }
 
 export const createMixedBookmarks = (totalCount: number): Bookmark[] => {
@@ -170,7 +190,6 @@ export const createMixedBookmarks = (totalCount: number): Bookmark[] => {
 
 // Common mock setup functions
 
-
 // Helper to reset store state
 export const resetBookmarkStore = () => {
   try {
@@ -195,4 +214,4 @@ export const resetBookmarkStore = () => {
 
 // Helper to wait for async operations
 export const waitForAsync = (ms: number = TEST_CONSTANTS.TIMEOUT_DELAY) =>
-  new Promise(resolve => setTimeout(resolve, ms))
+  new Promise((resolve) => setTimeout(resolve, ms))

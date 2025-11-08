@@ -22,11 +22,34 @@
     }
   ],
   "collections": [
-    { "id": "uncategorized", "name": "Uncategorized", "isPrivate": false, "isDefault": true, "isSmartCollection": false, "createdAt": "2024-01-01T00:00:00.000Z", "updatedAt": "2024-01-01T00:00:00.000Z", "bookmarkCount": 1, "userId": "local-user" }
+    {
+      "id": "uncategorized",
+      "name": "Uncategorized",
+      "isPrivate": false,
+      "isDefault": true,
+      "isSmartCollection": false,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "bookmarkCount": 1,
+      "userId": "local-user"
+    }
   ],
   "bookmarkCollections": [],
-  "settings": { "theme": "dark", "viewMode": "grid", "defaultSort": "newest", "showMetrics": true, "compactMode": false, "autoBackup": true, "exportFormat": "json" },
-  "metadata": { "version": "1.0.0", "totalBookmarks": 1, "createdAt": "2024-01-01T00:00:00.000Z", "lastUpdate": "2024-01-01T00:00:00.000Z" },
+  "settings": {
+    "theme": "dark",
+    "viewMode": "grid",
+    "defaultSort": "newest",
+    "showMetrics": true,
+    "compactMode": false,
+    "autoBackup": true,
+    "exportFormat": "json"
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "totalBookmarks": 1,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "lastUpdate": "2024-01-01T00:00:00.000Z"
+  },
   "exportedAt": "2024-01-01T00:00:00.000Z",
   "version": "2.0.0"
 }

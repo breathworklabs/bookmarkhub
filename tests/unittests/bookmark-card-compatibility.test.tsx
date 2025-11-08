@@ -17,10 +17,10 @@ vi.mock('../../src/store/bookmarkStore', () => ({
       clearBookmarkSelection: vi.fn(),
       toggleStarBookmark: vi.fn(),
       removeBookmark: vi.fn(),
-      addTag: vi.fn()
+      addTag: vi.fn(),
     }
     return selector ? selector(state) : state
-  })
+  }),
 }))
 
 // Mock the collections store
@@ -29,10 +29,10 @@ vi.mock('../../src/store/collectionsStore', () => ({
     const state = {
       collections: [],
       addBookmarkToCollection: vi.fn(),
-      removeBookmarkFromCollection: vi.fn()
+      removeBookmarkFromCollection: vi.fn(),
     }
     return selector ? selector(state) : state
-  })
+  }),
 }))
 
 // Type for testing - allows both mock and database formats
@@ -45,17 +45,17 @@ const mockBookmarkFormat: TestBookmark = {
   author: {
     name: 'John Doe',
     username: 'johndoe',
-    avatar: 'avatar.jpg'
+    avatar: 'avatar.jpg',
   },
   timestamp: '2024-01-01T00:00:00Z',
   hasMedia: true,
   metrics: {
     likes: '42',
     retweets: '15',
-    replies: '8'
+    replies: '8',
   },
   isStarred: true,
-  tags: ['react', 'javascript']
+  tags: ['react', 'javascript'],
 }
 
 const databaseBookmarkFormat: TestBookmark = {
@@ -77,15 +77,13 @@ const databaseBookmarkFormat: TestBookmark = {
   is_deleted: false,
   tags: ['typescript', 'database'],
   collections: ['uncategorized'],
-  user_id: 'test-user'
+  user_id: 'test-user',
 }
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <ChakraProvider value={defaultSystem}>
     <DndProvider backend={HTML5Backend}>
-      <ModalProvider>
-        {children}
-      </ModalProvider>
+      <ModalProvider>{children}</ModalProvider>
     </DndProvider>
   </ChakraProvider>
 )
@@ -109,7 +107,9 @@ describe('BookmarkCard Compatibility', () => {
     expect(screen.getByText(/1\/1\/2024/)).toBeInTheDocument()
 
     // Check content
-    expect(screen.getByText('This is a test bookmark with mock format')).toBeInTheDocument()
+    expect(
+      screen.getByText('This is a test bookmark with mock format')
+    ).toBeInTheDocument()
 
     // Check metrics
     expect(screen.getByText('42')).toBeInTheDocument()
@@ -188,7 +188,9 @@ describe('BookmarkCard Compatibility', () => {
     // Test database format not starred
     rerender(
       <TestWrapper>
-        <BookmarkCard bookmark={{ ...databaseBookmarkFormat, is_starred: false }} />
+        <BookmarkCard
+          bookmark={{ ...databaseBookmarkFormat, is_starred: false }}
+        />
       </TestWrapper>
     )
 
@@ -211,7 +213,9 @@ describe('BookmarkCard Compatibility', () => {
     // Test database format with thumbnail
     rerender(
       <TestWrapper>
-        <BookmarkCard bookmark={{ ...databaseBookmarkFormat, thumbnail_url: 'test.jpg' }} />
+        <BookmarkCard
+          bookmark={{ ...databaseBookmarkFormat, thumbnail_url: 'test.jpg' }}
+        />
       </TestWrapper>
     )
 
@@ -222,7 +226,9 @@ describe('BookmarkCard Compatibility', () => {
     // Test no media
     rerender(
       <TestWrapper>
-        <BookmarkCard bookmark={{ ...databaseBookmarkFormat, thumbnail_url: null }} />
+        <BookmarkCard
+          bookmark={{ ...databaseBookmarkFormat, thumbnail_url: null }}
+        />
       </TestWrapper>
     )
 
@@ -233,7 +239,14 @@ describe('BookmarkCard Compatibility', () => {
   it('should filter non-string tags correctly', () => {
     const bookmarkWithMixedTags: TestBookmark = {
       id: 4,
-      tags: ['valid-tag', 123, { invalid: 'tag' }, 'another-valid-tag', null, undefined]
+      tags: [
+        'valid-tag',
+        123,
+        { invalid: 'tag' },
+        'another-valid-tag',
+        null,
+        undefined,
+      ],
     }
 
     render(

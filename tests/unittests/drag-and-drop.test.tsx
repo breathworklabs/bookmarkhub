@@ -24,16 +24,18 @@ const renderWithProviders = (component: React.ReactElement) => {
   return render(
     <ChakraProvider value={defaultSystem}>
       <DndProvider backend={HTML5Backend}>
-        <ModalProvider>
-          {component}
-        </ModalProvider>
+        <ModalProvider>{component}</ModalProvider>
       </DndProvider>
     </ChakraProvider>
   )
 }
 
 // Helper to create test collections
-const createMockCollection = (id: string, name: string, isSmartCollection = false): Collection => ({
+const createMockCollection = (
+  id: string,
+  name: string,
+  isSmartCollection = false
+): Collection => ({
   id,
   name,
   isPrivate: false,
@@ -67,9 +69,21 @@ describe('Drag and Drop - Grid View', () => {
     })
 
     // Create mock bookmarks
-    mockBookmark1 = createMockBookmark({ id: 1, title: 'Bookmark 1', collections: ['uncategorized'] })
-    mockBookmark2 = createMockBookmark({ id: 2, title: 'Bookmark 2', collections: ['uncategorized'] })
-    mockBookmark3 = createMockBookmark({ id: 3, title: 'Bookmark 3', collections: ['uncategorized'] })
+    mockBookmark1 = createMockBookmark({
+      id: 1,
+      title: 'Bookmark 1',
+      collections: ['uncategorized'],
+    })
+    mockBookmark2 = createMockBookmark({
+      id: 2,
+      title: 'Bookmark 2',
+      collections: ['uncategorized'],
+    })
+    mockBookmark3 = createMockBookmark({
+      id: 3,
+      title: 'Bookmark 3',
+      collections: ['uncategorized'],
+    })
 
     // Set up stores
     useBookmarkStore.setState({
@@ -87,14 +101,18 @@ describe('Drag and Drop - Grid View', () => {
 
   describe('Single Bookmark in Grid View', () => {
     it('should render draggable bookmark card', () => {
-      const { container } = renderWithProviders(<BookmarkCard bookmark={mockBookmark1} />)
+      const { container } = renderWithProviders(
+        <BookmarkCard bookmark={mockBookmark1} />
+      )
 
       const card = container.querySelector('[data-testid="bookmark-card"]')
       expect(card).toBeTruthy()
     })
 
     it('should have correct bookmark data', () => {
-      const { container } = renderWithProviders(<BookmarkCard bookmark={mockBookmark1} />)
+      const { container } = renderWithProviders(
+        <BookmarkCard bookmark={mockBookmark1} />
+      )
 
       const card = container.querySelector('[data-testid="bookmark-card"]')
       expect(card).toBeTruthy()
@@ -173,8 +191,16 @@ describe('Drag and Drop - List View', () => {
       error: null,
     })
 
-    mockBookmark1 = createMockBookmark({ id: 1, title: 'List Bookmark 1', collections: ['uncategorized'] })
-    mockBookmark2 = createMockBookmark({ id: 2, title: 'List Bookmark 2', collections: ['uncategorized'] })
+    mockBookmark1 = createMockBookmark({
+      id: 1,
+      title: 'List Bookmark 1',
+      collections: ['uncategorized'],
+    })
+    mockBookmark2 = createMockBookmark({
+      id: 2,
+      title: 'List Bookmark 2',
+      collections: ['uncategorized'],
+    })
 
     useBookmarkStore.setState({
       bookmarks: [mockBookmark1, mockBookmark2],
@@ -190,7 +216,9 @@ describe('Drag and Drop - List View', () => {
 
   describe('Single Bookmark in List View', () => {
     it('should render draggable bookmark in list view', () => {
-      const { container } = renderWithProviders(<BookmarkCard bookmark={mockBookmark1} />)
+      const { container } = renderWithProviders(
+        <BookmarkCard bookmark={mockBookmark1} />
+      )
 
       const card = container.querySelector('[data-testid="bookmark-card"]')
       expect(card).toBeTruthy()
@@ -230,17 +258,24 @@ describe('Drag and Drop - List View', () => {
 
 describe('View Mode Consistency', () => {
   it('should maintain bookmark data across view modes', () => {
-    const bookmark = createMockBookmark({ id: 1, collections: ['uncategorized'] })
+    const bookmark = createMockBookmark({
+      id: 1,
+      collections: ['uncategorized'],
+    })
 
     // Render in grid view
     useBookmarkStore.setState({ viewMode: 'grid' })
-    const { container: gridContainer } = renderWithProviders(<BookmarkCard bookmark={bookmark} />)
+    const { container: gridContainer } = renderWithProviders(
+      <BookmarkCard bookmark={bookmark} />
+    )
     let card = gridContainer.querySelector('[data-testid="bookmark-card"]')
     expect(card).toBeTruthy()
 
     // Switch to list view
     useBookmarkStore.setState({ viewMode: 'list' })
-    const { container: listContainer } = renderWithProviders(<BookmarkCard bookmark={bookmark} />)
+    const { container: listContainer } = renderWithProviders(
+      <BookmarkCard bookmark={bookmark} />
+    )
     card = listContainer.querySelector('[data-testid="bookmark-card"]')
     expect(card).toBeTruthy()
 
@@ -272,8 +307,8 @@ describe('Collection Management', () => {
 
     const { collections: storeCollections } = useCollectionsStore.getState()
     expect(storeCollections).toHaveLength(3)
-    expect(storeCollections.find(c => c.id === 'work')).toBeDefined()
-    expect(storeCollections.find(c => c.id === 'personal')).toBeDefined()
+    expect(storeCollections.find((c) => c.id === 'work')).toBeDefined()
+    expect(storeCollections.find((c) => c.id === 'personal')).toBeDefined()
   })
 
   it('should identify default collection', () => {

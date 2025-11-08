@@ -3,7 +3,10 @@
  */
 
 import { expect } from 'vitest'
-import type { TagSuggestion, TaggingResult } from '../../../src/services/smartTagging/types'
+import type {
+  TagSuggestion,
+  TaggingResult,
+} from '../../../src/services/smartTagging/types'
 
 /**
  * Assert that a tag suggestion has the correct shape
@@ -68,7 +71,10 @@ export function expectTagInSuggestions(
   minConfidence?: number
 ): void {
   const suggestion = findSuggestionByTag(suggestions, tag)
-  expect(suggestion, `Expected to find tag "${tag}" in suggestions`).toBeDefined()
+  expect(
+    suggestion,
+    `Expected to find tag "${tag}" in suggestions`
+  ).toBeDefined()
 
   if (minConfidence !== undefined && suggestion) {
     expect(
@@ -86,7 +92,10 @@ export function expectTagNotInSuggestions(
   tag: string
 ): void {
   const suggestion = findSuggestionByTag(suggestions, tag)
-  expect(suggestion, `Expected NOT to find tag "${tag}" in suggestions`).toBeUndefined()
+  expect(
+    suggestion,
+    `Expected NOT to find tag "${tag}" in suggestions`
+  ).toBeUndefined()
 }
 
 /**
@@ -140,7 +149,9 @@ export function expectValidConfidence(confidence: number): void {
 /**
  * Sort suggestions by confidence (descending)
  */
-export function sortByConfidence(suggestions: TagSuggestion[]): TagSuggestion[] {
+export function sortByConfidence(
+  suggestions: TagSuggestion[]
+): TagSuggestion[] {
   return [...suggestions].sort((a, b) => b.confidence - a.confidence)
 }
 

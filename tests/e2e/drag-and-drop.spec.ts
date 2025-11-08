@@ -24,7 +24,7 @@ const testData = {
       collections: ['uncategorized'],
       primaryCollection: 'uncategorized',
       created_at: '2024-01-01T00:00:00.000Z',
-      updated_at: '2024-01-01T00:00:00.000Z'
+      updated_at: '2024-01-01T00:00:00.000Z',
     },
     {
       id: 2,
@@ -44,7 +44,7 @@ const testData = {
       collections: ['uncategorized'],
       primaryCollection: 'uncategorized',
       created_at: '2024-01-02T00:00:00.000Z',
-      updated_at: '2024-01-02T00:00:00.000Z'
+      updated_at: '2024-01-02T00:00:00.000Z',
     },
     {
       id: 3,
@@ -64,8 +64,8 @@ const testData = {
       collections: ['uncategorized'],
       primaryCollection: 'uncategorized',
       created_at: '2024-01-03T00:00:00.000Z',
-      updated_at: '2024-01-03T00:00:00.000Z'
-    }
+      updated_at: '2024-01-03T00:00:00.000Z',
+    },
   ],
   collections: [
     {
@@ -77,7 +77,7 @@ const testData = {
       createdAt: '2024-01-01T00:00:00.000Z',
       updatedAt: '2024-01-01T00:00:00.000Z',
       bookmarkCount: 3,
-      userId: 'local-user'
+      userId: 'local-user',
     },
     {
       id: 'work',
@@ -88,13 +88,13 @@ const testData = {
       createdAt: '2024-01-01T00:00:00.000Z',
       updatedAt: '2024-01-01T00:00:00.000Z',
       bookmarkCount: 0,
-      userId: 'local-user'
-    }
+      userId: 'local-user',
+    },
   ],
   bookmarkCollections: [],
   settings: {},
   metadata: { version: '2.0.0' },
-  version: '2.0.0'
+  version: '2.0.0',
 }
 
 test.describe('Drag and Drop UI - Grid and List Views', () => {
@@ -106,7 +106,9 @@ test.describe('Drag and Drop UI - Grid and List Views', () => {
 
   test('should display draggable bookmarks in grid view', async ({ page }) => {
     await page.goto('http://localhost:5173')
-    await expect(page.getByTestId('x-bookmark-manager')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByTestId('x-bookmark-manager')).toBeVisible({
+      timeout: 10000,
+    })
 
     // Verify bookmarks are displayed
     await expect(page.getByTestId('bookmark-card')).toHaveCount(3)
@@ -114,7 +116,9 @@ test.describe('Drag and Drop UI - Grid and List Views', () => {
 
   test('should display collection drop targets', async ({ page }) => {
     await page.goto('http://localhost:5173')
-    await expect(page.getByTestId('x-bookmark-manager')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByTestId('x-bookmark-manager')).toBeVisible({
+      timeout: 10000,
+    })
 
     // Verify collections are visible
     await expect(page.getByTestId('collection-uncategorized')).toBeVisible()
@@ -123,7 +127,9 @@ test.describe('Drag and Drop UI - Grid and List Views', () => {
 
   test('should toggle between grid and list views', async ({ page }) => {
     await page.goto('http://localhost:5173')
-    await expect(page.getByTestId('x-bookmark-manager')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByTestId('x-bookmark-manager')).toBeVisible({
+      timeout: 10000,
+    })
 
     // Switch to list view
     await page.getByTestId('view-toggle-list').click()
@@ -142,7 +148,9 @@ test.describe('Drag and Drop UI - Grid and List Views', () => {
 
   test('should select multiple bookmarks', async ({ page }) => {
     await page.goto('http://localhost:5173')
-    await expect(page.getByTestId('x-bookmark-manager')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByTestId('x-bookmark-manager')).toBeVisible({
+      timeout: 10000,
+    })
 
     const cards = page.getByTestId('bookmark-card')
 

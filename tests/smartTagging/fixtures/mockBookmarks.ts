@@ -46,7 +46,13 @@ export function createMockBookmark(overrides?: Partial<Bookmark>): Bookmark {
  * Create multiple mock bookmarks
  */
 export function createMockBookmarks(count: number): Bookmark[] {
-  const domains = ['github.com', 'stackoverflow.com', 'medium.com', 'dev.to', 'youtube.com']
+  const domains = [
+    'github.com',
+    'stackoverflow.com',
+    'medium.com',
+    'dev.to',
+    'youtube.com',
+  ]
   const authors = ['John Doe', 'Jane Smith', 'Alice Johnson', 'Bob Wilson']
 
   return Array.from({ length: count }, (_, i) =>
@@ -138,7 +144,8 @@ export function createPlainTwitterBookmark(): Bookmark {
     domain: 'x.com',
     url: 'https://x.com/user/status/9876543210',
     description: 'My thoughts on AI and machine learning in web development',
-    content: 'AI and machine learning are transforming how we build web applications',
+    content:
+      'AI and machine learning are transforming how we build web applications',
     source_platform: 'x.com',
     tags: [],
   })

@@ -11,24 +11,32 @@ vi.mock('../../src/lib/supabase', () => ({
     auth: {
       getUser: vi.fn().mockResolvedValue({
         data: { user: { id: 'test-user', email: 'test@test.com' } },
-        error: null
+        error: null,
       }),
       getSession: vi.fn().mockResolvedValue({
         data: { session: null },
-        error: null
+        error: null,
       }),
     },
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          order: vi.fn(() => Promise.resolve({
-            data: [
-              { id: 1, title: 'Test Bookmark', url: 'https://test.com', tags: [], created_at: new Date().toISOString() }
-            ],
-            error: null
-          }))
-        }))
-      }))
+          order: vi.fn(() =>
+            Promise.resolve({
+              data: [
+                {
+                  id: 1,
+                  title: 'Test Bookmark',
+                  url: 'https://test.com',
+                  tags: [],
+                  created_at: new Date().toISOString(),
+                },
+              ],
+              error: null,
+            })
+          ),
+        })),
+      })),
     })),
   },
 }))
@@ -59,7 +67,9 @@ describe('Render Loop Detection', () => {
       renderCount++
 
       if (renderCount > TEST_CONSTANTS.MAX_RENDER_COUNT) {
-        throw new Error(`INFINITE RENDER LOOP DETECTED! ${renderCount} renders exceeded threshold of ${TEST_CONSTANTS.MAX_RENDER_COUNT}`)
+        throw new Error(
+          `INFINITE RENDER LOOP DETECTED! ${renderCount} renders exceeded threshold of ${TEST_CONSTANTS.MAX_RENDER_COUNT}`
+        )
       }
 
       return <TestComponent />
@@ -70,7 +80,9 @@ describe('Render Loop Detection', () => {
 
     // Wait for any async effects to settle
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, TEST_CONSTANTS.TIMEOUT_DELAY))
+      await new Promise((resolve) =>
+        setTimeout(resolve, TEST_CONSTANTS.TIMEOUT_DELAY)
+      )
     })
 
     // Should render a reasonable number of times (initial + maybe one update)
@@ -87,11 +99,15 @@ describe('Render Loop Detection', () => {
     // Spy on the useFilteredBookmarksOptimized effect calls
     const originalConsoleLog = console.log
     console.log = vi.fn((message: string) => {
-      if (message.includes('🔍 useFilteredBookmarksOptimized effect triggered')) {
+      if (
+        message.includes('🔍 useFilteredBookmarksOptimized effect triggered')
+      ) {
         effectCallCount++
 
         if (effectCallCount > TEST_CONSTANTS.MAX_EFFECT_CALLS) {
-          throw new Error(`useFilteredBookmarksOptimized effect called too many times: ${effectCallCount}`)
+          throw new Error(
+            `useFilteredBookmarksOptimized effect called too many times: ${effectCallCount}`
+          )
         }
       }
       originalConsoleLog(message)
@@ -102,12 +118,13 @@ describe('Render Loop Detection', () => {
 
       // Wait for effects to settle
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, TEST_CONSTANTS.TIMEOUT_DELAY * 2))
+        await new Promise((resolve) =>
+          setTimeout(resolve, TEST_CONSTANTS.TIMEOUT_DELAY * 2)
+        )
       })
 
       // Effect should be called at most 2 times (mount + maybe one update)
       expect(effectCallCount).toBeLessThanOrEqual(2)
-
     } finally {
       console.log = originalConsoleLog
     }
@@ -129,14 +146,22 @@ describe('Render Loop Detection', () => {
     await act(async () => {
       useBookmarkStore.setState({
         bookmarks: [
-          { id: 1, title: 'Test', url: 'https://test.com', tags: [], created_at: new Date().toISOString() } as any
-        ]
+          {
+            id: 1,
+            title: 'Test',
+            url: 'https://test.com',
+            tags: [],
+            created_at: new Date().toISOString(),
+          } as any,
+        ],
       })
     })
 
     // Wait for effects
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, TEST_CONSTANTS.TIMEOUT_DELAY))
+      await new Promise((resolve) =>
+        setTimeout(resolve, TEST_CONSTANTS.TIMEOUT_DELAY)
+      )
     })
 
     expect(renderCount).toBeLessThan(TEST_CONSTANTS.MAX_AUTH_RENDERS)

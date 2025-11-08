@@ -16,7 +16,11 @@ vi.mock('react-hot-toast', () => ({
 }))
 
 // Helper to create test collections
-const createMockCollection = (id: string, name: string, isSmartCollection = false): Collection => ({
+const createMockCollection = (
+  id: string,
+  name: string,
+  isSmartCollection = false
+): Collection => ({
   id,
   name,
   isPrivate: false,
@@ -42,8 +46,10 @@ const simulateDrop = async (
 
   // Process all selected bookmarks
   for (const bookmarkId of bookmarkIds) {
-    const currentBookmark = bookmarks.find(b => b.id === bookmarkId)
-    const currentCollections = (currentBookmark as any)?.collections || ['uncategorized']
+    const currentBookmark = bookmarks.find((b) => b.id === bookmarkId)
+    const currentCollections = (currentBookmark as any)?.collections || [
+      'uncategorized',
+    ]
 
     // If moving TO uncategorized, remove from all other collections first
     if (dropResult.collectionId === 'uncategorized') {
@@ -69,9 +75,10 @@ const simulateDrop = async (
   }
 
   // Show success toast with count
-  const message = moveCount > 1
-    ? `Moved ${moveCount} bookmarks to "${dropResult.collectionName}"`
-    : `Moved to "${dropResult.collectionName}"`
+  const message =
+    moveCount > 1
+      ? `Moved ${moveCount} bookmarks to "${dropResult.collectionName}"`
+      : `Moved to "${dropResult.collectionName}"`
   toast.success(message)
 }
 
@@ -92,9 +99,21 @@ describe('Drag and Drop Behavior - Grid View', () => {
     clearBookmarkSelection = vi.fn()
 
     // Create mock bookmarks
-    mockBookmark1 = createMockBookmark({ id: 1, title: 'Bookmark 1', collections: ['uncategorized'] })
-    mockBookmark2 = createMockBookmark({ id: 2, title: 'Bookmark 2', collections: ['uncategorized'] })
-    mockBookmark3 = createMockBookmark({ id: 3, title: 'Bookmark 3', collections: ['uncategorized'] })
+    mockBookmark1 = createMockBookmark({
+      id: 1,
+      title: 'Bookmark 1',
+      collections: ['uncategorized'],
+    })
+    mockBookmark2 = createMockBookmark({
+      id: 2,
+      title: 'Bookmark 2',
+      collections: ['uncategorized'],
+    })
+    mockBookmark3 = createMockBookmark({
+      id: 3,
+      title: 'Bookmark 3',
+      collections: ['uncategorized'],
+    })
 
     // Set up stores
     useBookmarkStore.setState({
@@ -133,7 +152,10 @@ describe('Drag and Drop Behavior - Grid View', () => {
       )
 
       // Verify bookmark was removed from uncategorized
-      expect(removeBookmarkFromCollection).toHaveBeenCalledWith(1, 'uncategorized')
+      expect(removeBookmarkFromCollection).toHaveBeenCalledWith(
+        1,
+        'uncategorized'
+      )
 
       // Verify bookmark was added to work
       expect(addBookmarkToCollection).toHaveBeenCalledWith(1, 'work')
@@ -163,7 +185,10 @@ describe('Drag and Drop Behavior - Grid View', () => {
       )
 
       // Should not remove from uncategorized (not in that collection)
-      expect(removeBookmarkFromCollection).not.toHaveBeenCalledWith(4, 'uncategorized')
+      expect(removeBookmarkFromCollection).not.toHaveBeenCalledWith(
+        4,
+        'uncategorized'
+      )
 
       // Should add to personal
       expect(addBookmarkToCollection).toHaveBeenCalledWith(4, 'personal')
@@ -220,8 +245,14 @@ describe('Drag and Drop Behavior - Grid View', () => {
       )
 
       // Both bookmarks should be removed from uncategorized
-      expect(removeBookmarkFromCollection).toHaveBeenCalledWith(1, 'uncategorized')
-      expect(removeBookmarkFromCollection).toHaveBeenCalledWith(2, 'uncategorized')
+      expect(removeBookmarkFromCollection).toHaveBeenCalledWith(
+        1,
+        'uncategorized'
+      )
+      expect(removeBookmarkFromCollection).toHaveBeenCalledWith(
+        2,
+        'uncategorized'
+      )
 
       // Both bookmarks should be added to work
       expect(addBookmarkToCollection).toHaveBeenCalledWith(1, 'work')
@@ -257,7 +288,9 @@ describe('Drag and Drop Behavior - Grid View', () => {
       expect(removeBookmarkFromCollection).toHaveBeenCalledTimes(3)
       expect(addBookmarkToCollection).toHaveBeenCalledTimes(3)
 
-      expect(toast.success).toHaveBeenCalledWith('Moved 3 bookmarks to "Personal"')
+      expect(toast.success).toHaveBeenCalledWith(
+        'Moved 3 bookmarks to "Personal"'
+      )
       expect(clearBookmarkSelection).toHaveBeenCalled()
     })
 
@@ -283,11 +316,20 @@ describe('Drag and Drop Behavior - Grid View', () => {
       )
 
       // Should remove bookmark 10 from uncategorized
-      expect(removeBookmarkFromCollection).toHaveBeenCalledWith(10, 'uncategorized')
+      expect(removeBookmarkFromCollection).toHaveBeenCalledWith(
+        10,
+        'uncategorized'
+      )
 
       // Should remove bookmark 12 from personal (not in uncategorized)
-      expect(removeBookmarkFromCollection).not.toHaveBeenCalledWith(11, 'uncategorized')
-      expect(removeBookmarkFromCollection).not.toHaveBeenCalledWith(12, 'uncategorized')
+      expect(removeBookmarkFromCollection).not.toHaveBeenCalledWith(
+        11,
+        'uncategorized'
+      )
+      expect(removeBookmarkFromCollection).not.toHaveBeenCalledWith(
+        12,
+        'uncategorized'
+      )
 
       // All should be added to work
       expect(addBookmarkToCollection).toHaveBeenCalledWith(10, 'work')
@@ -298,7 +340,9 @@ describe('Drag and Drop Behavior - Grid View', () => {
 
   describe('Error Handling', () => {
     it('should handle errors when moving bookmarks', async () => {
-      const failingAddBookmark = vi.fn().mockRejectedValue(new Error('Network error'))
+      const failingAddBookmark = vi
+        .fn()
+        .mockRejectedValue(new Error('Network error'))
 
       const dropResult: DropResult = {
         collectionId: 'work',
@@ -337,8 +381,16 @@ describe('Drag and Drop Behavior - List View', () => {
     removeBookmarkFromCollection = vi.fn().mockResolvedValue(undefined)
     clearBookmarkSelection = vi.fn()
 
-    mockBookmark1 = createMockBookmark({ id: 1, title: 'List Bookmark 1', collections: ['uncategorized'] })
-    mockBookmark2 = createMockBookmark({ id: 2, title: 'List Bookmark 2', collections: ['uncategorized'] })
+    mockBookmark1 = createMockBookmark({
+      id: 1,
+      title: 'List Bookmark 1',
+      collections: ['uncategorized'],
+    })
+    mockBookmark2 = createMockBookmark({
+      id: 2,
+      title: 'List Bookmark 2',
+      collections: ['uncategorized'],
+    })
 
     useBookmarkStore.setState({
       bookmarks: [mockBookmark1, mockBookmark2],
@@ -372,7 +424,10 @@ describe('Drag and Drop Behavior - List View', () => {
         removeBookmarkFromCollection
       )
 
-      expect(removeBookmarkFromCollection).toHaveBeenCalledWith(1, 'uncategorized')
+      expect(removeBookmarkFromCollection).toHaveBeenCalledWith(
+        1,
+        'uncategorized'
+      )
       expect(addBookmarkToCollection).toHaveBeenCalledWith(1, 'work')
       expect(toast.success).toHaveBeenCalledWith('Moved to "Work"')
     })
@@ -405,7 +460,11 @@ describe('Drag and Drop Behavior - List View', () => {
 describe('Drop Target Validation Logic', () => {
   it('should identify smart collections correctly', () => {
     const starred = createMockCollection('starred', 'Starred', true)
-    const uncategorized = createMockCollection('uncategorized', 'Uncategorized', false)
+    const uncategorized = createMockCollection(
+      'uncategorized',
+      'Uncategorized',
+      false
+    )
     const work = createMockCollection('work', 'Work', false)
 
     // Starred is smart and should not accept drops
@@ -432,7 +491,10 @@ describe('Drop Target Validation Logic', () => {
   })
 
   it('should allow dropping bookmark not in target collection', () => {
-    const bookmark = createMockBookmark({ id: 1, collections: ['uncategorized'] })
+    const bookmark = createMockBookmark({
+      id: 1,
+      collections: ['uncategorized'],
+    })
     const targetCollectionId = 'work'
 
     const bookmarkCollections = bookmark.collections || []

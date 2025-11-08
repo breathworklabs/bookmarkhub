@@ -5,7 +5,10 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { SmartTaggingService } from '../../../src/services/smartTagging/SmartTaggingService'
 import type { TaggingOptions } from '../../../src/services/smartTagging/types'
-import { createMockBookmark, createTwitterBookmarkWithLink } from '../fixtures/mockBookmarks'
+import {
+  createMockBookmark,
+  createTwitterBookmarkWithLink,
+} from '../fixtures/mockBookmarks'
 
 describe('SmartTaggingService', () => {
   let service: SmartTaggingService
@@ -20,7 +23,8 @@ describe('SmartTaggingService', () => {
         domain: 'github.com',
         url: 'https://github.com/facebook/react',
         title: 'React - A JavaScript library',
-        description: 'React is a JavaScript library for building user interfaces',
+        description:
+          'React is a JavaScript library for building user interfaces',
       })
 
       const result = await service.generateTags(bookmark)
@@ -38,10 +42,14 @@ describe('SmartTaggingService', () => {
       const result = await service.generateTags(bookmark)
 
       // Should get tags from both domain (github, code) and URL pattern (issue, bug)
-      const allTags = [...result.suggestions, ...result.autoApply].map((s) => s.tag)
-      expect(allTags.some((t) => t === 'github' || t === 'code' || t === 'development')).toBe(
-        true
+      const allTags = [...result.suggestions, ...result.autoApply].map(
+        (s) => s.tag
       )
+      expect(
+        allTags.some(
+          (t) => t === 'github' || t === 'code' || t === 'development'
+        )
+      ).toBe(true)
       expect(allTags.some((t) => t === 'issue' || t === 'bug')).toBe(true)
     })
 
@@ -56,7 +64,9 @@ describe('SmartTaggingService', () => {
       const result = await service.generateTags(bookmark)
 
       // Should get tags from domain, NLP (react, typescript), and URL patterns
-      expect(result.suggestions.length + result.autoApply.length).toBeGreaterThan(0)
+      expect(
+        result.suggestions.length + result.autoApply.length
+      ).toBeGreaterThan(0)
     })
 
     it('should deduplicate tags from multiple strategies', async () => {
@@ -70,7 +80,9 @@ describe('SmartTaggingService', () => {
 
       // 'typescript' might come from both URL and NLP, should be deduplicated
       const allSuggestions = [...result.suggestions, ...result.autoApply]
-      const typescriptTags = allSuggestions.filter((s) => s.tag === 'typescript')
+      const typescriptTags = allSuggestions.filter(
+        (s) => s.tag === 'typescript'
+      )
       expect(typescriptTags.length).toBe(1)
     })
 
@@ -108,7 +120,9 @@ describe('SmartTaggingService', () => {
       const result = await service.generateTags(bookmark, [], options)
 
       // Total suggestions should not exceed maxSuggestions
-      expect(result.suggestions.length + result.autoApply.length).toBeLessThanOrEqual(5)
+      expect(
+        result.suggestions.length + result.autoApply.length
+      ).toBeLessThanOrEqual(5)
     })
 
     it('should respect autoApplyThreshold option', async () => {
@@ -160,16 +174,26 @@ describe('SmartTaggingService', () => {
       const result = await service.generateTags(bookmark)
 
       // Should extract and tag based on embedded GitHub link, not x.com
-      const allTags = [...result.suggestions, ...result.autoApply].map((s) => s.tag)
-      expect(allTags.some((t) => t === 'github' || t === 'code' || t === 'development')).toBe(
-        true
+      const allTags = [...result.suggestions, ...result.autoApply].map(
+        (s) => s.tag
       )
+      expect(
+        allTags.some(
+          (t) => t === 'github' || t === 'code' || t === 'development'
+        )
+      ).toBe(true)
     })
 
     it('should use learning strategy when historical data is available', async () => {
       const historicalBookmarks = [
-        createMockBookmark({ domain: 'github.com', tags: ['code', 'open-source'] }),
-        createMockBookmark({ domain: 'github.com', tags: ['code', 'open-source'] }),
+        createMockBookmark({
+          domain: 'github.com',
+          tags: ['code', 'open-source'],
+        }),
+        createMockBookmark({
+          domain: 'github.com',
+          tags: ['code', 'open-source'],
+        }),
         createMockBookmark({ domain: 'github.com', tags: ['code', 'project'] }),
       ]
 
@@ -181,7 +205,9 @@ describe('SmartTaggingService', () => {
       const result = await service.generateTags(bookmark, historicalBookmarks)
 
       // Learning strategy should suggest frequently used tags
-      const allTags = [...result.suggestions, ...result.autoApply].map((s) => s.tag)
+      const allTags = [...result.suggestions, ...result.autoApply].map(
+        (s) => s.tag
+      )
       expect(allTags.some((t) => t === 'code')).toBe(true)
     })
 
@@ -255,9 +281,9 @@ describe('SmartTaggingService', () => {
 
       // Auto-apply should have higher confidence than suggestions
       if (result.autoApply.length > 0 && result.suggestions.length > 0) {
-        expect(result.autoApply[result.autoApply.length - 1].confidence).toBeGreaterThanOrEqual(
-          result.suggestions[0].confidence
-        )
+        expect(
+          result.autoApply[result.autoApply.length - 1].confidence
+        ).toBeGreaterThanOrEqual(result.suggestions[0].confidence)
       }
     })
 
@@ -293,7 +319,9 @@ describe('SmartTaggingService', () => {
 
       const result = await service.generateTags(bookmark, [], options)
 
-      const allTags = [...result.suggestions, ...result.autoApply].map((s) => s.tag)
+      const allTags = [...result.suggestions, ...result.autoApply].map(
+        (s) => s.tag
+      )
       expect(allTags).toContain('custom')
     })
   })
@@ -341,7 +369,9 @@ describe('SmartTaggingService', () => {
       service.setStrategyEnabled('nlp', true, options)
       service.setStrategyEnabled('nlp', true, options)
 
-      const nlpCount = options.enabledStrategies.filter((s) => s === 'nlp').length
+      const nlpCount = options.enabledStrategies.filter(
+        (s) => s === 'nlp'
+      ).length
       expect(nlpCount).toBe(1)
     })
   })
@@ -358,7 +388,9 @@ describe('SmartTaggingService', () => {
 
       const result = await service.generateTags(bookmark)
 
-      const allTags = [...result.suggestions, ...result.autoApply].map((s) => s.tag)
+      const allTags = [...result.suggestions, ...result.autoApply].map(
+        (s) => s.tag
+      )
 
       // Should detect: github, code, editor, development, etc.
       expect(allTags.length).toBeGreaterThan(0)
@@ -375,7 +407,9 @@ describe('SmartTaggingService', () => {
 
       const result = await service.generateTags(bookmark)
 
-      const allTags = [...result.suggestions, ...result.autoApply].map((s) => s.tag)
+      const allTags = [...result.suggestions, ...result.autoApply].map(
+        (s) => s.tag
+      )
 
       // Should detect: react, typescript, tutorial, hooks
       expect(allTags.some((t) => t === 'react')).toBe(true)
@@ -392,7 +426,9 @@ describe('SmartTaggingService', () => {
 
       const result = await service.generateTags(bookmark)
 
-      const allTags = [...result.suggestions, ...result.autoApply].map((s) => s.tag)
+      const allTags = [...result.suggestions, ...result.autoApply].map(
+        (s) => s.tag
+      )
 
       // Should detect: javascript, programming, qa, async
       expect(allTags.some((t) => t === 'javascript')).toBe(true)
@@ -404,15 +440,22 @@ describe('SmartTaggingService', () => {
         'https://github.com/vercel/next.js',
         'github.com'
       )
-      bookmark.description = 'Check out this awesome #nextjs framework! #react #javascript'
+      bookmark.description =
+        'Check out this awesome #nextjs framework! #react #javascript'
 
       const result = await service.generateTags(bookmark)
 
-      const allTags = [...result.suggestions, ...result.autoApply].map((s) => s.tag)
+      const allTags = [...result.suggestions, ...result.autoApply].map(
+        (s) => s.tag
+      )
 
       // Should extract from embedded link AND hashtags
       expect(allTags.some((t) => t === 'github' || t === 'code')).toBe(true)
-      expect(allTags.some((t) => t === 'nextjs' || t === 'react' || t === 'javascript')).toBe(true)
+      expect(
+        allTags.some(
+          (t) => t === 'nextjs' || t === 'react' || t === 'javascript'
+        )
+      ).toBe(true)
     })
 
     it('should use historical patterns when available', async () => {
@@ -442,7 +485,9 @@ describe('SmartTaggingService', () => {
 
       const result = await service.generateTags(bookmark, historicalBookmarks)
 
-      const allTags = [...result.suggestions, ...result.autoApply].map((s) => s.tag)
+      const allTags = [...result.suggestions, ...result.autoApply].map(
+        (s) => s.tag
+      )
 
       // Should suggest 'article' and 'tutorial' based on history
       expect(allTags).toContain('article')

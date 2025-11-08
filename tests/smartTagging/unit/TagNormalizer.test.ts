@@ -181,7 +181,13 @@ describe('TagNormalizer', () => {
     })
 
     it('should filter out invalid tags', () => {
-      const tags = normalizer.normalizeTags(['JavaScript', 'the', 'React', 'a', 'Vue'])
+      const tags = normalizer.normalizeTags([
+        'JavaScript',
+        'the',
+        'React',
+        'a',
+        'Vue',
+      ])
 
       expect(tags).toHaveLength(3)
       expect(tags).not.toContain('the')
@@ -225,7 +231,11 @@ describe('TagNormalizer', () => {
 
   describe('normalizeWithReasons', () => {
     it('should return detailed results for multiple tags', () => {
-      const results = normalizer.normalizeWithReasons(['JavaScript', 'the', 'js'])
+      const results = normalizer.normalizeWithReasons([
+        'JavaScript',
+        'the',
+        'js',
+      ])
 
       expect(results).toHaveLength(3)
       expect(results[0].normalized).toBe('javascript')

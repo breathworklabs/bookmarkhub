@@ -33,9 +33,15 @@ describe('LearningStrategy', () => {
     it('should learn from existing bookmarks', async () => {
       // Create historical bookmarks with tags
       const historicalBookmarks = [
-        createMockBookmark({ domain: 'github.com', tags: ['code', 'open-source'] }),
+        createMockBookmark({
+          domain: 'github.com',
+          tags: ['code', 'open-source'],
+        }),
         createMockBookmark({ domain: 'github.com', tags: ['code', 'project'] }),
-        createMockBookmark({ domain: 'github.com', tags: ['code', 'open-source', 'tool'] }),
+        createMockBookmark({
+          domain: 'github.com',
+          tags: ['code', 'open-source', 'tool'],
+        }),
       ]
 
       context.allBookmarks = historicalBookmarks
@@ -52,15 +58,30 @@ describe('LearningStrategy', () => {
 
     it('should suggest tags based on domain patterns', async () => {
       const historicalBookmarks = [
-        createMockBookmark({ domain: 'stackoverflow.com', tags: ['programming', 'qa'] }),
-        createMockBookmark({ domain: 'stackoverflow.com', tags: ['programming', 'help'] }),
-        createMockBookmark({ domain: 'stackoverflow.com', tags: ['programming', 'qa'] }),
-        createMockBookmark({ domain: 'stackoverflow.com', tags: ['programming'] }),
+        createMockBookmark({
+          domain: 'stackoverflow.com',
+          tags: ['programming', 'qa'],
+        }),
+        createMockBookmark({
+          domain: 'stackoverflow.com',
+          tags: ['programming', 'help'],
+        }),
+        createMockBookmark({
+          domain: 'stackoverflow.com',
+          tags: ['programming', 'qa'],
+        }),
+        createMockBookmark({
+          domain: 'stackoverflow.com',
+          tags: ['programming'],
+        }),
       ]
 
       context.allBookmarks = historicalBookmarks
 
-      const bookmark = createMockBookmark({ domain: 'stackoverflow.com', tags: [] })
+      const bookmark = createMockBookmark({
+        domain: 'stackoverflow.com',
+        tags: [],
+      })
       const suggestions = await strategy.generateTags(bookmark, context)
 
       // 'programming' appears in all 4 bookmarks (100% frequency)
@@ -69,10 +90,16 @@ describe('LearningStrategy', () => {
 
     it('should suggest tags based on author patterns', async () => {
       const historicalBookmarks = [
-        createMockBookmark({ author: 'John Doe', tags: ['tutorial', 'javascript'] }),
+        createMockBookmark({
+          author: 'John Doe',
+          tags: ['tutorial', 'javascript'],
+        }),
         createMockBookmark({ author: 'John Doe', tags: ['tutorial', 'react'] }),
         createMockBookmark({ author: 'John Doe', tags: ['tutorial', 'web'] }),
-        createMockBookmark({ author: 'Jane Smith', tags: ['article', 'python'] }),
+        createMockBookmark({
+          author: 'Jane Smith',
+          tags: ['article', 'python'],
+        }),
       ]
 
       context.allBookmarks = historicalBookmarks
@@ -111,7 +138,10 @@ describe('LearningStrategy', () => {
       context.allBookmarks = historicalBookmarks
 
       // Bookmark already has tag1
-      const bookmark = createMockBookmark({ domain: 'example.com', tags: ['tag1'] })
+      const bookmark = createMockBookmark({
+        domain: 'example.com',
+        tags: ['tag1'],
+      })
       const suggestions = await strategy.generateTags(bookmark, context)
 
       // Should not suggest tag1 again
@@ -120,9 +150,18 @@ describe('LearningStrategy', () => {
 
     it('should only suggest high-frequency tags for domains', async () => {
       const historicalBookmarks = [
-        createMockBookmark({ domain: 'example.com', tags: ['common', 'common', 'common'] }),
-        createMockBookmark({ domain: 'example.com', tags: ['common', 'common', 'rare'] }),
-        createMockBookmark({ domain: 'example.com', tags: ['common', 'common', 'rare'] }),
+        createMockBookmark({
+          domain: 'example.com',
+          tags: ['common', 'common', 'common'],
+        }),
+        createMockBookmark({
+          domain: 'example.com',
+          tags: ['common', 'common', 'rare'],
+        }),
+        createMockBookmark({
+          domain: 'example.com',
+          tags: ['common', 'common', 'rare'],
+        }),
         createMockBookmark({ domain: 'example.com', tags: ['common'] }),
       ]
 
@@ -137,8 +176,14 @@ describe('LearningStrategy', () => {
 
     it('should normalize suggested tags', async () => {
       const historicalBookmarks = [
-        createMockBookmark({ domain: 'example.com', tags: ['JavaScript', 'REACT'] }),
-        createMockBookmark({ domain: 'example.com', tags: ['JavaScript', 'REACT'] }),
+        createMockBookmark({
+          domain: 'example.com',
+          tags: ['JavaScript', 'REACT'],
+        }),
+        createMockBookmark({
+          domain: 'example.com',
+          tags: ['JavaScript', 'REACT'],
+        }),
         createMockBookmark({ domain: 'example.com', tags: ['JavaScript'] }),
       ]
 
@@ -267,7 +312,9 @@ describe('LearningStrategy', () => {
 
     it('should limit co-occurrence suggestions to top 5', async () => {
       const historicalBookmarks = [
-        createMockBookmark({ tags: ['base', 'tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6'] }),
+        createMockBookmark({
+          tags: ['base', 'tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6'],
+        }),
       ]
 
       context.allBookmarks = historicalBookmarks
@@ -387,7 +434,10 @@ describe('LearningStrategy', () => {
       strategy.reset()
 
       // Should have no patterns
-      const suggestions = await strategy.generateTags(bookmark, { ...context, allBookmarks: [] })
+      const suggestions = await strategy.generateTags(bookmark, {
+        ...context,
+        allBookmarks: [],
+      })
       expect(suggestions).toHaveLength(0)
     })
   })

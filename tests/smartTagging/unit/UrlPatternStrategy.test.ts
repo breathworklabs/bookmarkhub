@@ -5,7 +5,10 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { UrlPatternStrategy } from '../../../src/services/smartTagging/strategies/UrlPatternStrategy'
 import type { TaggingContext } from '../../../src/services/smartTagging/types'
-import { createMockBookmark, createTwitterBookmarkWithLink } from '../fixtures/mockBookmarks'
+import {
+  createMockBookmark,
+  createTwitterBookmarkWithLink,
+} from '../fixtures/mockBookmarks'
 
 describe('UrlPatternStrategy', () => {
   let strategy: UrlPatternStrategy
