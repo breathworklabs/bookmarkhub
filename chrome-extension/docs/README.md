@@ -1,6 +1,6 @@
 # Chrome Extension Documentation
 
-This directory contains all documentation for the Markspace Chrome Extension.
+This directory contains all documentation for the BookmarkX Chrome Extension.
 
 ## Directory Structure
 
@@ -14,7 +14,7 @@ docs/
         └── README.md          # Screenshot requirements and tips
 
 tools/
-└── generate-markspace-icons.html  # Icon generator tool
+└── generate-markspace-icons.html  # Icon generator tool (legacy, for reference)
 ```
 
 ## Quick Links
@@ -39,10 +39,7 @@ tools/
 ## Important Notes
 
 - All submission materials are ready to use
-- Update manifest.json with Markspace branding before submitting
+- Update manifest.json with BookmarkX branding before submitting
 - Test the extension thoroughly before packaging
 - Host the privacy policy online (required by Chrome Web Store)
-
-## Support
-
-Questions about submission? Email: hello@breathworklabs.com
+- Icons have been generated and are ready to use (located in `assets/icons/`)
