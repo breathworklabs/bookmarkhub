@@ -5,80 +5,93 @@
 
 class BookmarkExtractor {
   constructor() {
-    this.queryId = 'ire7TB3NNzZOIa2SeD8pLA'; // Current as of Oct 2025
-    this.baseUrl = 'https://x.com/i/api/graphql';
-    this.bearerToken = 'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA';
+    this.queryId = 'ire7TB3NNzZOIa2SeD8pLA' // Current as of Oct 2025
+    this.baseUrl = 'https://x.com/i/api/graphql'
+    this.bearerToken =
+      'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA'
   }
 
   /**
    * Main extraction method - extracts all bookmarks automatically
    */
   async extractAllBookmarks(options = {}) {
-    const { maxBookmarks = 5000, onProgress = null } = options;
+    const { maxBookmarks = 5000, onProgress = null } = options
 
     try {
       // Check authentication
-      const isAuthenticated = await this.checkAuth();
+      const isAuthenticated = await this.checkAuth()
       if (!isAuthenticated) {
-        throw new Error('Not logged into X/Twitter. Please log in first.');
+        throw new Error('Not logged into X/Twitter. Please log in first.')
       }
 
       // Clear old extension storage before fresh extraction
-      console.log('Clearing old bookmark cache...');
-      await chrome.storage.local.clear();
+      console.log('Clearing old bookmark cache...')
+      await chrome.storage.local.clear()
 
-      let allBookmarks = [];
-      let cursor = null;
-      let hasMore = true;
-      let requestCount = 0;
-      const maxRequests = 100; // Safety limit
+      let allBookmarks = []
+      let cursor = null
+      let hasMore = true
+      let requestCount = 0
+      const maxRequests = 100 // Safety limit
 
-      console.log('Starting automated bookmark extraction...');
+      console.log('Starting automated bookmark extraction...')
 
-      while (hasMore && allBookmarks.length < maxBookmarks && requestCount < maxRequests) {
+      while (
+        hasMore &&
+        allBookmarks.length < maxBookmarks &&
+        requestCount < maxRequests
+      ) {
         // Fetch batch
-        console.log(`Fetching batch ${requestCount + 1}, cursor: ${cursor ? cursor.substring(0, 20) + '...' : 'initial'}`);
+        console.log(
+          `Fetching batch ${requestCount + 1}, cursor: ${cursor ? cursor.substring(0, 20) + '...' : 'initial'}`
+        )
 
-        const batch = await this.fetchBookmarkBatch(cursor);
+        const batch = await this.fetchBookmarkBatch(cursor)
 
         // Parse tweets from response
-        const tweets = this.parseBatchResponse(batch);
+        const tweets = this.parseBatchResponse(batch)
 
         // If no tweets found, stop even if there's a cursor
         if (tweets.length === 0) {
-          console.log('No more bookmarks found, stopping extraction');
-          hasMore = false;
-          break;
+          console.log('No more bookmarks found, stopping extraction')
+          hasMore = false
+          break
         }
 
-        allBookmarks.push(...tweets);
+        allBookmarks.push(...tweets)
 
         // Get next cursor
-        cursor = this.extractCursor(batch);
-        hasMore = !!cursor;
-        requestCount++;
+        cursor = this.extractCursor(batch)
+        hasMore = !!cursor
+        requestCount++
 
-        console.log(`Batch ${requestCount}: Got ${tweets.length} bookmarks, total: ${allBookmarks.length}, hasMore: ${hasMore}`);
+        console.log(
+          `Batch ${requestCount}: Got ${tweets.length} bookmarks, total: ${allBookmarks.length}, hasMore: ${hasMore}`
+        )
 
         // Progress callback
         if (onProgress) {
           onProgress({
             count: allBookmarks.length,
             hasMore,
-            batchCount: requestCount
-          });
+            batchCount: requestCount,
+          })
         }
 
         // Rate limiting - wait 1-2 seconds between requests
         if (hasMore) {
-          await this.delay(1000 + Math.random() * 1000);
+          await this.delay(1000 + Math.random() * 1000)
         }
       }
 
-      console.log(`Extraction complete: ${allBookmarks.length} bookmarks extracted`);
+      console.log(
+        `Extraction complete: ${allBookmarks.length} bookmarks extracted`
+      )
 
       // Transform to bookmark format
-      const bookmarks = allBookmarks.map(tweet => this.transformToBookmark(tweet));
+      const bookmarks = allBookmarks.map((tweet) =>
+        this.transformToBookmark(tweet)
+      )
 
       // Debug: Log first bookmark to see structure
       if (bookmarks.length > 0) {
@@ -87,15 +100,15 @@ class BookmarkExtractor {
           author: bookmarks[0].author,
           favicon_url: bookmarks[0].favicon_url,
           user_data: bookmarks[0].metadata?.user,
-          engagement: bookmarks[0].metadata?.engagement
-        });
+          engagement: bookmarks[0].metadata?.engagement,
+        })
       }
 
       // Save to storage
-      const saveResult = await this.saveBookmarks(bookmarks);
+      const saveResult = await this.saveBookmarks(bookmarks)
 
       // Notify all localhost tabs to sync immediately
-      await this.notifyLocalhostTabs();
+      await this.notifyLocalhostTabs()
 
       return {
         success: true,
@@ -103,16 +116,15 @@ class BookmarkExtractor {
         saved: saveResult.saved,
         duplicates: saveResult.duplicates,
         hasMore,
-        method: 'api'
-      };
-
+        method: 'api',
+      }
     } catch (error) {
-      console.error('Extraction failed:', error);
+      console.error('Extraction failed:', error)
       return {
         success: false,
         error: error.message,
-        method: 'api'
-      };
+        method: 'api',
+      }
     }
   }
 
@@ -121,10 +133,10 @@ class BookmarkExtractor {
    */
   async checkAuth() {
     try {
-      const cookies = await this.getCookies();
-      return !!(cookies.auth_token && cookies.ct0);
+      const cookies = await this.getCookies()
+      return !!(cookies.auth_token && cookies.ct0)
     } catch {
-      return false;
+      return false
     }
   }
 
@@ -132,29 +144,31 @@ class BookmarkExtractor {
    * Get Twitter authentication cookies
    */
   async getCookies() {
-    const cookieNames = ['auth_token', 'ct0', 'twid'];
-    const cookies = {};
+    const cookieNames = ['auth_token', 'ct0', 'twid']
+    const cookies = {}
 
     for (const name of cookieNames) {
       // Try x.com first, then twitter.com
       for (const domain of ['x.com', 'twitter.com']) {
         const cookie = await chrome.cookies.get({
           url: `https://${domain}`,
-          name: name
-        });
+          name: name,
+        })
 
         if (cookie) {
-          cookies[name] = cookie.value;
-          break;
+          cookies[name] = cookie.value
+          break
         }
       }
     }
 
     if (!cookies.auth_token || !cookies.ct0) {
-      throw new Error('Missing authentication cookies. Please log in to X/Twitter.');
+      throw new Error(
+        'Missing authentication cookies. Please log in to X/Twitter.'
+      )
     }
 
-    return cookies;
+    return cookies
   }
 
   /**
@@ -163,23 +177,23 @@ class BookmarkExtractor {
   buildCookieString(cookies) {
     return Object.entries(cookies)
       .map(([name, value]) => `${name}=${value}`)
-      .join('; ');
+      .join('; ')
   }
 
   /**
    * Fetch a batch of bookmarks from X API
    */
   async fetchBookmarkBatch(cursor = null, count = 100) {
-    const cookies = await this.getCookies();
+    const cookies = await this.getCookies()
 
     // Build variables
     const variables = {
       count,
-      includePromotedContent: false
-    };
+      includePromotedContent: false,
+    }
 
     if (cursor) {
-      variables.cursor = cursor;
+      variables.cursor = cursor
     }
 
     // Current feature flags (as of Oct 2025)
@@ -217,82 +231,86 @@ class BookmarkExtractor {
       responsive_web_grok_image_annotation_enabled: true,
       responsive_web_grok_imagine_annotation_enabled: true,
       responsive_web_grok_community_note_auto_translation_is_enabled: false,
-      responsive_web_enhance_cards_enabled: false
-    };
+      responsive_web_enhance_cards_enabled: false,
+    }
 
     // Build URL
-    const url = `${this.baseUrl}/${this.queryId}/Bookmarks?` +
+    const url =
+      `${this.baseUrl}/${this.queryId}/Bookmarks?` +
       `variables=${encodeURIComponent(JSON.stringify(variables))}` +
-      `&features=${encodeURIComponent(JSON.stringify(features))}`;
+      `&features=${encodeURIComponent(JSON.stringify(features))}`
 
     // Make request with proper headers
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        'authorization': `Bearer ${this.bearerToken}`,
+        authorization: `Bearer ${this.bearerToken}`,
         'x-csrf-token': cookies.ct0,
-        'cookie': this.buildCookieString(cookies),
+        cookie: this.buildCookieString(cookies),
         'x-twitter-active-user': 'yes',
         'x-twitter-auth-type': 'OAuth2Session',
         'x-twitter-client-language': 'en',
         'content-type': 'application/json',
-        'accept': '*/*',
-        'referer': 'https://x.com/i/bookmarks',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
-      }
-    });
+        accept: '*/*',
+        referer: 'https://x.com/i/bookmarks',
+        'user-agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
+      },
+    })
 
     if (!response.ok) {
       if (response.status === 401) {
-        throw new Error('Authentication failed. Please log in to X/Twitter.');
+        throw new Error('Authentication failed. Please log in to X/Twitter.')
       }
       if (response.status === 429) {
-        throw new Error('Rate limited. Please wait and try again.');
+        throw new Error('Rate limited. Please wait and try again.')
       }
-      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `API request failed: ${response.status} ${response.statusText}`
+      )
     }
 
-    const data = await response.json();
-    return data;
+    const data = await response.json()
+    return data
   }
 
   /**
    * Parse batch response and extract tweets
    */
   parseBatchResponse(response) {
-    const tweets = [];
+    const tweets = []
 
     try {
-      const timeline = response?.data?.bookmark_timeline_v2?.timeline;
+      const timeline = response?.data?.bookmark_timeline_v2?.timeline
       if (!timeline) {
-        console.warn('No timeline data in response');
-        return tweets;
+        console.warn('No timeline data in response')
+        return tweets
       }
 
-      const instructions = timeline.instructions || [];
+      const instructions = timeline.instructions || []
 
       for (const instruction of instructions) {
         if (instruction.type === 'TimelineAddEntries') {
-          const entries = instruction.entries || [];
+          const entries = instruction.entries || []
 
           for (const entry of entries) {
             // Skip cursor entries
             if (entry.content?.entryType === 'TimelineTimelineCursor') {
-              continue;
+              continue
             }
 
-            const tweet = this.extractTweetFromEntry(entry);
+            const tweet = this.extractTweetFromEntry(entry)
             if (tweet) {
-              tweets.push(tweet);
+              tweets.push(tweet)
             }
           }
         }
       }
     } catch (error) {
-      console.error('Error parsing batch response:', error);
+      console.error('Error parsing batch response:', error)
     }
 
-    return tweets;
+    return tweets
   }
 
   /**
@@ -300,21 +318,21 @@ class BookmarkExtractor {
    */
   extractTweetFromEntry(entry) {
     try {
-      const itemContent = entry.content?.itemContent;
-      if (!itemContent) return null;
+      const itemContent = entry.content?.itemContent
+      if (!itemContent) return null
 
-      const tweetResults = itemContent.tweet_results?.result;
-      if (!tweetResults) return null;
+      const tweetResults = itemContent.tweet_results?.result
+      if (!tweetResults) return null
 
       // Handle different result types
       if (tweetResults.__typename === 'TweetWithVisibilityResults') {
-        return this.parseTweet(tweetResults.tweet);
+        return this.parseTweet(tweetResults.tweet)
       }
 
-      return this.parseTweet(tweetResults);
+      return this.parseTweet(tweetResults)
     } catch (error) {
-      console.error('Error extracting tweet from entry:', error);
-      return null;
+      console.error('Error extracting tweet from entry:', error)
+      return null
     }
   }
 
@@ -323,17 +341,17 @@ class BookmarkExtractor {
    */
   parseTweet(tweet) {
     if (!tweet || !tweet.legacy) {
-      console.warn('Invalid tweet structure:', tweet);
-      return null;
+      console.warn('Invalid tweet structure:', tweet)
+      return null
     }
 
-    const legacy = tweet.legacy;
-    const userResult = tweet.core?.user_results?.result;
+    const legacy = tweet.legacy
+    const userResult = tweet.core?.user_results?.result
 
     // Twitter API has changed structure - user data is now split between core and legacy
-    const userCore = userResult?.core;
-    const userLegacy = userResult?.legacy;
-    const userAvatar = userResult?.avatar;
+    const userCore = userResult?.core
+    const userLegacy = userResult?.legacy
+    const userAvatar = userResult?.avatar
 
     const parsedTweet = {
       id: tweet.rest_id,
@@ -342,14 +360,18 @@ class BookmarkExtractor {
       user: {
         id: userResult?.rest_id,
         // Name and screen_name are now in userResult.core
-        screen_name: userCore?.screen_name || userLegacy?.screen_name || 'unknown',
+        screen_name:
+          userCore?.screen_name || userLegacy?.screen_name || 'unknown',
         name: userCore?.name || userLegacy?.name || 'Unknown User',
         // Profile image is now in userResult.avatar.image_url
-        profile_image_url: (userAvatar?.image_url || userLegacy?.profile_image_url_https || '')
-          .replace('_normal', '_400x400'),
+        profile_image_url: (
+          userAvatar?.image_url ||
+          userLegacy?.profile_image_url_https ||
+          ''
+        ).replace('_normal', '_400x400'),
         verified: userResult?.is_blue_verified || userLegacy?.verified || false,
         followers_count: userLegacy?.followers_count || 0,
-        description: userLegacy?.description || ''
+        description: userLegacy?.description || '',
       },
       favorite_count: legacy.favorite_count || 0,
       retweet_count: legacy.retweet_count || 0,
@@ -360,10 +382,10 @@ class BookmarkExtractor {
       entities: legacy.entities || {},
       extended_entities: legacy.extended_entities || {},
       // Store full tweet object for reference
-      _raw: tweet
-    };
+      _raw: tweet,
+    }
 
-    return parsedTweet;
+    return parsedTweet
   }
 
   /**
@@ -371,30 +393,30 @@ class BookmarkExtractor {
    */
   extractCursor(response) {
     try {
-      const timeline = response?.data?.bookmark_timeline_v2?.timeline;
-      if (!timeline) return null;
+      const timeline = response?.data?.bookmark_timeline_v2?.timeline
+      if (!timeline) return null
 
-      const instructions = timeline.instructions || [];
+      const instructions = timeline.instructions || []
 
       for (const instruction of instructions) {
         if (instruction.type === 'TimelineAddEntries') {
-          const entries = instruction.entries || [];
+          const entries = instruction.entries || []
 
           // Find cursor entry (usually last entry)
           for (const entry of entries.slice().reverse()) {
             if (entry.content?.entryType === 'TimelineTimelineCursor') {
               if (entry.content.cursorType === 'Bottom') {
-                return entry.content.value;
+                return entry.content.value
               }
             }
           }
         }
       }
 
-      return null;
+      return null
     } catch (error) {
-      console.error('Error extracting cursor:', error);
-      return null;
+      console.error('Error extracting cursor:', error)
+      return null
     }
   }
 
@@ -402,24 +424,24 @@ class BookmarkExtractor {
    * Transform tweet to bookmark format with enhanced data
    */
   transformToBookmark(tweet) {
-    const tweetUrl = `https://x.com/${tweet.user.screen_name}/status/${tweet.id}`;
+    const tweetUrl = `https://x.com/${tweet.user.screen_name}/status/${tweet.id}`
 
     // Convert text to HTML with proper links
-    const htmlContent = this.convertTextToHTML(tweet);
+    const htmlContent = this.convertTextToHTML(tweet)
 
     // Clean text for title/description (remove URLs)
-    let cleanText = tweet.text;
+    let cleanText = tweet.text
     if (tweet.entities?.urls) {
-      tweet.entities.urls.forEach(url => {
-        cleanText = cleanText.replace(url.url, '');
-      });
+      tweet.entities.urls.forEach((url) => {
+        cleanText = cleanText.replace(url.url, '')
+      })
     }
     if (tweet.entities?.media) {
-      tweet.entities.media.forEach(media => {
-        cleanText = cleanText.replace(media.url, '');
-      });
+      tweet.entities.media.forEach((media) => {
+        cleanText = cleanText.replace(media.url, '')
+      })
     }
-    cleanText = cleanText.trim();
+    cleanText = cleanText.trim()
 
     return {
       id: Date.now() + Math.random(),
@@ -434,7 +456,10 @@ class BookmarkExtractor {
       domain: 'x.com',
       source_platform: 'twitter',
       source_id: tweet.id,
-      engagement_score: (tweet.favorite_count || 0) + (tweet.retweet_count || 0) * 2 + (tweet.reply_count || 0),
+      engagement_score:
+        (tweet.favorite_count || 0) +
+        (tweet.retweet_count || 0) * 2 +
+        (tweet.reply_count || 0),
       is_starred: false,
       is_read: false,
       is_archived: false,
@@ -449,7 +474,7 @@ class BookmarkExtractor {
           profile_image_url: tweet.user.profile_image_url,
           verified: tweet.user.verified,
           followers_count: tweet.user.followers_count,
-          description: tweet.user.description
+          description: tweet.user.description,
         },
         // Complete engagement metrics
         engagement: {
@@ -458,7 +483,7 @@ class BookmarkExtractor {
           replies: tweet.reply_count || 0,
           quotes: tweet.quote_count || 0,
           bookmarks: tweet.bookmark_count || 0,
-          views: tweet.view_count || 0
+          views: tweet.view_count || 0,
         },
         // Import metadata
         import_date: new Date().toISOString(),
@@ -467,143 +492,147 @@ class BookmarkExtractor {
         plain_text: tweet.text,
         // Media information
         has_media: !!(tweet.extended_entities?.media || tweet.entities?.media),
-        media_count: (tweet.extended_entities?.media || tweet.entities?.media || []).length
+        media_count: (
+          tweet.extended_entities?.media ||
+          tweet.entities?.media ||
+          []
+        ).length,
       },
       created_at: new Date(tweet.created_at).toISOString(),
-      updated_at: new Date().toISOString()
-    };
+      updated_at: new Date().toISOString(),
+    }
   }
 
   /**
    * Extract thumbnail from tweet media
    */
   extractThumbnail(tweet) {
-    const media = tweet.extended_entities?.media || tweet.entities?.media;
+    const media = tweet.extended_entities?.media || tweet.entities?.media
     if (media && media.length > 0) {
-      return media[0].media_url_https || media[0].media_url;
+      return media[0].media_url_https || media[0].media_url
     }
-    return tweet.user.profile_image_url || null;
+    return tweet.user.profile_image_url || null
   }
 
   /**
    * Extract tags from tweet (hashtags + professional category)
    */
   extractHashtags(tweet) {
-    const tags = [];
+    const tags = []
 
     // Add hashtags from tweet content
-    const hashtags = tweet.entities?.hashtags || [];
-    hashtags.forEach(h => {
-      tags.push(h.text.toLowerCase());
-    });
+    const hashtags = tweet.entities?.hashtags || []
+    hashtags.forEach((h) => {
+      tags.push(h.text.toLowerCase())
+    })
 
     // Add professional category if available
-    const professional = tweet._raw?.core?.user_results?.result?.professional;
+    const professional = tweet._raw?.core?.user_results?.result?.professional
     if (professional?.category && professional.category.length > 0) {
-      professional.category.forEach(cat => {
+      professional.category.forEach((cat) => {
         // Add category name as tag (e.g., "Financial Tech Company" -> "financial-tech-company")
-        const categoryTag = cat.name.toLowerCase().replace(/\s+/g, '-');
-        tags.push(categoryTag);
-      });
+        const categoryTag = cat.name.toLowerCase().replace(/\s+/g, '-')
+        tags.push(categoryTag)
+      })
     }
 
     // Return unique tags only (no duplicates, no default "twitter" tag)
-    return [...new Set(tags)];
+    return [...new Set(tags)]
   }
 
   /**
    * Convert tweet text to HTML with proper links
    */
   convertTextToHTML(tweet) {
-    let html = tweet.text;
-    const entities = tweet.entities;
+    let html = tweet.text
+    const entities = tweet.entities
 
-    if (!entities) return this.escapeHtml(html);
+    if (!entities) return this.escapeHtml(html)
 
     // Collect all entities with their indices
-    const allEntities = [];
+    const allEntities = []
 
     // URLs
     if (entities.urls) {
-      entities.urls.forEach(url => {
+      entities.urls.forEach((url) => {
         allEntities.push({
           start: url.indices[0],
           end: url.indices[1],
           type: 'url',
           display: url.display_url || url.url,
-          expanded: url.expanded_url || url.url
-        });
-      });
+          expanded: url.expanded_url || url.url,
+        })
+      })
     }
 
     // Hashtags
     if (entities.hashtags) {
-      entities.hashtags.forEach(hashtag => {
+      entities.hashtags.forEach((hashtag) => {
         allEntities.push({
           start: hashtag.indices[0],
           end: hashtag.indices[1],
           type: 'hashtag',
-          text: hashtag.text
-        });
-      });
+          text: hashtag.text,
+        })
+      })
     }
 
     // Mentions
     if (entities.user_mentions) {
-      entities.user_mentions.forEach(mention => {
+      entities.user_mentions.forEach((mention) => {
         allEntities.push({
           start: mention.indices[0],
           end: mention.indices[1],
           type: 'mention',
-          screen_name: mention.screen_name
-        });
-      });
+          screen_name: mention.screen_name,
+        })
+      })
     }
 
     // Media (remove from text)
     if (entities.media) {
-      entities.media.forEach(media => {
+      entities.media.forEach((media) => {
         allEntities.push({
           start: media.indices[0],
           end: media.indices[1],
           type: 'media',
-          url: media.media_url_https
-        });
-      });
+          url: media.media_url_https,
+        })
+      })
     }
 
     // Sort by start index in reverse order to replace from end to start
-    allEntities.sort((a, b) => b.start - a.start);
+    allEntities.sort((a, b) => b.start - a.start)
 
     // Replace entities with HTML
-    allEntities.forEach(entity => {
-      const before = html.substring(0, entity.start);
-      const after = html.substring(entity.end);
-      let replacement = '';
+    allEntities.forEach((entity) => {
+      const before = html.substring(0, entity.start)
+      const after = html.substring(entity.end)
+      let replacement = ''
 
       switch (entity.type) {
         case 'url':
-          replacement = `<a href="${this.escapeHtml(entity.expanded)}" target="_blank" rel="noopener noreferrer" class="tweet-link">${this.escapeHtml(entity.display)}</a>`;
-          break;
+          replacement = `<a href="${this.escapeHtml(entity.expanded)}" target="_blank" rel="noopener noreferrer" class="tweet-link">${this.escapeHtml(entity.display)}</a>`
+          break
         case 'hashtag':
-          replacement = `<a href="https://x.com/hashtag/${entity.text}" target="_blank" rel="noopener noreferrer" class="tweet-hashtag">#${this.escapeHtml(entity.text)}</a>`;
-          break;
+          replacement = `<a href="https://x.com/hashtag/${entity.text}" target="_blank" rel="noopener noreferrer" class="tweet-hashtag">#${this.escapeHtml(entity.text)}</a>`
+          break
         case 'mention':
-          replacement = `<a href="https://x.com/${entity.screen_name}" target="_blank" rel="noopener noreferrer" class="tweet-mention">@${this.escapeHtml(entity.screen_name)}</a>`;
-          break;
+          replacement = `<a href="https://x.com/${entity.screen_name}" target="_blank" rel="noopener noreferrer" class="tweet-mention">@${this.escapeHtml(entity.screen_name)}</a>`
+          break
         case 'media':
           // Remove media URLs from text (they'll be shown as thumbnails)
-          replacement = '';
-          break;
+          replacement = ''
+          break
       }
 
-      html = before + replacement + after;
-    });
+      html = before + replacement + after
+    })
 
     // Convert newlines to <br>
-    html = html.replace(/\n/g, '<br>');
+    html = html.replace(/\n/g, '<br>')
 
-    return html;
+    return html
   }
 
   /**
@@ -615,9 +644,9 @@ class BookmarkExtractor {
       '<': '&lt;',
       '>': '&gt;',
       '"': '&quot;',
-      "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, m => map[m]);
+      "'": '&#039;',
+    }
+    return text.replace(/[&<>"']/g, (m) => map[m])
   }
 
   /**
@@ -627,17 +656,16 @@ class BookmarkExtractor {
   async saveBookmarks(newBookmarks) {
     try {
       // Storage is already cleared, just save the new bookmarks
-      await chrome.storage.local.set({ bookmarks: newBookmarks });
+      await chrome.storage.local.set({ bookmarks: newBookmarks })
 
       return {
         saved: newBookmarks.length,
         duplicates: 0,
-        total: newBookmarks.length
-      };
-
+        total: newBookmarks.length,
+      }
     } catch (error) {
-      console.error('Error saving bookmarks:', error);
-      throw error;
+      console.error('Error saving bookmarks:', error)
+      throw error
     }
   }
 
@@ -648,29 +676,30 @@ class BookmarkExtractor {
     try {
       // Find all localhost tabs
       const tabs = await chrome.tabs.query({
-        url: ['http://localhost/*', 'http://127.0.0.1/*']
-      });
+        url: ['http://localhost/*', 'http://127.0.0.1/*'],
+      })
 
-      console.log(`📢 Notifying ${tabs.length} localhost tab(s) to sync bookmarks`);
+      console.log(
+        `📢 Notifying ${tabs.length} localhost tab(s) to sync bookmarks`
+      )
 
       // Send sync message to each tab
       for (const tab of tabs) {
         try {
-          await chrome.tabs.sendMessage(tab.id, { action: 'SYNC_NOW' });
-          console.log(`✅ Notified tab ${tab.id} at ${tab.url}`);
+          await chrome.tabs.sendMessage(tab.id, { action: 'SYNC_NOW' })
+          console.log(`✅ Notified tab ${tab.id} at ${tab.url}`)
         } catch (error) {
-          console.log(`⚠️ Could not notify tab ${tab.id}:`, error.message);
+          console.log(`⚠️ Could not notify tab ${tab.id}:`, error.message)
         }
       }
 
       // Also create/activate a tab if none exist
       if (tabs.length === 0) {
-        console.log('📌 No localhost tabs found, opening default URL...');
-        await chrome.tabs.create({ url: 'http://localhost:3000' });
+        console.log('📌 No localhost tabs found, opening default URL...')
+        await chrome.tabs.create({ url: 'http://localhost:3000' })
       }
-
     } catch (error) {
-      console.error('Error notifying tabs:', error);
+      console.error('Error notifying tabs:', error)
     }
   }
 
@@ -678,52 +707,55 @@ class BookmarkExtractor {
    * Delay utility
    */
   delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms))
   }
 }
 
 // Global extractor instance
-const extractor = new BookmarkExtractor();
+const extractor = new BookmarkExtractor()
 
 // Message handler from popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'EXTRACT_BOOKMARKS') {
-    console.log('Received extraction request from popup');
+    console.log('Received extraction request from popup')
 
     // Handle extraction asynchronously
-    extractor.extractAllBookmarks({
-      maxBookmarks: request.maxBookmarks || 5000,
-      onProgress: (progress) => {
-        // Send progress updates to popup
-        try {
-          chrome.runtime.sendMessage({
-            type: 'EXTRACTION_PROGRESS',
-            ...progress
-          });
-        } catch (error) {
-          console.error('Error sending progress update:', error);
-        }
-      }
-    }).then(result => {
-      console.log('Extraction complete:', result);
-      sendResponse(result);
-    }).catch(error => {
-      console.error('Extraction error:', error);
-      sendResponse({
-        success: false,
-        error: error.message
-      });
-    });
+    extractor
+      .extractAllBookmarks({
+        maxBookmarks: request.maxBookmarks || 5000,
+        onProgress: (progress) => {
+          // Send progress updates to popup
+          try {
+            chrome.runtime.sendMessage({
+              type: 'EXTRACTION_PROGRESS',
+              ...progress,
+            })
+          } catch (error) {
+            console.error('Error sending progress update:', error)
+          }
+        },
+      })
+      .then((result) => {
+        console.log('Extraction complete:', result)
+        sendResponse(result)
+      })
+      .catch((error) => {
+        console.error('Extraction error:', error)
+        sendResponse({
+          success: false,
+          error: error.message,
+        })
+      })
 
-    return true; // Keep message channel open for async response
+    return true // Keep message channel open for async response
   }
 
   if (request.action === 'CHECK_AUTH') {
-    extractor.checkAuth().then(isAuth => {
-      sendResponse({ authenticated: isAuth });
-    });
-    return true;
+    extractor.checkAuth().then((isAuth) => {
+      sendResponse({ authenticated: isAuth })
+    })
+    return true
   }
-});
+})
 
-console.log('BookmarkX - Service Worker initialized');
+console.log('BookmarkX - Service Worker initialized')

@@ -24,7 +24,7 @@ A Chrome extension that extracts bookmarks from X/Twitter using your existing se
 
 ### Production Installation
 
-*Coming soon - will be available on Chrome Web Store*
+_Coming soon - will be available on Chrome Web Store_
 
 ## 🔧 **Usage**
 
@@ -128,19 +128,23 @@ The extension targets these X/Twitter internal API endpoints:
 ### Common Issues
 
 **"Please log into Twitter first"**
+
 - Make sure you're logged into X/Twitter in the same browser
 - Try refreshing the page and logging in again
 
 **"No bookmarks found"**
+
 - Check if you have any bookmarks on X/Twitter
 - Try navigating to your bookmarks page manually
 
 **"Extraction failed"**
+
 - Check your internet connection
 - Try again in a few minutes (rate limiting)
 - Check browser console for error details
 
 **"Extension not working"**
+
 - Make sure Developer Mode is enabled
 - Try reloading the extension
 - Check if you're on a supported X/Twitter page
@@ -155,6 +159,7 @@ The extension targets these X/Twitter internal API endpoints:
 ## 📝 **Changelog**
 
 ### Version 1.0.0
+
 - Initial release
 - Basic bookmark extraction from X/Twitter
 - Session-based authentication

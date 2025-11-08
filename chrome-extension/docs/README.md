@@ -20,12 +20,14 @@ tools/
 ## Quick Links
 
 ### For Chrome Web Store Submission
+
 - **[Submission Checklist](./store-submission/SUBMISSION_CHECKLIST.md)** - Complete step-by-step guide
 - **[Store Listing](./store-submission/STORE_LISTING.md)** - Copy for store page
 - **[Privacy Policy](./store-submission/PRIVACY_POLICY.md)** - Required policy document
 - **[Screenshots Guide](./store-submission/screenshots/README.md)** - What screenshots to take
 
 ### Tools
+
 - **[Icon Generator](../tools/generate-markspace-icons.html)** - Generate extension icons from logo
 
 ## Getting Started with Submission

@@ -3,6 +3,7 @@
 ## Pre-Submission Preparation
 
 ### ✅ 1. Developer Account
+
 - [ ] Created Chrome Web Store Developer account
 - [ ] Paid $5 registration fee
 - [ ] Verified email address
@@ -11,6 +12,7 @@
 ### ✅ 2. Extension Files
 
 **Manifest** (`manifest.json`)
+
 - [x] Updated name to "Markspace - X/Twitter Bookmark Manager"
 - [x] Version set to 1.0.0
 - [x] Description under 132 characters
@@ -19,6 +21,7 @@
 - [ ] Tested locally - no console errors
 
 **Icons**
+
 - [ ] icon16.png (16x16) - Generated from logo_v2 1.png
 - [ ] icon32.png (32x32) - Generated from logo_v2 1.png
 - [ ] icon48.png (48x48) - Generated from logo_v2 1.png
@@ -27,6 +30,7 @@
 - [ ] All icons have transparent backgrounds (if applicable)
 
 **Code Quality**
+
 - [ ] No console.log statements in production
 - [ ] No debug code or TODO comments
 - [ ] All files properly formatted
@@ -37,6 +41,7 @@
 ### ✅ 3. Store Listing Materials
 
 **Required Images**
+
 - [ ] Store icon (128x128) - icon128.png
 - [ ] Screenshot 1: Extension popup showing extract button (1280x800 or 640x400)
 - [ ] Screenshot 2: Bookmark extraction in progress (1280x800 or 640x400)
@@ -45,11 +50,13 @@
 - [ ] Screenshot 5: Search and filter functionality (1280x800 or 640x400)
 
 **Optional Promotional Images**
+
 - [ ] Small tile (440x280) - for feature highlighting
 - [ ] Marquee (1400x560) - for store homepage featuring
 - [ ] Promotional video (YouTube URL)
 
 **Text Content**
+
 - [x] Short description (132 chars): Written in STORE_LISTING.md
 - [x] Detailed description (16,000 chars): Written in STORE_LISTING.md
 - [x] Privacy policy: Created in PRIVACY_POLICY.md
@@ -60,6 +67,7 @@
 ### ✅ 4. Privacy & Permissions
 
 **Privacy Policy**
+
 - [x] Privacy policy document created
 - [ ] Privacy policy uploaded to website/GitHub
 - [ ] Policy URL ready for submission
@@ -81,6 +89,7 @@ Prepare explanations for each permission:
 ### ✅ 5. Testing
 
 **Functionality Tests**
+
 - [ ] Install extension locally (unpacked)
 - [ ] Test on X/Twitter logged-in page
 - [ ] Verify bookmark extraction works
@@ -93,6 +102,7 @@ Prepare explanations for each permission:
 - [ ] Test on Chrome (one version back)
 
 **Error Handling**
+
 - [ ] Test with X/Twitter logged out
 - [ ] Test with no internet connection
 - [ ] Test with Markspace app not running
@@ -120,6 +130,7 @@ zip -r markspace-extension-v1.0.0.zip . \
 ```
 
 **ZIP Contents Checklist**
+
 - [ ] manifest.json
 - [ ] All icon files (16, 32, 48, 128)
 - [ ] popup/ directory with HTML, CSS, JS
@@ -133,6 +144,7 @@ zip -r markspace-extension-v1.0.0.zip . \
 ### ✅ 7. Store Submission Form
 
 **Basic Info**
+
 - [ ] Extension name: "Markspace - X/Twitter Bookmark Manager"
 - [ ] Summary: [Use short description from STORE_LISTING.md]
 - [ ] Description: [Use detailed description from STORE_LISTING.md]
@@ -140,6 +152,7 @@ zip -r markspace-extension-v1.0.0.zip . \
 - [ ] Language: English
 
 **Privacy**
+
 - [ ] Privacy policy URL: [Your hosted policy URL]
 - [ ] Single purpose description: "Extract and organize X/Twitter bookmarks"
 - [ ] Permission justifications: [Use prepared explanations]
@@ -147,11 +160,13 @@ zip -r markspace-extension-v1.0.0.zip . \
 - [ ] Declares all data collection: Yes (none - local only)
 
 **Distribution**
+
 - [ ] Visibility: Public
 - [ ] Regions: All countries
 - [ ] Pricing: Free
 
 **Store Listing**
+
 - [ ] Upload icon (128x128)
 - [ ] Upload 5 screenshots
 - [ ] (Optional) Upload promotional images
@@ -160,6 +175,7 @@ zip -r markspace-extension-v1.0.0.zip . \
 - [ ] Add relevant tags (bookmark, twitter, x, organization, manager)
 
 **Contact & Support**
+
 - [ ] Developer name: Breathwork Labs
 - [ ] Email: hello@breathworklabs.com
 - [ ] Website: https://breathworklabs.com
@@ -170,17 +186,20 @@ zip -r markspace-extension-v1.0.0.zip . \
 ### ✅ 8. After Submitting
 
 **Immediate**
+
 - [ ] Save confirmation email
 - [ ] Note submission date
 - [ ] Monitor developer dashboard for status
 
 **During Review (1-7 days)**
+
 - [ ] Check email daily for review updates
 - [ ] Respond promptly to any reviewer questions
 - [ ] Be ready to make changes if requested
 - [ ] Monitor dashboard for status changes
 
 **Common Review Issues to Avoid**
+
 - ❌ Permissions not justified
 - ❌ Privacy policy missing or incomplete
 - ❌ Misleading description or screenshots
@@ -193,6 +212,7 @@ zip -r markspace-extension-v1.0.0.zip . \
 ### ✅ 9. If Approved
 
 **Launch**
+
 - [ ] Extension appears in Chrome Web Store
 - [ ] Test installation from store
 - [ ] Share store link with users
@@ -202,6 +222,7 @@ zip -r markspace-extension-v1.0.0.zip . \
 `https://chrome.google.com/webstore/detail/[extension-id]`
 
 **Marketing**
+
 - [ ] Add "Available on Chrome Web Store" badge to website
 - [ ] Update README.md with store link
 - [ ] Create launch announcement
@@ -210,6 +231,7 @@ zip -r markspace-extension-v1.0.0.zip . \
 ### ✅ 10. If Rejected
 
 **Response Plan**
+
 - [ ] Read rejection reason carefully
 - [ ] Make required changes
 - [ ] Test changes thoroughly
@@ -217,6 +239,7 @@ zip -r markspace-extension-v1.0.0.zip . \
 - [ ] Respond to reviewer comments if needed
 
 **Common Fixes**
+
 - Update permission justifications
 - Improve privacy policy clarity
 - Fix broken features
@@ -226,6 +249,7 @@ zip -r markspace-extension-v1.0.0.zip . \
 ## Future Updates
 
 ### Planning Updates
+
 - [ ] Version numbering scheme: X.Y.Z (major.minor.patch)
 - [ ] Keep changelog updated
 - [ ] Test updates before submission
@@ -233,6 +257,7 @@ zip -r markspace-extension-v1.0.0.zip . \
 - [ ] Allow 1-3 days for update review
 
 ### Update Checklist Template
+
 ```markdown
 - [ ] Increment version in manifest.json
 - [ ] Update changelog
@@ -246,16 +271,19 @@ zip -r markspace-extension-v1.0.0.zip . \
 ## Important Links
 
 **Chrome Web Store**
+
 - Dashboard: https://chrome.google.com/webstore/devconsole
 - Policies: https://developer.chrome.com/docs/webstore/program-policies/
 - Best Practices: https://developer.chrome.com/docs/webstore/best_practices/
 
 **Documentation**
+
 - Extension Manifest V3: https://developer.chrome.com/docs/extensions/mv3/
 - Publishing Guide: https://developer.chrome.com/docs/webstore/publish/
 - Review Process: https://developer.chrome.com/docs/webstore/review-process/
 
 **Support**
+
 - Help Center: https://support.google.com/chrome_webstore/
 - Developer Forums: https://groups.google.com/a/chromium.org/g/chromium-extensions
 
@@ -264,6 +292,7 @@ zip -r markspace-extension-v1.0.0.zip . \
 ## Quick Start Commands
 
 ### Generate Icons
+
 ```bash
 # Open in browser
 open chrome-extension/assets/icons/generate-markspace-icons.html
@@ -271,6 +300,7 @@ open chrome-extension/assets/icons/generate-markspace-icons.html
 ```
 
 ### Create Submission ZIP
+
 ```bash
 cd chrome-extension
 zip -r ../markspace-extension-v1.0.0.zip . \
@@ -280,6 +310,7 @@ zip -r ../markspace-extension-v1.0.0.zip . \
 ```
 
 ### Test Locally
+
 ```bash
 # 1. Open Chrome
 # 2. Navigate to: chrome://extensions/

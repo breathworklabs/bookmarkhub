@@ -1,6 +1,7 @@
 # Markspace - Chrome Web Store Listing
 
 ## Short Description (132 characters max)
+
 Extract and organize your X/Twitter bookmarks with smart tagging, advanced search, and privacy-first local storage.
 
 ## Detailed Description (16,000 characters max)
