@@ -19,6 +19,7 @@ Railway is the recommended hosting platform for this application, with simple se
    - Publish Directory: `dist`
 
 5. **Environment Variables** (Optional - this app uses local storage only):
+
    ```
    # All environment variables are OPTIONAL for this app
    # The app works entirely with browser localStorage
@@ -40,22 +41,27 @@ Railway is the recommended hosting platform for this application, with simple se
 ⚠️ **IMPORTANT:** The app uses different build commands for different scenarios:
 
 **For Railway/Production:**
+
 ```bash
 npm run build
 ```
+
 - Standard build without running tests
 - Fast deployment
 - Tests should be run locally before pushing
 
 **For Vercel (if used):**
+
 ```bash
 npm run vercel-build
 ```
+
 - Runs tests THEN builds: `npm run test -- --run && npm run build`
 - Tests must pass for deployment to succeed
 - Deployment fails if tests fail
 
 **Current Status:**
+
 - ✅ TypeScript: 0 errors
 - ✅ Tests: 425/430 passing
 - ✅ Build: Successful
@@ -110,6 +116,7 @@ Vercel is another excellent option, optimized for React/Vite apps.
    - Install Command: `npm install`
 
 5. **Add Environment Variables** (Optional) in project settings:
+
    ```
    # All environment variables are OPTIONAL for this app
    # The app works entirely with browser localStorage
@@ -135,6 +142,7 @@ The project is configured to automatically run tests before deployment:
 - **Failed tests** will abort the deployment
 
 To skip tests (not recommended):
+
 - Change build command to: `npm run build`
 
 ### Benefits
@@ -221,12 +229,13 @@ This app is **100% local storage based** and does NOT require any backend servic
 
 **Optional Environment Variables:**
 
-| Variable | Purpose | Required? | Default |
-|----------|---------|-----------|---------|
-| `VITE_GA_MEASUREMENT_ID` | Google Analytics tracking | ❌ No | None (no tracking) |
-| `VITE_SENTRY_DSN` | Error monitoring | ❌ No | None (no monitoring) |
+| Variable                 | Purpose                   | Required? | Default              |
+| ------------------------ | ------------------------- | --------- | -------------------- |
+| `VITE_GA_MEASUREMENT_ID` | Google Analytics tracking | ❌ No     | None (no tracking)   |
+| `VITE_SENTRY_DSN`        | Error monitoring          | ❌ No     | None (no monitoring) |
 
 **Not Used (Legacy References):**
+
 - ~~`VITE_SUPABASE_URL`~~ - Not used (local storage only)
 - ~~`VITE_SUPABASE_ANON_KEY`~~ - Not used (local storage only)
 

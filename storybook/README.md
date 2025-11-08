@@ -100,6 +100,7 @@ export default {
 ### Components with External Dependencies
 
 If a component makes API calls or uses external services, consider:
+
 1. Mocking the service layer
 2. Using MSW (Mock Service Worker) for API mocking
 3. Creating simplified versions of components for Storybook

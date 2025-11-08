@@ -62,7 +62,7 @@ git push -u origin master
 2. Click **"Edit profile"**
 3. Add:
    - Display name: **Breathwork Labs**
-   - Description: *Building privacy-focused productivity tools*
+   - Description: _Building privacy-focused productivity tools_
    - Website: `https://bookmarkx.breathworklabs.com`
 4. Upload a logo/avatar (optional)
 5. Click **"Save"**
@@ -151,24 +151,24 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run typecheck
-    - run: npm run lint
-    - run: npm run test -- --run
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run test -- --run
 ```
 
 ---

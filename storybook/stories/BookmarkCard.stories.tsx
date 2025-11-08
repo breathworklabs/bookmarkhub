@@ -59,7 +59,8 @@ export const WithImage: Story = {
       ...sampleBookmark,
       title: 'Beautiful Landscape',
       description: 'A stunning view of mountains and lakes',
-      thumbnail_url: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
+      thumbnail_url:
+        'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
     },
   },
 }
@@ -68,7 +69,15 @@ export const WithManyTags: Story = {
   args: {
     bookmark: {
       ...sampleBookmark,
-      tags: ['react', 'javascript', 'typescript', 'web-development', 'frontend', 'hooks', 'components'],
+      tags: [
+        'react',
+        'javascript',
+        'typescript',
+        'web-development',
+        'frontend',
+        'hooks',
+        'components',
+      ],
     },
   },
 }
@@ -139,9 +148,11 @@ export const WithAuthorIcon: Story = {
       ...sampleBookmark,
       author: 'Dan Abramov',
       title: 'Making Sense of React Hooks',
-      description: 'Understanding the motivation behind React Hooks and how they change the way we write components',
+      description:
+        'Understanding the motivation behind React Hooks and how they change the way we write components',
       tags: ['react', 'hooks', 'javascript'],
-      favicon_url: 'https://pbs.twimg.com/profile_images/1096807971374448640/xF_nY3NZ_normal.png',
+      favicon_url:
+        'https://pbs.twimg.com/profile_images/1096807971374448640/xF_nY3NZ_normal.png',
       domain: 'twitter.com',
     },
   },
@@ -153,13 +164,17 @@ export const WithTwitterProfile: Story = {
       ...sampleBookmark,
       author: 'Kent C. Dodds',
       title: 'Testing Implementation Details',
-      description: 'Why you should avoid testing implementation details in your React components',
+      description:
+        'Why you should avoid testing implementation details in your React components',
       tags: ['testing', 'react', 'best-practices'],
-      favicon_url: 'https://pbs.twimg.com/profile_images/1586196253355134976/m6pMHQ2N_normal.jpg',
+      favicon_url:
+        'https://pbs.twimg.com/profile_images/1586196253355134976/m6pMHQ2N_normal.jpg',
       domain: 'kentcdodds.com',
       metadata: {
-        profile_image_normal: 'https://pbs.twimg.com/profile_images/1586196253355134976/m6pMHQ2N_normal.jpg',
-        profile_image_bigger: 'https://pbs.twimg.com/profile_images/1586196253355134976/m6pMHQ2N_bigger.jpg',
+        profile_image_normal:
+          'https://pbs.twimg.com/profile_images/1586196253355134976/m6pMHQ2N_normal.jpg',
+        profile_image_bigger:
+          'https://pbs.twimg.com/profile_images/1586196253355134976/m6pMHQ2N_bigger.jpg',
       },
     },
   },
@@ -171,7 +186,8 @@ export const WithGitHubAvatar: Story = {
       ...sampleBookmark,
       author: 'Vercel',
       title: 'Next.js 14 Release',
-      description: 'Introducing Next.js 14 with Turbopack, Server Actions, and Partial Prerendering',
+      description:
+        'Introducing Next.js 14 with Turbopack, Server Actions, and Partial Prerendering',
       tags: ['nextjs', 'react', 'vercel'],
       favicon_url: 'https://avatars.githubusercontent.com/u/14985020?s=200&v=4',
       domain: 'nextjs.org',
@@ -186,9 +202,11 @@ export const WithCompanyLogo: Story = {
       ...sampleBookmark,
       author: 'Google Developers',
       title: 'Web Vitals',
-      description: 'Essential metrics for a healthy site - Learn about Core Web Vitals and how to measure them',
+      description:
+        'Essential metrics for a healthy site - Learn about Core Web Vitals and how to measure them',
       tags: ['performance', 'web-vitals', 'seo'],
-      favicon_url: 'https://developers.google.com/static/site-assets/logo-google-developers.svg',
+      favicon_url:
+        'https://developers.google.com/static/site-assets/logo-google-developers.svg',
       domain: 'web.dev',
       thumbnail_url: 'https://web.dev/images/social.png',
     },

@@ -76,12 +76,14 @@ bookmarksx/
 ## Key Files
 
 ### Configuration
+
 - `package.json` - Dependencies and scripts
 - `vite.config.ts` - Vite build configuration
 - `tsconfig.json` - TypeScript configuration
 - `playwright.config.ts` - E2E test configuration
 
 ### Root Documentation
+
 - `README.md` - Project overview & setup
 - `CLAUDE.md` - Development guidelines
 - `NEXT_STEPS.md` - Roadmap & planning
@@ -90,17 +92,20 @@ bookmarksx/
 ## State Management (Zustand)
 
 ### bookmarkStore
+
 - Bookmarks collection
 - UI state (active sidebar item, AI panel)
 - View mode (grid/list)
 - Selected bookmarks (for bulk actions)
 
 ### collectionsStore
+
 - Collections hierarchy
 - Active collection selection
 - Collection CRUD operations
 
 ### settingsStore
+
 - Extension integration settings
 - Display preferences (theme, sorting)
 - Privacy & data management
@@ -116,6 +121,7 @@ bookmarksx/
 ## Key Features
 
 ### Bookmark Management
+
 - Import from X/Twitter via Chrome extension
 - Search by title, content, author, domain
 - Multi-criteria filtering
@@ -124,12 +130,14 @@ bookmarksx/
 - Bulk operations (tag, delete, move)
 
 ### Privacy-First
+
 - 100% local storage
 - No backend servers
 - No tracking or analytics
 - Export/import in JSON/CSV/HTML
 
 ### Smart Organization
+
 - AI-powered tag suggestions (in development)
 - Nested collections
 - Custom sorting options
@@ -138,18 +146,21 @@ bookmarksx/
 ## Technology Stack
 
 **Frontend:**
+
 - React 19 + TypeScript
 - Chakra UI v3 (component library)
 - Zustand (state management)
 - React Router (navigation)
 
 **Development:**
+
 - Vite (build tool)
 - Vitest (unit testing)
 - Playwright (E2E testing)
 - ESLint + Prettier
 
 **Key Libraries:**
+
 - compromise (NLP for tags)
 - react-dnd (drag & drop)
 - framer-motion (animations)
@@ -158,6 +169,7 @@ bookmarksx/
 ## Development Workflow
 
 ### Commands
+
 ```bash
 npm run dev              # Start dev server (localhost:5173)
 npm run build            # Production build
@@ -168,6 +180,7 @@ npm run e2e              # Playwright E2E tests
 ```
 
 ### Component Guidelines
+
 - Use Chakra UI v3 components
 - Named exports for components/hooks
 - Memoize expensive components
@@ -175,6 +188,7 @@ npm run e2e              # Playwright E2E tests
 - Centralized filtering in hooks
 
 ### Testing
+
 - Unit tests with Vitest
 - E2E tests with Playwright
 - Test coverage expected

@@ -32,6 +32,7 @@ A privacy-focused bookmark management application for X/Twitter content, built w
 ## Getting Started
 
 1. **Clone and Install**
+
 ```bash
 git clone https://github.com/YOUR_USERNAME/bookmarkx.git
 cd bookmarkx
@@ -39,12 +40,13 @@ npm install
 ```
 
 2. **Start Development Server**
+
 ```bash
 npm run dev
 ```
 
 3. **Open in Browser**
-Navigate to `http://localhost:5173` and start managing your bookmarks!
+   Navigate to `http://localhost:5173` and start managing your bookmarks!
 
 ## Available Scripts
 
@@ -58,6 +60,7 @@ Navigate to `http://localhost:5173` and start managing your bookmarks!
 ## Usage
 
 ### Managing Bookmarks
+
 - **Add Bookmarks**: Use the "+" button to add new X/Twitter bookmarks
 - **Search**: Use the search bar to find bookmarks by content or tags
 - **Filter**: Use tag filters to organize your bookmarks
@@ -65,6 +68,7 @@ Navigate to `http://localhost:5173` and start managing your bookmarks!
 - **Export**: Download your bookmarks as JSON for backup
 
 ### Data Management
+
 - **Local Storage**: All data is stored in your browser's localStorage
 - **Export/Import**: Use the settings menu to backup or restore bookmarks
 - **Storage Limit**: Modern browsers support ~5-10MB of localStorage
@@ -73,12 +77,14 @@ Navigate to `http://localhost:5173` and start managing your bookmarks!
 ## Development
 
 ### Running Tests
+
 ```bash
 npm test                 # Run all tests
 npm run test:watch      # Run tests in watch mode
 ```
 
 ### Building for Production
+
 ```bash
 npm run build           # Create production build
 npm run preview         # Preview production build locally

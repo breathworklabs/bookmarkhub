@@ -3,22 +3,26 @@
 ## 🎯 Where to Display Smart Tags
 
 ### ⭐ **Priority 1: Bookmark Card Footer** (RECOMMENDED START HERE)
+
 - **Location**: After existing tags in `BookmarkFooter.tsx`
 - **Visual**: Collapsed by default, expand on click
 - **Interaction**: One-click to apply tags
 - **Why**: Most contextual, non-intrusive, always visible
 
 ### ⭐ **Priority 2: Bulk Tagging Modal**
+
 - **Trigger**: When 2+ bookmarks selected
 - **Visual**: Full modal with high/low confidence sections
 - **Why**: High value for power users
 
 ### Priority 3: Import Flow
+
 - **Trigger**: During bookmark import/sync
 - **Visual**: Progress indicator with auto-tagging stats
 - **Why**: Reduces manual work on bulk imports
 
 ### Priority 4: Settings Panel
+
 - **Location**: New "Smart Tagging" section in settings
 - **Visual**: Strategy toggles, confidence slider, statistics
 - **Why**: User control and transparency
@@ -28,19 +32,23 @@
 ## 🏗️ Components to Build
 
 ### Phase 1 (Start Here)
+
 1. **`<TagSuggestionChip />`** - Reusable chip with confidence
 2. **`<SmartTagSuggestionInline />`** - Inline suggestions for cards
 3. Integration in `BookmarkFooter.tsx`
 
 ### Phase 2
+
 4. **`<SmartTagBulkModal />`** - Bulk tagging modal
 5. Button in bulk actions bar
 
 ### Phase 3
+
 6. **`<SmartTagSettingsPanel />`** - Settings configuration
 7. Statistics tracking
 
 ### Phase 4
+
 8. **`<SmartTagImportProgress />`** - Import flow integration
 
 ---
@@ -48,6 +56,7 @@
 ## 🎨 Visual Design Quick Guide
 
 ### Colors
+
 ```css
 /* Auto-Apply (>80% confidence) */
 Background: rgba(34, 197, 94, 0.1)  /* Light green */
@@ -63,6 +72,7 @@ Icon: 💡 Lightbulb
 ```
 
 ### Sizing
+
 - **Tap targets**: 44x44px minimum (mobile)
 - **Chip height**: 28px
 - **Gap between chips**: 8px
@@ -83,6 +93,7 @@ Icon: 💡 Lightbulb
 ## 🚀 Quick Start Implementation
 
 ### 1. Add to BookmarkFooter.tsx
+
 ```typescript
 import { SmartTagSuggestionInline } from '../tags/SmartTagSuggestionInline'
 
@@ -96,15 +107,11 @@ import { SmartTagSuggestionInline } from '../tags/SmartTagSuggestionInline'
 ```
 
 ### 2. Use the Hook
+
 ```typescript
 import { useSmartTagging } from '@/hooks/useSmartTagging'
 
-const {
-  suggestions,
-  autoApply,
-  generateTags,
-  applyTag,
-} = useSmartTagging()
+const { suggestions, autoApply, generateTags, applyTag } = useSmartTagging()
 
 // Generate suggestions
 useEffect(() => {
@@ -136,6 +143,7 @@ useEffect(() => {
 ## 📋 Implementation Checklist
 
 **Week 1: Foundation**
+
 - [ ] Create `<TagSuggestionChip />` component
 - [ ] Create `<SmartTagSuggestionInline />` component
 - [ ] Integrate into `BookmarkFooter.tsx`
@@ -146,6 +154,7 @@ useEffect(() => {
 - [ ] Write component tests
 
 **Week 2: Bulk Operations**
+
 - [ ] Create `<SmartTagBulkModal />` component
 - [ ] Add "Smart Tag" button to bulk actions
 - [ ] Implement multi-bookmark tagging
@@ -153,6 +162,7 @@ useEffect(() => {
 - [ ] Write tests
 
 **Week 3: Settings**
+
 - [ ] Create `<SmartTagSettingsPanel />` component
 - [ ] Add settings page route
 - [ ] Implement strategy toggles
@@ -161,6 +171,7 @@ useEffect(() => {
 - [ ] Write tests
 
 **Week 4: Import Flow**
+
 - [ ] Create `<SmartTagImportProgress />` component
 - [ ] Integrate with import/sync
 - [ ] Batch processing optimization
@@ -172,11 +183,13 @@ useEffect(() => {
 ## 🎓 User Education
 
 ### Onboarding Tooltips
+
 1. First card with suggestions: "✨ We found smart tag suggestions for you!"
 2. First bulk selection: "💡 Tag multiple bookmarks at once with Smart Tag"
 3. Settings: "⚙️ Customize how smart tagging works"
 
 ### Help Text
+
 - "Smart tags are generated using AI to save you time"
 - "High confidence tags (>80%) can be auto-applied"
 - "All processing happens locally - your data never leaves your device"
