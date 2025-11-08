@@ -2,13 +2,13 @@ import { Dialog, Portal, Box, VStack, HStack, Text, Button, Input } from '@chakr
 import { LuFolder, LuFolderOpen, LuChevronRight, LuSearch, LuX } from 'react-icons/lu'
 import { memo, useState, useMemo } from 'react'
 import { useCollectionsStore } from '../../store/collectionsStore'
-import type { Collection } from '../../types/bookmark'
+import type { Collection } from '../../types/collections'
 
 interface CollectionPickerModalProps {
   isOpen: boolean
   onClose: () => void
-  onSelect: (collectionId: number | null) => void
-  currentCollectionId?: number | null
+  onSelect: (collectionId: string | null) => void
+  currentCollectionId?: string | null
   title?: string
 }
 
@@ -21,17 +21,17 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(({
 }) => {
   const collections = useCollectionsStore((state) => state.collections)
   const [searchQuery, setSearchQuery] = useState('')
-  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set())
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 
   // Build collection hierarchy
   const collectionMap = useMemo(() => {
-    const map = new Map<number, Collection & { children: Collection[] }>()
+    const map = new Map<string, Collection & { children: Collection[] }>()
     collections.forEach(col => {
       map.set(col.id, { ...col, children: [] })
     })
     collections.forEach(col => {
-      if (col.parent_id) {
-        const parent = map.get(col.parent_id)
+      if (col.parentId) {
+        const parent = map.get(col.parentId)
         if (parent) {
           parent.children.push(map.get(col.id)!)
         }
@@ -42,7 +42,7 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(({
 
   // Get root collections
   const rootCollections = useMemo(() => {
-    return Array.from(collectionMap.values()).filter(col => !col.parent_id)
+    return Array.from(collectionMap.values()).filter(col => !col.parentId)
   }, [collectionMap])
 
   // Filter collections based on search
@@ -50,28 +50,28 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(({
     if (!searchQuery.trim()) return rootCollections
 
     const query = searchQuery.toLowerCase()
-    const matches = new Set<number>()
+    const matches = new Set<string>()
 
     const checkMatch = (col: Collection & { children: Collection[] }) => {
       if (col.name.toLowerCase().includes(query)) {
         matches.add(col.id)
         // Add all parents
-        let parentId = col.parent_id
+        let parentId = col.parentId
         while (parentId) {
           matches.add(parentId)
           const parent = collectionMap.get(parentId)
-          parentId = parent?.parent_id || null
+          parentId = parent?.parentId || null
         }
       }
-      col.children.forEach(checkMatch)
+      (col.children as (Collection & { children: Collection[] })[]).forEach(checkMatch)
     }
 
-    rootCollections.forEach(checkMatch)
+    rootCollections.forEach((col: Collection & { children: Collection[] }) => checkMatch(col))
 
     return rootCollections.filter(col => matches.has(col.id))
   }, [rootCollections, searchQuery, collectionMap])
 
-  const toggleExpand = (id: number) => {
+  const toggleExpand = (id: string) => {
     setExpandedIds(prev => {
       const next = new Set(prev)
       if (next.has(id)) {
@@ -83,7 +83,7 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(({
     })
   }
 
-  const handleSelect = (collectionId: number | null) => {
+  const handleSelect = (collectionId: string | null) => {
     onSelect(collectionId)
     onClose()
     setSearchQuery('')
@@ -141,16 +141,16 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(({
             {col.name}
           </Text>
 
-          {col.bookmark_count > 0 && (
+          {col.bookmarkCount > 0 && (
             <Text fontSize="xs" color="var(--color-text-tertiary)">
-              {col.bookmark_count}
+              {col.bookmarkCount}
             </Text>
           )}
         </HStack>
 
         {isExpanded && hasChildren && (
           <Box>
-            {col.children.map(child => renderCollection(child, depth + 1))}
+            {(col.children as (Collection & { children: Collection[] })[]).map((child) => renderCollection(child, depth + 1))}
           </Box>
         )}
       </Box>
@@ -209,7 +209,7 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(({
                   >
                     <LuSearch size={16} color="var(--color-text-tertiary)" />
                     <Input
-                      variant="unstyled"
+                      variant="subtle"
                       placeholder="Search collections..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}

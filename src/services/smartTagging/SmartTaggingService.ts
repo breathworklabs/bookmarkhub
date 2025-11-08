@@ -114,6 +114,10 @@ export class SmartTaggingService {
    * Enable/disable a strategy
    */
   setStrategyEnabled(strategyName: string, enabled: boolean, options: TaggingOptions): void {
+    if (!options.enabledStrategies) {
+      return
+    }
+
     if (enabled) {
       if (!options.enabledStrategies.includes(strategyName)) {
         options.enabledStrategies.push(strategyName)

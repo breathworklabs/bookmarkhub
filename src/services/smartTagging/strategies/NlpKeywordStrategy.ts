@@ -8,18 +8,16 @@ import type { TaggingStrategy, TagSuggestion, TaggingContext } from '../types'
 import type { Bookmark } from '../../../types/bookmark'
 import { findTechKeywords } from '../../../data/smartTagging/techKeywords'
 import { TagNormalizer } from '../core/TagNormalizer'
-import { ContentLinkExtractor } from '../core/ContentLinkExtractor'
 import { isAmbiguousTechTerm, hasTechContext } from '../../../data/smartTagging/ambiguousTechTerms'
 
 export class NlpKeywordStrategy implements TaggingStrategy {
   readonly name = 'nlp'
   private normalizer = new TagNormalizer()
-  private linkExtractor = new ContentLinkExtractor()
 
   /**
    * Extract keywords using NLP and tech keyword matching
    */
-  async generateTags(bookmark: Bookmark, context: TaggingContext): Promise<TagSuggestion[]> {
+  async generateTags(bookmark: Bookmark, _context: TaggingContext): Promise<TagSuggestion[]> {
     const suggestions: TagSuggestion[] = []
 
     // Extract text content from bookmark

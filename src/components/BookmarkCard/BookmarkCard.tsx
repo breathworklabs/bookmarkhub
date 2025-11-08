@@ -32,7 +32,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   const toggleBookmarkSelection = useBookmarkStore((state) => state.toggleBookmarkSelection)
   const clearBookmarkSelection = useBookmarkStore((state) => state.clearBookmarkSelection)
   const toggleStarBookmark = useBookmarkStore((state) => state.toggleStarBookmark)
-  const deleteBookmark = useBookmarkStore((state) => state.deleteBookmark)
+  const removeBookmark = useBookmarkStore((state) => state.removeBookmark)
   const addBookmarkToCollection = useCollectionsStore((state) => state.addBookmarkToCollection)
   const removeBookmarkFromCollection = useCollectionsStore((state) => state.removeBookmarkFromCollection)
   const isMobile = useIsMobile()
@@ -205,7 +205,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   }, [])
 
   // Context menu actions
-  const handleMoveToCollection = useCallback(async (collectionId: number | null) => {
+  const handleMoveToCollection = useCallback(async (collectionId: string | null) => {
     try {
       const currentCollections = (bookmark as any)?.collections || ['uncategorized']
 
@@ -242,13 +242,13 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
 
   const handleDelete = useCallback(async () => {
     try {
-      await deleteBookmark(bookmark.id)
+      await removeBookmark(bookmark.id)
       toast.success('Bookmark deleted')
     } catch (error) {
       console.error('Failed to delete:', error)
       toast.error('Failed to delete bookmark')
     }
-  }, [bookmark.id, deleteBookmark])
+  }, [bookmark.id, removeBookmark])
 
   const handleOpenInNewTab = useCallback(() => {
     window.open(bookmark.url, '_blank', 'noopener,noreferrer')

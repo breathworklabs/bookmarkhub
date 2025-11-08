@@ -172,7 +172,6 @@ const AdvancedFilters = () => {
                       }}
                       openDelay={300}
                       closeOnClick={false}
-                      portalled
                     >
                       <Tooltip.Trigger asChild>
                         <Button

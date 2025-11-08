@@ -1,5 +1,5 @@
-import { Box, Flex, VStack, Text, Button, HStack, IconButton } from '@chakra-ui/react';
-import { LuImport, LuBookmarkPlus, LuFolderOpen, LuChevronDown, LuChevronUp } from 'react-icons/lu';
+import { Box, Flex, VStack, Text, Button, HStack } from '@chakra-ui/react';
+import { LuImport, LuBookmarkPlus, LuFolderOpen } from 'react-icons/lu';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useState } from 'react';
@@ -22,7 +22,6 @@ import { BulkActionsBar } from './BulkActionsBar';
 const XBookmarkManager = () => {
   const { bookmarks } = useBookmarkStore()
   const isMobile = useIsMobile()
-  const isMobileHeaderVisible = useBookmarkStore((state) => state.isMobileHeaderVisible)
   const toggleMobileHeader = useBookmarkStore((state) => state.toggleMobileHeader)
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false)
 

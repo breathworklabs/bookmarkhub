@@ -1,5 +1,5 @@
 import { Box, HStack, Text, Button, IconButton } from '@chakra-ui/react'
-import { LuFolder, LuTrash2, LuX, LuTag } from 'react-icons/lu'
+import { LuFolder, LuTrash2, LuX } from 'react-icons/lu'
 import { memo, useState } from 'react'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
@@ -9,7 +9,7 @@ import toast from 'react-hot-toast'
 export const BulkActionsBar = memo(() => {
   const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
   const clearBookmarkSelection = useBookmarkStore((state) => state.clearBookmarkSelection)
-  const deleteBookmark = useBookmarkStore((state) => state.deleteBookmark)
+  const removeBookmark = useBookmarkStore((state) => state.removeBookmark)
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const addBookmarkToCollection = useCollectionsStore((state) => state.addBookmarkToCollection)
   const removeBookmarkFromCollection = useCollectionsStore((state) => state.removeBookmarkFromCollection)
@@ -18,7 +18,7 @@ export const BulkActionsBar = memo(() => {
 
   if (selectedBookmarks.length === 0) return null
 
-  const handleMoveToCollection = async (collectionId: number | null) => {
+  const handleMoveToCollection = async (collectionId: string | null) => {
     try {
       // Process all selected bookmarks
       for (const bookmarkId of selectedBookmarks) {
@@ -55,7 +55,7 @@ export const BulkActionsBar = memo(() => {
 
     try {
       for (const bookmarkId of selectedBookmarks) {
-        await deleteBookmark(bookmarkId)
+        await removeBookmark(bookmarkId)
       }
       toast.success(`Deleted ${selectedBookmarks.length} bookmark${selectedBookmarks.length > 1 ? 's' : ''}`)
       clearBookmarkSelection()

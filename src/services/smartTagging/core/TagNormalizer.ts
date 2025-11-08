@@ -6,7 +6,7 @@
 import type { NormalizationResult, NormalizationReason } from '../types'
 import { NORMALIZATION_CONFIG } from '../config'
 import { isStopWord } from '../../../data/smartTagging/stopWords'
-import { applyTagAlias, hasAlias } from '../../../data/smartTagging/tagAliases'
+import { applyTagAlias } from '../../../data/smartTagging/tagAliases'
 
 export class TagNormalizer {
   /**
@@ -28,7 +28,6 @@ export class TagNormalizer {
     }
 
     // Step 3: Remove special characters (keep hyphens and alphanumeric)
-    const beforeSpecialChars = normalized
     normalized = normalized.replace(/[^a-z0-9-]/g, '')
 
     // Step 4: Remove leading/trailing hyphens

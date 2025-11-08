@@ -25,12 +25,11 @@ const SmartTagSuggestionInline = memo(({
   maxVisibleSuggestions = 3,
 }: SmartTagSuggestionInlineProps) => {
   const [isExpanded, setIsExpanded] = useState(!initialCollapsed)
-  const [isDismissed, setIsDismissed] = useState(false)
+  const [isDismissed] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
   const [appliedTags, setAppliedTags] = useState<Set<string>>(new Set())
 
   const {
-    suggestions,
     autoApply,
     isLoading,
     error,
@@ -61,9 +60,6 @@ const SmartTagSuggestionInline = memo(({
     const existingTags = new Set(bookmark.tags || [])
     return autoApply.filter((s) => !existingTags.has(s.tag) && !appliedTags.has(s.tag))
   }, [autoApply, bookmark.tags, appliedTags])
-
-  // Keep this for backward compatibility but won't use it
-  const availableAutoApply = availableSuggestions
 
   // Calculate visible suggestions
   const visibleSuggestions = isExpanded
