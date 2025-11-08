@@ -86,34 +86,23 @@ src/services/smartTagging/strategies/UrlPatternStrategy.ts
 
 ## HIGH PRIORITY - Pre-Launch Must Fix
 
-### 3. Documentation References Wrong Domain/Setup
+### 3. Documentation References Wrong Domain/Setup ✅ RESOLVED
 
-**Priority:** HIGH
-**Impact:** Misleads users about deployment
-**Status:** INCORRECT INFO
+**Priority:** ✅ COMPLETE
+**Impact:** All documentation now accurate
+**Status:** FIXED (Nov 8, 2025)
 
-**Issues in DEPLOYMENT.md:**
-- **Line 34:** References `breathworklabs.com` as custom domain (wrong project name)
-- **Lines 22-27:** Environment variables mention:
-  - `VITE_SUPABASE_URL` - No Supabase in this project (local-only)
-  - `VITE_GA_MEASUREMENT_ID` - Google Analytics not configured
-  - `VITE_SENTRY_DSN` - Sentry not configured
+**Resolution:**
+- ✅ Updated DEPLOYMENT.md with correct domain (`bookmarkx.breathworklabs.com`)
+- ✅ Completely rewrote GITHUB_SETUP.md with:
+  - Correct project name (bookmarkx)
+  - Correct domain (bookmarkx.breathworklabs.com)
+  - Two setup options (personal repo or organization)
+  - Updated all branch references to `master`
+- ✅ Updated package.json homepage to `https://bookmarkx.breathworklabs.com`
+- ✅ Updated README.md clone URL to use correct repository name
 
-**Issues in GITHUB_SETUP.md:**
-- **Line 5-26:** Setup instructions reference `breathworklabs` org (should be personal account?)
-- **Lines 34-39:** References wrong repo name and organization
-
-**Current package.json shows:**
-```json
-"author": "Breathwork Labs <hello@breathworklabs.com>",
-"homepage": "https://breathworklabs.com",
-```
-
-**Action Required:**
-- [ ] Clarify actual deployment domain/organization
-- [ ] Update DEPLOYMENT.md with correct environment variables (or remove if not used)
-- [ ] Update GITHUB_SETUP.md with actual GitHub org/user
-- [ ] Update package.json author/homepage to match actual project
+**Note:** Environment variables in DEPLOYMENT.md (Supabase, GA, Sentry) are marked as optional examples and documented as "not required" for local-only storage app
 
 ---
 
