@@ -202,7 +202,7 @@ export const filterBookmarks = ({
           case 'unread':
             return bookmark.is_read === false
           case 'comments':
-            return bookmark.content.includes('comment') || bookmark.content.includes('reply')
+            return bookmark.content?.includes('comment') || bookmark.content?.includes('reply')
           case 'engagement':
             return bookmark.engagement_score > 100
           case 'recent':
