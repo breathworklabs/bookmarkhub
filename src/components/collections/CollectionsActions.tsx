@@ -7,12 +7,16 @@ import {
   LuX,
   LuTag,
   LuChevronRight,
+  LuSettings,
 } from 'react-icons/lu'
 import { useCallback, memo, useState, useMemo } from 'react'
 import { useCollectionsStore } from '../../store/collectionsStore'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useModal } from '../modals/ModalProvider'
 import { useIsMobile } from '../../hooks/useMobile'
+import { useButtonStyles } from '../../hooks/useStyles'
+import { useFilterReset } from '../../utils/filterUtils'
+import { useBookmarkSelectors } from '../../hooks/selectors/useBookmarkSelectors'
 import TagInput from '../tags/TagInput'
 import SmartTagSuggestions from '../tags/SmartTagSuggestions'
 import { getCollectionPath } from '../../utils/collectionHierarchy'
@@ -43,9 +47,11 @@ const CollectionsActions = memo(() => {
   const [showTagInput, setShowTagInput] = useState(false)
   const [selectedBookmarkTags, setSelectedBookmarkTags] = useState<string[]>([])
 
-  const { showCreateCollection, showDeleteConfirmation, showEditCollection } =
+  const { showCreateCollection, showDeleteConfirmation, showEditCollection, showAddTag, showTagManager } =
     useModal()
   const isMobile = useIsMobile()
+  const resetFilters = useFilterReset()
+  const { selectedTags, addTag } = useBookmarkSelectors()
 
   // Get the currently active collection
   const activeCollection = collections.find((c) => c.id === activeCollectionId)
@@ -227,6 +233,18 @@ const CollectionsActions = memo(() => {
   const handleCancelTagInput = useCallback(() => {
     setShowTagInput(false)
   }, [])
+
+  // Handler for Add Tag button (from FilterBar)
+  const handleAddTag = useCallback(() => {
+    showAddTag({
+      placeholder: 'Enter tag name...',
+      existingTags: selectedTags,
+      onAdd: (tagName: string) => {
+        addTag(tagName)
+        resetFilters()
+      },
+    })
+  }, [showAddTag, selectedTags, addTag, resetFilters])
 
   return (
     <Box
@@ -429,7 +447,8 @@ const CollectionsActions = memo(() => {
 
                 {/* Action Buttons */}
                 <HStack gap={2} h="40px" alignItems="center">
-                  {!isSmartCollection && !isMobile && (
+                      {!isSmartCollection && !isMobile && (
+                        <>
                     <Button
                       size="sm"
                       variant="ghost"
@@ -445,7 +464,42 @@ const CollectionsActions = memo(() => {
                         <LuFolderPlus size={14} />
                         <Text>Create Collection</Text>
                       </HStack>
-                    </Button>
+                        </Button>
+
+                        {/* Add Tag Button */}
+                      <Button
+                        {...useButtonStyles('secondary')}
+                        size="sm"
+                        px={3}
+                        py={2}
+                        borderRadius="16px"
+                        fontSize="13px"
+                        onClick={handleAddTag}
+                        gap={1}
+                        alignItems="center"
+                        flexShrink={0}
+                        whiteSpace="nowrap"
+                      >
+                        + Add Tag
+                      </Button>
+
+                      {/* Manage Tags Button */}
+                      <Button
+                        {...useButtonStyles('ghost')}
+                        size="sm"
+                        px={2}
+                        py={2}
+                        borderRadius="16px"
+                        fontSize="13px"
+                        onClick={showTagManager}
+                        gap={1}
+                        alignItems="center"
+                        title="Manage Tags"
+                        flexShrink={0}
+                      >
+                        <LuSettings size={14} />
+                          </Button>
+                          </>
                   )}
 
                   {isUserCollection && (

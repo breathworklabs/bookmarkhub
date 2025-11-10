@@ -6,6 +6,9 @@ import {
   Spacer,
   Badge,
   IconButton,
+  Menu,
+  Portal,
+  For,
 } from '@chakra-ui/react'
 import { Tooltip } from '@chakra-ui/react'
 import {
@@ -14,6 +17,10 @@ import {
   LuLayoutList,
   LuBookmarkPlus,
   LuInfo,
+  LuCalendar,
+  LuChevronDown,
+  LuMessageSquare,
+  LuImage,
 } from 'react-icons/lu'
 import { useMemo, useCallback, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -23,9 +30,27 @@ import { sanitizeBookmark } from '../lib/dataValidation'
 import { useButtonStyles, useInputStyles } from '../hooks/useStyles'
 import { componentStyles } from '../styles/components'
 import { useIsMobile } from '../hooks/useMobile'
+import { colors } from '../styles/colors'
+import { useFilterReset } from '../utils/filterUtils'
+import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
 
 interface SearchHeaderProps {
   onMenuClick?: () => void // For opening mobile drawer
+}
+
+// Filter options for the Time Range dropdown
+const FILTER_OPTIONS = [
+  { index: 0, label: 'All Time', icon: LuCalendar },
+  { index: 1, label: 'Today', icon: LuCalendar },
+  { index: 2, label: 'This Week', icon: LuCalendar },
+  { index: 3, label: 'Threads', icon: LuMessageSquare },
+  { index: 4, label: 'Media', icon: LuImage },
+]
+
+// Helper function to get the active filter label
+const getActiveFilterLabel = (activeTab: number): string => {
+  const option = FILTER_OPTIONS.find((opt) => opt.index === activeTab)
+  return option ? option.label : 'All Time'
 }
 
 // Optimized selector to get all filter data at once
@@ -74,6 +99,10 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
   const { showAddBookmark } = useModal()
   const isMobile = useIsMobile()
   const navigate = useNavigate()
+
+  // Time Range dropdown selectors
+  const { activeTab, setActiveTab } = useBookmarkSelectors()
+  const resetFilters = useFilterReset()
 
   // Call hooks unconditionally to avoid "Rendered fewer hooks" error
   const secondaryButtonStyles = useButtonStyles('secondary')
@@ -207,6 +236,15 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
     navigate('/help')
   }, [navigate])
 
+  // Time Range dropdown handlers
+  const handleFilterSelect = useCallback(
+    (index: number) => {
+      setActiveTab(index)
+      resetFilters()
+    },
+    [setActiveTab, resetFilters]
+  )
+
   return (
     <Box {...componentStyles.container.header}>
       <HStack gap={{ base: 2, md: 6 }} alignItems="center">
@@ -264,6 +302,56 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
 
         {/* Action Buttons */}
         <HStack gap={{ base: 2, md: 3 }}>
+          {/* Help Button with Tooltip - First item */}
+          {!isMobile && (
+            <Tooltip.Root
+              positioning={{
+                placement: 'bottom',
+                strategy: 'fixed',
+                offset: { mainAxis: 8 },
+              }}
+              openDelay={300}
+              closeOnClick={false}
+            >
+              <Tooltip.Trigger asChild>
+                <IconButton
+                  aria-label="Help & Documentation"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleHelpClick}
+                  style={{
+                    color: 'var(--color-text-tertiary)',
+                    border: '1px solid var(--color-border)',
+                  }}
+                  _hover={{
+                    bg: 'var(--color-bg-tertiary)',
+                    color: 'var(--color-text-primary)',
+                    borderColor: 'var(--color-border-hover)',
+                  }}
+                >
+                  <LuInfo size={16} />
+                </IconButton>
+              </Tooltip.Trigger>
+              <Tooltip.Positioner>
+                <Tooltip.Content
+                  bg="var(--color-bg-tertiary)"
+                  color="var(--color-text-secondary)"
+                  border="1px solid var(--color-border)"
+                  borderRadius="4px"
+                  px={2}
+                  py={1}
+                  fontSize="11px"
+                  fontWeight="400"
+                  maxW="200px"
+                  boxShadow="0 1px 4px rgba(0, 0, 0, 0.1)"
+                  zIndex={9999}
+                >
+                  Help & Documentation
+                </Tooltip.Content>
+              </Tooltip.Positioner>
+            </Tooltip.Root>
+          )}
+
           {/* View Toggle - Hide on mobile */}
           {!isMobile && (
             <HStack
@@ -335,53 +423,115 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
             </HStack>
           )}
 
-          {/* Help Button with Tooltip */}
-          <Tooltip.Root
-            positioning={{
-              placement: 'bottom',
-              strategy: 'fixed',
-              offset: { mainAxis: 8 },
-            }}
-            openDelay={300}
-            closeOnClick={false}
-          >
-            <Tooltip.Trigger asChild>
-              <IconButton
-                aria-label="Help & Documentation"
-                variant="ghost"
-                size="sm"
-                onClick={handleHelpClick}
-                style={{
-                  color: 'var(--color-text-tertiary)',
-                  border: '1px solid var(--color-border)',
-                }}
-                _hover={{
-                  bg: 'var(--color-bg-tertiary)',
-                  color: 'var(--color-text-primary)',
-                  borderColor: 'var(--color-border-hover)',
-                }}
-              >
-                <LuInfo size={16} />
-              </IconButton>
-            </Tooltip.Trigger>
-            <Tooltip.Positioner>
-              <Tooltip.Content
-                bg="var(--color-bg-tertiary)"
-                color="var(--color-text-secondary)"
-                border="1px solid var(--color-border)"
-                borderRadius="4px"
-                px={2}
-                py={1}
-                fontSize="11px"
-                fontWeight="400"
-                maxW="200px"
-                boxShadow="0 1px 4px rgba(0, 0, 0, 0.1)"
-                zIndex={9999}
-              >
-                Help & Documentation
-              </Tooltip.Content>
-            </Tooltip.Positioner>
-          </Tooltip.Root>
+          {/* Time Range Dropdown - Hide on mobile */}
+          {!isMobile && (
+            <Menu.Root>
+              <Menu.Trigger asChild>
+                <Button
+                  {...secondaryButtonStyles}
+                  size="sm"
+                  px={3}
+                  py={2}
+                  borderRadius="8px"
+                  fontSize="13px"
+                  gap={2}
+                  flexShrink={0}
+                >
+                  <LuCalendar size={14} />
+                  <Box as="span" fontWeight="600">
+                    {getActiveFilterLabel(activeTab)}
+                  </Box>
+                  <LuChevronDown size={12} />
+                </Button>
+              </Menu.Trigger>
+              <Portal>
+                <Menu.Positioner>
+                  <Menu.Content
+                    bg="var(--color-bg-tertiary)"
+                    borderColor="var(--color-border)"
+                    borderRadius="12px"
+                    py={2}
+                    minW="200px"
+                    css={{
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                    }}
+                  >
+                    <For each={FILTER_OPTIONS.slice(0, 3)}>
+                      {(option) => {
+                        const Icon = option.icon
+                        const isActive = activeTab === option.index
+                        return (
+                          <Menu.Item
+                            key={option.index}
+                            value={option.label}
+                            onClick={() => handleFilterSelect(option.index)}
+                            bg={isActive ? colors.primary[500] : 'transparent'}
+                            color={isActive ? 'white' : colors.dark.textPrimary}
+                            _hover={{
+                              bg: isActive
+                                ? colors.primary[600]
+                                : colors.dark.border,
+                              color: isActive
+                                ? 'white'
+                                : colors.dark.textPrimary,
+                            }}
+                            px={3}
+                            py={2}
+                            fontSize="14px"
+                            cursor="pointer"
+                            transition="all 0.15s ease"
+                          >
+                            <HStack gap={2}>
+                              <Icon size={16} />
+                              <Box as="span">{option.label}</Box>
+                            </HStack>
+                          </Menu.Item>
+                        )
+                      }}
+                    </For>
+                    <Menu.Separator
+                      my={2}
+                      borderColor="var(--color-border)"
+                      opacity={0.5}
+                    />
+                    <For each={FILTER_OPTIONS.slice(3)}>
+                      {(option) => {
+                        const Icon = option.icon
+                        const isActive = activeTab === option.index
+                        return (
+                          <Menu.Item
+                            key={option.index}
+                            value={option.label}
+                            onClick={() => handleFilterSelect(option.index)}
+                            bg={isActive ? colors.primary[500] : 'transparent'}
+                            color={isActive ? 'white' : colors.dark.textPrimary}
+                            _hover={{
+                              bg: isActive
+                                ? colors.primary[600]
+                                : colors.dark.border,
+                              color: isActive
+                                ? 'white'
+                                : colors.dark.textPrimary,
+                            }}
+                            px={3}
+                            py={2}
+                            fontSize="14px"
+                            cursor="pointer"
+                            transition="all 0.15s ease"
+                          >
+                            <HStack gap={2}>
+                              <Icon size={16} />
+                              <Box as="span">{option.label}</Box>
+                            </HStack>
+                          </Menu.Item>
+                        )
+                      }}
+                    </For>
+                  </Menu.Content>
+                </Menu.Positioner>
+              </Portal>
+            </Menu.Root>
+          )}
 
           {/* Filters Button - Icon only on mobile */}
           {isMobile ? (
