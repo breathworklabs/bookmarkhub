@@ -467,8 +467,35 @@
     const authToken =
       'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA' // Twitter's public bearer token
 
-    // Use the CORRECT query ID from cookies-version (as of Oct 2025)
-    const queryId = 'ire7TB3NNzZOIa2SeD8pLA'
+    // Try to extract query ID dynamically from Twitter's bundled JS
+    let queryId = null
+
+    try {
+      // Look through all script tags for the Bookmarks query ID
+      const scripts = document.querySelectorAll('script')
+      for (const script of scripts) {
+        const content = script.textContent || script.innerText
+        if (content && content.includes('Bookmarks')) {
+          // Search for query ID pattern (22 character alphanumeric string)
+          const matches = content.match(/queryId:"([a-zA-Z0-9_-]{22})"[,}].*Bookmarks/g)
+          if (matches && matches.length > 0) {
+            // Extract the queryId from the match
+            const idMatch = matches[0].match(/queryId:"([a-zA-Z0-9_-]{22})"/)
+            if (idMatch) {
+              queryId = idMatch[1]
+              break
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('[BookmarkX API] Error extracting queryId:', error)
+    }
+
+    // Fallback to hardcoded query ID if extraction failed
+    if (!queryId) {
+      queryId = 'ire7TB3NNzZOIa2SeD8pLA' // Fallback (as of Jan 2025)
+    }
 
     return { authToken, queryId }
   }
