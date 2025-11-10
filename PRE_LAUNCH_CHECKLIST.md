@@ -40,6 +40,7 @@
   - Note: 5 tests skipped by design
 
 - [x] **Linting**
+
   ```bash
   npm run lint
   ```
@@ -60,6 +61,7 @@
   - No console errors in browser
 
 - [x] **Production Preview**
+
   ```bash
   npm run build && npm run preview
   ```
@@ -417,9 +419,9 @@ git push origin master  # Ensure all pushed
 
 ## 🎉 Launch Approval
 
-**Approved by:** ********\_********
+**Approved by:** **\*\*\*\***\_**\*\*\*\***
 
-**Date:** ********\_********
+**Date:** **\*\*\*\***\_**\*\*\*\***
 
 **Deployment URL:** `https://bookmarkx.breathworklabs.com`
 

@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BookmarkX Extension Test Page</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+
+      h1 {
+        color: #667eea;
+      }
+
+      .test-section {
+        background: white;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 5px;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      #console {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 20px;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        max-height: 400px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+      }
+
+      .success {
+        color: #4ade80;
+      }
+      .error {
+        color: #f87171;
+      }
+      .info {
+        color: #60a5fa;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📚 BookmarkX Extension Test Suite</h1>
+
+    <div class="test-section">
+      <h2>Quick Tests</h2>
+      <button onclick="runTest('basic')">
+        Basic Extraction (10 bookmarks)
+      </button>
+      <button onclick="runTest('medium')">Medium Test (50 bookmarks)</button>
+      <button onclick="runTest('large')">Large Test (100 bookmarks)</button>
+      <button onclick="runTest('scroll')">Scroll Test</button>
+      <button onclick="clearConsole()">Clear Console</button>
+    </div>
+
+    <div class="test-section">
+      <h2>Test Console</h2>
+      <div id="console"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Manual Test</h2>
+      <p>Open DevTools Console (F12) for detailed logs</p>
+      <pre>
+// Run these commands in console:
+testExtraction(50);  // Test extraction
+testScroll();        // Test scrolling
+cleanup();           // Clean up
+    </pre
+      >
+    </div>
+
+    <script>
+      const consoleDiv = document.getElementById('console')
+
+      function log(message, type = 'info') {
+        const timestamp = new Date().toLocaleTimeString()
+        const line = document.createElement('div')
+        line.className = type
+        line.textContent = `[${timestamp}] ${message}`
+        consoleDiv.appendChild(line)
+        consoleDiv.scrollTop = consoleDiv.scrollHeight
+        console.log(message)
+      }
+
+      function clearConsole() {
+        consoleDiv.innerHTML = ''
+        log('Console cleared', 'info')
+      }
+
+      function generateFakeTweet(index) {
+        const usernames = ['elonmusk', 'naval', 'pmarca', 'sama', 'paulg']
+        const username = usernames[index % usernames.length]
+        const tweetId = `${1234567890 + index}`
+
+        return {
+          id: tweetId,
+          username: username,
+          displayName: `User ${index}`,
+          text: `Test tweet ${index} content`,
+          url: `https://twitter.com/${username}/status/${tweetId}`,
+          timestamp: new Date(Date.now() - index * 3600000).toISOString(),
+          images: [],
+          profileImage: '',
+          extractedAt: new Date().toISOString(),
+        }
+      }
+
+      function createFakeTweetElements(count) {
+        log(`Creating ${count} fake tweet elements...`, 'info')
+
+        // Remove existing
+        document.querySelectorAll('.fake-tweet').forEach((el) => el.remove())
+
+        const container = document.createElement('div')
+        container.id = 'fake-timeline'
+        container.style.cssText = 'display: none;' // Hidden
+
+        for (let i = 0; i < count; i++) {
+          const tweet = generateFakeTweet(i)
+          const article = document.createElement('article')
+          article.className = 'fake-tweet'
+          article.setAttribute('data-testid', 'tweet')
+
+          article.innerHTML = `
+          <div data-testid="User-Name">
+            <a role="link" href="/${tweet.username}"></a>
+            <span><span>${tweet.displayName}</span></span>
+          </div>
+          <div data-testid="tweetText">${tweet.text}</div>
+          <a href="/${tweet.username}/status/${tweet.id}">Link</a>
+          <time datetime="${tweet.timestamp}"></time>
+        `
+
+          container.appendChild(article)
+        }
+
+        document.body.appendChild(container)
+        log(`✅ Created ${count} fake tweets`, 'success')
+      }
+
+      function testExtraction(count) {
+        log(`\n=== Starting Extraction Test (${count} bookmarks) ===`, 'info')
+
+        createFakeTweetElements(count)
+
+        setTimeout(() => {
+          const tweets = document.querySelectorAll(
+            'article[data-testid="tweet"]'
+          )
+          log(`Found ${tweets.length} tweet elements`, 'info')
+
+          const extracted = []
+          tweets.forEach((tweet, index) => {
+            try {
+              const usernameEl = tweet.querySelector(
+                '[data-testid="User-Name"] a'
+              )
+              const username = usernameEl
+                ? usernameEl.getAttribute('href').replace('/', '')
+                : ''
+
+              const displayNameEl = tweet.querySelector(
+                '[data-testid="User-Name"] span > span'
+              )
+              const displayName = displayNameEl ? displayNameEl.textContent : ''
+
+              const textEl = tweet.querySelector('[data-testid="tweetText"]')
+              const text = textEl ? textEl.textContent : ''
+
+              const linkEl = tweet.querySelector('a[href*="/status/"]')
+              const url = linkEl
+                ? 'https://twitter.com' + linkEl.getAttribute('href')
+                : ''
+
+              const tweetId = url.match(/\/status\/(\d+)/)?.[1] || ''
+
+              if (tweetId && username) {
+                extracted.push({
+                  id: tweetId,
+                  username,
+                  displayName,
+                  text,
+                  url,
+                })
+              }
+            } catch (error) {
+              log(`Error extracting tweet ${index}: ${error.message}`, 'error')
+            }
+          })
+
+          log(`\n=== Results ===`, 'info')
+          log(
+            `✅ Extracted: ${extracted.length}/${count}`,
+            extracted.length === count ? 'success' : 'error'
+          )
+          log(
+            `Success rate: ${((extracted.length / count) * 100).toFixed(1)}%`,
+            'info'
+          )
+
+          if (extracted.length === count) {
+            log(`\n✅ TEST PASSED!`, 'success')
+          } else {
+            log(
+              `\n❌ TEST FAILED: Expected ${count}, got ${extracted.length}`,
+              'error'
+            )
+          }
+
+          // Cleanup
+          setTimeout(() => {
+            const container = document.getElementById('fake-timeline')
+            if (container) container.remove()
+          }, 1000)
+        }, 500)
+      }
+
+      function runTest(type) {
+        clearConsole()
+
+        switch (type) {
+          case 'basic':
+            testExtraction(10)
+            break
+          case 'medium':
+            testExtraction(50)
+            break
+          case 'large':
+            testExtraction(100)
+            break
+          case 'scroll':
+            log('Scroll test not yet implemented', 'info')
+            break
+        }
+      }
+
+      // Initial message
+      log('BookmarkX Test Suite Ready', 'success')
+      log('Click a button above to run tests', 'info')
+    </script>
+  </body>
+</html>

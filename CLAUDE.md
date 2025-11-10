@@ -291,6 +291,36 @@ bookmarksx/
 - lucide-react (icons)
 - framer-motion (animations)
 
+### Using Context7 MCP for Documentation
+
+**Context7 MCP server provides up-to-date documentation for all libraries.**
+
+When you need current API references or examples, use:
+
+```
+use context7 react@19              # React 19 documentation
+use context7 @chakra-ui/react@3    # Chakra UI v3 documentation
+use context7 zustand               # Zustand documentation
+use context7 typescript            # TypeScript documentation
+use context7 vite                  # Vite documentation
+use context7 vitest                # Vitest documentation
+use context7 react-router          # React Router documentation
+```
+
+**When to use Context7:**
+
+- Checking current API syntax for Chakra UI v3 components
+- Verifying React 19 hooks and patterns
+- Looking up TypeScript utility types
+- Confirming library method signatures
+- Finding version-specific examples
+
+**Example workflow:**
+
+1. Need to implement a Chakra UI feature? → `use context7 @chakra-ui/react@3`
+2. Unsure about React 19 hook? → `use context7 react@19`
+3. TypeScript type question? → `use context7 typescript`
+
 ---
 
 ## Key Architectural Patterns

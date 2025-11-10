@@ -9,6 +9,7 @@ Successfully implemented a complete Twitter Archive Import feature for BookmarkX
 ### 1. Service Layer (`src/services/twitterArchiveImport/`)
 
 #### **types.ts**
+
 - `TwitterArchiveBookmark`: Twitter archive data structure
 - `ParsedTwitterBookmark`: Intermediate parsed format
 - `ImportProgress`: Progress tracking interface
@@ -16,6 +17,7 @@ Successfully implemented a complete Twitter Archive Import feature for BookmarkX
 - `ProgressCallback`: Progress callback function type
 
 #### **zipProcessor.ts**
+
 - `extractBookmarksFromZip()`: Extract bookmarks.js from ZIP archive
 - `validateZipFile()`: Validate file before processing
 - Supports multiple bookmark file locations
@@ -24,6 +26,7 @@ Successfully implemented a complete Twitter Archive Import feature for BookmarkX
 - Error handling with ImportExportError
 
 #### **archiveParser.ts**
+
 - `parseTwitterArchive()`: Parse Twitter's JavaScript format
 - Handles `window.YTD.bookmarks.part0 = [...]` format
 - Extracts tweet data, media, and user information
@@ -32,6 +35,7 @@ Successfully implemented a complete Twitter Archive Import feature for BookmarkX
 - Error collection for invalid bookmarks
 
 #### **dataTransformer.ts**
+
 - `transformTwitterBookmark()`: Convert to BookmarkInsert format
 - `transformTwitterBookmarks()`: Batch transformation
 - Preserves original tweet metadata
@@ -40,6 +44,7 @@ Successfully implemented a complete Twitter Archive Import feature for BookmarkX
 - Progress tracking during transformation
 
 #### **index.ts**
+
 - `importTwitterArchive()`: Main import function
 - Orchestrates the complete import workflow:
   1. Validate ZIP file
@@ -52,6 +57,7 @@ Successfully implemented a complete Twitter Archive Import feature for BookmarkX
 ### 2. React Hook (`src/hooks/useArchiveImport.ts`)
 
 Custom hook for Twitter Archive import with:
+
 - `importArchive(file)`: Import function
 - `isImporting`: Loading state
 - `progress`: Progress information
@@ -60,6 +66,7 @@ Custom hook for Twitter Archive import with:
 - `reset()`: Reset state function
 
 Features:
+
 - Progress tracking through all phases
 - Error handling
 - Integration with bookmarkStore
@@ -69,10 +76,12 @@ Features:
 ### 3. UI Integration (`src/components/SearchHeader.tsx`)
 
 Updated import button to support:
+
 - **ZIP files** → Twitter Archive import
 - **JSON files** → X bookmarks or regular export
 
 Implementation:
+
 - File type detection
 - Async import of services (code splitting)
 - Progress indication
@@ -82,6 +91,7 @@ Implementation:
 ### 4. Tests (`tests/unittests/twitterArchiveImport.test.ts`)
 
 Comprehensive test suite with 11 tests:
+
 - Archive parsing (single/multiple bookmarks)
 - Media handling (images/video detection)
 - Empty content handling
@@ -95,7 +105,9 @@ All tests passing: ✅
 ### 5. Documentation
 
 #### **docs/TWITTER_ARCHIVE_IMPORT.md**
+
 Complete feature documentation including:
+
 - User guide
 - Technical details
 - Archive structure
@@ -108,6 +120,7 @@ Complete feature documentation including:
 ## Technical Details
 
 ### Dependencies
+
 - **JSZip** (already installed): ZIP file processing
 - **Existing utilities**: Error handling, data validation, sanitization
 
@@ -134,6 +147,7 @@ Reload bookmarks
 ### Progress Tracking
 
 Phases:
+
 1. **extracting**: ZIP extraction (0-100%)
 2. **parsing**: JavaScript parsing (0-100%)
 3. **transforming**: Data transformation (by count)
@@ -144,6 +158,7 @@ Phases:
 ### Error Handling
 
 Using existing error handling utilities:
+
 - `ImportExportError` for import-specific errors
 - `BookmarkError` for validation errors
 - User-friendly error messages
@@ -152,6 +167,7 @@ Using existing error handling utilities:
 ### Metadata Preservation
 
 Each imported bookmark includes:
+
 ```json
 {
   "tweet_id": "original ID",
@@ -169,21 +185,25 @@ Each imported bookmark includes:
 ## Code Quality
 
 ### ✅ Type Safety
+
 - All files fully typed
 - No `any` types (used `unknown` where needed)
 - Proper TypeScript interfaces
 
 ### ✅ Linting
+
 - No ESLint errors in new files
 - Follows project code style
 - Prettier formatted
 
 ### ✅ Testing
+
 - 11 comprehensive tests
 - All tests passing (754 total tests)
 - Edge cases covered
 
 ### ✅ Documentation
+
 - JSDoc comments on all functions
 - Clear parameter descriptions
 - Usage examples
@@ -192,6 +212,7 @@ Each imported bookmark includes:
 ## Files Created/Modified
 
 ### Created:
+
 1. `src/services/twitterArchiveImport/types.ts`
 2. `src/services/twitterArchiveImport/zipProcessor.ts`
 3. `src/services/twitterArchiveImport/archiveParser.ts`
@@ -202,11 +223,13 @@ Each imported bookmark includes:
 8. `docs/TWITTER_ARCHIVE_IMPORT.md`
 
 ### Modified:
+
 1. `src/components/SearchHeader.tsx` - Updated import handler
 
 ## Usage Example
 
 ### For Users:
+
 1. Download Twitter data archive from Twitter
 2. Click "Import" button in BookmarkX
 3. Select the ZIP file
@@ -214,6 +237,7 @@ Each imported bookmark includes:
 5. Bookmarks appear with "Twitter Archive" tag
 
 ### For Developers:
+
 ```typescript
 import { useArchiveImport } from './hooks/useArchiveImport'
 
@@ -245,6 +269,7 @@ function MyComponent() {
 ## Future Enhancements
 
 Potential improvements:
+
 - [ ] Visual progress modal with statistics
 - [ ] Duplicate detection during import
 - [ ] Merge/replace options for existing bookmarks
@@ -256,6 +281,7 @@ Potential improvements:
 ## Integration Notes
 
 The feature integrates seamlessly with existing code:
+
 - Uses existing `BookmarkInsert` type
 - Leverages `sanitizeBookmark()` for validation
 - Utilizes `localStorageService` for persistence
