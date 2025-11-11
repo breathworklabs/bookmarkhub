@@ -29,10 +29,23 @@ export interface PrivacySettings {
   searchHistoryEnabled: boolean
 }
 
+export interface OnboardingState {
+  checklistProgress: {
+    hasImportedBookmarks: boolean
+    hasCreatedCollection: boolean
+    hasAddedTags: boolean
+    hasUsedSearchFilters: boolean
+    hasExploredSettings: boolean
+    hasExportedData: boolean
+  }
+  checklistDismissed: boolean
+}
+
 export interface SettingsState {
   extension: ExtensionSettings
   display: DisplaySettings
   privacy: PrivacySettings
+  onboarding: OnboardingState
   hasSeenSplash: boolean
 
   // Extension settings actions
@@ -57,6 +70,10 @@ export interface SettingsState {
 
   // Privacy settings actions
   updatePrivacySettings: (settings: Partial<PrivacySettings>) => void
+
+  // Onboarding actions
+  toggleChecklistItem: (itemKey: keyof OnboardingState['checklistProgress']) => void
+  setChecklistDismissed: (dismissed: boolean) => void
 
   // App state actions
   setHasSeenSplash: (seen: boolean) => void
@@ -94,6 +111,18 @@ const defaultPrivacySettings: PrivacySettings = {
   searchHistoryEnabled: true,
 }
 
+const defaultOnboardingState: OnboardingState = {
+  checklistProgress: {
+    hasImportedBookmarks: false,
+    hasCreatedCollection: false,
+    hasAddedTags: false,
+    hasUsedSearchFilters: false,
+    hasExploredSettings: false,
+    hasExportedData: false,
+  },
+  checklistDismissed: false,
+}
+
 // Custom storage that uses consolidated localStorage
 // Zustand v5 persist expects StorageValue<S> = { state: S, version?: number }
 const consolidatedStorage = {
@@ -124,6 +153,14 @@ const consolidatedStorage = {
               privacy: {
                 ...defaultPrivacySettings,
                 ...(actualSettings.privacy || {}),
+              },
+              onboarding: {
+                ...defaultOnboardingState,
+                ...(actualSettings.onboarding || {}),
+                checklistProgress: {
+                  ...defaultOnboardingState.checklistProgress,
+                  ...(actualSettings.onboarding?.checklistProgress || {}),
+                },
               },
               hasSeenSplash: actualSettings.hasSeenSplash ?? false,
             } as Partial<SettingsState>
@@ -186,6 +223,7 @@ export const useSettingsStore = create<SettingsState>()(
       extension: defaultExtensionSettings,
       display: defaultDisplaySettings,
       privacy: defaultPrivacySettings,
+      onboarding: defaultOnboardingState,
       hasSeenSplash: false,
 
       // Extension settings actions
@@ -279,6 +317,23 @@ export const useSettingsStore = create<SettingsState>()(
           privacy: { ...state.privacy, ...settings },
         })),
 
+      // Onboarding actions
+      toggleChecklistItem: (itemKey) =>
+        set((state) => ({
+          onboarding: {
+            ...state.onboarding,
+            checklistProgress: {
+              ...state.onboarding.checklistProgress,
+              [itemKey]: !state.onboarding.checklistProgress[itemKey],
+            },
+          },
+        })),
+
+      setChecklistDismissed: (dismissed) =>
+        set((state) => ({
+          onboarding: { ...state.onboarding, checklistDismissed: dismissed },
+        })),
+
       // App state actions
       setHasSeenSplash: (seen) => set({ hasSeenSplash: seen }),
 
@@ -291,6 +346,7 @@ export const useSettingsStore = create<SettingsState>()(
           extension: defaultExtensionSettings,
           display: defaultDisplaySettings,
           privacy: defaultPrivacySettings,
+          onboarding: defaultOnboardingState,
           hasSeenSplash: false,
         }),
     }),

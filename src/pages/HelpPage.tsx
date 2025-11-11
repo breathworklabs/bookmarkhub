@@ -12,6 +12,8 @@ import {
   LuSettings,
   LuShield,
   LuSquare,
+  LuSquareCheck,
+  LuX,
 } from 'react-icons/lu'
 import { useNavigate } from 'react-router-dom'
 import { DndProvider } from 'react-dnd'
@@ -19,6 +21,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useState, useCallback, useEffect } from 'react'
 import UnifiedSidebar from '../components/UnifiedSidebar'
 import { useSettingsStore } from '../store/settingsStore'
+import { useChecklistStatus } from '../hooks/useChecklistStatus'
 
 type HelpTopic =
   | 'getting-started'
@@ -1032,6 +1035,11 @@ const CollectionsGuide = () => {
 
 // Getting Started Guide
 const GettingStartedGuide = () => {
+  const { itemsArray, completedCount, totalCount, progressPercentage } = useChecklistStatus()
+  const toggleChecklistItem = useSettingsStore((s) => s.toggleChecklistItem)
+  const checklistDismissed = useSettingsStore((s) => s.onboarding.checklistDismissed)
+  const setChecklistDismissed = useSettingsStore((s) => s.setChecklistDismissed)
+
   return (
     <VStack alignItems="stretch" gap={6}>
       {/* Welcome Section */}
@@ -1468,60 +1476,114 @@ const GettingStartedGuide = () => {
       </Box>
 
       {/* First Steps Checklist */}
-      <Box
-        p={1}
-        style={{ background: 'var(--color-border)' }}
-        borderRadius="8px"
-      />
+      {!checklistDismissed && (
+        <>
+          <Box
+            p={1}
+            style={{ background: 'var(--color-border)' }}
+            borderRadius="8px"
+          />
 
-      <Box>
-        <Alert.Root status="info" variant="subtle">
-          <Alert.Indicator />
-          <VStack alignItems="stretch" gap={2}>
-            <Alert.Title>First Steps Checklist</Alert.Title>
-            <Alert.Description>
-              <VStack alignItems="stretch" gap={2}>
-                <HStack gap={2} alignItems="flex-start">
-                  <LuSquare size={16} style={{ marginTop: '2px', color: 'var(--color-text-tertiary)' }} />
-                  <Text fontSize="sm" lineHeight="1.6">
-                    Import your bookmarks from X/Twitter
-                  </Text>
+          <Box>
+            <Alert.Root status="info" variant="subtle">
+              <Alert.Indicator />
+              <VStack alignItems="stretch" gap={2} width="100%">
+                <HStack justifyContent="space-between" width="100%">
+                  <Alert.Title>
+                    First Steps Checklist ({completedCount}/{totalCount})
+                  </Alert.Title>
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    onClick={() => setChecklistDismissed(true)}
+                    aria-label="Dismiss checklist"
+                  >
+                    <LuX size={14} />
+                  </Button>
                 </HStack>
-                <HStack gap={2} alignItems="flex-start">
-                  <LuSquare size={16} style={{ marginTop: '2px', color: 'var(--color-text-tertiary)' }} />
-                  <Text fontSize="sm" lineHeight="1.6">
-                    Create your first collection
-                  </Text>
-                </HStack>
-                <HStack gap={2} alignItems="flex-start">
-                  <LuSquare size={16} style={{ marginTop: '2px', color: 'var(--color-text-tertiary)' }} />
-                  <Text fontSize="sm" lineHeight="1.6">
-                    Add tags to organize bookmarks
-                  </Text>
-                </HStack>
-                <HStack gap={2} alignItems="flex-start">
-                  <LuSquare size={16} style={{ marginTop: '2px', color: 'var(--color-text-tertiary)' }} />
-                  <Text fontSize="sm" lineHeight="1.6">
-                    Try the search and filter features
-                  </Text>
-                </HStack>
-                <HStack gap={2} alignItems="flex-start">
-                  <LuSquare size={16} style={{ marginTop: '2px', color: 'var(--color-text-tertiary)' }} />
-                  <Text fontSize="sm" lineHeight="1.6">
-                    Explore settings and customize your experience
-                  </Text>
-                </HStack>
-                <HStack gap={2} alignItems="flex-start">
-                  <LuSquare size={16} style={{ marginTop: '2px', color: 'var(--color-text-tertiary)' }} />
-                  <Text fontSize="sm" lineHeight="1.6">
-                    Export your data as a backup
-                  </Text>
-                </HStack>
+                <Alert.Description>
+                  <VStack alignItems="stretch" gap={2}>
+                    {/* Progress Bar */}
+                    <Box>
+                      <Box
+                        h="6px"
+                        borderRadius="3px"
+                        style={{ background: 'var(--color-bg-tertiary)' }}
+                        overflow="hidden"
+                      >
+                        <Box
+                          h="100%"
+                          w={`${progressPercentage}%`}
+                          style={{ background: 'var(--color-accent-primary)' }}
+                          transition="width 0.3s ease"
+                        />
+                      </Box>
+                      <Text
+                        fontSize="xs"
+                        style={{ color: 'var(--color-text-tertiary)' }}
+                        mt={1}
+                      >
+                        {progressPercentage}% complete
+                      </Text>
+                    </Box>
+
+                    {/* Checklist Items */}
+                    {itemsArray.map((item) => {
+                      const Icon = item.isCompleted ? LuSquareCheck : LuSquare
+                      return (
+                        <HStack
+                          key={item.id}
+                          gap={2}
+                          alignItems="flex-start"
+                          cursor={item.isAutoDetected ? 'default' : 'pointer'}
+                          onClick={() => {
+                            if (!item.isAutoDetected) {
+                              toggleChecklistItem(item.id)
+                            }
+                          }}
+                          opacity={item.isCompleted ? 0.7 : 1}
+                          _hover={
+                            item.isAutoDetected
+                              ? {}
+                              : { opacity: 0.8 }
+                          }
+                        >
+                          <Icon
+                            size={16}
+                            style={{
+                              marginTop: '2px',
+                              color: item.isCompleted
+                                ? 'var(--color-accent-primary)'
+                                : 'var(--color-text-tertiary)',
+                            }}
+                          />
+                          <Text
+                            fontSize="sm"
+                            lineHeight="1.6"
+                            textDecoration={item.isCompleted ? 'line-through' : 'none'}
+                          >
+                            {item.label}
+                            {item.isAutoDetected && item.isCompleted && (
+                              <Text
+                                as="span"
+                                fontSize="xs"
+                                style={{ color: 'var(--color-text-tertiary)' }}
+                                ml={2}
+                              >
+                                ✓ Auto-detected
+                              </Text>
+                            )}
+                          </Text>
+                        </HStack>
+                      )
+                    })}
+                  </VStack>
+                </Alert.Description>
               </VStack>
-            </Alert.Description>
-          </VStack>
-        </Alert.Root>
-      </Box>
+            </Alert.Root>
+          </Box>
+        </>
+      )}
 
       {/* Tips for Success */}
       <Box>
