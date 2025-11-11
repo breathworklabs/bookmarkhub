@@ -214,5 +214,5 @@ The extension extracts bookmarks from X/Twitter and sends them to the local app 
 
 ---
 
-For development guidelines, see [CLAUDE.md](../CLAUDE.md)
-For roadmap and planning, see [NEXT_STEPS.md](../NEXT_STEPS.md)
+For development guidelines, see [CLAUDE.md](../dev/CLAUDE.md)
+For roadmap and planning, see [NEXT_STEPS.md](NEXT_STEPS.md)

@@ -11,7 +11,7 @@ Privacy-focused bookmark management for X/Twitter with React, TypeScript, Chakra
 ## Start Every Session Here
 
 1. **Check current status:** `git log --oneline -5 && git status`
-2. **Review project docs:** [README.md](README.md), [NEXT_STEPS.md](NEXT_STEPS.md)
+2. **Review project docs:** [README.md](../../README.md), [NEXT_STEPS.md](../reference/NEXT_STEPS.md)
 3. **Check recent changes:** Review PR checklist in README.md
 
 ---
@@ -20,10 +20,10 @@ Privacy-focused bookmark management for X/Twitter with React, TypeScript, Chakra
 
 **Key Documentation:**
 
-- [README.md](README.md) - Project overview, setup, and PR checklist
-- [NEXT_STEPS.md](NEXT_STEPS.md) - Roadmap and feature planning
-- [DEPLOYMENT.md](DEPLOYMENT.md) - Deployment guide for Vercel
-- [GITHUB_SETUP.md](GITHUB_SETUP.md) - GitHub configuration
+- [README.md](../../README.md) - Project overview, setup, and PR checklist
+- [NEXT_STEPS.md](../reference/NEXT_STEPS.md) - Roadmap and feature planning
+- [DEPLOYMENT.md](../deployment/DEPLOYMENT.md) - Deployment guide for Vercel
+- [GITHUB_SETUP.md](../deployment/GITHUB_SETUP.md) - GitHub configuration
 - [CODE_QUALITY_AUDIT.md](CODE_QUALITY_AUDIT.md) - Code quality standards
 
 ---
@@ -241,7 +241,7 @@ bookmarksx/
 
 **Morning:**
 
-1. Check [NEXT_STEPS.md](NEXT_STEPS.md) for priorities
+1. Check [NEXT_STEPS.md](../reference/NEXT_STEPS.md) for priorities
 2. Review `git log --oneline -5`
 3. Start: `npm run dev`
 
@@ -261,7 +261,7 @@ bookmarksx/
 **Evening:**
 
 - Commit completed work (type: prefix + description)
-- Update NEXT_STEPS.md if needed
+- Update [NEXT_STEPS.md](../reference/NEXT_STEPS.md) if needed
 
 ---
 
@@ -368,8 +368,8 @@ use context7 react-router          # React Router documentation
 
 **Project questions:**
 
-1. [README.md](README.md) for setup and PR checklist
-2. [NEXT_STEPS.md](NEXT_STEPS.md) for roadmap
+1. [README.md](../../README.md) for setup and PR checklist
+2. [NEXT_STEPS.md](../reference/NEXT_STEPS.md) for roadmap
 3. Recent commits: `git log --oneline -10`
 
 **Claude Code issues:**
@@ -381,10 +381,10 @@ use context7 react-router          # React Router documentation
 
 ## New to Project? Start Here:
 
-1. Read [README.md](README.md)
+1. Read [README.md](../../README.md)
 2. Run `npm install && npm run dev`
 3. Open `http://localhost:5173`
-4. Review [NEXT_STEPS.md](NEXT_STEPS.md) for roadmap
+4. Review [NEXT_STEPS.md](../reference/NEXT_STEPS.md) for roadmap
 5. Check PR checklist in README.md before committing
 6. Review recent commits: `git log --oneline -10`
 
