@@ -11,6 +11,7 @@ import {
   LuLayers,
   LuSettings,
   LuShield,
+  LuSquare,
 } from 'react-icons/lu'
 import { useNavigate } from 'react-router-dom'
 import { DndProvider } from 'react-dnd'
@@ -1480,24 +1481,42 @@ const GettingStartedGuide = () => {
             <Alert.Title>First Steps Checklist</Alert.Title>
             <Alert.Description>
               <VStack alignItems="stretch" gap={2}>
-                <Text fontSize="sm" lineHeight="1.6">
-                  ☐ Import your bookmarks from X/Twitter
-                </Text>
-                <Text fontSize="sm" lineHeight="1.6">
-                  ☐ Create your first collection
-                </Text>
-                <Text fontSize="sm" lineHeight="1.6">
-                  ☐ Add tags to organize bookmarks
-                </Text>
-                <Text fontSize="sm" lineHeight="1.6">
-                  ☐ Try the search and filter features
-                </Text>
-                <Text fontSize="sm" lineHeight="1.6">
-                  ☐ Explore settings and customize your experience
-                </Text>
-                <Text fontSize="sm" lineHeight="1.6">
-                  ☐ Export your data as a backup
-                </Text>
+                <HStack gap={2} alignItems="flex-start">
+                  <LuSquare size={16} style={{ marginTop: '2px', color: 'var(--color-text-tertiary)' }} />
+                  <Text fontSize="sm" lineHeight="1.6">
+                    Import your bookmarks from X/Twitter
+                  </Text>
+                </HStack>
+                <HStack gap={2} alignItems="flex-start">
+                  <LuSquare size={16} style={{ marginTop: '2px', color: 'var(--color-text-tertiary)' }} />
+                  <Text fontSize="sm" lineHeight="1.6">
+                    Create your first collection
+                  </Text>
+                </HStack>
+                <HStack gap={2} alignItems="flex-start">
+                  <LuSquare size={16} style={{ marginTop: '2px', color: 'var(--color-text-tertiary)' }} />
+                  <Text fontSize="sm" lineHeight="1.6">
+                    Add tags to organize bookmarks
+                  </Text>
+                </HStack>
+                <HStack gap={2} alignItems="flex-start">
+                  <LuSquare size={16} style={{ marginTop: '2px', color: 'var(--color-text-tertiary)' }} />
+                  <Text fontSize="sm" lineHeight="1.6">
+                    Try the search and filter features
+                  </Text>
+                </HStack>
+                <HStack gap={2} alignItems="flex-start">
+                  <LuSquare size={16} style={{ marginTop: '2px', color: 'var(--color-text-tertiary)' }} />
+                  <Text fontSize="sm" lineHeight="1.6">
+                    Explore settings and customize your experience
+                  </Text>
+                </HStack>
+                <HStack gap={2} alignItems="flex-start">
+                  <LuSquare size={16} style={{ marginTop: '2px', color: 'var(--color-text-tertiary)' }} />
+                  <Text fontSize="sm" lineHeight="1.6">
+                    Export your data as a backup
+                  </Text>
+                </HStack>
               </VStack>
             </Alert.Description>
           </VStack>
