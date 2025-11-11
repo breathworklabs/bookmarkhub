@@ -52,6 +52,8 @@ const CollectionsActions = memo(() => {
   const isMobile = useIsMobile()
   const resetFilters = useFilterReset()
   const { selectedTags, addTag } = useBookmarkSelectors()
+  const secondaryButtonStyles = useButtonStyles('secondary')
+  const ghostButtonStyles = useButtonStyles('ghost')
 
   // Get the currently active collection
   const activeCollection = collections.find((c) => c.id === activeCollectionId)
@@ -468,7 +470,7 @@ const CollectionsActions = memo(() => {
 
                         {/* Add Tag Button */}
                       <Button
-                        {...useButtonStyles('secondary')}
+                        {...secondaryButtonStyles}
                         size="sm"
                         px={3}
                         py={2}
@@ -485,7 +487,7 @@ const CollectionsActions = memo(() => {
 
                       {/* Manage Tags Button */}
                       <Button
-                        {...useButtonStyles('ghost')}
+                        {...ghostButtonStyles}
                         size="sm"
                         px={2}
                         py={2}

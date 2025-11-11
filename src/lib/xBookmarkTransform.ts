@@ -141,7 +141,7 @@ export function validateXBookmarkData(data: any): {
     const item = data[i]
     if (!item.id) errors.push(`Item ${i}: Missing required field 'id'`)
     if (!item.url) errors.push(`Item ${i}: Missing required field 'url'`)
-    if (!item.text) errors.push(`Item ${i}: Missing required field 'text'`)
+    // text is optional - could be media-only posts
     if (!item.username)
       errors.push(`Item ${i}: Missing required field 'username'`)
     if (!item.display_name)

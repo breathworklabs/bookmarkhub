@@ -186,16 +186,37 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
             const text = await file.text()
             const data = JSON.parse(text)
 
+            console.log('Import data structure:', {
+              isArray: Array.isArray(data),
+              length: Array.isArray(data) ? data.length : 'N/A',
+              firstItem: Array.isArray(data) && data.length > 0 ? {
+                hasTweetId: !!data[0].tweet_id,
+                hasSourceId: !!data[0].source_id,
+                hasUsername: !!data[0].username,
+                hasDisplayName: !!data[0].display_name,
+              } : 'N/A',
+              hasBookmarksField: !!data.bookmarks,
+            })
+
             // Check if this looks like X bookmark data (array with tweet-like structure)
-            if (
+            const isXBookmarkData =
               Array.isArray(data) &&
               data.length > 0 &&
-              data[0].tweet_id &&
+              (data[0].tweet_id || data[0].source_id) &&
               data[0].username
-            ) {
+
+            if (isXBookmarkData) {
+              console.log('Detected X bookmark data, importing...')
               await importXBookmarks(data) // Import all bookmarks
+            } else if (data.bookmarks && Array.isArray(data.bookmarks)) {
+              // Regular export format with bookmarks, settings, metadata
+              console.log('Detected regular export format, importing...')
+              const importBookmarks =
+                useBookmarkStore.getState().importBookmarks
+              await importBookmarks(file)
             } else {
               // Fall back to regular import
+              console.log('Unknown format, trying regular import...')
               const importBookmarks =
                 useBookmarkStore.getState().importBookmarks
               await importBookmarks(file)

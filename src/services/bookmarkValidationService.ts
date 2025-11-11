@@ -25,11 +25,23 @@ export interface ValidationSummary {
 /**
  * Check if a URL is still accessible
  * Uses HEAD request for efficiency
+ *
+ * Note: X/Twitter URLs cannot be validated from client-side due to CORS and anti-bot protection.
+ * These URLs will be marked as valid by default to avoid 403 errors.
  */
 export const validateUrl = async (
   url: string
 ): Promise<{ isValid: boolean; status?: number; error?: string }> => {
   try {
+    // Skip validation for X/Twitter URLs (they block client-side requests)
+    if (url.includes('x.com') || url.includes('twitter.com')) {
+      return {
+        isValid: true,
+        status: 200,
+        error: 'Skipped (X/Twitter URLs cannot be validated client-side)',
+      }
+    }
+
     // Use a CORS proxy for validation to avoid CORS issues
     // In production, this should be replaced with a server-side validation
     const controller = new AbortController()
