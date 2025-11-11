@@ -7,12 +7,14 @@ import {
   Button,
   Heading,
   Link,
+  Image,
 } from '@chakra-ui/react'
 import { useNavigate, Link as RouterLink } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { LuCheck } from 'react-icons/lu'
 import splashContent from '../data/splash-content.json'
 import { useSettingsStore } from '../store/settingsStore'
+import logoImage from '../assets/logo_v2 1.png'
 
 interface FeatureShowcaseProps {
   badge: string
@@ -207,18 +209,21 @@ const SplashPage = () => {
         borderBottom="1px solid rgba(255, 255, 255, 0.1)"
         zIndex={1000}
       >
-        <Heading
-          fontSize="1.5rem"
-          fontWeight="700"
-          css={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
-        >
-          BookmarkX
-        </Heading>
+        <HStack gap={3}>
+          <Image src={logoImage} alt="BookmarkX Logo" h="40px" w="40px" />
+          <Heading
+            fontSize="1.5rem"
+            fontWeight="700"
+            css={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            BookmarkX
+          </Heading>
+        </HStack>
         <Button
           size="lg"
           style={{ background: 'var(--color-blue)' }}
