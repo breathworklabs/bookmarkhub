@@ -1,7 +1,7 @@
 {
   "hero": {
-    "title": "Your Bookmarks, Supercharged",
-    "subtitle": "The most powerful bookmark manager with AI-powered organization, advanced filtering, and seamless sync across all your devices.",
+    "title": "Your Bookmarks, Organized",
+    "subtitle": "A powerful bookmark manager for X/Twitter with smart collections, advanced filtering, and offline-first storage.",
     "ctaText": "Get Started",
     "ctaSecondary": "Learn More"
   },
@@ -25,86 +25,86 @@
   },
   "features": [
     {
-      "badge": "Smart Organization",
-      "title": "Smart Collections",
-      "description": "Let AI do the heavy lifting. Smart Collections automatically organize your bookmarks based on content, topics, and usage patterns. No more manual sorting—just save and let the magic happen.",
+      "badge": "Organization",
+      "title": "Custom Collections",
+      "description": "Organize your bookmarks your way. Create custom collections to group related content, assign bookmarks to multiple collections, and keep everything neatly categorized.",
       "highlights": [
-        "Automatic categorization by topic and content type",
-        "Dynamic collections that update as you save",
-        "Custom rules for personalized organization",
-        "Visual analytics of your browsing interests"
+        "Create unlimited custom collections",
+        "Assign bookmarks to multiple collections",
+        "Visual collection management",
+        "Quick collection switching and filtering"
       ]
     },
     {
-      "badge": "Power Search",
+      "badge": "Search & Filter",
       "title": "Advanced Filtering",
-      "description": "Find exactly what you need in seconds. Filter by tags, dates, domains, authors, and more. Combine multiple filters to create powerful search queries that surface the perfect bookmark every time.",
+      "description": "Find exactly what you need in seconds. Filter by time range, find threads, search for media content, or use tags to narrow down results. Powerful search makes finding bookmarks effortless.",
       "highlights": [
-        "Multi-criteria filtering with AND/OR logic",
-        "Search by domain, author, or publication date",
-        "Save custom filter presets for quick access",
-        "Full-text search across bookmark content"
+        "Filter by time range (today, this week, all time)",
+        "Find thread conversations easily",
+        "Search for bookmarks with media",
+        "Tag-based filtering and search"
       ]
     },
     {
-      "badge": "Seamless Import",
+      "badge": "Import",
       "title": "X/Twitter Import",
-      "description": "Bring all your Twitter/X bookmarks with you. Native import support means one-click migration of all your saved tweets, complete with metadata, images, and thread context. Your digital library, unified.",
+      "description": "Bring all your Twitter/X bookmarks with you. Use our Chrome extension to easily import your saved tweets, complete with metadata, images, and thread context preserved.",
       "highlights": [
-        "One-click import from Twitter/X account",
-        "Preserves tweet threads and media",
-        "Automatic categorization of imported content",
-        "Scheduled sync to keep bookmarks updated"
+        "Chrome extension for easy import",
+        "Preserves tweet metadata and media",
+        "Automatic sync via extension",
+        "Support for both cookies and direct import methods"
       ]
     },
     {
-      "badge": "Productivity Boost",
-      "title": "Bulk Actions",
-      "description": "Manage hundreds of bookmarks at once. Multi-select any number of items and apply tags, move to collections, export, or delete in one go. What used to take hours now takes seconds.",
+      "badge": "Tagging",
+      "title": "Tag Management",
+      "description": "Keep your bookmarks organized with flexible tagging. Add multiple tags to each bookmark, filter by tags, and manage your tag library to build your own organizational system.",
       "highlights": [
-        "Multi-select with keyboard shortcuts",
-        "Batch tagging and categorization",
-        "Mass export in multiple formats",
-        "Undo/redo for all bulk operations"
+        "Add multiple tags per bookmark",
+        "Filter and search by tags",
+        "Visual tag management",
+        "Quick tag assignment and editing"
       ]
     },
     {
-      "badge": "AI-Powered",
-      "title": "Smart Tags",
-      "description": "Never manually tag again. Our AI analyzes each bookmark's content and suggests relevant tags automatically. Accept, reject, or customize—you're always in control while AI does the grunt work.",
+      "badge": "Export & Backup",
+      "title": "Data Export",
+      "description": "Your data, your control. Export all your bookmarks, collections, and tags in standard JSON format. Perfect for backups, migrations, or sharing your curated content.",
       "highlights": [
-        "Intelligent tag suggestions based on content",
-        "Learn from your tagging patterns over time",
-        "Auto-tagging for bulk imports",
-        "Tag hierarchy and relationship mapping"
+        "Export all data in JSON format",
+        "Includes bookmarks, collections, and tags",
+        "Easy re-import from exported files",
+        "Keep full control of your data"
       ]
     },
     {
-      "badge": "Beautiful UI",
-      "title": "Dark Mode",
-      "description": "Easy on the eyes, day or night. Switch seamlessly between light and dark themes, or let the app automatically adjust based on your system preferences. Every detail designed for maximum readability and style.",
+      "badge": "Themes",
+      "title": "Dark & Light Mode",
+      "description": "Easy on the eyes, day or night. Switch between light and dark themes, or let the app automatically adjust based on your system preferences. Designed for comfort and readability.",
       "highlights": [
-        "True dark mode optimized for OLED screens",
-        "Automatic theme switching by time of day",
-        "Custom accent color options",
-        "Respects system preferences"
+        "Dark mode for comfortable viewing",
+        "Light mode for daytime use",
+        "Auto mode follows system preferences",
+        "Instant theme switching"
       ]
     },
     {
-      "badge": "Always Available",
+      "badge": "Local Storage",
       "title": "Offline-First",
-      "description": "Your bookmarks, always accessible. Everything stored locally for instant access, even without internet. Changes sync automatically when you're back online. No connection required, no compromises made.",
+      "description": "Your bookmarks, always accessible. Everything stored locally in your browser for instant access, even without internet. No server required, complete privacy, lightning-fast performance.",
       "highlights": [
-        "Full functionality without internet connection",
-        "Lightning-fast local-first architecture",
-        "Automatic cloud sync when online",
-        "Conflict resolution for multi-device editing"
+        "Full functionality without internet",
+        "Lightning-fast local storage",
+        "Complete data privacy",
+        "No server dependencies"
       ]
     }
   ],
   "cta": {
-    "title": "Ready to Transform Your Bookmarks?",
-    "subtitle": "Join thousands of users who've already made the switch",
+    "title": "Ready to Organize Your Bookmarks?",
+    "subtitle": "Start managing your X/Twitter bookmarks better today",
     "primaryButton": "Get Started"
   }
 }
