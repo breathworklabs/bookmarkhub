@@ -21,7 +21,7 @@ export interface DisplaySettings {
   sortBy: 'date' | 'title' | 'author' | 'domain' // Sorting preference
   sortOrder: 'asc' | 'desc' // Sort direction
   isSidebarCollapsed: boolean // Sidebar collapse state
-  previousSidebarState: boolean | null // Previous sidebar state before navigation
+  previousSidebarState: boolean | null // Previous sidebar state before help navigation
 }
 
 export interface PrivacySettings {

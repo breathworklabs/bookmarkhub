@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Box, Image, Spinner } from '@chakra-ui/react'
+import { Box, Image } from '@chakra-ui/react'
 
 interface LazyImageProps {
   src: string
@@ -38,10 +38,10 @@ const LazyImage = ({
   bottom,
   zIndex,
 }: LazyImageProps) => {
-  const [isLoading, setIsLoading] = useState(true)
+  const imgRef = useRef<HTMLDivElement>(null)
+  const imageRef = useRef<HTMLImageElement>(null)
   const [hasError, setHasError] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
-  const imgRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -61,12 +61,7 @@ const LazyImage = ({
     return () => observer.disconnect()
   }, [])
 
-  const handleLoad = () => {
-    setIsLoading(false)
-  }
-
   const handleError = () => {
-    setIsLoading(false)
     setHasError(true)
   }
 
@@ -124,36 +119,17 @@ const LazyImage = ({
           </Box>
         )
       ) : (
-        <>
-          {/* Loading spinner */}
-          {isLoading && (
-            <Box
-              position="absolute"
-              top="50%"
-              left="50%"
-              transform="translate(-50%, -50%)"
-              zIndex={1}
-            >
-              <Spinner
-                size="sm"
-                style={{ color: 'var(--color-text-tertiary)' }}
-              />
-            </Box>
-          )}
-
-          {/* Actual image */}
-          <Image
-            src={src}
-            alt={alt}
-            w="100%"
-            h="100%"
-            objectFit={objectFit}
-            onLoad={handleLoad}
-            onError={handleError}
-            opacity={isLoading ? 0 : 1}
-            transition="opacity 0.3s ease"
-          />
-        </>
+        // Actual image - no loading spinner for smoother experience with cached images
+        <Image
+          ref={imageRef}
+          src={src}
+          alt={alt}
+          w="100%"
+          h="100%"
+          objectFit={objectFit}
+          onError={handleError}
+          loading="eager"
+        />
       )}
     </Box>
   )

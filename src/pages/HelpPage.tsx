@@ -1,10 +1,10 @@
 import { Box, Flex, VStack, HStack, Text, Button, Code } from '@chakra-ui/react'
-import { Alert } from '@chakra-ui/react/alert'
+import { Alert } from '@chakra-ui/react'
 import { LuArrowLeft, LuBookOpen, LuFolderTree, LuInfo } from 'react-icons/lu'
 import { useNavigate } from 'react-router-dom'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import UnifiedSidebar from '../components/UnifiedSidebar'
 import { useSettingsStore } from '../store/settingsStore'
 
@@ -23,18 +23,33 @@ const HelpPage = () => {
   const navigate = useNavigate()
   const [activeTopic, setActiveTopic] = useState<HelpTopic>('collections')
 
-  // Handle back navigation
-  const handleBackClick = useCallback(() => {
-    // Restore sidebar to previous state if it was stored
-    const prevState = useSettingsStore.getState().display.previousSidebarState
-    if (prevState !== null) {
-      useSettingsStore.getState().setSidebarCollapsed(prevState)
-      // Clear the stored state
-      useSettingsStore.getState().setPreviousSidebarState(null)
+  // Collapse sidebar on mount, restore on unmount
+  useEffect(() => {
+    // Store current sidebar state
+    const currentState = useSettingsStore.getState().display.isSidebarCollapsed
+    useSettingsStore.getState().setPreviousSidebarState(currentState)
+
+    // Collapse sidebar if not already collapsed
+    if (!currentState) {
+      useSettingsStore.getState().setSidebarCollapsed(true)
     }
 
-    // Navigate back to home
-    navigate('/')
+    // Restore on unmount - delayed to avoid animation during navigation
+    return () => {
+      const prevState = useSettingsStore.getState().display.previousSidebarState
+      if (prevState !== null) {
+        // Delay to let navigation complete first
+        setTimeout(() => {
+          useSettingsStore.getState().setSidebarCollapsed(prevState)
+          useSettingsStore.getState().setPreviousSidebarState(null)
+        }, 50)
+      }
+    }
+  }, [])
+
+  // Handle back navigation
+  const handleBackClick = useCallback(() => {
+    navigate('/', { replace: true })
   }, [navigate])
 
   const topics = [
