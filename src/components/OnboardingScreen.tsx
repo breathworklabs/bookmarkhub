@@ -1,5 +1,6 @@
 import { Box, Flex, VStack, Text, Button, HStack } from '@chakra-ui/react'
 import { LuImport, LuBookmarkPlus, LuFolderOpen } from 'react-icons/lu'
+import toast from 'react-hot-toast'
 import { componentStyles } from '../styles/components'
 import { useBookmarkStore } from '../store/bookmarkStore'
 
@@ -9,6 +10,7 @@ const OnboardingScreen = () => {
       const text = await file.text()
       const data = JSON.parse(text)
 
+      let importedCount = 0
       if (
         Array.isArray(data) &&
         data.length > 0 &&
@@ -16,12 +18,29 @@ const OnboardingScreen = () => {
         (data as any)[0].username
       ) {
         await useBookmarkStore.getState().importXBookmarks(data)
+        importedCount = data.length
       } else {
         await useBookmarkStore.getState().importBookmarks(file)
+        // Get count from the imported data
+        const imported = data?.bookmarks || []
+        importedCount = Array.isArray(imported) ? imported.length : 0
       }
+
+      // Show success toast and auto-refresh
+      const message =
+        importedCount === 1
+          ? '✓ Imported 1 bookmark successfully. Refreshing...'
+          : `✓ Imported ${importedCount} bookmarks successfully. Refreshing...`
+
+      toast.success(message, { duration: 2500 })
+
+      // Auto-refresh after showing toast
+      setTimeout(() => {
+        window.location.reload()
+      }, 2500)
     } catch (error) {
       console.error('Import failed:', error)
-      alert(
+      toast.error(
         `Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       )
     }

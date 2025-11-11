@@ -33,6 +33,7 @@ import { useIsMobile } from '../hooks/useMobile'
 import { colors } from '../styles/colors'
 import { useFilterReset } from '../utils/filterUtils'
 import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
+import toast from 'react-hot-toast'
 
 interface SearchHeaderProps {
   onMenuClick?: () => void // For opening mobile drawer
@@ -186,18 +187,6 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
             const text = await file.text()
             const data = JSON.parse(text)
 
-            console.log('Import data structure:', {
-              isArray: Array.isArray(data),
-              length: Array.isArray(data) ? data.length : 'N/A',
-              firstItem: Array.isArray(data) && data.length > 0 ? {
-                hasTweetId: !!data[0].tweet_id,
-                hasSourceId: !!data[0].source_id,
-                hasUsername: !!data[0].username,
-                hasDisplayName: !!data[0].display_name,
-              } : 'N/A',
-              hasBookmarksField: !!data.bookmarks,
-            })
-
             // Check if this looks like X bookmark data (array with tweet-like structure)
             const isXBookmarkData =
               Array.isArray(data) &&
@@ -205,25 +194,47 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
               (data[0].tweet_id || data[0].source_id) &&
               data[0].username
 
+            // Check if bookmarks array contains X bookmark data
+            const hasXBookmarksInObject =
+              data.bookmarks &&
+              Array.isArray(data.bookmarks) &&
+              data.bookmarks.length > 0 &&
+              (data.bookmarks[0].tweet_id || data.bookmarks[0].source_id) &&
+              data.bookmarks[0].username
+
+            let importedCount = 0
+
             if (isXBookmarkData) {
-              console.log('Detected X bookmark data, importing...')
               await importXBookmarks(data) // Import all bookmarks
+              importedCount = data.length
+            } else if (hasXBookmarksInObject) {
+              await importXBookmarks(data.bookmarks) // Import bookmarks array
+              importedCount = data.bookmarks.length
             } else if (data.bookmarks && Array.isArray(data.bookmarks)) {
               // Regular export format with bookmarks, settings, metadata
-              console.log('Detected regular export format, importing...')
               const importBookmarks =
                 useBookmarkStore.getState().importBookmarks
               await importBookmarks(file)
+              importedCount = data.bookmarks.length
             } else {
               // Fall back to regular import
-              console.log('Unknown format, trying regular import...')
               const importBookmarks =
                 useBookmarkStore.getState().importBookmarks
               await importBookmarks(file)
+              importedCount = data.bookmarks?.length || 0
             }
 
-            // Only refresh on successful import
-            window.location.reload()
+            // Show success message
+            const message = importedCount === 1
+              ? '✓ Imported 1 bookmark successfully. Refreshing...'
+              : `✓ Imported ${importedCount} bookmarks successfully. Refreshing...`
+
+            toast.success(message, { duration: 2500 })
+
+            // Refresh after showing the message
+            setTimeout(() => {
+              window.location.reload()
+            }, 2500)
           } else {
             alert('Invalid file type. Please upload a .json or .zip file.')
           }
