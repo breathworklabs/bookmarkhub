@@ -362,35 +362,6 @@ const SplashPage = () => {
               </Text>
             </Box>
           </Box>
-
-          {/* Stats Bar */}
-          <Flex
-            justify="center"
-            gap={{ base: 6, md: 12 }}
-            mt={12}
-            flexWrap="wrap"
-          >
-            {splashContent.stats.map((stat, i) => (
-              <VStack key={i} textAlign="center">
-                <Heading
-                  fontSize="2rem"
-                  fontWeight="700"
-                  css={{
-                    background:
-                      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }}
-                >
-                  {stat.number}
-                </Heading>
-                <Text color="#a0a0a0" fontSize="0.9rem" mt={2}>
-                  {stat.label}
-                </Text>
-              </VStack>
-            ))}
-          </Flex>
         </Box>
       </Flex>
 

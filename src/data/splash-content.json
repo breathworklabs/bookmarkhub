@@ -2,7 +2,7 @@
   "hero": {
     "title": "Your Bookmarks, Supercharged",
     "subtitle": "The most powerful bookmark manager with AI-powered organization, advanced filtering, and seamless sync across all your devices.",
-    "ctaText": "Start Free Trial",
+    "ctaText": "Get Started",
     "ctaSecondary": "Learn More"
   },
   "stats": [
@@ -105,6 +105,6 @@
   "cta": {
     "title": "Ready to Transform Your Bookmarks?",
     "subtitle": "Join thousands of users who've already made the switch",
-    "primaryButton": "Start Free Trial"
+    "primaryButton": "Get Started"
   }
 }
