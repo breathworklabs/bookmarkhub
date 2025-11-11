@@ -15,28 +15,21 @@ import {
   LuInfo,
 } from 'react-icons/lu'
 import { useNavigate } from 'react-router-dom'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import UnifiedSidebar from '../UnifiedSidebar'
 
 const TermsOfService = () => {
   const navigate = useNavigate()
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <Flex h="100vh" w="100vw">
-        {/* Sidebar */}
-        <UnifiedSidebar />
-
-        {/* Main Content */}
-        <Flex
-          flex={1}
-          direction="column"
-          w="100%"
-          overflowY="auto"
-          p={8}
-          style={{ background: 'var(--color-bg-primary)' }}
-        >
+    <Flex h="100vh" w="100vw">
+      {/* Main Content */}
+      <Flex
+        flex={1}
+        direction="column"
+        w="100%"
+        overflowY="auto"
+        p={8}
+        style={{ background: 'var(--color-bg-primary)' }}
+      >
           <Box maxW="800px" mx="auto" w="100%">
             {/* Back Button */}
             <Button
@@ -554,7 +547,6 @@ const TermsOfService = () => {
           </Box>
         </Flex>
       </Flex>
-    </DndProvider>
   )
 }
 

@@ -16,18 +16,12 @@ import {
   LuUserCheck,
 } from 'react-icons/lu'
 import { useNavigate } from 'react-router-dom'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import UnifiedSidebar from '../UnifiedSidebar'
 
 const PrivacyPolicy = () => {
   const navigate = useNavigate()
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <Flex h="100vh" w="100vw">
-        {/* Sidebar */}
-        <UnifiedSidebar />
+    <Flex h="100vh" w="100vw">
 
         {/* Main Content */}
         <Flex
@@ -801,7 +795,6 @@ const PrivacyPolicy = () => {
           </Box>
         </Flex>
       </Flex>
-    </DndProvider>
   )
 }
 
