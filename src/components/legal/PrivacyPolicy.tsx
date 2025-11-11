@@ -35,7 +35,7 @@ const PrivacyPolicy = () => {
           <Box maxW="800px" mx="auto" w="100%">
             {/* Back Button */}
             <Button
-              onClick={() => navigate('/settings')}
+              onClick={() => navigate(-1)}
               variant="ghost"
               style={{ color: 'var(--color-text-secondary)' }}
               _hover={{
@@ -50,7 +50,7 @@ const PrivacyPolicy = () => {
               size="sm"
             >
               <LuArrowLeft size={18} style={{ marginRight: '8px' }} />
-              Back to Settings
+              Back
             </Button>
 
             {/* Privacy Policy Card */}
