@@ -189,7 +189,7 @@ const SettingsPage = () => {
           <Box maxW="800px" mx="auto" w="100%">
             {/* Back Button */}
             <Button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/', { replace: true })}
               variant="ghost"
               style={{ color: 'var(--color-text-secondary)' }}
               _hover={{

@@ -12,7 +12,7 @@ import ReactGA from 'react-ga4'
  * Sends Core Web Vitals to Google Analytics 4
  */
 export const initPerformanceMonitoring = () => {
-  function sendToGoogleAnalytics({ name, delta, value, id }: Metric) {
+  function sendToGoogleAnalytics({ name, delta, id }: Metric) {
     // Send to GA4
     ReactGA.event({
       category: 'Web Vitals',
@@ -22,14 +22,6 @@ export const initPerformanceMonitoring = () => {
       nonInteraction: true,
     })
 
-    // Log in development
-    if (import.meta.env.DEV) {
-      console.log(`[Performance] ${name}:`, {
-        value: Math.round(value),
-        delta: Math.round(delta),
-        id,
-      })
-    }
   }
 
   // Track all Core Web Vitals
@@ -72,8 +64,6 @@ export const trackOperationPerformance = (
       label: `${operation} (${duration}ms)`,
       nonInteraction: true,
     })
-  } else if (import.meta.env.DEV) {
-    console.log(`[Performance] ${operation}: ${duration}ms`)
   }
 
   return duration
@@ -111,15 +101,6 @@ export const trackPagePerformance = () => {
       })
     }
   })
-
-  if (import.meta.env.DEV) {
-    console.log(
-      '[Performance] Page Timing:',
-      Object.fromEntries(
-        Object.entries(metrics).map(([k, v]) => [k, `${Math.round(v)}ms`])
-      )
-    )
-  }
 }
 
 /**
@@ -152,12 +133,6 @@ export const trackStorageMetrics = async () => {
           value: Math.round(percentUsed),
           nonInteraction: true,
         })
-      }
-
-      if (import.meta.env.DEV) {
-        console.log(
-          `[Performance] Storage: ${Math.round(percentUsed)}% (${Math.round((usage || 0) / 1024 / 1024)}MB / ${Math.round((quota || 0) / 1024 / 1024)}MB)`
-        )
       }
     } catch (error) {
       console.error('[Performance] Failed to track storage metrics:', error)
@@ -235,11 +210,10 @@ export const withPerformanceTracking = async <T>(
  * Track memory usage (if available)
  */
 export const trackMemoryUsage = () => {
-  // @ts-ignore - performance.memory is non-standard but available in Chrome
+  // @ts-expect-error - performance.memory is non-standard but available in Chrome
   if (window.performance && window.performance.memory) {
-    // @ts-ignore
-    const { usedJSHeapSize, totalJSHeapSize, jsHeapSizeLimit } =
-      window.performance.memory
+    // @ts-expect-error - performance.memory is non-standard but available in Chrome
+    const { usedJSHeapSize, jsHeapSizeLimit } = window.performance.memory
     const percentUsed = (usedJSHeapSize / jsHeapSizeLimit) * 100
 
     ReactGA.event({
@@ -253,12 +227,6 @@ export const trackMemoryUsage = () => {
     if (percentUsed > 80) {
       console.warn(
         `[Performance] High memory usage: ${Math.round(percentUsed)}%`
-      )
-    }
-
-    if (import.meta.env.DEV) {
-      console.log(
-        `[Performance] Memory: ${Math.round(usedJSHeapSize / 1024 / 1024)}MB / ${Math.round(jsHeapSizeLimit / 1024 / 1024)}MB`
       )
     }
   }
