@@ -33,6 +33,7 @@ import { useIsMobile } from '../hooks/useMobile'
 import { colors } from '../styles/colors'
 import { useFilterReset } from '../utils/filterUtils'
 import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
+import { useSettingsStore } from '../store/settingsStore'
 
 interface SearchHeaderProps {
   onMenuClick?: () => void // For opening mobile drawer
@@ -233,6 +234,16 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
   }, [showAddBookmark, addBookmark])
 
   const handleHelpClick = useCallback(() => {
+    // Store current sidebar state before navigating
+    const currentSidebarState = useSettingsStore.getState().display.isSidebarCollapsed
+    useSettingsStore.getState().setPreviousSidebarState(currentSidebarState)
+
+    // Collapse sidebar if not already collapsed
+    if (!currentSidebarState) {
+      useSettingsStore.getState().setSidebarCollapsed(true)
+    }
+
+    // Navigate to help page
     navigate('/help')
   }, [navigate])
 

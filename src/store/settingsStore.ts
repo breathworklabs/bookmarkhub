@@ -21,6 +21,7 @@ export interface DisplaySettings {
   sortBy: 'date' | 'title' | 'author' | 'domain' // Sorting preference
   sortOrder: 'asc' | 'desc' // Sort direction
   isSidebarCollapsed: boolean // Sidebar collapse state
+  previousSidebarState: boolean | null // Previous sidebar state before navigation
 }
 
 export interface PrivacySettings {
@@ -51,6 +52,8 @@ export interface SettingsState {
   setSortBy: (sortBy: DisplaySettings['sortBy']) => void
   setSortOrder: (sortOrder: DisplaySettings['sortOrder']) => void
   toggleSidebarCollapsed: () => void
+  setPreviousSidebarState: (state: boolean | null) => void
+  setSidebarCollapsed: (collapsed: boolean) => void
 
   // Privacy settings actions
   updatePrivacySettings: (settings: Partial<PrivacySettings>) => void
@@ -83,6 +86,7 @@ const defaultDisplaySettings: DisplaySettings = {
   sortBy: 'date',
   sortOrder: 'desc',
   isSidebarCollapsed: false,
+  previousSidebarState: null,
 }
 
 const defaultPrivacySettings: PrivacySettings = {
@@ -257,6 +261,16 @@ export const useSettingsStore = create<SettingsState>()(
             ...state.display,
             isSidebarCollapsed: !state.display.isSidebarCollapsed,
           },
+        })),
+
+      setPreviousSidebarState: (state: boolean | null) =>
+        set((prevState) => ({
+          display: { ...prevState.display, previousSidebarState: state },
+        })),
+
+      setSidebarCollapsed: (collapsed) =>
+        set((state) => ({
+          display: { ...state.display, isSidebarCollapsed: collapsed },
         })),
 
       // Privacy settings actions

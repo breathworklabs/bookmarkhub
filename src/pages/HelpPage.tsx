@@ -4,8 +4,9 @@ import { LuArrowLeft, LuBookOpen, LuFolderTree, LuInfo } from 'react-icons/lu'
 import { useNavigate } from 'react-router-dom'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import UnifiedSidebar from '../components/UnifiedSidebar'
+import { useSettingsStore } from '../store/settingsStore'
 
 type HelpTopic =
   | 'getting-started'
@@ -21,6 +22,20 @@ type HelpTopic =
 const HelpPage = () => {
   const navigate = useNavigate()
   const [activeTopic, setActiveTopic] = useState<HelpTopic>('collections')
+
+  // Handle back navigation
+  const handleBackClick = useCallback(() => {
+    // Restore sidebar to previous state if it was stored
+    const prevState = useSettingsStore.getState().display.previousSidebarState
+    if (prevState !== null) {
+      useSettingsStore.getState().setSidebarCollapsed(prevState)
+      // Clear the stored state
+      useSettingsStore.getState().setPreviousSidebarState(null)
+    }
+
+    // Navigate back to home
+    navigate('/')
+  }, [navigate])
 
   const topics = [
     {
@@ -84,7 +99,7 @@ const HelpPage = () => {
           <Box maxW="1200px" mx="auto" w="100%">
             {/* Back Button */}
             <Button
-              onClick={() => navigate('/')}
+              onClick={handleBackClick}
               variant="ghost"
               style={{ color: 'var(--color-text-secondary)' }}
               _hover={{
