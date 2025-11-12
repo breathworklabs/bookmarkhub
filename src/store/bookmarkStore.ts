@@ -22,28 +22,25 @@ import {
   type ValidationResult,
   type ValidationSummary,
 } from '../services/bookmarkValidationService'
+import {
+  addActivityToLogs,
+  getRecentLogs,
+  type ActivityLog,
+} from '../utils/activityLogger'
+import {
+  createFilterPreset,
+  loadFilterPresets,
+  addPreset,
+  deletePreset,
+  updatePreset,
+  findPresetById,
+  type SavedFilterPreset,
+} from '../utils/filterPresets'
 
 export interface DateRangeFilter {
   type: 'all' | 'today' | 'week' | 'month' | 'custom'
   customStart?: Date
   customEnd?: Date
-}
-
-export interface SavedFilterPreset {
-  id: string
-  name: string
-  description?: string
-  filters: {
-    selectedTags: string[]
-    searchQuery: string
-    authorFilter: string
-    domainFilter: string
-    contentTypeFilter: string
-    dateRangeFilter: DateRangeFilter
-    quickFilters: string[]
-  }
-  createdAt: string
-  updatedAt: string
 }
 
 export interface PaginationState {
@@ -54,12 +51,9 @@ export interface PaginationState {
   isLoading: boolean
 }
 
-export interface ActivityLog {
-  id: string
-  action: string
-  timestamp: Date
-  details?: string
-}
+// Re-export types from utility modules
+export type { ActivityLog } from '../utils/activityLogger'
+export type { SavedFilterPreset } from '../utils/filterPresets'
 
 interface BookmarkState {
   // State
@@ -248,7 +242,7 @@ export const useBookmarkStore = create<BookmarkState>()(
       recentActivity: [],
 
       // Saved filter presets initial state
-      savedFilterPresets: [],
+      savedFilterPresets: loadFilterPresets(),
 
       // Bookmark validation initial state
       validationResults: [],
@@ -260,22 +254,7 @@ export const useBookmarkStore = create<BookmarkState>()(
       initialize: async () => {
         const startTime = Date.now()
         try {
-          // Load saved filter presets from localStorage
-          try {
-            const savedPresets = localStorage.getItem(
-              'x-bookmark-filter-presets'
-            )
-            if (savedPresets) {
-              const presets: SavedFilterPreset[] = JSON.parse(savedPresets)
-              set(
-                { savedFilterPresets: presets },
-                false,
-                'initialize:loadPresets'
-              )
-            }
-          } catch (error) {
-            logger.warn('Failed to load filter presets', error)
-          }
+          // Filter presets are now loaded during store initialization (see savedFilterPresets: loadFilterPresets())
 
           // Clean up old trash items (30+ days old)
           try {
@@ -1144,34 +1123,21 @@ export const useBookmarkStore = create<BookmarkState>()(
       // Activity tracking actions
       addActivityLog: (action: string, details?: string) => {
         const state = get()
-        const newActivity: ActivityLog = {
-          id: `${Date.now()}-${Math.random()}`,
-          action,
-          timestamp: new Date(),
-          details,
-        }
-
-        // Keep only the last 50 activities
-        const updatedActivity = [newActivity, ...state.recentActivity].slice(
-          0,
-          50
-        )
+        const updatedActivity = addActivityToLogs(state.recentActivity, action, details)
         set({ recentActivity: updatedActivity }, false, 'addActivityLog')
       },
 
       getRecentActivity: (limit = 10) => {
         const state = get()
-        return state.recentActivity.slice(0, limit)
+        return getRecentLogs(state.recentActivity, limit)
       },
 
       // Saved filter preset actions
       saveFilterPreset: (name: string, description?: string) => {
         const state = get()
-        const newPreset: SavedFilterPreset = {
-          id: `preset-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+        const newPreset = createFilterPreset(
           name,
-          description,
-          filters: {
+          {
             selectedTags: [...state.selectedTags],
             searchQuery: state.searchQuery,
             authorFilter: state.authorFilter,
@@ -1180,27 +1146,16 @@ export const useBookmarkStore = create<BookmarkState>()(
             dateRangeFilter: { ...state.dateRangeFilter },
             quickFilters: [...state.quickFilters],
           },
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        }
+          description
+        )
 
-        const updatedPresets = [...state.savedFilterPresets, newPreset]
+        const updatedPresets = addPreset(state.savedFilterPresets, newPreset)
         set({ savedFilterPresets: updatedPresets }, false, 'saveFilterPreset')
-
-        // Persist to localStorage
-        try {
-          localStorage.setItem(
-            'x-bookmark-filter-presets',
-            JSON.stringify(updatedPresets)
-          )
-        } catch (error) {
-          logger.error('Failed to save filter presets', error)
-        }
       },
 
       loadFilterPreset: (presetId: string) => {
         const state = get()
-        const preset = state.savedFilterPresets.find((p) => p.id === presetId)
+        const preset = findPresetById(state.savedFilterPresets, presetId)
 
         if (preset) {
           set(
@@ -1224,20 +1179,8 @@ export const useBookmarkStore = create<BookmarkState>()(
 
       deleteFilterPreset: (presetId: string) => {
         const state = get()
-        const updatedPresets = state.savedFilterPresets.filter(
-          (p) => p.id !== presetId
-        )
+        const updatedPresets = deletePreset(state.savedFilterPresets, presetId)
         set({ savedFilterPresets: updatedPresets }, false, 'deleteFilterPreset')
-
-        // Persist to localStorage
-        try {
-          localStorage.setItem(
-            'x-bookmark-filter-presets',
-            JSON.stringify(updatedPresets)
-          )
-        } catch (error) {
-          logger.error('Failed to save filter presets', error)
-        }
       },
 
       updateFilterPreset: (
@@ -1246,28 +1189,13 @@ export const useBookmarkStore = create<BookmarkState>()(
         description?: string
       ) => {
         const state = get()
-        const updatedPresets = state.savedFilterPresets.map((p) => {
-          if (p.id === presetId) {
-            return {
-              ...p,
-              name,
-              description,
-              updatedAt: new Date().toISOString(),
-            }
-          }
-          return p
-        })
+        const updatedPresets = updatePreset(
+          state.savedFilterPresets,
+          presetId,
+          name,
+          description
+        )
         set({ savedFilterPresets: updatedPresets }, false, 'updateFilterPreset')
-
-        // Persist to localStorage
-        try {
-          localStorage.setItem(
-            'x-bookmark-filter-presets',
-            JSON.stringify(updatedPresets)
-          )
-        } catch (error) {
-          logger.error('Failed to save filter presets', error)
-        }
       },
 
       // Bookmark validation actions
