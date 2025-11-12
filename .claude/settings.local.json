@@ -12,7 +12,10 @@
       "Bash(npm run test:*)",
       "Bash(cat:*)",
       "WebSearch",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm outdated:*)",
+      "Bash(npm run test:coverage:*)",
+      "Bash(npm audit:*)"
     ],
     "deny": [],
     "ask": []

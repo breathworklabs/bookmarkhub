@@ -1,6 +1,7 @@
 import { Box } from '@chakra-ui/react'
 import { memo, useMemo } from 'react'
 import { type Bookmark } from '../../types/bookmark'
+import { sanitizeBookmarkContent } from '../../utils/sanitization'
 
 interface BookmarkContentProps {
   bookmark: Bookmark
@@ -9,11 +10,12 @@ interface BookmarkContentProps {
 
 const BookmarkContent = memo(({ bookmark, hasMedia }: BookmarkContentProps) => {
   const getContent = useMemo(() => {
-    return (
+    const rawContent =
       (bookmark as any).content ||
       (bookmark as any).description ||
       'No content available'
-    )
+    // Sanitize HTML to prevent XSS attacks
+    return sanitizeBookmarkContent(rawContent)
   }, [(bookmark as any).content, (bookmark as any).description])
 
   return (
