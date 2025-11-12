@@ -1,169 +1,132 @@
+/**
+ * React Error Boundary component
+ * Catches JavaScript errors anywhere in the child component tree
+ * and displays a fallback UI instead of crashing the entire app
+ */
+
 import { Component, ErrorInfo, ReactNode } from 'react'
-import { Box, VStack, Text, Button, HStack } from '@chakra-ui/react'
-import { LuTriangleAlert, LuRefreshCw } from 'react-icons/lu'
-import {
-  createErrorHandler,
-  createUserFriendlyMessage,
-  type AppError,
-} from '../utils/errorHandling'
+import { Box, Button, Heading, Text, VStack, Code } from '@chakra-ui/react'
+import { logger } from '../lib/logger'
 
 interface Props {
   children: ReactNode
   fallback?: ReactNode
-  onError?: (error: AppError) => void
+  onReset?: () => void
   context?: string
 }
 
 interface State {
   hasError: boolean
-  error: AppError | null
+  error: Error | null
+  errorInfo: ErrorInfo | null
 }
 
-/**
- * Error Boundary component for catching and handling React errors
- */
 export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props)
-    this.state = { hasError: false, error: null }
+  public state: State = {
+    hasError: false,
+    error: null,
+    errorInfo: null,
   }
 
-  static getDerivedStateFromError(error: Error): State {
-    const errorHandler = createErrorHandler('ErrorBoundary')
-    const standardError = errorHandler(error)
-
-    return {
-      hasError: true,
-      error: standardError,
-    }
+  public static getDerivedStateFromError(error: Error): Partial<State> {
+    return { hasError: true, error }
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    const errorHandler = createErrorHandler(
-      this.props.context || 'ErrorBoundary'
-    )
-    const standardError = errorHandler(error, {
-      action: 'componentDidCatch',
-      component: errorInfo.componentStack || undefined,
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    const context = this.props.context || 'Unknown component'
+
+    logger.error(`Error in ${context}`, error, {
+      context: {
+        componentStack: errorInfo.componentStack,
+        errorBoundary: context,
+      },
     })
 
-    this.setState({ error: standardError })
-
-    // Call custom error handler if provided
-    if (this.props.onError) {
-      this.props.onError(standardError)
-    }
+    this.setState({
+      error,
+      errorInfo,
+    })
   }
 
-  handleRetry = () => {
-    this.setState({ hasError: false, error: null })
+  private handleReset = () => {
+    this.setState({
+      hasError: false,
+      error: null,
+      errorInfo: null,
+    })
+
+    this.props.onReset?.()
   }
 
-  render() {
+  public render() {
     if (this.state.hasError) {
-      // Use custom fallback if provided
       if (this.props.fallback) {
         return this.props.fallback
       }
 
-      // Default error UI
       return (
         <Box
           p={8}
-          style={{ background: 'var(--color-bg-tertiary)' }}
-          border="1px solid var(--color-error)"
-          borderRadius="8px"
-          maxW="500px"
+          maxW="2xl"
           mx="auto"
           mt={8}
+          borderWidth="1px"
+          borderRadius="lg"
+          bg="red.50"
+          borderColor="red.200"
         >
-          <VStack gap={4} alignItems="center" textAlign="center">
-            <Box color="var(--color-error)">
-              <LuTriangleAlert size={48} />
-            </Box>
+          <VStack gap={4} align="stretch">
+            <Heading size="lg" color="red.700">
+              Something went wrong
+            </Heading>
 
-            <VStack gap={2}>
-              <Text
-                fontSize="18px"
-                fontWeight="600"
-                style={{ color: 'var(--color-text-primary)' }}
-              >
-                Something went wrong
-              </Text>
+            <Text color="red.600">
+              {this.props.context
+                ? `An error occurred in ${this.props.context}`
+                : 'An unexpected error occurred'}
+            </Text>
 
-              {this.state.error && (
-                <Text
-                  fontSize="14px"
-                  style={{ color: 'var(--color-text-tertiary)' }}
-                  maxW="400px"
-                >
-                  {createUserFriendlyMessage(this.state.error)}
-                </Text>
-              )}
-            </VStack>
-
-            <HStack gap={3}>
-              <Button
-                size="sm"
-                style={{ background: 'var(--color-blue)' }}
-                color="white"
-                _hover={{ bg: 'var(--color-blue-hover)' }}
-                onClick={this.handleRetry}
-              >
-                <LuRefreshCw size={16} style={{ marginRight: '8px' }} />
-                Try Again
-              </Button>
-
-              <Button
-                size="sm"
-                variant="outline"
-                style={{
-                  borderColor: 'var(--color-border)',
-                  color: 'var(--color-text-tertiary)',
-                }}
-                _hover={{
-                  borderColor: 'var(--color-border-hover)',
-                  color: 'var(--color-text-primary)',
-                }}
-                onClick={() => window.location.reload()}
-              >
-                Reload Page
-              </Button>
-            </HStack>
-
-            {process.env.NODE_ENV === 'development' && this.state.error && (
-              <Box
-                mt={4}
-                p={3}
-                style={{ background: 'var(--color-bg-primary)' }}
-                border="1px solid var(--color-border)"
-                borderRadius="4px"
-                w="100%"
-              >
-                <Text
-                  fontSize="12px"
-                  style={{ color: 'var(--color-text-tertiary)' }}
-                  fontFamily="mono"
-                >
-                  <strong>Error Details:</strong>
-                  <br />
-                  {this.state.error.message}
-                  <br />
-                  {this.state.error.context?.component && (
-                    <>
-                      Component: {this.state.error.context.component}
-                      <br />
-                    </>
-                  )}
-                  {this.state.error.timestamp && (
-                    <>
-                      Time:{' '}
-                      {new Date(this.state.error.timestamp).toLocaleString()}
-                    </>
-                  )}
-                </Text>
-              </Box>
+            {this.state.error && (
+              <Code p={4} borderRadius="md" bg="red.100" color="red.800" fontSize="sm">
+                {this.state.error.message}
+              </Code>
             )}
+
+            {import.meta.env.DEV && this.state.errorInfo && (
+              <details>
+                <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
+                  Component Stack (Dev Only)
+                </summary>
+                <Code
+                  p={4}
+                  mt={2}
+                  borderRadius="md"
+                  bg="gray.100"
+                  fontSize="xs"
+                  whiteSpace="pre-wrap"
+                  display="block"
+                >
+                  {this.state.errorInfo.componentStack}
+                </Code>
+              </details>
+            )}
+
+            <Button
+              colorScheme="red"
+              onClick={this.handleReset}
+              size="md"
+              mt={4}
+            >
+              Try Again
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => window.location.reload()}
+              size="sm"
+            >
+              Reload Page
+            </Button>
           </VStack>
         </Box>
       )
@@ -173,4 +136,18 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-export default ErrorBoundary
+export const ErrorBoundarySection = ({
+  children,
+  sectionName,
+  onReset,
+}: {
+  children: ReactNode
+  sectionName: string
+  onReset?: () => void
+}) => {
+  return (
+    <ErrorBoundary context={sectionName} onReset={onReset}>
+      {children}
+    </ErrorBoundary>
+  )
+}
