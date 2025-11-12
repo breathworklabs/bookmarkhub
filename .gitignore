@@ -42,5 +42,10 @@ coverage/
 *.tmp
 *.temp
 
+# Test data should not be in public/
+public/test*.js
+public/test*.json
+public/*test*.json
+
 *storybook.log
 storybook-static

@@ -1,0 +1,38 @@
+{
+  "name": "BookmarkX - Privacy-First Bookmark Manager",
+  "short_name": "BookmarkX",
+  "description": "Privacy-focused bookmark management for X/Twitter. Local-first, no tracking, works completely offline.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#1DA1F2",
+  "orientation": "any",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/logo_v2 1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Add Bookmark",
+      "short_name": "Add",
+      "description": "Quickly add a new bookmark",
+      "url": "/?action=add",
+      "icons": []
+    },
+    {
+      "name": "Search",
+      "short_name": "Search",
+      "description": "Search your bookmarks",
+      "url": "/?action=search",
+      "icons": []
+    }
+  ],
+  "prefer_related_applications": false
+}
