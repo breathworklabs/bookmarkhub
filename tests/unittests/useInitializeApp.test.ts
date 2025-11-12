@@ -3,6 +3,7 @@ import { renderHook, waitFor, act } from '@testing-library/react'
 import { useInitializeApp } from '../../src/hooks/useInitializeApp'
 import { useBookmarkStore } from '../../src/store/bookmarkStore'
 import { useCollectionsStore } from '../../src/store/collectionsStore'
+import { useSettingsStore } from '../../src/store/settingsStore'
 import toast from 'react-hot-toast'
 import * as analytics from '../../src/lib/analytics'
 import * as performance from '../../src/lib/performance'
@@ -23,6 +24,17 @@ vi.mock('../../src/lib/performance', () => ({
   initAllPerformanceMonitoring: vi.fn(),
 }))
 
+// Mock localStorageService
+vi.mock('../../src/lib/localStorage', () => ({
+  localStorageService: {
+    getHasBeenCleared: vi.fn(() => false),
+    getLastImportSource: vi.fn(() => null),
+    setLastImportSource: vi.fn(),
+    getBookmarks: vi.fn(async () => []),
+    getCollections: vi.fn(async () => []),
+  },
+}))
+
 describe('useInitializeApp', () => {
   let localStorageData: Record<string, string> = {}
   let messageListeners: Array<(event: MessageEvent) => void> = []
@@ -39,6 +51,18 @@ describe('useInitializeApp', () => {
       collections: [],
       isLoading: false,
       error: null,
+    })
+
+    // Configure settingsStore with valid autoSyncInterval
+    useSettingsStore.setState({
+      extension: {
+        autoSyncInterval: '5min',
+        syncNotifications: true,
+        defaultTags: [],
+        importDuplicates: 'skip',
+        autoOpenApp: false,
+        defaultCollection: null,
+      },
     })
 
     // Mock localStorage

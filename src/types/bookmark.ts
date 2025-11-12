@@ -3,6 +3,27 @@
  * Local-first, privacy-focused bookmark management
  */
 
+// Platform-specific metadata types (discriminated union)
+export interface XTwitterMetadata {
+  platform: 'x.com'
+  tweet_date: string
+  extracted_at: string
+  username: string
+  display_name: string
+  has_video: boolean
+  images?: string[]
+  profile_image_normal?: string
+  profile_image_bigger?: string
+}
+
+export interface GenericWebMetadata {
+  platform: 'web' | 'other'
+  [key: string]: unknown
+}
+
+// Discriminated union for all metadata types
+export type BookmarkMetadata = XTwitterMetadata | GenericWebMetadata
+
 // Core bookmark interface for localStorage
 export interface Bookmark {
   id: number
@@ -28,7 +49,7 @@ export interface Bookmark {
   tags: string[]
   collections: string[] // Array of collection IDs
   primaryCollection?: string // Main collection
-  metadata?: any
+  metadata?: BookmarkMetadata
   created_at: string
   updated_at: string
 }

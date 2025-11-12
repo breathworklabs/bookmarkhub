@@ -939,7 +939,12 @@ describe('Filter Functionality', () => {
             id: 140,
             created_at: twentyFiveHoursAgo.toISOString(), // old created_at
             metadata: {
+              platform: 'x.com' as const,
               tweet_date: twelveHoursAgo.toISOString(), // recent tweet_date
+              extracted_at: twelveHoursAgo.toISOString(),
+              username: 'testuser',
+              display_name: 'Test User',
+              has_video: false,
             },
           },
         ]

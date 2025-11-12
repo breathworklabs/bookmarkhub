@@ -192,11 +192,13 @@ describe('Twitter Archive Import', () => {
 
       expect(result.metadata).toBeDefined()
       expect(result.metadata).toMatchObject({
-        tweet_id: '1234567890',
+        platform: 'x.com',
+        tweet_date: '2024-01-01T12:00:00.000Z',
         username: 'testuser',
         display_name: 'Test User',
-        imported_from: 'twitter_archive',
+        has_video: false,
       })
+      expect(result.metadata).toHaveProperty('extracted_at')
     })
 
     it('should handle bookmarks with media', () => {

@@ -1,4 +1,4 @@
-import type { BookmarkInsert } from '../types/bookmark'
+import type { BookmarkInsert, XTwitterMetadata } from '../types/bookmark'
 import { DataProcessingService } from '../services/dataProcessingService'
 
 // X/Twitter bookmark data structure from the JSON file
@@ -77,6 +77,7 @@ export function transformXBookmark(
     tags: platformTags,
     collections: [],
     metadata: {
+      platform: 'x.com',
       tweet_date: xBookmark.tweet_date,
       extracted_at: xBookmark.extracted_at,
       username: xBookmark.username,
@@ -87,7 +88,7 @@ export function transformXBookmark(
         normalProfileImages.length > 0 ? normalProfileImages[0] : undefined,
       profile_image_bigger:
         biggerProfileImages.length > 0 ? biggerProfileImages[0] : undefined,
-    },
+    } satisfies XTwitterMetadata,
   }
 
   return bookmark

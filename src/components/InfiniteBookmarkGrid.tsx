@@ -3,6 +3,7 @@ import { memo, useCallback, useEffect } from 'react'
 import { usePaginatedBookmarksOptimized } from '../hooks/composite/usePaginatedBookmarksOptimized'
 import { useInfiniteScrollObserver } from '../hooks/useIntersectionObserver'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { useSettingsStore } from '../store/settingsStore'
 import BookmarkCard from './BookmarkCard/BookmarkCard'
 import BookmarkList from './BookmarkList'
 
@@ -11,10 +12,9 @@ const InfiniteBookmarkGrid = memo(() => {
     usePaginatedBookmarksOptimized()
 
   // View mode
-  const viewMode = useBookmarkStore((state) => state.viewMode)
+  const viewMode = useSettingsStore((state) => state.display.viewMode)
 
   // Selection management
-  useBookmarkStore((state) => state.selectedBookmarks)
   const setSelectedBookmarks = useBookmarkStore(
     (state) => state.setSelectedBookmarks
   )

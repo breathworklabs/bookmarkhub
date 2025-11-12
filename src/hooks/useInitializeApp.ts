@@ -5,6 +5,7 @@ import { useCollectionsStore } from '../store/collectionsStore'
 import { useSettingsStore } from '../store/settingsStore'
 import { initGA } from '../lib/analytics'
 import { initAllPerformanceMonitoring } from '../lib/performance'
+import { localStorageService } from '../lib/localStorage'
 
 export const useInitializeApp = () => {
   const [hasExistingBookmarks, setHasExistingBookmarks] = useState<
@@ -71,7 +72,6 @@ export const useInitializeApp = () => {
         const { count, showNotification = true } = event.data
 
         // Check if user recently cleared data - don't auto-load in that case
-        const { localStorageService } = require('../lib/localStorage')
         if (localStorageService.getHasBeenCleared()) {
           console.log('Extension sync ignored: User cleared data')
           return
@@ -130,7 +130,6 @@ export const useInitializeApp = () => {
     }
 
     // Check if user recently cleared data - don't auto-sync in that case
-    const { localStorageService } = require('../lib/localStorage')
     if (localStorageService.getHasBeenCleared()) {
       console.log('Auto-sync: Disabled (user cleared data)')
       return

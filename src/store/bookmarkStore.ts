@@ -67,7 +67,6 @@ interface BookmarkState {
   selectedTags: string[]
   searchQuery: string
   activeTab: number
-  viewMode: 'grid' | 'list'
   selectedBookmarks: number[]
   isLoading: boolean
   isAIPanelOpen: boolean
@@ -147,7 +146,6 @@ interface BookmarkState {
 
   setSearchQuery: (query: string) => void
   setActiveTab: (tab: number) => void
-  setViewMode: (mode: 'grid' | 'list') => void
   setSelectedBookmarks: (bookmarks: number[]) => void
   selectBookmark: (id: number) => void
   deselectBookmark: (id: number) => void
@@ -196,22 +194,6 @@ interface BookmarkState {
 }
 
 // Helper to get initial view mode from consolidated localStorage
-const getInitialViewMode = (): 'grid' | 'list' => {
-  try {
-    const data = localStorage.getItem('x-bookmark-manager-data')
-    if (data) {
-      const parsed = JSON.parse(data)
-      const viewMode = parsed?.settings?.viewMode
-      if (viewMode === 'grid' || viewMode === 'list') {
-        return viewMode
-      }
-    }
-  } catch (error) {
-    console.error('Failed to load view mode:', error)
-  }
-  return 'grid'
-}
-
 export const useBookmarkStore = create<BookmarkState>()(
   devtools(
     (set, get) => ({
@@ -221,7 +203,6 @@ export const useBookmarkStore = create<BookmarkState>()(
       selectedTags: [],
       searchQuery: '',
       activeTab: 0,
-      viewMode: getInitialViewMode(),
       selectedBookmarks: [],
       isLoading: false,
       isAIPanelOpen: false,
@@ -880,7 +861,6 @@ export const useBookmarkStore = create<BookmarkState>()(
               selectedTags: [],
               searchQuery: '',
               activeTab: 0,
-              viewMode: 'grid',
               selectedBookmarks: [],
               activeSidebarItem: 'All Bookmarks',
             },
@@ -924,11 +904,6 @@ export const useBookmarkStore = create<BookmarkState>()(
       setSearchQuery: (query) =>
         set({ searchQuery: query }, false, 'setSearchQuery'),
       setActiveTab: (tab) => set({ activeTab: tab }, false, 'setActiveTab'),
-      setViewMode: (mode) => {
-        set({ viewMode: mode }, false, 'setViewMode')
-        // Note: viewMode is now managed by settingsStore.display.viewMode
-        // This local state is kept for immediate UI updates
-      },
       setSelectedBookmarks: (bookmarks) =>
         set({ selectedBookmarks: bookmarks }, false, 'setSelectedBookmarks'),
       selectBookmark: (id) =>

@@ -69,7 +69,7 @@ export const filterBookmarks = ({
         today.setHours(0, 0, 0, 0)
         filtered = filtered.filter((bookmark) => {
           const dateToUse =
-            bookmark.metadata && bookmark.metadata.tweet_date
+            bookmark.metadata && bookmark.metadata.platform === 'x.com' && bookmark.metadata.tweet_date
               ? bookmark.metadata.tweet_date
               : bookmark.created_at
           return new Date(dateToUse) >= today
@@ -82,7 +82,7 @@ export const filterBookmarks = ({
         weekAgo.setDate(weekAgo.getDate() - 7)
         filtered = filtered.filter((bookmark) => {
           const dateToUse =
-            bookmark.metadata && bookmark.metadata.tweet_date
+            bookmark.metadata && bookmark.metadata.platform === 'x.com' && bookmark.metadata.tweet_date
               ? bookmark.metadata.tweet_date
               : bookmark.created_at
           return new Date(dateToUse) >= weekAgo
@@ -166,7 +166,7 @@ export const filterBookmarks = ({
   if (dateRangeFilter.type !== 'all') {
     filtered = filtered.filter((bookmark) => {
       const dateToUse =
-        bookmark.metadata && bookmark.metadata.tweet_date
+        bookmark.metadata && bookmark.metadata.platform === 'x.com' && bookmark.metadata.tweet_date
           ? bookmark.metadata.tweet_date
           : bookmark.created_at
       const bookmarkDate = new Date(dateToUse)
@@ -226,7 +226,7 @@ export const filterBookmarks = ({
             const recent = new Date()
             recent.setDate(recent.getDate() - 1)
             const dateToUse =
-              bookmark.metadata && bookmark.metadata.tweet_date
+              bookmark.metadata && bookmark.metadata.platform === 'x.com' && bookmark.metadata.tweet_date
                 ? bookmark.metadata.tweet_date
                 : bookmark.created_at
             return new Date(dateToUse) >= recent
@@ -242,11 +242,11 @@ export const filterBookmarks = ({
   // Sort by date descending (newest first) - use tweet_date when available
   const sorted = filtered.sort((a, b) => {
     const dateA =
-      a.metadata && a.metadata.tweet_date
+      a.metadata && a.metadata.platform === 'x.com' && a.metadata.tweet_date
         ? new Date(a.metadata.tweet_date)
         : new Date(a.created_at)
     const dateB =
-      b.metadata && b.metadata.tweet_date
+      b.metadata && b.metadata.platform === 'x.com' && b.metadata.tweet_date
         ? new Date(b.metadata.tweet_date)
         : new Date(b.created_at)
 

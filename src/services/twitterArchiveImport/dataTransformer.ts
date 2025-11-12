@@ -2,7 +2,7 @@
  * Transform parsed Twitter Archive bookmarks to BookmarkX format
  */
 
-import type { BookmarkInsert } from '../../types/bookmark'
+import type { BookmarkInsert, XTwitterMetadata } from '../../types/bookmark'
 import type { ParsedTwitterBookmark, ProgressCallback } from './types'
 import { DataProcessingService } from '../dataProcessingService'
 
@@ -33,23 +33,17 @@ export function transformTwitterBookmark(
     images: parsedBookmark.media?.images,
   })
 
-  // Build metadata
-  const metadata: Record<string, unknown> = {
-    tweet_id: parsedBookmark.tweetId,
+  // Build properly typed metadata
+  const metadata: XTwitterMetadata = {
+    platform: 'x.com',
     tweet_date: parsedBookmark.createdAt,
+    extracted_at: new Date().toISOString(),
     username: parsedBookmark.author.username,
     display_name: parsedBookmark.author.name,
-    imported_from: 'twitter_archive',
-    imported_at: new Date().toISOString(),
-  }
-
-  if (parsedBookmark.media) {
-    metadata.has_video = parsedBookmark.media.hasVideo
-    metadata.images = parsedBookmark.media.images
-  }
-
-  if (parsedBookmark.author.profileImage) {
-    metadata.profile_image = parsedBookmark.author.profileImage
+    has_video: parsedBookmark.media?.hasVideo || false,
+    images: parsedBookmark.media?.images,
+    profile_image_normal: parsedBookmark.author.profileImage,
+    profile_image_bigger: parsedBookmark.author.profileImage,
   }
 
   const bookmark: BookmarkInsert = {

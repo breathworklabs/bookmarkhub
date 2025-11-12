@@ -25,6 +25,7 @@ import {
 import { useMemo, useCallback, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { useSettingsStore } from '../store/settingsStore'
 import { useModal } from './modals/ModalProvider'
 import { sanitizeBookmark } from '../lib/dataValidation'
 import { useButtonStyles, useInputStyles } from '../hooks/useStyles'
@@ -33,6 +34,7 @@ import { useIsMobile } from '../hooks/useMobile'
 import { colors } from '../styles/colors'
 import { useFilterReset } from '../utils/filterUtils'
 import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
+import { useDebounce } from '../hooks/useDebounce'
 import toast from 'react-hot-toast'
 
 interface SearchHeaderProps {
@@ -95,8 +97,8 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
   const toggleFiltersPanel = useBookmarkStore(
     (state) => state.toggleFiltersPanel
   )
-  const viewMode = useBookmarkStore((state) => state.viewMode)
-  const setViewMode = useBookmarkStore((state) => state.setViewMode)
+  const viewMode = useSettingsStore((state) => state.display.viewMode)
+  const setViewMode = useSettingsStore((state) => state.setViewMode)
   const { showAddBookmark } = useModal()
   const isMobile = useIsMobile()
   const navigate = useNavigate()
@@ -129,12 +131,15 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
 
   const importXBookmarks = useBookmarkStore((state) => state.importXBookmarks)
 
+  // Debounced search query setter (300ms delay)
+  const debouncedSetSearchQuery = useDebounce(setSearchQuery, 300)
+
   // Memoized event handlers
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(e.target.value)
+      debouncedSetSearchQuery(e.target.value)
     },
-    [setSearchQuery]
+    [debouncedSetSearchQuery]
   )
 
   const handleToggleFilters = useCallback(() => {

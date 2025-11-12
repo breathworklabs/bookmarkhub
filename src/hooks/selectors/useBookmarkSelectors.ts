@@ -1,4 +1,5 @@
 import { useBookmarkStore } from '../../store/bookmarkStore'
+import { useSettingsStore } from '../../store/settingsStore'
 
 /**
  * Centralized hook for all bookmark store selectors
@@ -13,7 +14,7 @@ export const useBookmarkSelectors = () => {
     error: useBookmarkStore((state) => state.error),
 
     // UI State
-    viewMode: useBookmarkStore((state) => state.viewMode),
+    viewMode: useSettingsStore((state) => state.display.viewMode),
     isAIPanelOpen: useBookmarkStore((state) => state.isAIPanelOpen),
     isFiltersPanelOpen: useBookmarkStore((state) => state.isFiltersPanelOpen),
     activeSidebarItem: useBookmarkStore((state) => state.activeSidebarItem),
@@ -58,7 +59,7 @@ export const useBookmarkSelectors = () => {
     setSearchQuery: useBookmarkStore((state) => state.setSearchQuery),
 
     // Actions - UI
-    setViewMode: useBookmarkStore((state) => state.setViewMode),
+    setViewMode: useSettingsStore((state) => state.setViewMode),
     setAIPanelOpen: useBookmarkStore((state) => state.setAIPanelOpen),
     toggleAIPanel: useBookmarkStore((state) => state.toggleAIPanel),
     setFiltersPanelOpen: useBookmarkStore((state) => state.setFiltersPanelOpen),

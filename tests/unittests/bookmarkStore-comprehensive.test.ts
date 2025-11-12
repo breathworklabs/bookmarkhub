@@ -128,20 +128,6 @@ describe('bookmarkStore - state management', () => {
     })
   })
 
-  describe('view mode', () => {
-    it('should set view mode to grid', () => {
-      useBookmarkStore.getState().setViewMode('grid')
-
-      expect(useBookmarkStore.getState().viewMode).toBe('grid')
-    })
-
-    it('should set view mode to list', () => {
-      useBookmarkStore.getState().setViewMode('list')
-
-      expect(useBookmarkStore.getState().viewMode).toBe('list')
-    })
-  })
-
   describe('sidebar item', () => {
     it('should set active sidebar item', () => {
       useBookmarkStore.getState().setActiveSidebarItem('Favorites')
@@ -350,13 +336,11 @@ describe('bookmarkStore - state management', () => {
       useBookmarkStore.getState().setSearchQuery('test')
       useBookmarkStore.getState().setActiveTab(1)
       useBookmarkStore.getState().setSelectedTags(['react'])
-      useBookmarkStore.getState().setViewMode('list')
 
       const state = useBookmarkStore.getState()
       expect(state.searchQuery).toBe('test')
       expect(state.activeTab).toBe(1)
       expect(state.selectedTags).toEqual(['react'])
-      expect(state.viewMode).toBe('list')
     })
 
     it('should maintain state consistency across updates', () => {

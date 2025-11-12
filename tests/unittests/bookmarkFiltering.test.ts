@@ -754,7 +754,14 @@ describe('bookmarkFiltering', () => {
         createTestBookmark({
           id: 1,
           created_at: '2024-01-10T00:00:00.000Z',
-          metadata: { tweet_date: '2024-01-20T00:00:00.000Z' },
+          metadata: {
+            platform: 'x.com' as const,
+            tweet_date: '2024-01-20T00:00:00.000Z',
+            extracted_at: '2024-01-20T00:00:00.000Z',
+            username: 'testuser',
+            display_name: 'Test User',
+            has_video: false,
+          },
         }),
         createTestBookmark({ id: 2, created_at: '2024-01-15T00:00:00.000Z' }),
       ]

@@ -67,8 +67,8 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
     (state) => state.setActiveSidebarItem
   )
   const toggleAIPanel = useBookmarkStore((state) => state.toggleAIPanel)
-  const viewMode = useBookmarkStore((state) => state.viewMode)
-  const setViewMode = useBookmarkStore((state) => state.setViewMode)
+  const viewMode = useSettingsStore((state) => state.display.viewMode)
+  const setViewMode = useSettingsStore((state) => state.setViewMode)
   const isSidebarCollapsed = useSettingsStore(
     (state) => state.display.isSidebarCollapsed
   )

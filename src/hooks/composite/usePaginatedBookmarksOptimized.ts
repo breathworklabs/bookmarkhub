@@ -1,9 +1,8 @@
-import { useMemo, useEffect } from 'react'
+import { useMemo, useEffect, useRef } from 'react'
 import { type Bookmark } from '../../types/bookmark'
-import { filterBookmarks } from '../../utils/bookmarkFiltering'
-import { useBookmarkSelectors } from '../selectors/useBookmarkSelectors'
-import { useCollectionsSelectors } from '../selectors/useCollectionsSelectors'
+import { filterBookmarksOptimized } from '../../utils/bookmarkFilteringOptimized'
 import { useBookmarkStore } from '../../store/bookmarkStore'
+import { useCollectionsStore } from '../../store/collectionsStore'
 
 export interface PaginatedBookmarksResult {
   bookmarks: Bookmark[]
@@ -15,46 +14,58 @@ export interface PaginatedBookmarksResult {
 }
 
 /**
- * Optimized hook for paginated bookmarks using centralized selectors
- * Reduces store subscriptions and improves performance
+ * Optimized hook for paginated bookmarks using single-pass algorithm
+ * Subscribes to individual store values to avoid object recreation issues
  */
 export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
-  const bookmarkSelectors = useBookmarkSelectors()
-  const collectionsSelectors = useCollectionsSelectors()
+  // Subscribe to individual values to avoid object recreation
+  const bookmarks = useBookmarkStore((state) => state.bookmarks)
+  const selectedTags = useBookmarkStore((state) => state.selectedTags)
+  const searchQuery = useBookmarkStore((state) => state.searchQuery)
+  const activeTab = useBookmarkStore((state) => state.activeTab)
+  const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
+  const authorFilter = useBookmarkStore((state) => state.authorFilter)
+  const domainFilter = useBookmarkStore((state) => state.domainFilter)
+  const contentTypeFilter = useBookmarkStore((state) => state.contentTypeFilter)
+  const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)
+  const quickFilters = useBookmarkStore((state) => state.quickFilters)
+
+  const activeCollectionId = useCollectionsStore((state) => state.activeCollectionId)
+  const collectionBookmarks = useCollectionsStore((state) => state.collectionBookmarks)
 
   // Get pagination state and actions
-  const pagination = bookmarkSelectors.pagination
-  const resetPagination = bookmarkSelectors.resetPagination
+  const pagination = useBookmarkStore((state) => state.pagination)
+  const resetPagination = useBookmarkStore((state) => state.resetPagination)
 
   // Apply all filters to get the complete filtered result using shared logic
   const filteredBookmarks = useMemo(() => {
-    return filterBookmarks({
-      bookmarks: bookmarkSelectors.bookmarks,
-      selectedTags: bookmarkSelectors.selectedTags,
-      searchQuery: bookmarkSelectors.searchQuery,
-      activeTab: bookmarkSelectors.activeTab,
-      activeSidebarItem: bookmarkSelectors.activeSidebarItem,
-      authorFilter: bookmarkSelectors.authorFilter,
-      domainFilter: bookmarkSelectors.domainFilter,
-      contentTypeFilter: bookmarkSelectors.contentTypeFilter,
-      dateRangeFilter: bookmarkSelectors.dateRangeFilter,
-      quickFilters: bookmarkSelectors.quickFilters,
-      activeCollectionId: collectionsSelectors.activeCollectionId,
-      collectionBookmarks: collectionsSelectors.collectionBookmarks,
+    return filterBookmarksOptimized({
+      bookmarks,
+      selectedTags,
+      searchQuery,
+      activeTab,
+      activeSidebarItem,
+      authorFilter,
+      domainFilter,
+      contentTypeFilter,
+      dateRangeFilter,
+      quickFilters,
+      activeCollectionId,
+      collectionBookmarks,
     })
   }, [
-    bookmarkSelectors.bookmarks,
-    bookmarkSelectors.selectedTags,
-    bookmarkSelectors.searchQuery,
-    bookmarkSelectors.activeTab,
-    bookmarkSelectors.activeSidebarItem,
-    bookmarkSelectors.authorFilter,
-    bookmarkSelectors.domainFilter,
-    bookmarkSelectors.contentTypeFilter,
-    bookmarkSelectors.dateRangeFilter,
-    bookmarkSelectors.quickFilters,
-    collectionsSelectors.activeCollectionId,
-    collectionsSelectors.collectionBookmarks,
+    bookmarks,
+    selectedTags,
+    searchQuery,
+    activeTab,
+    activeSidebarItem,
+    authorFilter,
+    domainFilter,
+    contentTypeFilter,
+    dateRangeFilter,
+    quickFilters,
+    activeCollectionId,
+    collectionBookmarks,
   ])
 
   // Get paginated bookmarks based on current page
@@ -62,33 +73,69 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
     const { currentPage, itemsPerPage } = pagination
     const endIndex = currentPage * itemsPerPage
     return filteredBookmarks.slice(0, endIndex)
-  }, [filteredBookmarks, pagination.currentPage, pagination.itemsPerPage])
+  }, [filteredBookmarks, pagination])
 
   // Calculate if there are more bookmarks to load
   const hasMore = useMemo(() => {
     const { currentPage, itemsPerPage } = pagination
     const endIndex = currentPage * itemsPerPage
     return endIndex < filteredBookmarks.length
-  }, [
-    pagination.currentPage,
-    pagination.itemsPerPage,
-    filteredBookmarks.length,
-  ])
+  }, [pagination, filteredBookmarks.length])
+
+  // Track previous filter values to detect changes
+  const prevFilterValuesRef = useRef({
+    selectedTags,
+    searchQuery,
+    activeTab,
+    activeSidebarItem,
+    authorFilter,
+    domainFilter,
+    contentTypeFilter,
+    dateRangeFilter,
+    quickFilters,
+    activeCollectionId,
+  })
 
   // Reset pagination when filters change
   useEffect(() => {
-    resetPagination()
+    const prev = prevFilterValuesRef.current
+    if (
+      prev.selectedTags !== selectedTags ||
+      prev.searchQuery !== searchQuery ||
+      prev.activeTab !== activeTab ||
+      prev.activeSidebarItem !== activeSidebarItem ||
+      prev.authorFilter !== authorFilter ||
+      prev.domainFilter !== domainFilter ||
+      prev.contentTypeFilter !== contentTypeFilter ||
+      prev.dateRangeFilter !== dateRangeFilter ||
+      prev.quickFilters !== quickFilters ||
+      prev.activeCollectionId !== activeCollectionId
+    ) {
+      resetPagination()
+      prevFilterValuesRef.current = {
+        selectedTags,
+        searchQuery,
+        activeTab,
+        activeSidebarItem,
+        authorFilter,
+        domainFilter,
+        contentTypeFilter,
+        dateRangeFilter,
+        quickFilters,
+        activeCollectionId,
+      }
+    }
   }, [
-    bookmarkSelectors.selectedTags,
-    bookmarkSelectors.searchQuery,
-    bookmarkSelectors.activeTab,
-    bookmarkSelectors.activeSidebarItem,
-    bookmarkSelectors.authorFilter,
-    bookmarkSelectors.domainFilter,
-    bookmarkSelectors.contentTypeFilter,
-    bookmarkSelectors.dateRangeFilter,
-    bookmarkSelectors.quickFilters,
-    collectionsSelectors.activeCollectionId,
+    selectedTags,
+    searchQuery,
+    activeTab,
+    activeSidebarItem,
+    authorFilter,
+    domainFilter,
+    contentTypeFilter,
+    dateRangeFilter,
+    quickFilters,
+    activeCollectionId,
     resetPagination,
   ])
 

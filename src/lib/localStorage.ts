@@ -81,6 +81,17 @@ class LocalStorageService {
     }
   }
 
+  // Type-safe boolean normalization helper
+  private normalizeBoolean(value: unknown): boolean {
+    if (typeof value === 'boolean') {
+      return value
+    }
+    if (typeof value === 'string') {
+      return value === 'true'
+    }
+    return false
+  }
+
   // Get the entire consolidated storage
   private getStorage(): ConsolidatedStorage {
     if (!this.isAvailable()) {
@@ -203,41 +214,49 @@ class LocalStorageService {
   }
 
   // Helper methods to get/set individual sections (maintains compatibility with existing code)
+  // Type-safe overloads for different storage keys
+  private safeGet(key: typeof LEGACY_STORAGE_KEYS.BOOKMARKS, defaultValue: StoredBookmark[]): StoredBookmark[]
+  private safeGet(key: typeof LEGACY_STORAGE_KEYS.COLLECTIONS, defaultValue: StoredCollection[]): StoredCollection[]
+  private safeGet(key: typeof LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS, defaultValue: StoredBookmarkCollection[]): StoredBookmarkCollection[]
+  private safeGet(key: typeof LEGACY_STORAGE_KEYS.METADATA, defaultValue: AppMetadata): AppMetadata
   private safeGet<T>(key: string, defaultValue: T): T {
     const storage = this.getStorage()
 
     // Map legacy keys to consolidated storage properties with null safety
     switch (key) {
       case LEGACY_STORAGE_KEYS.BOOKMARKS:
-        return (storage.bookmarks || []) as unknown as T
+        return (storage.bookmarks || []) as T
       case LEGACY_STORAGE_KEYS.COLLECTIONS:
-        return (storage.collections || []) as unknown as T
+        return (storage.collections || []) as T
       case LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS:
-        return (storage.bookmarkCollections || []) as unknown as T
+        return (storage.bookmarkCollections || []) as T
       case LEGACY_STORAGE_KEYS.METADATA:
-        return (storage.metadata || defaultValue) as unknown as T
+        return (storage.metadata || defaultValue) as T
       default:
         return defaultValue
     }
   }
 
+  private safeSet(key: typeof LEGACY_STORAGE_KEYS.BOOKMARKS, value: StoredBookmark[]): boolean
+  private safeSet(key: typeof LEGACY_STORAGE_KEYS.COLLECTIONS, value: StoredCollection[]): boolean
+  private safeSet(key: typeof LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS, value: StoredBookmarkCollection[]): boolean
+  private safeSet(key: typeof LEGACY_STORAGE_KEYS.METADATA, value: AppMetadata): boolean
   private safeSet<T>(key: string, value: T): boolean {
     const storage = this.getStorage()
 
     // Map legacy keys to consolidated storage properties
     switch (key) {
       case LEGACY_STORAGE_KEYS.BOOKMARKS:
-        storage.bookmarks = value as unknown as StoredBookmark[]
+        storage.bookmarks = value as StoredBookmark[]
         break
       case LEGACY_STORAGE_KEYS.COLLECTIONS:
-        storage.collections = value as unknown as StoredCollection[]
+        storage.collections = value as StoredCollection[]
         break
       case LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS:
-        storage.bookmarkCollections =
-          value as unknown as StoredBookmarkCollection[]
+        storage.bookmarkCollections = value as StoredBookmarkCollection[]
         break
       case LEGACY_STORAGE_KEYS.METADATA:
-        storage.metadata = value as unknown as AppMetadata
+        storage.metadata = value as AppMetadata
         break
       default:
         return false
@@ -248,7 +267,7 @@ class LocalStorageService {
 
   // Bookmark operations
   async getBookmarks(): Promise<StoredBookmark[]> {
-    const bookmarks = this.safeGet<StoredBookmark[]>(
+    const bookmarks = this.safeGet(
       LEGACY_STORAGE_KEYS.BOOKMARKS,
       []
     )
@@ -279,17 +298,10 @@ class LocalStorageService {
         needsUpdate = true
         updated = {
           ...updated,
-          is_starred:
-            bookmark.is_starred === true ||
-            (bookmark.is_starred as any) === 'true',
-          is_read:
-            bookmark.is_read === true || (bookmark.is_read as any) === 'true',
-          is_archived:
-            bookmark.is_archived === true ||
-            (bookmark.is_archived as any) === 'true',
-          is_deleted:
-            bookmark.is_deleted === true ||
-            (bookmark.is_deleted as any) === 'true',
+          is_starred: this.normalizeBoolean(bookmark.is_starred),
+          is_read: this.normalizeBoolean(bookmark.is_read),
+          is_archived: this.normalizeBoolean(bookmark.is_archived),
+          is_deleted: this.normalizeBoolean(bookmark.is_deleted),
         }
       }
 
@@ -510,7 +522,7 @@ class LocalStorageService {
 
   // Collection operations
   async getCollections(): Promise<StoredCollection[]> {
-    let collections = this.safeGet<StoredCollection[]>(
+    let collections = this.safeGet(
       LEGACY_STORAGE_KEYS.COLLECTIONS,
       []
     )
@@ -748,7 +760,7 @@ class LocalStorageService {
     }
 
     // Also remove all bookmark-collection relationships
-    const bookmarkCollections = this.safeGet<StoredBookmarkCollection[]>(
+    const bookmarkCollections = this.safeGet(
       LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS,
       []
     )
@@ -783,7 +795,7 @@ class LocalStorageService {
 
   // Bookmark-Collection relationship operations
   async getBookmarkCollections(): Promise<StoredBookmarkCollection[]> {
-    return this.safeGet<StoredBookmarkCollection[]>(
+    return this.safeGet(
       LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS,
       []
     )
@@ -931,7 +943,7 @@ class LocalStorageService {
   // Metadata operations
   private async updateMetadata(): Promise<void> {
     const bookmarks = await this.getBookmarks()
-    const currentMetadata = this.safeGet<AppMetadata>(
+    const currentMetadata = this.safeGet(
       LEGACY_STORAGE_KEYS.METADATA,
       {
         version: '1.0.0',
@@ -955,7 +967,7 @@ class LocalStorageService {
   }
 
   async getMetadata(): Promise<AppMetadata> {
-    return this.safeGet<AppMetadata>(LEGACY_STORAGE_KEYS.METADATA, {
+    return this.safeGet(LEGACY_STORAGE_KEYS.METADATA, {
       version: '1.0.0',
       totalBookmarks: 0,
       createdAt: new Date().toISOString(),

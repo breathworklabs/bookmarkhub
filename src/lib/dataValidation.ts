@@ -14,6 +14,28 @@ import { DataProcessingService } from '../services/dataProcessingService'
 // Zod schemas
 export const urlSchema = z.string().url()
 
+// Platform-specific metadata schemas
+export const xTwitterMetadataSchema = z.object({
+  platform: z.literal('x.com'),
+  tweet_date: z.string(),
+  extracted_at: z.string(),
+  username: z.string(),
+  display_name: z.string(),
+  has_video: z.boolean(),
+  images: z.array(z.string()).optional(),
+  profile_image_normal: z.string().optional(),
+  profile_image_bigger: z.string().optional(),
+})
+
+export const genericWebMetadataSchema = z.object({
+  platform: z.union([z.literal('web'), z.literal('other')]),
+}).catchall(z.unknown())
+
+export const bookmarkMetadataSchema = z.union([
+  xTwitterMetadataSchema,
+  genericWebMetadataSchema,
+])
+
 export const bookmarkSchema = z.object({
   id: z.number(),
   user_id: z.string(),
@@ -37,7 +59,7 @@ export const bookmarkSchema = z.object({
   deleted_at: z.string().optional(),
   tags: z.array(z.string()),
   collections: z.array(z.string()).default(['uncategorized']),
-  metadata: z.any().optional(),
+  metadata: bookmarkMetadataSchema.optional(),
   created_at: z.string(),
   updated_at: z.string(),
 })
@@ -209,7 +231,7 @@ export const validateImportData = (
   if (data.metadata && !isValidMetadata(data.metadata)) {
     const result = appMetadataSchema.safeParse(data.metadata)
     if (!result.success) {
-      errors.push(`Invalid metadata format: ${result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`)
+      errors.push(`Invalid metadata format: ${result.error.issues.map(e => `${String(e.path.join('.'))}:  ${e.message}`).join(', ')}`)
     }
   }
 
