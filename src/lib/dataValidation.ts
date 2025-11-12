@@ -68,6 +68,7 @@ export const appMetadataSchema = z.object({
   lastUpdate: z.string(),
   storageUsed: z.number().optional(),
   maxStorage: z.number().optional(),
+  importSource: z.string().optional(),
 })
 
 export const exportDataSchema = z.object({
@@ -206,7 +207,10 @@ export const validateImportData = (
   // Settings validation removed - managed by settingsStore
 
   if (data.metadata && !isValidMetadata(data.metadata)) {
-    errors.push('Invalid metadata format')
+    const result = appMetadataSchema.safeParse(data.metadata)
+    if (!result.success) {
+      errors.push(`Invalid metadata format: ${result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`)
+    }
   }
 
   return { valid: errors.length === 0, errors }

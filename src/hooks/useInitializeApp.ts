@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
+import { useSettingsStore } from '../store/settingsStore'
 import { initGA } from '../lib/analytics'
 import { initAllPerformanceMonitoring } from '../lib/performance'
 
@@ -69,6 +70,16 @@ export const useInitializeApp = () => {
       ) {
         const { count, showNotification = true } = event.data
 
+        // Check if user recently cleared data - don't auto-load in that case
+        const { localStorageService } = require('../lib/localStorage')
+        if (localStorageService.getHasBeenCleared()) {
+          console.log('Extension sync ignored: User cleared data')
+          return
+        }
+
+        // Mark that this import came from the extension
+        localStorageService.setLastImportSource('extension')
+
         // Reload bookmarks from localStorage without page reload
         Promise.all([
           useBookmarkStore.getState().initialize(),
@@ -110,6 +121,28 @@ export const useInitializeApp = () => {
 
   // Auto-sync: Request bookmarks from extension when app opens
   useEffect(() => {
+    const autoSyncInterval = useSettingsStore.getState().extension.autoSyncInterval
+
+    // Only auto-sync if not set to 'manual' or 'off'
+    if (autoSyncInterval === 'manual' || autoSyncInterval === 'off') {
+      console.log('Auto-sync: Disabled (set to', autoSyncInterval + ')')
+      return
+    }
+
+    // Check if user recently cleared data - don't auto-sync in that case
+    const { localStorageService } = require('../lib/localStorage')
+    if (localStorageService.getHasBeenCleared()) {
+      console.log('Auto-sync: Disabled (user cleared data)')
+      return
+    }
+
+    // Check if user recently imported from a file - don't auto-sync to prevent overwriting
+    const lastImportSource = localStorageService.getLastImportSource()
+    if (lastImportSource === 'file') {
+      console.log('Auto-sync: Disabled (user imported from file - preventing data overwrite)')
+      return
+    }
+
     // Small delay to ensure extension is ready
     const timer = setTimeout(() => {
       window.postMessage(

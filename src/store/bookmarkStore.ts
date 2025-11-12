@@ -326,23 +326,42 @@ export const useBookmarkStore = create<BookmarkState>()(
               console.error('Background initialization failed:', error)
             })
           } else {
-            // No bookmarks in localStorage - load mock bookmarks for demo
+            // No bookmarks in localStorage
+            // Check if user explicitly cleared data (don't load mock data in that case)
+            const hasBeenCleared = localStorageService.getHasBeenCleared()
 
-            set(
-              {
-                bookmarks: mockBookmarks,
-                selectedTags: [],
-                searchQuery: '',
-                activeTab: 0,
-                selectedBookmarks: [],
-                isLoading: false,
-              },
-              false,
-              'initialize:mockData'
-            )
+            if (hasBeenCleared) {
+              // User cleared data - keep it empty
+              set(
+                {
+                  bookmarks: [],
+                  selectedTags: [],
+                  searchQuery: '',
+                  activeTab: 0,
+                  selectedBookmarks: [],
+                  isLoading: false,
+                },
+                false,
+                'initialize:empty'
+              )
+            } else {
+              // First time or no data - load mock bookmarks for demo
+              set(
+                {
+                  bookmarks: mockBookmarks,
+                  selectedTags: [],
+                  searchQuery: '',
+                  activeTab: 0,
+                  selectedBookmarks: [],
+                  isLoading: false,
+                },
+                false,
+                'initialize:mockData'
+              )
 
-            // Calculate filter options with mock bookmarks
-            get().calculateFilterOptions()
+              // Calculate filter options with mock bookmarks
+              get().calculateFilterOptions()
+            }
           }
 
           // Track initialization performance
@@ -450,6 +469,10 @@ export const useBookmarkStore = create<BookmarkState>()(
           // No duplicates, proceed with adding
           const newBookmark =
             await localStorageService.createBookmark(sanitizedBookmark)
+
+          // Clear the "data cleared" flag since user is adding new data
+          localStorageService.setHasBeenCleared(false)
+
           set(
             (state) => ({ bookmarks: [newBookmark, ...state.bookmarks] }),
             false,
@@ -756,6 +779,13 @@ export const useBookmarkStore = create<BookmarkState>()(
           await get().loadBookmarks()
           // Settings are managed by settingsStore now
 
+          // Clear the "data cleared" flag since user is importing new data
+          localStorageService.setHasBeenCleared(false)
+
+          // Mark that this data was imported from a file (not extension)
+          // This prevents auto-sync from overwriting the imported data on refresh
+          localStorageService.setLastImportSource('file')
+
           // Track successful import
           const importedCount = data.bookmarks?.length || 0
           trackOperationPerformance('bookmark_import', startTime, {
@@ -807,6 +837,12 @@ export const useBookmarkStore = create<BookmarkState>()(
             }
           }
 
+          // Clear the "data cleared" flag since user is importing new data
+          localStorageService.setHasBeenCleared(false)
+
+          // Mark that this data was imported from extension (X bookmarks)
+          localStorageService.setLastImportSource('extension')
+
           // Reload bookmarks to show imported data
           await get().loadBookmarks()
 
@@ -833,6 +869,9 @@ export const useBookmarkStore = create<BookmarkState>()(
           set({ isLoading: true, error: null }, false, 'clearAllData:start')
 
           await localStorageService.clearAllData()
+
+          // Set flag to indicate user cleared data (prevents mock data from loading)
+          localStorageService.setHasBeenCleared(true)
 
           // Reset store to initial state
           set(

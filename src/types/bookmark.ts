@@ -84,6 +84,7 @@ export interface AppMetadata {
   lastUpdate: string
   storageUsed?: number
   maxStorage?: number
+  importSource?: string
 }
 
 // Export/Import data structure

@@ -26,6 +26,23 @@ async function syncBookmarksToLocalStorage() {
       return
     }
 
+    // Get existing data from consolidated localStorage
+    const storageKey = 'x-bookmark-manager-data'
+    const existingDataStr = localStorage.getItem(storageKey)
+    const existingData = existingDataStr ? JSON.parse(existingDataStr) : null
+
+    // Check if user has cleared data - don't sync if they have
+    if (existingData?.appState?.hasBeenCleared) {
+      console.log('[BookmarkX Bridge] ⚠️ User cleared data, skipping sync')
+      return
+    }
+
+    // Check if user recently imported from a file - don't sync to prevent overwriting
+    if (existingData?.appState?.lastImportSource === 'file') {
+      console.log('[BookmarkX Bridge] ⚠️ User imported from file, skipping sync to prevent data overwrite')
+      return
+    }
+
     // Get bookmarks from extension storage (using 'extractedBookmarks' key for direct-import)
     const result = await chrome.storage.local.get(['extractedBookmarks'])
     const extensionBookmarks = result.extractedBookmarks || []
@@ -37,10 +54,6 @@ async function syncBookmarksToLocalStorage() {
     // Get extension settings
     const extensionSettings = getSettings()
 
-    // Get existing data from consolidated localStorage
-    const storageKey = 'x-bookmark-manager-data'
-    const existingDataStr = localStorage.getItem(storageKey)
-    const existingData = existingDataStr ? JSON.parse(existingDataStr) : null
     const existingBookmarks = existingData?.bookmarks || []
 
     // Apply duplicate handling setting (skip, replace, keep-both)
@@ -151,6 +164,13 @@ async function syncBookmarksToLocalStorage() {
       totalBookmarks: allBookmarks.length,
       lastUpdate: new Date().toISOString(),
       importSource: 'chrome-extension-api',
+    }
+
+    // Preserve appState and mark import source
+    updatedData.appState = {
+      ...(existingData?.appState || {}),
+      lastImportSource: 'extension',
+      lastImportTimestamp: new Date().toISOString(),
     }
 
     // Save consolidated storage

@@ -43,6 +43,11 @@ interface ConsolidatedStorage {
   }
   consent?: 'accepted' | 'rejected' | null
   extensionSettings?: any // Extension/display/privacy settings from settingsStore
+  appState?: {
+    hasBeenCleared?: boolean
+    lastImportSource?: 'file' | 'extension' | null
+    lastImportTimestamp?: string
+  }
   version: string
   // settings is deprecated - migrated to extensionSettings
 }
@@ -937,9 +942,13 @@ class LocalStorageService {
     )
 
     const updatedMetadata: AppMetadata = {
-      ...currentMetadata,
+      version: currentMetadata.version || '1.0.0',
       totalBookmarks: bookmarks.length,
+      createdAt: currentMetadata.createdAt || new Date().toISOString(),
       lastUpdate: new Date().toISOString(),
+      lastBackup: currentMetadata.lastBackup,
+      storageUsed: currentMetadata.storageUsed,
+      maxStorage: currentMetadata.maxStorage,
     }
 
     this.safeSet(LEGACY_STORAGE_KEYS.METADATA, updatedMetadata)
@@ -1053,6 +1062,52 @@ class LocalStorageService {
   }
 
   // Utility methods
+  // App state management
+  getHasBeenCleared(): boolean {
+    try {
+      const data = this.getStorage()
+      return data.appState?.hasBeenCleared ?? false
+    } catch {
+      return false
+    }
+  }
+
+  setHasBeenCleared(value: boolean): void {
+    try {
+      const data = this.getStorage()
+      data.appState = {
+        ...data.appState,
+        hasBeenCleared: value,
+      }
+      this.setStorage(data)
+    } catch (error) {
+      console.error('Failed to set hasBeenCleared flag:', error)
+    }
+  }
+
+  getLastImportSource(): 'file' | 'extension' | null {
+    try {
+      const data = this.getStorage()
+      return data.appState?.lastImportSource ?? null
+    } catch {
+      return null
+    }
+  }
+
+  setLastImportSource(source: 'file' | 'extension' | null): void {
+    try {
+      const data = this.getStorage()
+      data.appState = {
+        ...data.appState,
+        lastImportSource: source,
+        lastImportTimestamp: source ? new Date().toISOString() : undefined,
+      }
+      this.setStorage(data)
+    } catch (error) {
+      console.error('Failed to set lastImportSource flag:', error)
+    }
+  }
+
   async getStorageInfo(): Promise<{
     isAvailable: boolean
     usedSpace: number
