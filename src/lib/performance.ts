@@ -1,37 +1,30 @@
 /**
  * Performance Monitoring Module
  *
- * Tracks Web Vitals and custom performance metrics using Google Analytics 4
+ * Tracks Web Vitals and custom performance metrics locally
+ * Privacy-first: No external analytics, only local logging
  */
 
 import { onCLS, onFCP, onLCP, onTTFB, onINP, type Metric } from 'web-vitals'
-import ReactGA from 'react-ga4'
 import { logger } from './logger'
 
 /**
  * Initialize Web Vitals tracking
- * Sends Core Web Vitals to Google Analytics 4
+ * Logs Core Web Vitals locally for debugging
  */
 export const initPerformanceMonitoring = () => {
-  function sendToGoogleAnalytics({ name, delta, id }: Metric) {
-    // Send to GA4
-    ReactGA.event({
-      category: 'Web Vitals',
-      action: name,
-      value: Math.round(name === 'CLS' ? delta * 1000 : delta),
-      label: id,
-      nonInteraction: true,
-    })
-
+  function logWebVital({ name, delta, id }: Metric) {
+    const value = Math.round(name === 'CLS' ? delta * 1000 : delta)
+    logger.debug(`[Web Vitals] ${name}: ${value} (id: ${id})`)
   }
 
   // Track all Core Web Vitals
   // Note: FID has been deprecated in favor of INP (Interaction to Next Paint)
-  onCLS(sendToGoogleAnalytics)
-  onFCP(sendToGoogleAnalytics)
-  onLCP(sendToGoogleAnalytics)
-  onTTFB(sendToGoogleAnalytics)
-  onINP(sendToGoogleAnalytics)
+  onCLS(logWebVital)
+  onFCP(logWebVital)
+  onLCP(logWebVital)
+  onTTFB(logWebVital)
+  onINP(logWebVital)
 }
 
 /**
@@ -44,13 +37,7 @@ export const trackOperationPerformance = (
 ) => {
   const duration = Date.now() - startTime
 
-  ReactGA.event({
-    category: 'Performance',
-    action: 'Operation Duration',
-    label: operation,
-    value: Math.round(duration),
-    nonInteraction: true,
-  })
+  logger.debug(`[Performance] ${operation}: ${duration}ms`, metadata)
 
   // Log slow operations (>2s)
   if (duration > 2000) {
@@ -58,13 +45,6 @@ export const trackOperationPerformance = (
       `[Performance] Slow operation: ${operation} took ${duration}ms`,
       metadata
     )
-
-    ReactGA.event({
-      category: 'Performance',
-      action: 'Slow Operation',
-      label: `${operation} (${duration}ms)`,
-      nonInteraction: true,
-    })
   }
 
   return duration
@@ -91,17 +71,12 @@ export const trackPagePerformance = () => {
     'Page Load': perfData.loadEventEnd - perfData.loadEventStart,
   }
 
-  Object.entries(metrics).forEach(([name, value]) => {
-    if (value > 0) {
-      ReactGA.event({
-        category: 'Performance',
-        action: 'Page Timing',
-        label: name,
-        value: Math.round(value),
-        nonInteraction: true,
-      })
-    }
-  })
+  const metricsLog = Object.entries(metrics)
+    .filter(([, value]) => value > 0)
+    .map(([name, value]) => `${name}: ${Math.round(value)}ms`)
+    .join(', ')
+
+  logger.debug(`[Performance] Page Timing: ${metricsLog}`)
 }
 
 /**
@@ -113,27 +88,15 @@ export const trackStorageMetrics = async () => {
       const { usage, quota } = await navigator.storage.estimate()
       const percentUsed = ((usage || 0) / (quota || 1)) * 100
 
-      ReactGA.event({
-        category: 'Storage',
-        action: 'Usage',
-        label: 'Percent Used',
-        value: Math.round(percentUsed),
-        nonInteraction: true,
-      })
+      logger.debug(
+        `[Performance] Storage usage: ${Math.round(percentUsed)}% (${Math.round((usage || 0) / 1024 / 1024)}MB / ${Math.round((quota || 0) / 1024 / 1024)}MB)`
+      )
 
       // Warn if storage is high
       if (percentUsed > 80) {
         logger.warn(
           `[Performance] High storage usage: ${Math.round(percentUsed)}%`
         )
-
-        ReactGA.event({
-          category: 'Storage',
-          action: 'Warning',
-          label: 'High Storage Usage',
-          value: Math.round(percentUsed),
-          nonInteraction: true,
-        })
       }
     } catch (error) {
       logger.error('[Performance] Failed to track storage metrics:', error)
@@ -161,20 +124,16 @@ export const trackResourceLoading = () => {
     const duration = resource.responseEnd - resource.startTime
     const resourceName = resource.name.split('/').pop() || 'unknown'
 
-    ReactGA.event({
-      category: 'Performance',
-      action: 'Slow Resource',
-      label: resourceName,
-      value: Math.round(duration),
-      nonInteraction: true,
-    })
-
-    if (import.meta.env.DEV) {
-      logger.warn(
-        `[Performance] Slow resource: ${resourceName} (${Math.round(duration)}ms)`
-      )
-    }
+    logger.warn(
+      `[Performance] Slow resource: ${resourceName} (${Math.round(duration)}ms)`
+    )
   })
+
+  if (slowResources.length > 0) {
+    logger.debug(
+      `[Performance] Found ${slowResources.length} slow resources (>1s)`
+    )
+  }
 }
 
 /**
@@ -194,14 +153,10 @@ export const withPerformanceTracking = async <T>(
   } catch (error) {
     // Track failed operations separately
     const duration = Date.now() - startTime
-
-    ReactGA.event({
-      category: 'Performance',
-      action: 'Failed Operation',
-      label: operation,
-      value: Math.round(duration),
-      nonInteraction: true,
-    })
+    logger.error(
+      `[Performance] Failed operation: ${operation} (${duration}ms)`,
+      error
+    )
 
     throw error
   }
@@ -216,14 +171,12 @@ export const trackMemoryUsage = () => {
     // @ts-expect-error - performance.memory is non-standard but available in Chrome
     const { usedJSHeapSize, jsHeapSizeLimit } = window.performance.memory
     const percentUsed = (usedJSHeapSize / jsHeapSizeLimit) * 100
+    const usedMB = Math.round(usedJSHeapSize / 1024 / 1024)
+    const limitMB = Math.round(jsHeapSizeLimit / 1024 / 1024)
 
-    ReactGA.event({
-      category: 'Performance',
-      action: 'Memory Usage',
-      label: 'Heap Percent Used',
-      value: Math.round(percentUsed),
-      nonInteraction: true,
-    })
+    logger.debug(
+      `[Performance] Memory usage: ${Math.round(percentUsed)}% (${usedMB}MB / ${limitMB}MB)`
+    )
 
     if (percentUsed > 80) {
       logger.warn(

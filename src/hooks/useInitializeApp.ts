@@ -3,7 +3,6 @@ import toast from 'react-hot-toast'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { useSettingsStore } from '../store/settingsStore'
-import { initGA } from '../lib/analytics'
 import { initAllPerformanceMonitoring } from '../lib/performance'
 import { localStorageService } from '../lib/localStorage'
 import { logger } from '../lib/logger'
@@ -27,14 +26,8 @@ export const useInitializeApp = () => {
 
     hasInitialized.current = true
 
-    // Initialize analytics and performance monitoring
-    // Note: Check cookie consent in production
-    const shouldInitAnalytics = import.meta.env.DEV || true // Replace with actual consent check
-
-    if (shouldInitAnalytics) {
-      initGA()
-      initAllPerformanceMonitoring()
-    }
+    // Initialize performance monitoring (privacy-first, local logging only)
+    initAllPerformanceMonitoring()
 
     // First, synchronously check if we have existing bookmarks
     const checkExistingBookmarks = () => {

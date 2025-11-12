@@ -5,7 +5,6 @@ import { useBookmarkStore } from '../../src/store/bookmarkStore'
 import { useCollectionsStore } from '../../src/store/collectionsStore'
 import { useSettingsStore } from '../../src/store/settingsStore'
 import toast from 'react-hot-toast'
-import * as analytics from '../../src/lib/analytics'
 import * as performance from '../../src/lib/performance'
 
 // Mock dependencies
@@ -14,10 +13,6 @@ vi.mock('react-hot-toast', () => ({
     success: vi.fn(),
     error: vi.fn(),
   },
-}))
-
-vi.mock('../../src/lib/analytics', () => ({
-  initGA: vi.fn(),
 }))
 
 vi.mock('../../src/lib/performance', () => ({
@@ -191,31 +186,26 @@ describe('useInitializeApp', () => {
     })
 
     it('should only initialize once', () => {
-      const initGASpy = vi.spyOn(analytics, 'initGA')
       const initPerfSpy = vi.spyOn(performance, 'initAllPerformanceMonitoring')
 
       const { rerender } = renderHook(() => useInitializeApp())
 
-      expect(initGASpy).toHaveBeenCalledTimes(1)
       expect(initPerfSpy).toHaveBeenCalledTimes(1)
 
       rerender()
       rerender()
 
       // Should still only be called once
-      expect(initGASpy).toHaveBeenCalledTimes(1)
       expect(initPerfSpy).toHaveBeenCalledTimes(1)
     })
   })
 
-  describe('analytics and performance', () => {
-    it('should initialize analytics in development', () => {
-      const initGASpy = vi.spyOn(analytics, 'initGA')
+  describe('performance monitoring', () => {
+    it('should initialize performance monitoring', () => {
       const initPerfSpy = vi.spyOn(performance, 'initAllPerformanceMonitoring')
 
       renderHook(() => useInitializeApp())
 
-      expect(initGASpy).toHaveBeenCalled()
       expect(initPerfSpy).toHaveBeenCalled()
     })
   })

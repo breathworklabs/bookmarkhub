@@ -33,8 +33,7 @@ This directory contains automated CI/CD workflows for BookmarkX.
    - For Netlify: `NETLIFY_AUTH_TOKEN`, `NETLIFY_SITE_ID`
 3. Uncomment deployment steps in `deploy.yml`
 4. (Optional) Add production secrets:
-   - `VITE_SENTRY_DSN` - Error tracking
-   - `VITE_GA_MEASUREMENT_ID` - Analytics
+   - `VITE_SENTRY_DSN` - Error tracking (optional)
 
 **Quick Setup:**
 - **Vercel**: Connect GitHub repo at [vercel.com](https://vercel.com)

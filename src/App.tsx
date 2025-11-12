@@ -1,11 +1,5 @@
 import { ChakraProvider, Box, Spinner, Text, VStack } from '@chakra-ui/react'
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useEffect } from 'react'
 import XBookmarkManager from './components/XBookmarkManager'
@@ -23,25 +17,9 @@ import { ModalProvider } from './components/modals/ModalProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import * as Sentry from '@sentry/react'
 import { ThemeProvider } from './contexts/ThemeContext'
-import { initGA, trackPageView } from './lib/analytics'
 import { useSettingsStore } from './store/settingsStore'
 import { chakraTheme } from './styles/chakraTheme'
 // import { AuthDebug } from './components/debug/AuthDebug'
-
-// Component to track page views
-function AnalyticsTracker() {
-  const location = useLocation()
-
-  useEffect(() => {
-    initGA()
-  }, [])
-
-  useEffect(() => {
-    trackPageView(location.pathname + location.search)
-  }, [location])
-
-  return null
-}
 
 // Wrap Router with Sentry for better error tracking
 const SentryRoutes = Sentry.withSentryRouting(Routes)
@@ -51,7 +29,6 @@ function App() {
     <ChakraProvider value={chakraTheme}>
       <ThemeProvider>
         <BrowserRouter>
-          <AnalyticsTracker />
           <Toaster
             position="top-right"
             toastOptions={{
@@ -87,7 +64,6 @@ function App() {
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/cookies" element={<CookiePolicy />} />
               </SentryRoutes>
-              {/* <CookieConsentBanner /> */}
             </ModalProvider>
           </ErrorBoundary>
         </BrowserRouter>
