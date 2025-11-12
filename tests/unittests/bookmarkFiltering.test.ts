@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import {
-  filterBookmarks,
+  filterBookmarksOptimized as filterBookmarks,
   type FilterParams,
-} from '../../src/utils/bookmarkFiltering'
+} from '../../src/utils/bookmarkFilteringOptimized'
 import type { Bookmark } from '../../src/types/bookmark'
 import type { DateRangeFilter } from '../../src/store/bookmarkStore'
 

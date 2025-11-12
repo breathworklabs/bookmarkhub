@@ -1,5 +1,23 @@
 import { type Bookmark } from '../types/bookmark'
-import type { FilterParams } from './bookmarkFiltering'
+import { type DateRangeFilter } from '../store/bookmarkStore'
+
+/**
+ * Filter parameters interface
+ */
+export interface FilterParams {
+  bookmarks: Bookmark[]
+  selectedTags: string[]
+  searchQuery: string
+  activeTab: number
+  activeSidebarItem: string
+  authorFilter: string
+  domainFilter: string
+  contentTypeFilter: string
+  dateRangeFilter: DateRangeFilter
+  quickFilters: string[]
+  activeCollectionId: string | null
+  collectionBookmarks: Record<string, number[]>
+}
 
 /**
  * Helper to get the effective date for a bookmark (prefers tweet_date if available)
