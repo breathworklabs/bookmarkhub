@@ -1,4 +1,5 @@
 import ReactGA from 'react-ga4'
+import { logger } from './logger'
 
 let isInitialized = false
 
@@ -9,12 +10,12 @@ export const initGA = () => {
   const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID
 
   if (!measurementId) {
-    console.warn('Google Analytics measurement ID not found')
+    logger.warn('Google Analytics measurement ID not found')
     return
   }
 
   if (isInitialized) {
-    console.warn('Google Analytics already initialized')
+    logger.warn('Google Analytics already initialized')
     return
   }
 
@@ -25,9 +26,9 @@ export const initGA = () => {
       },
     })
     isInitialized = true
-    console.log('Google Analytics initialized')
+    logger.debug('Google Analytics initialized')
   } catch (error) {
-    console.error('Failed to initialize Google Analytics:', error)
+    logger.error('Failed to initialize Google Analytics:', error)
   }
 }
 
@@ -44,7 +45,7 @@ export const trackPageView = (path: string, title?: string) => {
       title: title || document.title,
     })
   } catch (error) {
-    console.error('Failed to track page view:', error)
+    logger.error('Failed to track page view:', error)
   }
 }
 
@@ -67,7 +68,7 @@ export const trackEvent = (
       value,
     })
   } catch (error) {
-    console.error('Failed to track event:', error)
+    logger.error('Failed to track event:', error)
   }
 }
 

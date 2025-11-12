@@ -34,6 +34,7 @@ import { useBookmarkStore } from '../store/bookmarkStore'
 import { useSettingsStore } from '../store/settingsStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import UnifiedSidebar from './UnifiedSidebar'
+import { logger } from '../lib/logger'
 
 const MotionBox = motion.create(Box)
 
@@ -93,7 +94,7 @@ const SettingsPage = () => {
       // Reload page to show onboarding
       setTimeout(() => window.location.reload(), 500)
     } catch (error) {
-      console.error('Failed to clear data:', error)
+      logger.error('Failed to clear data', { error })
       toast.error('Failed to clear data')
     }
   }
@@ -111,7 +112,7 @@ const SettingsPage = () => {
       await exportBookmarks()
       toast.success('Bookmarks exported successfully')
     } catch (error) {
-      console.error('Failed to export bookmarks:', error)
+      logger.error('Failed to export bookmarks', { error })
       toast.error('Failed to export bookmarks')
     }
   }

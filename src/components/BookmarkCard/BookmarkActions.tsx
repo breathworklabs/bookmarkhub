@@ -5,6 +5,7 @@ import { type Bookmark } from '../../types/bookmark'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useIconButtonStyles, useColor } from '../../hooks/useStyles'
 import { localStorageService } from '../../lib/localStorage'
+import { logger } from '../../lib/logger'
 
 interface BookmarkActionsProps {
   bookmark: Bookmark
@@ -65,10 +66,10 @@ const BookmarkActions = memo(
               // Log activity
               addActivityLog('Shared bookmark', bookmark.title)
             })
-            .catch((err) => console.error('Failed to mark as shared:', err))
+            .catch((err) => logger.error('Failed to mark as shared', err))
         }
       } catch (err) {
-        console.error('Failed to copy URL:', err)
+        logger.error('Failed to copy URL', err, { notify: true })
         // Fallback for older browsers
         try {
           const textArea = document.createElement('textarea')
@@ -100,10 +101,10 @@ const BookmarkActions = memo(
                 // Log activity
                 addActivityLog('Shared bookmark', bookmark.title)
               })
-              .catch((err) => console.error('Failed to mark as shared:', err))
+              .catch((err) => logger.error('Failed to mark as shared', err))
           }
         } catch (fallbackErr) {
-          console.error('Fallback copy also failed:', fallbackErr)
+          logger.error('Fallback copy also failed', fallbackErr, { notify: true })
         }
       }
     }, [bookmark, bookmarks, setBookmarks, addActivityLog])
@@ -112,7 +113,7 @@ const BookmarkActions = memo(
       try {
         await toggleStarBookmark(bookmark.id)
       } catch (error) {
-        console.error('Failed to toggle star:', error)
+        logger.error('Failed to toggle star', error, { notify: true })
       }
     }, [toggleStarBookmark, bookmark.id])
 

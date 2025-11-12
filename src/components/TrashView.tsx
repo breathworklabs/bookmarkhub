@@ -17,6 +17,7 @@ import type { Bookmark } from '../types/bookmark'
 import toast from 'react-hot-toast'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import UnifiedSidebar from './UnifiedSidebar'
+import { logger } from '../lib/logger'
 
 const TrashView = () => {
   const [deletedBookmarks, setDeletedBookmarks] = useState<Bookmark[]>([])
@@ -29,7 +30,7 @@ const TrashView = () => {
       const deleted = await localStorageService.getDeletedBookmarks()
       setDeletedBookmarks(deleted)
     } catch (error) {
-      console.error('Failed to load deleted bookmarks:', error)
+      logger.error('Failed to load deleted bookmarks', { error })
       toast.error('Failed to load trash')
     } finally {
       setIsLoading(false)
@@ -47,7 +48,7 @@ const TrashView = () => {
       loadDeletedBookmarks()
       loadBookmarks() // Refresh main bookmarks list
     } catch (error) {
-      console.error('Failed to restore bookmark:', error)
+      logger.error('Failed to restore bookmark', { error })
       toast.error('Failed to restore bookmark')
     }
   }
@@ -62,7 +63,7 @@ const TrashView = () => {
       toast.success('Bookmark permanently deleted')
       loadDeletedBookmarks()
     } catch (error) {
-      console.error('Failed to permanently delete bookmark:', error)
+      logger.error('Failed to permanently delete bookmark', { error })
       toast.error('Failed to delete bookmark')
     }
   }
@@ -81,7 +82,7 @@ const TrashView = () => {
       toast.success('Trash emptied')
       loadDeletedBookmarks()
     } catch (error) {
-      console.error('Failed to empty trash:', error)
+      logger.error('Failed to empty trash', { error })
       toast.error('Failed to empty trash')
     }
   }

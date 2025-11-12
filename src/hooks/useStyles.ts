@@ -9,6 +9,7 @@ import {
   getTagStyle,
 } from '../styles/components'
 import { colors } from '../styles/colors'
+import { logger } from '../lib/logger'
 
 // Style hooks for consistent component styling
 
@@ -87,7 +88,7 @@ export const useColor = (colorPath: string) => {
     for (const key of keys) {
       value = value[key]
       if (value === undefined) {
-        console.warn(`Color path "${colorPath}" not found`)
+        logger.warn(`Color path "${colorPath}" not found`)
         return '#000000'
       }
     }

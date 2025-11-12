@@ -35,6 +35,7 @@ import {
   getChildCollections,
   wouldCreateCircularReference,
 } from '../../../utils/collectionHierarchy'
+import { logger } from '../../../lib/logger'
 
 interface CollectionTreeItemProps {
   collection: Collection
@@ -208,6 +209,7 @@ export const CollectionTreeItem = memo<CollectionTreeItemProps>(
               `Moved "${item.collection.name}" under "${collection.name}"`
             )
           } catch (error: any) {
+            logger.error('Failed to move collection', { error })
             toast.error(error.message || 'Failed to move collection')
           }
         },

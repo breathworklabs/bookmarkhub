@@ -18,6 +18,7 @@ import FilterBar from './FilterBar'
 import CollectionsActions from './collections/CollectionsActions'
 import InfiniteBookmarkGrid from './InfiniteBookmarkGrid'
 import { BulkActionsBar } from './BulkActionsBar'
+import { logger } from '../lib/logger'
 
 const XBookmarkManager = () => {
   const { bookmarks } = useBookmarkStore()
@@ -50,7 +51,7 @@ const XBookmarkManager = () => {
             await useBookmarkStore.getState().importBookmarks(file)
           }
         } catch (error) {
-          console.error('Import failed:', error)
+          logger.error('Import failed', { error, notify: true })
           alert(
             `Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`
           )

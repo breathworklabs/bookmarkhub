@@ -6,6 +6,7 @@
 
 import { onCLS, onFCP, onLCP, onTTFB, onINP, type Metric } from 'web-vitals'
 import ReactGA from 'react-ga4'
+import { logger } from './logger'
 
 /**
  * Initialize Web Vitals tracking
@@ -53,7 +54,7 @@ export const trackOperationPerformance = (
 
   // Log slow operations (>2s)
   if (duration > 2000) {
-    console.warn(
+    logger.warn(
       `[Performance] Slow operation: ${operation} took ${duration}ms`,
       metadata
     )
@@ -122,7 +123,7 @@ export const trackStorageMetrics = async () => {
 
       // Warn if storage is high
       if (percentUsed > 80) {
-        console.warn(
+        logger.warn(
           `[Performance] High storage usage: ${Math.round(percentUsed)}%`
         )
 
@@ -135,7 +136,7 @@ export const trackStorageMetrics = async () => {
         })
       }
     } catch (error) {
-      console.error('[Performance] Failed to track storage metrics:', error)
+      logger.error('[Performance] Failed to track storage metrics:', error)
     }
   }
 }
@@ -169,7 +170,7 @@ export const trackResourceLoading = () => {
     })
 
     if (import.meta.env.DEV) {
-      console.warn(
+      logger.warn(
         `[Performance] Slow resource: ${resourceName} (${Math.round(duration)}ms)`
       )
     }
@@ -225,7 +226,7 @@ export const trackMemoryUsage = () => {
     })
 
     if (percentUsed > 80) {
-      console.warn(
+      logger.warn(
         `[Performance] High memory usage: ${Math.round(percentUsed)}%`
       )
     }

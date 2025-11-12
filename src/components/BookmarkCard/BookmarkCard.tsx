@@ -11,6 +11,7 @@ import { useCardStyles } from '../../hooks/useStyles'
 import { useIsMobile } from '../../hooks/useMobile'
 import { CollectionPickerModal } from '../modals/CollectionPickerModal'
 import { BookmarkContextMenu } from './BookmarkContextMenu'
+import { logger } from '../../lib/logger'
 import {
   BookmarkHeader,
   BookmarkContent,
@@ -126,7 +127,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
                 : `Moved to "${dropResult.collectionName}"`
             toast.success(message)
           } catch (error) {
-            console.error('Failed to move bookmark(s) to collection:', error)
+            logger.error('Failed to move bookmark(s) to collection', error)
 
             // Show error toast
             toast.error(
@@ -268,7 +269,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
 
         toast.success('Bookmark moved successfully')
       } catch (error) {
-        console.error('Failed to move bookmark:', error)
+        logger.error('Failed to move bookmark', error)
         toast.error('Failed to move bookmark')
       }
     },
@@ -280,7 +281,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
       await navigator.clipboard.writeText(bookmark.url)
       toast.success('Link copied to clipboard')
     } catch (err) {
-      console.error('Failed to copy:', err)
+      logger.error('Failed to copy', err)
       toast.error('Failed to copy link')
     }
   }, [bookmark.url])
@@ -290,7 +291,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
       await removeBookmark(bookmark.id)
       toast.success('Bookmark deleted')
     } catch (error) {
-      console.error('Failed to delete:', error)
+      logger.error('Failed to delete', error)
       toast.error('Failed to delete bookmark')
     }
   }, [bookmark.id, removeBookmark])

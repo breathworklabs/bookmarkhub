@@ -5,6 +5,7 @@ import { componentStyles } from '../styles/components'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'
 import { useCollectionsStore } from '../store/collectionsStore'
+import { logger } from '../lib/logger'
 
 interface SidebarItem {
   icon: React.ComponentType<{ size: number }>
@@ -56,7 +57,7 @@ const SidebarMenu = () => {
           try {
             await createCollection(collectionData)
           } catch (error) {
-            console.error('Failed to create collection:', error)
+            logger.error('Failed to create collection', { error })
           }
         },
       })

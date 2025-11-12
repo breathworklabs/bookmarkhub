@@ -36,6 +36,7 @@ import { useFilterReset } from '../utils/filterUtils'
 import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
 import { useDebounce } from '../hooks/useDebounce'
 import toast from 'react-hot-toast'
+import { logger } from '../lib/logger'
 
 interface SearchHeaderProps {
   onMenuClick?: () => void // For opening mobile drawer
@@ -244,7 +245,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
             alert('Invalid file type. Please upload a .json or .zip file.')
           }
         } catch (error) {
-          console.error('Import failed:', error)
+          logger.error('Import failed', { error })
           alert(
             `Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`
           )
@@ -263,7 +264,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
             await addBookmark(validatedBookmark)
           }
         } catch (error) {
-          console.error('Failed to add bookmark:', error)
+          logger.error('Failed to add bookmark', { error })
         }
       },
     })

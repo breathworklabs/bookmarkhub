@@ -32,6 +32,7 @@ import CollectionsList from './collections/CollectionsList'
 import { useNavigationStyles } from '../hooks/useStyles'
 import { componentStyles } from '../styles/components'
 import logoImage from '../assets/logo_v2 1.png'
+import { logger } from '../lib/logger'
 
 // Optimized selector for bookmark data
 const useBookmarkCounts = () => {
@@ -307,7 +308,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
                         try {
                           await createCollection(collectionData)
                         } catch (error) {
-                          console.error('Failed to create collection:', error)
+                          logger.error('Failed to create collection', { error })
                         }
                       },
                     })
@@ -343,7 +344,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
                         try {
                           await createCollection(collectionData)
                         } catch (error) {
-                          console.error('Failed to create collection:', error)
+                          logger.error('Failed to create collection', { error })
                         }
                       },
                     })

@@ -9,6 +9,7 @@ import {
 } from 'react-icons/lu'
 import { memo } from 'react'
 import { type Bookmark } from '../../types/bookmark'
+import { logger } from '../../lib/logger'
 
 interface BookmarkContextMenuProps {
   bookmark: Bookmark
@@ -184,7 +185,7 @@ export const BookmarkContextMenu = memo<BookmarkContextMenuProps>(
                     try {
                       await navigator.clipboard.writeText(bookmark.url)
                     } catch (err) {
-                      console.error('Failed to copy:', err)
+                      logger.error('Failed to copy URL to clipboard', { error: err, notify: true })
                     }
                   })
                 }

@@ -5,6 +5,7 @@ import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { CollectionPickerModal } from './modals/CollectionPickerModal'
 import toast from 'react-hot-toast'
+import { logger } from '../lib/logger'
 
 export const BulkActionsBar = memo(() => {
   const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
@@ -53,7 +54,7 @@ export const BulkActionsBar = memo(() => {
       )
       clearBookmarkSelection()
     } catch (error) {
-      console.error('Failed to move bookmarks:', error)
+      logger.error('Failed to move bookmarks', { error })
       toast.error('Failed to move bookmarks')
     }
   }
@@ -76,7 +77,7 @@ export const BulkActionsBar = memo(() => {
       )
       clearBookmarkSelection()
     } catch (error) {
-      console.error('Failed to delete bookmarks:', error)
+      logger.error('Failed to delete bookmarks', { error })
       toast.error('Failed to delete bookmarks')
     }
   }

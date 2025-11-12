@@ -14,6 +14,7 @@ import type {
   BookmarkCollection,
   CollectionInsert as CollectionInsertType,
 } from '../types/collections'
+import { logger } from './logger'
 
 // Single storage key for consolidated structure
 const STORAGE_KEY = 'x-bookmark-manager-data'
@@ -111,7 +112,7 @@ class LocalStorageService {
       }
       return JSON.parse(item)
     } catch (error) {
-      console.error('Failed to parse localStorage:', error)
+      logger.error('Failed to parse localStorage:', error)
       return this.getDefaultStorage()
     }
   }
@@ -119,7 +120,7 @@ class LocalStorageService {
   // Set the entire consolidated storage
   private setStorage(data: ConsolidatedStorage): boolean {
     if (!this.isAvailable()) {
-      console.warn('localStorage is not available, cannot save data')
+      logger.warn('localStorage is not available, cannot save data')
       return false
     }
 
@@ -127,7 +128,7 @@ class LocalStorageService {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
       return true
     } catch (error) {
-      console.error('Failed to save to localStorage:', error)
+      logger.error('Failed to save to localStorage:', error)
       return false
     }
   }
@@ -165,7 +166,7 @@ class LocalStorageService {
         return this.getDefaultStorage()
       }
 
-      console.log('Migrating from legacy storage format...')
+      logger.debug('Migrating from legacy storage format...')
 
       const defaultStorage = this.getDefaultStorage()
 
@@ -205,10 +206,10 @@ class LocalStorageService {
         localStorage.removeItem(key)
       })
 
-      console.log('Migration completed successfully')
+      logger.debug('Migration completed successfully')
       return consolidatedData
     } catch (error) {
-      console.error('Failed to migrate legacy storage:', error)
+      logger.error('Failed to migrate legacy storage:', error)
       return this.getDefaultStorage()
     }
   }
@@ -1093,7 +1094,7 @@ class LocalStorageService {
       }
       this.setStorage(data)
     } catch (error) {
-      console.error('Failed to set hasBeenCleared flag:', error)
+      logger.error('Failed to set hasBeenCleared flag:', error)
     }
   }
 
@@ -1116,7 +1117,7 @@ class LocalStorageService {
       }
       this.setStorage(data)
     } catch (error) {
-      console.error('Failed to set lastImportSource flag:', error)
+      logger.error('Failed to set lastImportSource flag:', error)
     }
   }
 

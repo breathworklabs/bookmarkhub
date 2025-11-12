@@ -14,6 +14,7 @@ import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useModal } from '../modals/ModalProvider'
 import LazyImage from '../LazyImage'
 import { useMenuItemStyles } from '../../hooks/useStyles'
+import { logger } from '../../lib/logger'
 
 interface BookmarkHeaderProps {
   bookmark: Bookmark
@@ -107,7 +108,7 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
         try {
           await updateBookmark(id, updatedBookmark)
         } catch (error) {
-          console.error('Failed to update bookmark:', error)
+          logger.error('Failed to update bookmark', error, { notify: true })
         }
       },
     })
@@ -125,7 +126,7 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
         try {
           await removeBookmark(bookmark.id)
         } catch (error) {
-          console.error('Failed to delete bookmark:', error)
+          logger.error('Failed to delete bookmark', error, { notify: true })
         }
       },
     })
@@ -135,7 +136,7 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
     try {
       await toggleArchiveBookmark(bookmark.id)
     } catch (error) {
-      console.error('Failed to toggle archive:', error)
+      logger.error('Failed to toggle archive', error, { notify: true })
     }
   }, [toggleArchiveBookmark, bookmark.id])
 

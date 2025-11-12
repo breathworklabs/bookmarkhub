@@ -159,8 +159,10 @@ describe('useInitializeApp', () => {
 
       expect(result.current.hasExistingBookmarks).toBe(false)
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Error checking existing bookmarks:',
-        expect.any(Error)
+        '[ERROR] Error checking existing bookmarks',
+        expect.objectContaining({
+          error: expect.any(String)
+        })
       )
 
       consoleSpy.mockRestore()
@@ -399,8 +401,10 @@ describe('useInitializeApp', () => {
       )
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Error reloading stores after extension update:',
-        expect.any(Error)
+        '[ERROR] Error reloading stores after extension update',
+        expect.objectContaining({
+          error: expect.any(String)
+        })
       )
 
       consoleSpy.mockRestore()
@@ -561,8 +565,10 @@ describe('useInitializeApp', () => {
       })
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Failed to validate bookmarks on startup:',
-        expect.any(Error)
+        '[ERROR] Failed to validate bookmarks on startup',
+        expect.objectContaining({
+          error: expect.any(String)
+        })
       )
 
       consoleSpy.mockRestore()

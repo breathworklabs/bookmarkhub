@@ -5,6 +5,7 @@ import { useCollectionsStore } from '../../store/collectionsStore'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useModal } from '../modals/ModalProvider'
 import { CollectionTree } from './tree/CollectionTree'
+import { logger } from '../../lib/logger'
 
 const CollectionsList = memo(() => {
   const {
@@ -95,7 +96,7 @@ const CollectionsList = memo(() => {
         onToggleExpand={toggleCollectionExpansion}
         onExpandFullView={(collectionId) => {
           // TODO: Open CollectionTreePanel
-          console.log('Expand full view for:', collectionId)
+          logger.debug('Expand full view for collection', { context: { collectionId } })
         }}
         onCollectionClick={handleCollectionClick}
       />
@@ -126,7 +127,7 @@ const CollectionsList = memo(() => {
                   try {
                     await createCollection(collectionData)
                   } catch (error) {
-                    console.error('Failed to create collection:', error)
+                    logger.error('Failed to create collection', { error })
                   }
                 },
               })

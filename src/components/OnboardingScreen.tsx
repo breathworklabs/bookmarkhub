@@ -3,6 +3,7 @@ import { LuImport, LuBookmarkPlus, LuFolderOpen } from 'react-icons/lu'
 import toast from 'react-hot-toast'
 import { componentStyles } from '../styles/components'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { logger } from '../lib/logger'
 
 const OnboardingScreen = () => {
   const handleFileChosen = async (file: File) => {
@@ -39,7 +40,7 @@ const OnboardingScreen = () => {
         window.location.reload()
       }, 2500)
     } catch (error) {
-      console.error('Import failed:', error)
+      logger.error('Import failed', { error })
       toast.error(
         `Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       )

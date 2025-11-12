@@ -16,6 +16,7 @@ import { useState, useCallback, useMemo, memo, useEffect } from 'react'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import TagChip from './TagChip'
 import type { TagStats } from '../../types/tags'
+import { logger } from '../../lib/logger'
 
 interface TagMergeModalProps {
   isOpen: boolean
@@ -166,7 +167,7 @@ const TagMergeModal = memo(
         setTargetTag('')
         onClose()
       } catch (error) {
-        console.error('Failed to merge tags:', error)
+        logger.error('Failed to merge tags', { error, notify: true })
       } finally {
         setIsLoading(false)
       }

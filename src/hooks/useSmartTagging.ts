@@ -10,6 +10,7 @@ import type {
   TagSuggestion,
 } from '../services/smartTagging/types'
 import type { Bookmark } from '../types/bookmark'
+import { logger } from '../lib/logger'
 
 interface UseSmartTaggingOptions extends TaggingOptions {
   autoFetch?: boolean // Auto-fetch suggestions when bookmark changes
@@ -78,7 +79,7 @@ export function useSmartTagging(
         const error =
           err instanceof Error ? err : new Error('Failed to generate tags')
         setError(error)
-        console.error('Error generating tags:', error)
+        logger.error('Error generating tags', error)
       } finally {
         setIsLoading(false)
       }

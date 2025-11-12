@@ -11,6 +11,7 @@ import { ItemTypes, type DropResult } from '../types/dnd'
 import TagChip from './tags/TagChip'
 import LazyImage from './LazyImage'
 import { formatDistanceToNow } from 'date-fns'
+import { logger } from '../lib/logger'
 
 interface BookmarkListProps {
   bookmarks: Bookmark[]
@@ -155,7 +156,7 @@ const BookmarkListItem = memo(
                   : `Moved to "${dropResult.collectionName}"`
               toast.success(message)
             } catch (error) {
-              console.error('Failed to move bookmark(s) to collection:', error)
+              logger.error('Failed to move bookmark(s) to collection', { error })
               toast.error('Failed to move bookmark(s)')
             }
           }
@@ -457,7 +458,7 @@ const BookmarkList = memo(({ bookmarks }: BookmarkListProps) => {
         localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
       }
     } catch (error) {
-      console.error('Failed to save column widths:', error)
+      logger.warn('Failed to save column widths to storage', { error })
     }
   }, [columnWidths])
 

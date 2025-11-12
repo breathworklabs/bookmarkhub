@@ -6,6 +6,7 @@ import { useSettingsStore } from '../store/settingsStore'
 import { initGA } from '../lib/analytics'
 import { initAllPerformanceMonitoring } from '../lib/performance'
 import { localStorageService } from '../lib/localStorage'
+import { logger } from '../lib/logger'
 
 export const useInitializeApp = () => {
   const [hasExistingBookmarks, setHasExistingBookmarks] = useState<
@@ -53,7 +54,7 @@ export const useInitializeApp = () => {
           ])
         }
       } catch (error) {
-        console.error('Error checking existing bookmarks:', error)
+        logger.error('Error checking existing bookmarks', error)
         setHasExistingBookmarks(false)
       }
     }
@@ -73,7 +74,7 @@ export const useInitializeApp = () => {
 
         // Check if user recently cleared data - don't auto-load in that case
         if (localStorageService.getHasBeenCleared()) {
-          console.log('Extension sync ignored: User cleared data')
+          logger.debug('Extension sync ignored: User cleared data')
           return
         }
 
@@ -102,10 +103,7 @@ export const useInitializeApp = () => {
             }
           })
           .catch((error) => {
-            console.error(
-              'Error reloading stores after extension update:',
-              error
-            )
+            logger.error('Error reloading stores after extension update', error)
 
             // Always show error toast (regardless of notification setting)
             toast.error(
@@ -125,20 +123,20 @@ export const useInitializeApp = () => {
 
     // Only auto-sync if not set to 'manual' or 'off'
     if (autoSyncInterval === 'manual' || autoSyncInterval === 'off') {
-      console.log('Auto-sync: Disabled (set to', autoSyncInterval + ')')
+      logger.debug(`Auto-sync: Disabled (set to ${autoSyncInterval})`)
       return
     }
 
     // Check if user recently cleared data - don't auto-sync in that case
     if (localStorageService.getHasBeenCleared()) {
-      console.log('Auto-sync: Disabled (user cleared data)')
+      logger.debug('Auto-sync: Disabled (user cleared data)')
       return
     }
 
     // Check if user recently imported from a file - don't auto-sync to prevent overwriting
     const lastImportSource = localStorageService.getLastImportSource()
     if (lastImportSource === 'file') {
-      console.log('Auto-sync: Disabled (user imported from file - preventing data overwrite)')
+      logger.debug('Auto-sync: Disabled (user imported from file - preventing data overwrite)')
       return
     }
 
@@ -151,7 +149,7 @@ export const useInitializeApp = () => {
         },
         '*'
       )
-      console.log('Auto-sync: Requested bookmarks from extension')
+      logger.debug('Auto-sync: Requested bookmarks from extension')
     }, 500)
 
     return () => clearTimeout(timer)
@@ -165,7 +163,7 @@ export const useInitializeApp = () => {
         const validateAllBookmarks =
           useBookmarkStore.getState().validateAllBookmarks
         validateAllBookmarks().catch((error) => {
-          console.error('Failed to validate bookmarks on startup:', error)
+          logger.error('Failed to validate bookmarks on startup', error)
         })
       }, 2000) // Delay to allow other initialization to complete
 

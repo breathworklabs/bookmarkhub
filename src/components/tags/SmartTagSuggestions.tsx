@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo, memo, useEffect } from 'react'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useTagCategoriesStore } from '../../store/tagCategoriesStore'
 import TagChip from './TagChip'
+import { logger } from '../../lib/logger'
 
 interface SmartTagSuggestionsProps {
   selectedBookmarkIds: number[]
@@ -273,7 +274,7 @@ const SmartTagSuggestions = memo(
 
         setSuggestions(finalSuggestions)
       } catch (error) {
-        console.error('Failed to generate smart suggestions:', error)
+        logger.error('Failed to generate smart suggestions', { error })
         setSuggestions([])
       } finally {
         setIsLoading(false)

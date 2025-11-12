@@ -2,6 +2,7 @@ import { Box, VStack, Text, Button, For, HStack } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useMemo } from 'react'
+import { logger } from '../lib/logger'
 
 const MotionBox = motion.create(Box)
 
@@ -241,7 +242,7 @@ const AIInsights = () => {
                         _hover={{ opacity: 0.8 }}
                         onClick={() => {
                           // TODO: Navigate to broken links view
-                          console.log('Review broken links')
+                          logger.debug('Review broken links clicked')
                         }}
                       >
                         Review Links

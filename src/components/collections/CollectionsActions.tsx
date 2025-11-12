@@ -20,6 +20,7 @@ import { useBookmarkSelectors } from '../../hooks/selectors/useBookmarkSelectors
 import TagInput from '../tags/TagInput'
 import SmartTagSuggestions from '../tags/SmartTagSuggestions'
 import { getCollectionPath } from '../../utils/collectionHierarchy'
+import { logger } from '../../lib/logger'
 
 const CollectionsActions = memo(() => {
   const {
@@ -80,7 +81,7 @@ const CollectionsActions = memo(() => {
         try {
           await createCollection(collectionData)
         } catch (error) {
-          console.error('Failed to create collection:', error)
+          logger.error('Failed to create collection', { error })
         }
       },
     })
@@ -95,7 +96,7 @@ const CollectionsActions = memo(() => {
         try {
           await updateCollection(id, updatedData)
         } catch (error) {
-          console.error('Failed to update collection:', error)
+          logger.error('Failed to update collection', { error })
         }
       },
     })
@@ -113,7 +114,7 @@ const CollectionsActions = memo(() => {
         try {
           await deleteCollection(activeCollection.id)
         } catch (error) {
-          console.error('Failed to delete collection:', error)
+          logger.error('Failed to delete collection', { error })
         }
       },
     })
@@ -135,7 +136,7 @@ const CollectionsActions = memo(() => {
           await Promise.all(selectedBookmarks.map((id) => removeBookmark(id)))
           clearBookmarkSelection()
         } catch (error) {
-          console.error('Failed to delete bookmarks:', error)
+          logger.error('Failed to delete bookmarks', { error })
         }
       },
     })
@@ -203,7 +204,7 @@ const CollectionsActions = memo(() => {
         // Update local state
         setSelectedBookmarkTags((prev) => [...prev, tag])
       } catch (error) {
-        console.error('Failed to add tags to bookmarks:', error)
+        logger.error('Failed to add tags to bookmarks', { error })
       }
     },
     [selectedBookmarks, bookmarks, updateBookmark]
@@ -226,7 +227,7 @@ const CollectionsActions = memo(() => {
         // Update local state
         setSelectedBookmarkTags((prev) => prev.filter((t) => t !== tag))
       } catch (error) {
-        console.error('Failed to remove tags from bookmarks:', error)
+        logger.error('Failed to remove tags from bookmarks', { error })
       }
     },
     [selectedBookmarks, bookmarks, updateBookmark]
