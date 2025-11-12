@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { logger } from '../lib/logger'
 import { persist } from 'zustand/middleware'
 
 export interface ExtensionSettings {
@@ -173,7 +174,7 @@ const consolidatedStorage = {
         }
       }
     } catch (error) {
-      console.error('Failed to get settings from consolidated storage:', error)
+      logger.error('Failed to get settings from consolidated storage:', error)
     }
     return null
   },
@@ -197,7 +198,7 @@ const consolidatedStorage = {
       parsed.extensionSettings = value
       localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
     } catch (error) {
-      console.error('Failed to save settings to consolidated storage:', error)
+      logger.error('Failed to save settings to consolidated storage:', error)
     }
   },
   removeItem: (_name: string): void => {
@@ -209,7 +210,7 @@ const consolidatedStorage = {
         localStorage.setItem('x-bookmark-manager-data', JSON.stringify(parsed))
       }
     } catch (error) {
-      console.error(
+      logger.error(
         'Failed to remove settings from consolidated storage:',
         error
       )

@@ -11,6 +11,7 @@ import { createErrorHandler } from '../utils/errorHandling'
 import { detectDuplicate, type DuplicateMatch } from '../lib/duplicateDetection'
 import { downloadFile } from '../lib/exportFormats'
 import { trackOperationPerformance } from '../lib/performance'
+import { logger } from '../lib/logger'
 import type { Bookmark, BookmarkInsert } from '../types/bookmark'
 import {
   validateBookmarks,
@@ -273,14 +274,14 @@ export const useBookmarkStore = create<BookmarkState>()(
               )
             }
           } catch (error) {
-            console.warn('Failed to load filter presets:', error)
+            logger.warn('Failed to load filter presets', error)
           }
 
           // Clean up old trash items (30+ days old)
           try {
             await localStorageService.cleanupOldTrash(30)
           } catch (error) {
-            console.warn('Failed to cleanup old trash:', error)
+            logger.warn('Failed to cleanup old trash', error)
             // Don't fail initialization if cleanup fails
           }
 
@@ -304,7 +305,7 @@ export const useBookmarkStore = create<BookmarkState>()(
 
             // Calculate filter options in background
             Promise.resolve(get().calculateFilterOptions()).catch((error) => {
-              console.error('Background initialization failed:', error)
+              logger.error('Background initialization failed', error)
             })
           } else {
             // No bookmarks in localStorage
@@ -498,7 +499,7 @@ export const useBookmarkStore = create<BookmarkState>()(
           // Log activity
           get().addActivityLog('Updated bookmark', sanitizedBookmark.title)
         } catch (error) {
-          console.error('Error updating bookmark:', error)
+          logger.error('Error updating bookmark', error, { notify: true })
           set(
             {
               error:
@@ -532,7 +533,7 @@ export const useBookmarkStore = create<BookmarkState>()(
           // Log activity
           get().addActivityLog('Moved to trash', updatedBookmark.title)
         } catch (error) {
-          console.error('Error removing bookmark:', error)
+          logger.error('Error removing bookmark', error, { notify: true })
           set(
             {
               error:
@@ -567,7 +568,7 @@ export const useBookmarkStore = create<BookmarkState>()(
             get().addActivityLog('Starred bookmark', updatedBookmark.title)
           }
         } catch (error) {
-          console.error('Error toggling bookmark star:', error)
+          logger.error('Failed to star bookmark', error, { notify: true })
           set(
             {
               error:
@@ -608,7 +609,7 @@ export const useBookmarkStore = create<BookmarkState>()(
             get().addActivityLog('Archived bookmark', updatedBookmark.title)
           }
         } catch (error) {
-          console.error('Error toggling bookmark archive:', error)
+          logger.error('Failed to archive bookmark', error, { notify: true })
           set(
             {
               error:
@@ -633,7 +634,7 @@ export const useBookmarkStore = create<BookmarkState>()(
           const results = await localStorageService.searchBookmarks(query)
           set({ bookmarks: results }, false, 'searchBookmarks:success')
         } catch (error) {
-          console.error('Error searching bookmarks:', error)
+          logger.error('Error searching bookmarks', error)
           set(
             {
               error:
@@ -726,7 +727,7 @@ export const useBookmarkStore = create<BookmarkState>()(
             'application/json'
           )
         } catch (error) {
-          console.error('Error exporting bookmarks:', error)
+          logger.error('Failed to export bookmarks', error, { notify: true })
           set(
             {
               error:
@@ -773,7 +774,7 @@ export const useBookmarkStore = create<BookmarkState>()(
             count: importedCount,
           })
         } catch (error) {
-          console.error('Error importing bookmarks:', error)
+          logger.error('Failed to import bookmarks', error, { notify: true })
           set(
             {
               error:
@@ -814,7 +815,7 @@ export const useBookmarkStore = create<BookmarkState>()(
                 successCount++
               }
             } catch (error) {
-              console.warn('Failed to import bookmark:', bookmark.title, error)
+              logger.warn(`Failed to import bookmark: ${bookmark.title}`, error)
             }
           }
 
@@ -829,7 +830,7 @@ export const useBookmarkStore = create<BookmarkState>()(
 
           // Filter options will be recalculated in loadBookmarks()
         } catch (error) {
-          console.error('Error importing X bookmarks:', error)
+          logger.error('Failed to import X bookmarks', error, { notify: true })
           set(
             {
               error:
@@ -868,7 +869,7 @@ export const useBookmarkStore = create<BookmarkState>()(
             'clearAllData:success'
           )
         } catch (error) {
-          console.error('Error clearing data:', error)
+          logger.error('Failed to clear data', error, { notify: true })
           set(
             {
               error:
@@ -1193,7 +1194,7 @@ export const useBookmarkStore = create<BookmarkState>()(
             JSON.stringify(updatedPresets)
           )
         } catch (error) {
-          console.error('Failed to save filter presets to localStorage:', error)
+          logger.error('Failed to save filter presets', error)
         }
       },
 
@@ -1235,7 +1236,7 @@ export const useBookmarkStore = create<BookmarkState>()(
             JSON.stringify(updatedPresets)
           )
         } catch (error) {
-          console.error('Failed to save filter presets to localStorage:', error)
+          logger.error('Failed to save filter presets', error)
         }
       },
 
@@ -1265,7 +1266,7 @@ export const useBookmarkStore = create<BookmarkState>()(
             JSON.stringify(updatedPresets)
           )
         } catch (error) {
-          console.error('Failed to save filter presets to localStorage:', error)
+          logger.error('Failed to save filter presets', error)
         }
       },
 
@@ -1337,7 +1338,7 @@ export const useBookmarkStore = create<BookmarkState>()(
             )
           }
         } catch (error) {
-          console.error('Error validating bookmarks:', error)
+          logger.error('Error validating bookmarks', error)
           set(
             {
               isValidating: false,

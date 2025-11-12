@@ -1,3 +1,4 @@
+import { logger } from "./../lib/logger"
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import {
@@ -118,7 +119,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
                 )
               collectionBookmarks[collection.id] = bookmarks.map((b) => b.id)
             } catch (error) {
-              console.warn(
+              logger.warn(
                 `Failed to load bookmarks for collection ${collection.id}:`,
                 error
               )
@@ -172,7 +173,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
                 )
               collectionBookmarks[collection.id] = bookmarks.map((b) => b.id)
             } catch (error) {
-              console.warn(
+              logger.warn(
                 `Failed to load bookmarks for collection ${collection.id}:`,
                 error
               )
@@ -191,7 +192,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
             'collections:load:success'
           )
         } catch (error) {
-          console.error('Error loading collections:', error)
+          logger.error('Failed to load collections', error)
           set(
             {
               error:
@@ -236,7 +237,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
             .getState()
             .addActivityLog('Created collection', newCollection.name)
         } catch (error) {
-          console.error('Error creating collection:', error)
+          logger.error('Failed to create collection', error, { notify: true })
           set(
             {
               error:
@@ -276,7 +277,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
             'collections:update:success'
           )
         } catch (error) {
-          console.error('Error updating collection:', error)
+          logger.error('Failed to update collection', error, { notify: true })
           set(
             {
               error:
@@ -330,7 +331,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
             .getState()
             .addActivityLog('Deleted collection', collectionName)
         } catch (error) {
-          console.error('Error deleting collection:', error)
+          logger.error('Failed to delete collection', error, { notify: true })
           set(
             {
               error:
@@ -378,7 +379,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
             .getState()
             .addActivityLog('Added to collection', collectionName)
         } catch (error) {
-          console.error('Error adding bookmark to collection:', error)
+          logger.error('Failed to add bookmark to collection', error, { notify: true })
           set(
             {
               error:
@@ -423,7 +424,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
             .getState()
             .addActivityLog('Removed from collection', collectionName)
         } catch (error) {
-          console.error('Error removing bookmark from collection:', error)
+          logger.error('Failed to remove bookmark from collection', error, { notify: true })
           set(
             {
               error:
@@ -454,7 +455,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
             'collections:getBookmarks:success'
           )
         } catch (error) {
-          console.error('Error getting bookmarks by collection:', error)
+          logger.error('Failed to get bookmarks by collection', error)
           set(
             {
               error:
@@ -500,7 +501,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
               `to ${collectionName}`
             )
         } catch (error) {
-          console.error('Error moving bookmarks:', error)
+          logger.error('Failed to move bookmarks', error, { notify: true })
           set(
             {
               error:
@@ -605,7 +606,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
               `${collection?.name} to ${newParent?.name || 'root'}`
             )
         } catch (error) {
-          console.error('Error moving collection:', error)
+          logger.error('Failed to move collection', error, { notify: true })
           set(
             {
               error:
