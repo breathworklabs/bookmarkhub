@@ -1,0 +1,38 @@
+name: Security Audit
+
+on:
+  schedule:
+    # Run weekly on Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [master, main]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Check for outdated dependencies
+        run: npm outdated || true
+
+      - name: Security Summary
+        run: |
+          echo "🔒 Security audit completed"
+          echo "Check the logs above for any vulnerabilities"
+          echo "Run 'npm audit fix' locally to fix issues"
