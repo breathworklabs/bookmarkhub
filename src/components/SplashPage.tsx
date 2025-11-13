@@ -15,6 +15,7 @@ import { LuCheck } from 'react-icons/lu'
 import splashContent from '../data/splash-content.json'
 import { useSettingsStore } from '../store/settingsStore'
 import logoImage from '../assets/logo_v2 1.png'
+import { APP_NAME, APP_COPYRIGHT } from '../constants/app'
 
 interface FeatureShowcaseProps {
   badge: string
@@ -209,8 +210,14 @@ const SplashPage = () => {
         borderBottom="1px solid rgba(255, 255, 255, 0.1)"
         zIndex={1000}
       >
-        <HStack gap={3}>
-          <Image src={logoImage} alt="BookmarkX Logo" h="40px" w="40px" />
+        <HStack
+          gap={3}
+          cursor="pointer"
+          onClick={() => navigate('/')}
+          _hover={{ opacity: 0.8 }}
+          transition="opacity 0.2s"
+        >
+          <Image src={logoImage} alt={`${APP_NAME} Logo`} h="40px" w="40px" />
           <Heading
             fontSize="1.5rem"
             fontWeight="700"
@@ -221,7 +228,7 @@ const SplashPage = () => {
               backgroundClip: 'text',
             }}
           >
-            BookmarkX
+            {APP_NAME}
           </Heading>
         </HStack>
         <Button
@@ -489,7 +496,7 @@ const SplashPage = () => {
 
           {/* Copyright */}
           <Text color="#666" fontSize="0.85rem" textAlign="center">
-            &copy; 2025 BookmarkX. All rights reserved.
+            {APP_COPYRIGHT}
           </Text>
         </VStack>
       </Box>

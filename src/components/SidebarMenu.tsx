@@ -1,11 +1,12 @@
 import { Box, VStack, HStack, Text, Badge, For } from '@chakra-ui/react'
-import { LuMenu, LuStar, LuExternalLink, LuSettings } from 'react-icons/lu'
+import { LuMenu, LuExternalLink, LuSettings } from 'react-icons/lu'
 import { useNavigate } from 'react-router-dom'
 import { componentStyles } from '../styles/components'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useModal } from './modals/ModalProvider'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { logger } from '../lib/logger'
+import { APP_NAME } from '../constants/app'
 
 interface SidebarItem {
   icon: React.ComponentType<{ size: number }>
@@ -20,7 +21,7 @@ const SidebarMenu = () => {
   const setActiveSidebarItem = useBookmarkStore(
     (state) => state.setActiveSidebarItem
   )
-  const toggleAIPanel = useBookmarkStore((state) => state.toggleAIPanel)
+  // const toggleAIPanel = useBookmarkStore((state) => state.toggleAIPanel) // Hidden for now - will add later
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const { showCreateCollection } = useModal()
   const createCollection = useCollectionsStore(
@@ -40,7 +41,7 @@ const SidebarMenu = () => {
       count: totalBookmarks.toLocaleString(),
     },
     { icon: LuMenu, label: 'Collections', count: null },
-    { icon: LuStar, label: 'AI Insights', badge: 'New' },
+    // { icon: LuStar, label: 'AI Insights', badge: 'New' }, // Hidden for now - will add later
     { icon: LuExternalLink, label: 'Shared', count: null },
   ]
 
@@ -49,9 +50,11 @@ const SidebarMenu = () => {
     // Clear active collection when clicking sidebar navigation items
     setActiveCollection(null)
 
-    if (item.label === 'AI Insights') {
-      toggleAIPanel()
-    } else if (item.label === 'Collections') {
+    // Hidden for now - will add later
+    // if (item.label === 'AI Insights') {
+    //   toggleAIPanel()
+    // } else
+    if (item.label === 'Collections') {
       showCreateCollection({
         onCreate: async (collectionData) => {
           try {
@@ -73,6 +76,10 @@ const SidebarMenu = () => {
           pb={4}
           borderBottomWidth="1px"
           style={{ borderColor: 'var(--color-border)' }}
+          cursor="pointer"
+          onClick={() => navigate('/')}
+          _hover={{ opacity: 0.8 }}
+          transition="opacity 0.2s"
         >
           <Box
             w={8}
@@ -92,7 +99,7 @@ const SidebarMenu = () => {
             fontWeight="bold"
             style={{ color: 'var(--color-text-primary)' }}
           >
-            BookmarkX
+            {APP_NAME}
           </Text>
         </HStack>
 

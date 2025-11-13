@@ -9,9 +9,9 @@ import {
   Button,
   Image,
 } from '@chakra-ui/react'
+import { APP_NAME } from '../constants/app'
 import {
   LuMenu,
-  LuStar,
   LuExternalLink,
   LuFolderPlus,
   LuSettings,
@@ -95,9 +95,11 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
       // Clear selected bookmarks when switching categories
       useBookmarkStore.getState().clearBookmarkSelection()
 
-      if (label === 'AI Insights') {
-        toggleAIPanel()
-      } else if (label === 'All Bookmarks') {
+      // Hidden for now - will add later
+      // if (label === 'AI Insights') {
+      //   toggleAIPanel()
+      // } else
+      if (label === 'All Bookmarks') {
         navigate('/')
       }
 
@@ -237,10 +239,14 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
           borderBottomWidth="1px"
           style={{ borderColor: 'var(--color-border)' }}
           justifyContent={isSidebarCollapsed ? 'center' : 'flex-start'}
+          cursor="pointer"
+          onClick={() => navigate('/')}
+          _hover={{ opacity: 0.8 }}
+          transition="opacity 0.2s"
         >
           <Image
             src={logoImage}
-            alt="BookmarkX Logo"
+            alt={`${APP_NAME} Logo`}
             w={10}
             h={8}
             borderRadius="lg"
@@ -252,7 +258,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
               fontWeight="bold"
               style={{ color: 'var(--color-text-primary)' }}
             >
-              BookmarkX
+              {APP_NAME}
             </Text>
           )}
         </HStack>
@@ -367,6 +373,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
         <VStack alignItems="stretch" gap={2}>
           <Separator style={{ borderColor: 'var(--color-border)' }} />
 
+          {/* Hidden for now - will add later
           <NavItem
             icon={<LuStar size={18} />}
             label="AI Insights"
@@ -376,6 +383,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
             onClick={() => handleNavItemClick('AI Insights')}
             active={isActive('AI Insights')}
           />
+          */}
 
           <NavItem
             icon={<LuExternalLink size={18} />}
