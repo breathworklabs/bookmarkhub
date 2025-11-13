@@ -918,6 +918,15 @@ class LocalStorageService {
           return bookmarks.filter((b) => new Date(b.created_at) >= cutoffDate)
         case 'archived':
           return bookmarks.filter((b) => b.is_archived)
+        case 'uncategorized':
+          return bookmarks.filter(
+            (b) =>
+              !b.is_deleted &&
+              (!b.collections ||
+                b.collections.length === 0 ||
+                (b.collections.length === 1 &&
+                  b.collections[0] === 'uncategorized'))
+          )
         case 'tag':
           if (collection.smartCriteria.value) {
             return bookmarks.filter((b) =>

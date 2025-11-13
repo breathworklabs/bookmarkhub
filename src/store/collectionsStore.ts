@@ -369,15 +369,25 @@ export const useCollectionsStore = create<CollectionsStore>()(
             'collections:addBookmark:success'
           )
 
+          // Update bookmarkStore to trigger reactivity for smart collections
+          const { useBookmarkStore } = await import('./bookmarkStore')
+          const bookmarkStoreState = useBookmarkStore.getState()
+          const updatedBookmarks = bookmarkStoreState.bookmarks.map((b) =>
+            b.id === bookmarkId
+              ? {
+                  ...b,
+                  collections: [...new Set([...b.collections, collectionId])],
+                }
+              : b
+          )
+          useBookmarkStore.setState({ bookmarks: updatedBookmarks })
+
           // Log activity
           const collection = get().collections.find(
             (c) => c.id === collectionId
           )
           const collectionName = collection?.name || 'collection'
-          const { useBookmarkStore } = await import('./bookmarkStore')
-          useBookmarkStore
-            .getState()
-            .addActivityLog('Added to collection', collectionName)
+          bookmarkStoreState.addActivityLog('Added to collection', collectionName)
         } catch (error) {
           logger.error('Failed to add bookmark to collection', error, { notify: true })
           set(
@@ -414,15 +424,25 @@ export const useCollectionsStore = create<CollectionsStore>()(
             'collections:removeBookmark:success'
           )
 
+          // Update bookmarkStore to trigger reactivity for smart collections
+          const { useBookmarkStore } = await import('./bookmarkStore')
+          const bookmarkStoreState = useBookmarkStore.getState()
+          const updatedBookmarks = bookmarkStoreState.bookmarks.map((b) =>
+            b.id === bookmarkId
+              ? {
+                  ...b,
+                  collections: b.collections.filter((cId) => cId !== collectionId),
+                }
+              : b
+          )
+          useBookmarkStore.setState({ bookmarks: updatedBookmarks })
+
           // Log activity
           const collection = get().collections.find(
             (c) => c.id === collectionId
           )
           const collectionName = collection?.name || 'collection'
-          const { useBookmarkStore } = await import('./bookmarkStore')
-          useBookmarkStore
-            .getState()
-            .addActivityLog('Removed from collection', collectionName)
+          bookmarkStoreState.addActivityLog('Removed from collection', collectionName)
         } catch (error) {
           logger.error('Failed to remove bookmark from collection', error, { notify: true })
           set(

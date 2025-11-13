@@ -28,6 +28,7 @@ import toast from 'react-hot-toast'
 import type { Collection } from '../../../types/collections'
 import { ItemTypes, type DragItem, type DropResult } from '../../../types/dnd'
 import { useCollectionsStore } from '../../../store/collectionsStore'
+import { useBookmarkStore } from '../../../store/bookmarkStore'
 import {
   getTotalDepth,
   getHiddenChildrenCount,
@@ -135,8 +136,53 @@ export const CollectionTreeItem = memo<CollectionTreeItemProps>(
       [collection, collections]
     )
 
-    // Get bookmark count
-    const bookmarkCount = collectionBookmarks[collection.id]?.length || 0
+    // Get bookmarks from store for reactive smart collection counts
+    const bookmarks = useBookmarkStore((state) => state.bookmarks)
+
+    // Get bookmark count - compute reactively for smart collections
+    const bookmarkCount = useMemo(() => {
+      // For smart collections, compute count from bookmarks directly for real-time updates
+      if (collection.isSmartCollection) {
+        switch (collection.id) {
+          case 'starred':
+            return bookmarks.filter((b) => b.is_starred && !b.is_deleted).length
+
+          case 'archived':
+            return bookmarks.filter((b) => b.is_archived && !b.is_deleted).length
+
+          case 'recent': {
+            const weekAgo = new Date()
+            weekAgo.setDate(weekAgo.getDate() - 7)
+            return bookmarks.filter((b) => {
+              const date = new Date(b.created_at)
+              return date >= weekAgo && !b.is_deleted
+            }).length
+          }
+
+          case 'uncategorized':
+            return bookmarks.filter(
+              (b) =>
+                !b.is_deleted &&
+                (!b.collections ||
+                  b.collections.length === 0 ||
+                  (b.collections.length === 1 &&
+                    b.collections[0] === 'uncategorized'))
+            ).length
+
+          default:
+            // Fallback for unknown smart collections
+            return collectionBookmarks[collection.id]?.length || 0
+        }
+      }
+
+      // For regular collections, use cached map for efficiency
+      return collectionBookmarks[collection.id]?.length || 0
+    }, [
+      collection.id,
+      collection.isSmartCollection,
+      bookmarks,
+      collectionBookmarks,
+    ])
 
     // Store actions for DnD
     const moveCollection = useCollectionsStore((state) => state.moveCollection)
