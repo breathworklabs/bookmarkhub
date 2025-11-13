@@ -1,5 +1,5 @@
 /**
- * Content Script Bridge for BookmarkHub
+ * Content Script Bridge for BookmarkHub (Direct Import Version)
  * Automatically syncs extension bookmarks to page localStorage
  */
 
@@ -29,7 +29,7 @@ function getSettings() {
     const parsed = JSON.parse(data)
     return parsed.extensionSettings?.extension || null
   } catch (error) {
-    console.error('Error loading settings:', error)
+    console.error('[BookmarkHub Bridge] Error loading settings:', error)
     return null
   }
 }
@@ -39,18 +39,18 @@ async function syncBookmarksToLocalStorage() {
   try {
     // Check if already syncing (prevent concurrent syncs)
     if (isSyncing) {
-      console.log('⏳ Sync already in progress, skipping duplicate sync')
+      console.log('[BookmarkHub Bridge] ⏳ Sync already in progress, skipping duplicate sync')
       return
     }
 
     // Set sync lock
     isSyncing = true
     const syncStartTime = Date.now()
-    console.log('🔄 Starting bookmark sync...')
+    console.log('[BookmarkHub Bridge] 🔄 Starting bookmark sync...')
 
     // Check if extension context is still valid
     if (!chrome.runtime?.id) {
-      console.log('⚠️ Extension context invalidated, skipping sync')
+      console.log('[BookmarkHub Bridge] ⚠️ Extension context invalidated, skipping sync')
       isSyncing = false
       return
     }
@@ -62,28 +62,28 @@ async function syncBookmarksToLocalStorage() {
 
     // Check if user has cleared data - don't sync if they have
     if (existingData?.appState?.hasBeenCleared) {
-      console.log('⚠️ User cleared data, skipping sync')
+      console.log('[BookmarkHub Bridge] ⚠️ User cleared data, skipping sync')
       isSyncing = false
       return
     }
 
     // Check if user recently imported from a file - don't sync to prevent overwriting
     if (existingData?.appState?.lastImportSource === 'file') {
-      console.log('⚠️ User imported from file, skipping sync to prevent data overwrite')
+      console.log('[BookmarkHub Bridge] ⚠️ User imported from file, skipping sync to prevent data overwrite')
       isSyncing = false
       return
     }
 
-    // Get bookmarks from extension storage
-    const result = await chrome.storage.local.get(['bookmarks'])
-    const extensionBookmarks = result.bookmarks || []
+    // Get bookmarks from extension storage (using 'extractedBookmarks' key for direct-import)
+    const result = await chrome.storage.local.get(['extractedBookmarks'])
+    const extensionBookmarks = result.extractedBookmarks || []
 
     console.log(
-      `📊 Sync status: ${extensionBookmarks.length} in extension, ${existingData?.bookmarks?.length || 0} in localStorage`
+      `[BookmarkHub Bridge] 📊 Sync status: ${extensionBookmarks.length} in extension, ${existingData?.bookmarks?.length || 0} in localStorage`
     )
 
     if (extensionBookmarks.length === 0) {
-      console.log('ℹ️ No bookmarks in extension storage, skipping sync')
+      console.log('[BookmarkHub Bridge] ℹ️ No bookmarks in extension storage, skipping sync')
       isSyncing = false
       return
     }
@@ -93,7 +93,6 @@ async function syncBookmarksToLocalStorage() {
 
     const existingBookmarks = existingData?.bookmarks || []
 
-    // Phase 2: Improved duplicate detection with settings
     // Apply duplicate handling setting (skip, replace, keep-both)
     const duplicateHandling = extensionSettings?.importDuplicates || 'skip'
 
@@ -135,11 +134,11 @@ async function syncBookmarksToLocalStorage() {
     })
 
     console.log(
-      `🔍 Duplicate detection complete: ${newBookmarks.length} new, ${bookmarksToReplace.length} to replace, ${extensionBookmarks.length - newBookmarks.length - bookmarksToReplace.length} skipped as duplicates`
+      `[BookmarkHub Bridge] 🔍 Duplicate detection complete: ${newBookmarks.length} new, ${bookmarksToReplace.length} to replace, ${extensionBookmarks.length - newBookmarks.length - bookmarksToReplace.length} skipped as duplicates`
     )
 
     if (newBookmarks.length === 0 && bookmarksToReplace.length === 0) {
-      console.log('✅ All bookmarks already exist, no sync needed')
+      console.log('[BookmarkHub Bridge] ✅ All bookmarks already exist, no sync needed')
       isSyncing = false
       return
     }
@@ -147,14 +146,14 @@ async function syncBookmarksToLocalStorage() {
     // Apply default tags from settings
     const defaultTags = extensionSettings?.defaultTags || []
 
-    // Phase 3: Fix collection assignment to use 'uncategorized' and add default tags
+    // Set collection to 'uncategorized' and add default tags
     const bookmarksWithCorrectCollections = newBookmarks.map((bookmark) => ({
       ...bookmark,
-      collections: ['uncategorized'], // Set as uncategorized instead of 'Imported from X'
+      collections: ['uncategorized'],
       primaryCollection: 'uncategorized',
       tags: [...(bookmark.tags || []), ...defaultTags].filter(
         (tag, index, self) => self.indexOf(tag) === index
-      ), // Merge and dedupe tags
+      ),
     }))
 
     // Replace duplicates if needed
@@ -170,13 +169,13 @@ async function syncBookmarksToLocalStorage() {
       }
     })
 
-    // Merge bookmarks with corrected collections
+    // Merge bookmarks
     const mergedBookmarks = [
       ...workingBookmarks,
       ...bookmarksWithCorrectCollections,
     ]
 
-    console.log(`🔀 Merged: ${mergedBookmarks.length} total bookmarks before final deduplication`)
+    console.log(`[BookmarkHub Bridge] 🔀 Merged: ${mergedBookmarks.length} total bookmarks before final deduplication`)
 
     // CRITICAL: Post-merge deduplication to catch any edge cases
     // This prevents duplicates even if concurrent syncs somehow occurred
@@ -213,10 +212,10 @@ async function syncBookmarksToLocalStorage() {
 
     const duplicatesRemoved = mergedBookmarks.length - allBookmarks.length
     if (duplicatesRemoved > 0) {
-      console.log(`🧹 Removed ${duplicatesRemoved} duplicates in post-merge cleanup`)
+      console.log(`[BookmarkHub Bridge] 🧹 Removed ${duplicatesRemoved} duplicates in post-merge cleanup`)
     }
 
-    console.log(`✨ Final result: ${allBookmarks.length} unique bookmarks`)
+    console.log(`[BookmarkHub Bridge] ✨ Final result: ${allBookmarks.length} unique bookmarks`)
 
     // Update consolidated storage
     const updatedData = existingData || {
@@ -262,15 +261,15 @@ async function syncBookmarksToLocalStorage() {
     // Save consolidated storage
     localStorage.setItem(storageKey, JSON.stringify(updatedData))
 
-    console.log('💾 Saved to localStorage successfully')
+    console.log('[BookmarkHub Bridge] 💾 Saved to localStorage successfully')
 
     // CRITICAL: Clear extension storage after successful sync
     // This prevents re-syncing the same bookmarks on next sync
     try {
-      await chrome.storage.local.remove(['bookmarks'])
-      console.log('🧹 Cleared extension storage to prevent re-sync')
+      await chrome.storage.local.remove(['extractedBookmarks'])
+      console.log('[BookmarkHub Bridge] 🧹 Cleared extension storage to prevent re-sync')
     } catch (error) {
-      console.warn('⚠️ Could not clear extension storage:', error)
+      console.warn('[BookmarkHub Bridge] ⚠️ Could not clear extension storage:', error)
       // Non-fatal error, continue with sync
     }
 
@@ -279,11 +278,9 @@ async function syncBookmarksToLocalStorage() {
 
     const syncDuration = Date.now() - syncStartTime
     lastSyncTimestamp = Date.now()
-    console.log(`✅ Sync complete in ${syncDuration}ms: ${totalImported} imported, ${allBookmarks.length} total`)
+    console.log(`[BookmarkHub Bridge] ✅ Sync complete in ${syncDuration}ms: ${totalImported} imported, ${allBookmarks.length} total`)
 
-    // Phase 1 & 4: Notify React app to reload bookmarks and show toast
-    // App will handle state updates without page reload
-    // Check if notifications are enabled
+    // Notify React app to reload bookmarks
     const showNotification = extensionSettings?.syncNotifications !== false
 
     window.postMessage(
@@ -307,21 +304,19 @@ async function syncBookmarksToLocalStorage() {
     if (error.message?.includes('Extension context invalidated')) {
       return
     }
-    console.error('❌ Error syncing bookmarks:', error)
+    console.error('[BookmarkHub Bridge] ❌ Error syncing bookmarks:', error)
   }
 }
 
 // Listen for messages from extension to sync immediately
 chrome.runtime?.onMessage?.addListener((request, sender, sendResponse) => {
   if (request.action === 'SYNC_NOW') {
-    console.log('📢 Received SYNC_NOW command from extension')
     syncBookmarksToLocalStorage()
       .then(() => {
         sendResponse({ success: true })
-        // No page reload needed - React app will handle updates
       })
       .catch((error) => {
-        console.error('Sync error:', error)
+        console.error('[BookmarkHub Bridge] Sync error:', error)
         sendResponse({ success: false, error: error.message })
       })
     return true // Keep channel open for async response
@@ -334,61 +329,16 @@ const debouncedStorageSync = debounce(() => {
 }, 1000) // Wait 1 second after last change before syncing
 
 chrome.storage?.onChanged?.addListener((changes, areaName) => {
-  if (areaName === 'local' && changes.bookmarks) {
-    console.log('📦 Extension storage changed, scheduling debounced sync...')
+  if (areaName === 'local' && changes.extractedBookmarks) {
+    console.log('[BookmarkHub Bridge] 📦 Extension storage changed, scheduling debounced sync...')
     debouncedStorageSync()
-    // No page reload needed - React app will handle updates via window message
   }
 })
-
-// Get sync interval from settings
-function getSyncIntervalMs() {
-  const settings = getSettings()
-  const interval = settings?.autoSyncInterval || 'manual'
-
-  const intervals = {
-    off: 0,
-    '5min': 5 * 60 * 1000,
-    '15min': 15 * 60 * 1000,
-    '30min': 30 * 60 * 1000,
-    '1hour': 60 * 60 * 1000,
-    manual: 0,
-  }
-
-  return intervals[interval] || 0
-}
 
 // Initial sync on page load
 setTimeout(() => {
-  console.log('🔄 Running initial bookmark sync...')
   syncBookmarksToLocalStorage()
 }, 1000)
-
-// Setup periodic sync based on settings
-let syncIntervalId = null
-
-function setupPeriodicSync() {
-  // Clear existing interval
-  if (syncIntervalId) {
-    clearInterval(syncIntervalId)
-    syncIntervalId = null
-  }
-
-  const intervalMs = getSyncIntervalMs()
-
-  if (intervalMs > 0) {
-    syncIntervalId = setInterval(syncBookmarksToLocalStorage, intervalMs)
-  }
-}
-
-setupPeriodicSync()
-
-// Listen for settings changes in consolidated storage and update interval
-window.addEventListener('storage', (e) => {
-  if (e.key === 'x-bookmark-manager-data') {
-    setupPeriodicSync()
-  }
-})
 
 // Listen for sync requests from the React app
 window.addEventListener('message', (event) => {
@@ -400,7 +350,6 @@ window.addEventListener('message', (event) => {
     event.data?.type === 'X_REQUEST_SYNC' &&
     event.data?.source === 'x-bookmark-manager-app'
   ) {
-    console.log('📢 Received sync request from app, syncing bookmarks...')
     syncBookmarksToLocalStorage()
   }
 })
