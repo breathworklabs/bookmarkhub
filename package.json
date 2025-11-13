@@ -1,10 +1,10 @@
 {
-  "name": "bookmarkx",
+  "name": "bookmarkhub",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "author": "Breathwork Labs <hello@breathworklabs.com>",
-  "homepage": "https://bookmarkx.breathworklabs.com",
+  "homepage": "https://bookmarkhub.breathworklabs.com",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

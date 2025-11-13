@@ -1,6 +1,6 @@
 {
-  "name": "BookmarkX - Privacy-First Bookmark Manager",
-  "short_name": "BookmarkX",
+  "name": "BookmarkHub - Privacy-First Bookmark Manager",
+  "short_name": "BookmarkHub",
   "description": "Privacy-focused bookmark management for X/Twitter. Local-first, no tracking, works completely offline.",
   "start_url": "/",
   "display": "standalone",
