@@ -1,4 +1,4 @@
-# Troubleshooting Guide - BookmarkX Direct Import
+# Troubleshooting Guide - BookmarkHub Direct Import
 
 ## Common Issues and Solutions
 
@@ -24,7 +24,7 @@ The extraction happens ON the Twitter page, not in the extension popup:
 Open DevTools on Twitter page (F12):
 
 ```
-Look for: [BookmarkX] Twitter extractor loaded
+Look for: [BookmarkHub] Twitter extractor loaded
 If missing: Extension didn't inject properly
 ```
 
@@ -41,7 +41,7 @@ If missing: Extension didn't inject properly
 **Symptoms:**
 
 - Banner says "5 bookmarks extracted"
-- Can't find them in BookmarkX
+- Can't find them in BookmarkHub
 - Not sure where they went
 
 **Solutions:**
@@ -54,18 +54,18 @@ If missing: Extension didn't inject properly
 4. Look for `extractedBookmarks` key
 5. Click to view the data
 
-**B. Click "Open in BookmarkX" button**
+**B. Click "Open in BookmarkHub" button**
 The bookmarks are saved, but you need to:
 
 1. Look for completion banner on Twitter page
-2. Click **"Open in BookmarkX"** button
-3. BookmarkX opens with import parameters
+2. Click **"Open in BookmarkHub"** button
+3. BookmarkHub opens with import parameters
 
 **C. Manual import**
 If button doesn't work:
 
 1. Copy data from Chrome Storage (see A above)
-2. Open BookmarkX manually
+2. Open BookmarkHub manually
 3. Go to Settings → Import
 4. Paste the JSON data
 
@@ -91,7 +91,7 @@ ls chrome-extension/direct-import/assets/
 **B. Reload extension**
 
 1. Go to `chrome://extensions/`
-2. Find BookmarkX extension
+2. Find BookmarkHub extension
 3. Click the **reload icon** (circular arrow)
 
 **C. Check for errors**
@@ -146,7 +146,7 @@ setTimeout(autoScroll, 3000) // 3 seconds between scrolls
 **Symptoms:**
 
 - No banner appears on Twitter
-- Console shows no [BookmarkX] logs
+- Console shows no [BookmarkHub] logs
 - Nothing happens
 
 **Solutions:**
@@ -156,7 +156,7 @@ Must be on: `twitter.com/i/bookmarks` or `x.com/i/bookmarks`
 Not: `twitter.com/home` or other pages
 
 **B. Check permissions**
-In `chrome://extensions/` → BookmarkX → Details:
+In `chrome://extensions/` → BookmarkHub → Details:
 
 - "Site access" should be "On all sites" or "On specific sites"
 - Add `twitter.com` and `x.com` if restricted
@@ -170,18 +170,18 @@ In `chrome://extensions/` → BookmarkX → Details:
 
 ---
 
-### 6. "Bookmarks extracted but not showing in BookmarkX"
+### 6. "Bookmarks extracted but not showing in BookmarkHub"
 
 **Symptoms:**
 
 - Extraction successful
-- BookmarkX opens but empty
+- BookmarkHub opens but empty
 - No import prompt
 
 **Solutions:**
 
 **A. Check URL parameters**
-BookmarkX should open with:
+BookmarkHub should open with:
 
 ```
 http://localhost:5173?import=twitter&count=50
@@ -192,15 +192,15 @@ If not, the background script didn't trigger correctly.
 **B. Check background script logs**
 
 1. Go to `chrome://extensions/`
-2. Find BookmarkX
+2. Find BookmarkHub
 3. Click "Service worker"
 4. Check for errors
 
-**C. Implement import handler in BookmarkX**
+**C. Implement import handler in BookmarkHub**
 The main app needs to:
 
 ```javascript
-// In BookmarkX app
+// In BookmarkHub app
 useEffect(() => {
   const params = new URLSearchParams(window.location.search)
   if (params.get('import') === 'twitter') {
@@ -269,7 +269,7 @@ To see detailed logs:
 // Add to start of content-scripts/twitter-extractor.js
 const DEBUG = true
 function log(...args) {
-  if (DEBUG) console.log('[BookmarkX DEBUG]', ...args)
+  if (DEBUG) console.log('[BookmarkHub DEBUG]', ...args)
 }
 ```
 
@@ -326,13 +326,13 @@ scrollableElement.scrollBy({ top: 1000 }) // Remove behavior: 'smooth'
 ### 1. Check Extension Console
 
 ```
-chrome://extensions/ → BookmarkX → "Errors" button
+chrome://extensions/ → BookmarkHub → "Errors" button
 ```
 
 ### 2. Check Background Worker
 
 ```
-chrome://extensions/ → BookmarkX → "Service worker"
+chrome://extensions/ → BookmarkHub → "Service worker"
 ```
 
 ### 3. Check Twitter Page Console
@@ -383,7 +383,7 @@ If none of these solutions work:
 1. **Check Chrome version**: Needs Chrome 88+
 2. **Check Manifest V3 support**: Should be enabled by default
 3. **Try incognito mode**: Rules out conflicts with other extensions
-4. **Disable other extensions**: May conflict with BookmarkX
+4. **Disable other extensions**: May conflict with BookmarkHub
 5. **Clear extension data**: Remove and reinstall
 
 ## Reporting Bugs

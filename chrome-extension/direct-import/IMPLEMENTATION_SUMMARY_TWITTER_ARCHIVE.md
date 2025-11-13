@@ -18,12 +18,12 @@ A Chrome extension that uses Twitter's GraphQL API to fetch ALL bookmarks instan
 
 1. Click extension icon → "Import Bookmarks"
 2. Twitter bookmarks page opens
-3. Content script shows banner: "⚡ BookmarkX - Fast Export"
+3. Content script shows banner: "⚡ BookmarkHub - Fast Export"
 4. User clicks "Fetch All Bookmarks ⚡"
 5. Extension makes GraphQL API requests with cursor pagination
 6. Progress banner shows: "Found X bookmarks, Request N..."
 7. Completion banner: "✓ Extraction Complete! Successfully extracted X bookmarks"
-8. User clicks "Open in BookmarkX"
+8. User clicks "Open in BookmarkHub"
 
 ### 2. Technical Implementation
 
@@ -96,7 +96,7 @@ chrome.runtime.sendMessage({
 - Saves to `chrome.storage.local`
 - Format: `{ extractedBookmarks: [...], extractedAt: "2024-..." }`
 
-**Background Script → BookmarkX App:**
+**Background Script → BookmarkHub App:**
 
 - Opens tab: `http://localhost:5173?import=twitter&count=X`
 - App reads from `chrome.storage.local.extractedBookmarks`
@@ -158,7 +158,7 @@ chrome-extension/direct-import/
    Successfully extracted 347 bookmarks in seconds!
    ```
 
-7. **Click "Open in BookmarkX"**
+7. **Click "Open in BookmarkHub"**
 
 ### Automated Tests
 
@@ -217,7 +217,7 @@ See `test/README.md` and `TESTING_GUIDE.md`
 - [x] Privacy policy (100% local, no tracking)
 - [x] Permissions justified:
   - `scripting`: Inject content script
-  - `tabs`: Open BookmarkX tab
+  - `tabs`: Open BookmarkHub tab
   - `storage`: Save extracted bookmarks
   - `activeTab`: Interact with Twitter page
 - [x] Host permissions: `*://twitter.com/*`, `*://x.com/*`

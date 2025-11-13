@@ -1,6 +1,6 @@
-# BookmarkX Chrome Extensions
+# BookmarkHub Chrome Extensions
 
-This directory contains two versions of the BookmarkX Chrome extension, each using a different approach for importing Twitter/X bookmarks.
+This directory contains two versions of the BookmarkHub Chrome extension, each using a different approach for importing Twitter/X bookmarks.
 
 ## 📁 Versions
 
@@ -14,7 +14,7 @@ This directory contains two versions of the BookmarkX Chrome extension, each usi
 2. Auto-scrolls to load all bookmarks
 3. Extracts data from loaded DOM elements
 4. Saves to Chrome storage
-5. Opens BookmarkX with imported data
+5. Opens BookmarkHub with imported data
 
 **Pros:**
 
@@ -48,7 +48,7 @@ This directory contains two versions of the BookmarkX Chrome extension, each usi
 1. Reads Twitter auth cookies from browser
 2. Makes authenticated API requests
 3. Fetches bookmarks via Twitter's GraphQL API
-4. Processes and saves to BookmarkX
+4. Processes and saves to BookmarkHub
 
 **Pros:**
 
@@ -101,7 +101,7 @@ This directory contains two versions of the BookmarkX Chrome extension, each usi
 1. Click the extension icon
 2. Click "Import Bookmarks"
 3. Wait for auto-scroll and extraction
-4. Click "Open in BookmarkX"
+4. Click "Open in BookmarkHub"
 
 **Cookies Version:**
 
@@ -109,7 +109,7 @@ This directory contains two versions of the BookmarkX Chrome extension, each usi
 2. Click the extension icon
 3. Click "Import Bookmarks"
 4. Wait for API extraction
-5. Click "Open in BookmarkX"
+5. Click "Open in BookmarkHub"
 
 ## 📊 Comparison Table
 
@@ -166,7 +166,7 @@ Both versions:
 ### Prerequisites
 
 - Chrome browser (version 88+)
-- Node.js (for BookmarkX app)
+- Node.js (for BookmarkHub app)
 - Twitter/X account with bookmarks
 
 ### Project Structure
@@ -211,7 +211,7 @@ Both versions are ready to use as-is. Before Chrome Web Store submission:
 2. **Test import flow**
    - Visit Twitter bookmarks page
    - Use extension to import
-   - Verify data in BookmarkX
+   - Verify data in BookmarkHub
 
 3. **Check console logs**
    - Extension popup: Right-click icon → Inspect popup
@@ -253,7 +253,7 @@ Both versions are ready to use as-is. Before Chrome Web Store submission:
 - [Chrome Extension Documentation](https://developer.chrome.com/docs/extensions/)
 - [Manifest V3 Migration Guide](https://developer.chrome.com/docs/extensions/mv3/intro/)
 - [Chrome Web Store Developer Policies](https://developer.chrome.com/docs/webstore/program-policies/)
-- [BookmarkX Main README](../README.md)
+- [BookmarkHub Main README](../README.md)
 
 ## 🤝 Contributing
 
@@ -266,7 +266,7 @@ Contributions welcome! Please:
 
 ## 📄 License
 
-Same as BookmarkX project
+Same as BookmarkHub project
 
 ## ❓ FAQ
 
@@ -282,5 +282,5 @@ A: The direct-import version is more fragile to UI changes. The cookies version 
 **Q: Can I modify these for other social media platforms?**
 A: Absolutely! The patterns used here can be adapted for LinkedIn, Reddit, etc.
 
-**Q: Do I need to rebuild BookmarkX to use these?**
-A: No, the extensions work with the standard BookmarkX build. Just update the URL in the code.
+**Q: Do I need to rebuild BookmarkHub to use these?**
+A: No, the extensions work with the standard BookmarkHub build. Just update the URL in the code.

@@ -1,4 +1,4 @@
-# BookmarkX
+# BookmarkHub
 
 A privacy-focused bookmark management application for X/Twitter content, built with React, TypeScript, and Vite.
 
@@ -34,8 +34,8 @@ A privacy-focused bookmark management application for X/Twitter content, built w
 1. **Clone and Install**
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/bookmarkx.git
-cd bookmarkx
+git clone https://github.com/YOUR_USERNAME/bookmarkhub.git
+cd bookmarkhub
 npm install
 ```
 

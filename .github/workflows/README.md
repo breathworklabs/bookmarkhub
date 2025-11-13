@@ -1,6 +1,6 @@
 # GitHub Actions Workflows
 
-This directory contains automated CI/CD workflows for BookmarkX.
+This directory contains automated CI/CD workflows for BookmarkHub.
 
 ## Workflows
 

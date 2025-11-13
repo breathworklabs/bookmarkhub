@@ -1,5 +1,5 @@
 /**
- * Test Mode for BookmarkX Extension
+ * Test Mode for BookmarkHub Extension
  *
  * Simulates Twitter bookmark extraction without needing real Twitter data
  * Run this in console on any page to test the extraction logic
@@ -267,7 +267,7 @@ function cleanup() {
 // Auto-run basic test
 console.log(`
 ╔════════════════════════════════════════╗
-║   BookmarkX Extension Test Mode       ║
+║   BookmarkHub Extension Test Mode       ║
 ╚════════════════════════════════════════╝
 
 Available commands:

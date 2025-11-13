@@ -1,5 +1,5 @@
 /**
- * Playwright E2E tests for BookmarkX Chrome Extension
+ * Playwright E2E tests for BookmarkHub Chrome Extension
  *
  * Run with: npx playwright test
  */
@@ -10,7 +10,7 @@ const path = require('path')
 const EXTENSION_PATH = path.join(__dirname, '..')
 const TEST_PAGE = `file://${path.join(__dirname, 'test.html')}`
 
-test.describe('BookmarkX Extension', () => {
+test.describe('BookmarkHub Extension', () => {
   let browser
   let context
   let page

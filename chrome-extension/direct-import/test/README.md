@@ -1,4 +1,4 @@
-# BookmarkX Extension Tests
+# BookmarkHub Extension Tests
 
 ## Quick Start
 

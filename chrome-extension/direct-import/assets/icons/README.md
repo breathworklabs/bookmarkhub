@@ -1,6 +1,6 @@
-# BookmarkX Extension Icons
+# BookmarkHub Extension Icons
 
-This directory contains the icon files for the BookmarkX Chrome extension.
+This directory contains the icon files for the BookmarkHub Chrome extension.
 
 ## Icon Files
 

@@ -7,7 +7,7 @@ The cookies-version has the CORRECT, WORKING code in:
 Just copy these exact functions to direct-import:
 
 1. parseTweet() - Parses Twitter's new API structure
-2. transformToBookmark() - Transforms to BookmarkX format CORRECTLY
+2. transformToBookmark() - Transforms to BookmarkHub format CORRECTLY
 3. extractThumbnail()
 4. extractHashtags()
 5. convertTextToHTML()

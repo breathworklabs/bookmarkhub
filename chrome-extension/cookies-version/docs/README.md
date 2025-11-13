@@ -1,6 +1,6 @@
 # Chrome Extension Documentation
 
-This directory contains all documentation for the BookmarkX Chrome Extension.
+This directory contains all documentation for the BookmarkHub Chrome Extension.
 
 ## Directory Structure
 
@@ -41,7 +41,7 @@ tools/
 ## Important Notes
 
 - All submission materials are ready to use
-- Update manifest.json with BookmarkX branding before submitting
+- Update manifest.json with BookmarkHub branding before submitting
 - Test the extension thoroughly before packaging
 - Host the privacy policy online (required by Chrome Web Store)
 - Icons have been generated and are ready to use (located in `assets/icons/`)

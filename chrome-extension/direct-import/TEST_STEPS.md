@@ -1,9 +1,9 @@
-# Testing Steps - BookmarkX Direct Import
+# Testing Steps - BookmarkHub Direct Import
 
 ## Step 1: Reload Extension
 
 1. Go to `chrome://extensions/`
-2. Find **BookmarkX - Twitter Bookmark Manager**
+2. Find **BookmarkHub - Twitter Bookmark Manager**
 3. Click the **reload icon** (circular arrow)
 4. Confirm no errors appear
 
@@ -11,7 +11,7 @@
 
 **Method A: Via Extension**
 
-1. Click the BookmarkX extension icon in toolbar
+1. Click the BookmarkHub extension icon in toolbar
 2. Click "Import Bookmarks"
 3. New tab opens to Twitter bookmarks
 
@@ -30,10 +30,10 @@
 
 ```
 ✅ Expected to see:
-[BookmarkX] Twitter extractor loaded
-[BookmarkX] Showing start banner...
-[BookmarkX] Banner added to DOM
-[BookmarkX] Button found, adding listener
+[BookmarkHub] Twitter extractor loaded
+[BookmarkHub] Showing start banner...
+[BookmarkHub] Banner added to DOM
+[BookmarkHub] Button found, adding listener
 ```
 
 ```
@@ -49,7 +49,7 @@ After 2 seconds, you should see:
 
 ```
 ┌─────────────────────────────┐
-│ 📚 BookmarkX Ready         │
+│ 📚 BookmarkHub Ready         │
 │                             │
 │ Click below to start...     │
 │                             │
@@ -76,11 +76,11 @@ Click the **"Start Extraction"** button
 2. New progress banner appears
 3. Console shows:
    ```
-   [BookmarkX] Button clicked!
-   [BookmarkX] startExtraction called, isExtracting: false
-   [BookmarkX] Starting extraction...
-   [BookmarkX] Progress banner shown
-   [BookmarkX] Starting auto-scroll...
+   [BookmarkHub] Button clicked!
+   [BookmarkHub] startExtraction called, isExtracting: false
+   [BookmarkHub] Starting extraction...
+   [BookmarkHub] Progress banner shown
+   [BookmarkHub] Starting auto-scroll...
    ```
 
 **What you should see:**
@@ -107,11 +107,11 @@ The page should:
 **Console should show:**
 
 ```
-[BookmarkX] Scrolling... Found 5 bookmarks so far
-[BookmarkX] Progress updated: 5 bookmarks, scroll 1
-[BookmarkX] Scrolling... Found 15 bookmarks so far
-[BookmarkX] Progress updated: 15 bookmarks, scroll 2
-[BookmarkX] Scrolling... Found 25 bookmarks so far
+[BookmarkHub] Scrolling... Found 5 bookmarks so far
+[BookmarkHub] Progress updated: 5 bookmarks, scroll 1
+[BookmarkHub] Scrolling... Found 15 bookmarks so far
+[BookmarkHub] Progress updated: 15 bookmarks, scroll 2
+[BookmarkHub] Scrolling... Found 25 bookmarks so far
 ...
 ```
 
@@ -122,13 +122,13 @@ When finished (after 10 scrolls or reaching end):
 **Console shows:**
 
 ```
-[BookmarkX] Reached end of bookmarks
-[BookmarkX] Extracting bookmark data...
-[BookmarkX] Found X tweets
-[BookmarkX] Extracted bookmark 1: @username
-[BookmarkX] Extracted bookmark 2: @username
+[BookmarkHub] Reached end of bookmarks
+[BookmarkHub] Extracting bookmark data...
+[BookmarkHub] Found X tweets
+[BookmarkHub] Extracted bookmark 1: @username
+[BookmarkHub] Extracted bookmark 2: @username
 ...
-[BookmarkX] Extracted N unique bookmarks
+[BookmarkHub] Extracted N unique bookmarks
 ```
 
 **Completion banner appears:**
@@ -140,7 +140,7 @@ When finished (after 10 scrolls or reaching end):
 │ Successfully extracted      │
 │ 50 bookmarks                │
 │                             │
-│ [ Open in BookmarkX ]       │
+│ [ Open in BookmarkHub ]       │
 └─────────────────────────────┘
 ```
 
@@ -191,7 +191,7 @@ When finished (after 10 scrolls or reaching end):
 
 **Solution:**
 
-1. Check console for click event: `[BookmarkX] Button clicked!`
+1. Check console for click event: `[BookmarkHub] Button clicked!`
 2. If no message, try clicking multiple times
 3. Check for JavaScript errors in console
 4. Try disabling other extensions
@@ -240,7 +240,7 @@ When finished (after 10 scrolls or reaching end):
 - [ ] Completion banner appears
 - [ ] Data saved to Chrome storage
 - [ ] Can view data in Application tab
-- [ ] "Open in BookmarkX" button works
+- [ ] "Open in BookmarkHub" button works
 
 ## Success Criteria
 
@@ -257,13 +257,13 @@ When finished (after 10 scrolls or reaching end):
 - Smooth scrolling animation
 - Real-time progress updates
 - Proper error handling
-- Opens BookmarkX with import parameters
+- Opens BookmarkHub with import parameters
 
 ## Next Steps After Successful Test
 
 1. Test with different bookmark counts (5, 50, 100+)
 2. Test with bookmarks that have images
 3. Test with bookmarks that have videos
-4. Test "Open in BookmarkX" button
-5. Verify BookmarkX can read the data
+4. Test "Open in BookmarkHub" button
+5. Verify BookmarkHub can read the data
 6. Test export/import flow end-to-end

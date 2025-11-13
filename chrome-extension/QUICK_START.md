@@ -1,4 +1,4 @@
-# Quick Start Guide - BookmarkX Chrome Extensions
+# Quick Start Guide - BookmarkHub Chrome Extensions
 
 ## TL;DR
 
@@ -19,17 +19,17 @@ chrome://extensions/
 
 ### 2. Test the Extension
 
-1. Click the BookmarkX extension icon in Chrome toolbar
+1. Click the BookmarkHub extension icon in Chrome toolbar
 2. Click "Import Bookmarks" button
 3. Twitter bookmarks page opens automatically
 4. Extension auto-scrolls and extracts bookmarks
-5. Click "Open in BookmarkX" when done
+5. Click "Open in BookmarkHub" when done
 6. Your bookmarks are imported! 🎉
 
 ### 3. Verify It Works
 
 ```bash
-# Start BookmarkX locally
+# Start BookmarkHub locally
 cd bookmarksx
 npm run dev
 
@@ -52,9 +52,9 @@ Extracts DOM elements
     ↓
 Saves to Chrome storage
     ↓
-Opens BookmarkX with params
+Opens BookmarkHub with params
     ↓
-BookmarkX reads storage
+BookmarkHub reads storage
     ↓
 Imports bookmarks ✓
 ```
@@ -103,7 +103,7 @@ chrome.storage.local.set({
 })
 ```
 
-### 4. Opens BookmarkX (`service-worker.js:30`)
+### 4. Opens BookmarkHub (`service-worker.js:30`)
 
 ```javascript
 chrome.tabs.create({
@@ -138,7 +138,7 @@ const BOOKMARKX_URL = 'https://bookmarksx.vercel.app'
 ### 2. Test Production Build
 
 ```bash
-# Build BookmarkX for production
+# Build BookmarkHub for production
 npm run build
 
 # Test extension with production URL
@@ -158,14 +158,14 @@ npm run build
 
 ```bash
 cd chrome-extension/direct-import
-zip -r bookmarkx-extension.zip . -x "*.DS_Store" -x "__MACOSX"
+zip -r bookmarkhub-extension.zip . -x "*.DS_Store" -x "__MACOSX"
 ```
 
 ### 5. Submit to Chrome Web Store
 
 1. Go to [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole)
 2. Click "New Item"
-3. Upload `bookmarkx-extension.zip`
+3. Upload `bookmarkhub-extension.zip`
 4. Fill in store listing details
 5. Submit for review
 
@@ -184,7 +184,7 @@ Right-click extension icon → Inspect popup
 
 ```bash
 chrome://extensions/
-# Find BookmarkX extension
+# Find BookmarkHub extension
 # Click "Service worker"
 # View logs
 ```
@@ -194,7 +194,7 @@ chrome://extensions/
 ```bash
 # Go to twitter.com/i/bookmarks
 # Open DevTools (F12)
-# Look for logs: [BookmarkX] ...
+# Look for logs: [BookmarkHub] ...
 ```
 
 ### No Bookmarks Extracted?
@@ -205,10 +205,10 @@ chrome://extensions/
 4. **Check console** for error messages
 5. **Refresh page** and try again
 
-### BookmarkX Not Opening?
+### BookmarkHub Not Opening?
 
 1. **Check BOOKMARKX_URL** is correct
-2. **Verify BookmarkX is running** at that URL
+2. **Verify BookmarkHub is running** at that URL
 3. **Check Chrome storage**: DevTools → Application → Local Storage
 4. **Look for**: `extractedBookmarks` key
 
@@ -267,17 +267,17 @@ return {
 - **Extension issues**: See [direct-import/README.md](./direct-import/README.md)
 - **Chrome Web Store**: [Developer Policies](https://developer.chrome.com/docs/webstore/program-policies/)
 - **Manifest V3**: [Migration Guide](https://developer.chrome.com/docs/extensions/mv3/intro/)
-- **BookmarkX**: See [main README](../README.md)
+- **BookmarkHub**: See [main README](../README.md)
 
 ## FAQ
 
-**Q: Do I need to rebuild BookmarkX?**
-A: No! The extension works with your existing BookmarkX build.
+**Q: Do I need to rebuild BookmarkHub?**
+A: No! The extension works with your existing BookmarkHub build.
 
 **Q: Will this work with x.com?**
 A: Yes! It works with both twitter.com and x.com domains.
 
-**Q: Can users without the extension use BookmarkX?**
+**Q: Can users without the extension use BookmarkHub?**
 A: Yes! The extension is just one import method. Users can still manually import JSON files.
 
 **Q: How often should I update the extension?**
