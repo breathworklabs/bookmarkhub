@@ -22,7 +22,7 @@ import {
   LuMessageSquare,
   LuImage,
 } from 'react-icons/lu'
-import { useMemo, useCallback, memo } from 'react'
+import { useMemo, useCallback, memo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useSettingsStore } from '../store/settingsStore'
@@ -132,13 +132,23 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
 
   const importXBookmarks = useBookmarkStore((state) => state.importXBookmarks)
 
+  // Local state for immediate visual feedback
+  const [localSearchValue, setLocalSearchValue] = useState(filterData.searchQuery)
+
+  // Sync local state with external changes (e.g., filter reset)
+  useEffect(() => {
+    setLocalSearchValue(filterData.searchQuery)
+  }, [filterData.searchQuery])
+
   // Debounced search query setter (300ms delay)
   const debouncedSetSearchQuery = useDebounce(setSearchQuery, 300)
 
   // Memoized event handlers
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      debouncedSetSearchQuery(e.target.value)
+      const value = e.target.value
+      setLocalSearchValue(value) // Immediate visual feedback
+      debouncedSetSearchQuery(value) // Debounced store update
     },
     [debouncedSetSearchQuery]
   )
@@ -331,7 +341,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
             <Input
               {...useInputStyles('search')}
               placeholder="Search bookmarks, content, authors..."
-              value={filterData.searchQuery}
+              value={localSearchValue}
               onChange={handleSearchChange}
             />
           </HStack>
