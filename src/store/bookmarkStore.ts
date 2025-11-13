@@ -570,9 +570,15 @@ export const useBookmarkStore = create<BookmarkState>()(
             throw new Error(`Bookmark with id ${id} not found`)
           }
 
+          // When archiving: remove from all collections
+          // When unarchiving: add to uncategorized
+          const isArchiving = !bookmark.is_archived
           const updatedBookmark = await localStorageService.updateBookmark(id, {
-            is_archived: !bookmark.is_archived,
+            is_archived: isArchiving,
+            collections: isArchiving ? [] : ['uncategorized'],
+            primaryCollection: isArchiving ? undefined : 'uncategorized',
           })
+
           set(
             (state) => ({
               bookmarks: state.bookmarks.map((bookmark) =>
@@ -583,9 +589,15 @@ export const useBookmarkStore = create<BookmarkState>()(
             'toggleArchiveBookmark:success'
           )
 
+          // Update collectionsStore to trigger reactivity
+          const { useCollectionsStore } = await import('./collectionsStore')
+          await useCollectionsStore.getState().loadCollections()
+
           // Log activity
           if (updatedBookmark.is_archived) {
             get().addActivityLog('Archived bookmark', updatedBookmark.title)
+          } else {
+            get().addActivityLog('Unarchived bookmark', updatedBookmark.title)
           }
         } catch (error) {
           logger.error('Failed to archive bookmark', error, { notify: true })

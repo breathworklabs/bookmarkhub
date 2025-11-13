@@ -350,6 +350,20 @@ export const useCollectionsStore = create<CollectionsStore>()(
       // Add bookmark to collection
       addBookmarkToCollection: async (bookmarkId, collectionId) => {
         try {
+          // Get bookmark to check if archived
+          const { useBookmarkStore } = await import('./bookmarkStore')
+          const bookmarkStoreState = useBookmarkStore.getState()
+          const bookmark = bookmarkStoreState.bookmarks.find(
+            (b) => b.id === bookmarkId
+          )
+
+          // If bookmark is archived, unarchive it first
+          if (bookmark?.is_archived) {
+            await localStorageService.updateBookmark(bookmarkId, {
+              is_archived: false,
+            })
+          }
+
           await localStorageService.addBookmarkToCollection(
             bookmarkId,
             collectionId
@@ -370,13 +384,12 @@ export const useCollectionsStore = create<CollectionsStore>()(
           )
 
           // Update bookmarkStore to trigger reactivity for smart collections
-          const { useBookmarkStore } = await import('./bookmarkStore')
-          const bookmarkStoreState = useBookmarkStore.getState()
           const updatedBookmarks = bookmarkStoreState.bookmarks.map((b) =>
             b.id === bookmarkId
               ? {
                   ...b,
                   collections: [...new Set([...b.collections, collectionId])],
+                  is_archived: false, // Ensure unarchived in store
                 }
               : b
           )
@@ -388,6 +401,9 @@ export const useCollectionsStore = create<CollectionsStore>()(
           )
           const collectionName = collection?.name || 'collection'
           bookmarkStoreState.addActivityLog('Added to collection', collectionName)
+          if (bookmark?.is_archived) {
+            bookmarkStoreState.addActivityLog('Unarchived bookmark', bookmark.title)
+          }
         } catch (error) {
           logger.error('Failed to add bookmark to collection', error, { notify: true })
           set(
