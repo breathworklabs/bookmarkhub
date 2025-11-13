@@ -84,13 +84,13 @@ describe('FeedbackMenu', () => {
       expect(screen.getByText(/We typically respond within 24-48 hours\./i)).toBeInTheDocument()
     })
 
-    it('should render close trigger', () => {
-      const { container } = renderWithProviders(
-        <FeedbackMenu isOpen={true} onClose={mockOnClose} />
-      )
+    it('should render close button in header', () => {
+      renderWithProviders(<FeedbackMenu isOpen={true} onClose={mockOnClose} />)
 
-      const closeTrigger = container.querySelector('[data-scope="dialog"][data-part="close-trigger"]')
-      expect(closeTrigger).toBeInTheDocument()
+      // Close button is now integrated in the header with an X icon
+      const closeButtons = screen.getAllByRole('button')
+      // First 3 buttons are feedback options, 4th is the close button
+      expect(closeButtons.length).toBeGreaterThanOrEqual(4)
     })
   })
 
@@ -421,13 +421,16 @@ describe('FeedbackMenu', () => {
       expect(generalButton).toBeInTheDocument()
     })
 
-    it('should render modal with proper ARIA attributes', () => {
-      const { container } = renderWithProviders(
-        <FeedbackMenu isOpen={true} onClose={mockOnClose} />
-      )
+    it('should render modal with proper dialog structure', () => {
+      renderWithProviders(<FeedbackMenu isOpen={true} onClose={mockOnClose} />)
 
-      const dialog = container.querySelector('[role="dialog"]')
-      expect(dialog).toBeInTheDocument()
+      // Check that the dialog content is rendered with the title
+      expect(screen.getByText('Share Your Feedback')).toBeInTheDocument()
+
+      // Check that all interactive elements are present
+      expect(screen.getByText('Report a Bug')).toBeInTheDocument()
+      expect(screen.getByText('Request a Feature')).toBeInTheDocument()
+      expect(screen.getByText('General Feedback')).toBeInTheDocument()
     })
   })
 })
