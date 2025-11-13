@@ -84,13 +84,12 @@ describe('FeedbackMenu', () => {
       expect(screen.getByText(/We typically respond within 24-48 hours\./i)).toBeInTheDocument()
     })
 
-    it('should render close button in header', () => {
+    it('should render close button in footer', () => {
       renderWithProviders(<FeedbackMenu isOpen={true} onClose={mockOnClose} />)
 
-      // Close button is now integrated in the header with an X icon
-      const closeButtons = screen.getAllByRole('button')
-      // First 3 buttons are feedback options, 4th is the close button
-      expect(closeButtons.length).toBeGreaterThanOrEqual(4)
+      // Close button should be in the footer
+      const closeButton = screen.getByText('Close')
+      expect(closeButton).toBeInTheDocument()
     })
   })
 
@@ -371,6 +370,15 @@ describe('FeedbackMenu', () => {
       expect(screen.queryByText('Report a Bug')).not.toBeInTheDocument()
       expect(screen.queryByText('Request a Feature')).not.toBeInTheDocument()
       expect(screen.queryByText('General Feedback')).not.toBeInTheDocument()
+    })
+
+    it('should call onClose when Close button is clicked', () => {
+      renderWithProviders(<FeedbackMenu isOpen={true} onClose={mockOnClose} />)
+
+      const closeButton = screen.getByText('Close')
+      fireEvent.click(closeButton)
+
+      expect(mockOnClose).toHaveBeenCalledTimes(1)
     })
   })
 

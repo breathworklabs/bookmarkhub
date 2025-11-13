@@ -1,5 +1,5 @@
 import { Box, Button, VStack, Text, HStack, Portal } from '@chakra-ui/react'
-import { LuBug, LuLightbulb, LuMessageSquare, LuX } from 'react-icons/lu'
+import { LuBug, LuLightbulb, LuMessageSquare } from 'react-icons/lu'
 import { Dialog } from '@chakra-ui/react'
 import { memo } from 'react'
 import toast from 'react-hot-toast'
@@ -138,22 +138,15 @@ export const FeedbackMenu = memo<FeedbackMenuProps>(({ isOpen, onClose }) => {
               borderBottom="1px solid var(--color-border)"
               p={6}
             >
-              <HStack justify="space-between" w="100%">
-                <Dialog.Title>
-                  <Text
-                    fontSize="xl"
-                    fontWeight="700"
-                    color="var(--color-text-primary)"
-                  >
-                    Share Your Feedback
-                  </Text>
-                </Dialog.Title>
-                <Dialog.CloseTrigger asChild>
-                  <Button size="sm" variant="ghost" onClick={onClose}>
-                    <LuX size={18} />
-                  </Button>
-                </Dialog.CloseTrigger>
-              </HStack>
+              <Dialog.Title>
+                <Text
+                  fontSize="xl"
+                  fontWeight="700"
+                  color="var(--color-text-primary)"
+                >
+                  Share Your Feedback
+                </Text>
+              </Dialog.Title>
             </Dialog.Header>
 
             <Dialog.Body p={6}>
@@ -276,24 +269,36 @@ export const FeedbackMenu = memo<FeedbackMenuProps>(({ isOpen, onClose }) => {
               borderTop="1px solid var(--color-border)"
               p={6}
             >
-              <VStack gap={1} w="100%">
-                <Text
-                  fontSize="xs"
+              <HStack justify="space-between" w="100%">
+                <VStack gap={1} alignItems="flex-start" flex={1}>
+                  <Text
+                    fontSize="xs"
+                    color="var(--color-text-tertiary)"
+                    lineHeight="1.6"
+                  >
+                    Your email client will open with a pre-filled template.
+                  </Text>
+                  <Text
+                    fontSize="xs"
+                    color="var(--color-text-tertiary)"
+                    lineHeight="1.6"
+                  >
+                    We typically respond within 24-48 hours.
+                  </Text>
+                </VStack>
+                <Button
+                  variant="ghost"
                   color="var(--color-text-tertiary)"
-                  lineHeight="1.6"
-                  textAlign="center"
+                  borderRadius="10px"
+                  _hover={{
+                    color: 'var(--color-text-primary)',
+                    bg: 'rgba(42, 45, 53, 0.5)',
+                  }}
+                  onClick={onClose}
                 >
-                  Your email client will open with a pre-filled template.
-                </Text>
-                <Text
-                  fontSize="xs"
-                  color="var(--color-text-tertiary)"
-                  lineHeight="1.6"
-                  textAlign="center"
-                >
-                  We typically respond within 24-48 hours.
-                </Text>
-              </VStack>
+                  Close
+                </Button>
+              </HStack>
             </Dialog.Footer>
           </Dialog.Content>
         </Dialog.Positioner>
