@@ -267,21 +267,33 @@ export const FeedbackMenu = memo<FeedbackMenuProps>(({ isOpen, onClose }) => {
                     </VStack>
                   </HStack>
                 </Button>
-
-                <Box pt={3} borderTop="1px solid var(--color-border)">
-                  <Text
-                    fontSize="xs"
-                    color="var(--color-text-tertiary)"
-                    lineHeight="1.6"
-                    textAlign="center"
-                  >
-                    Your email client will open with a pre-filled template.
-                    <br />
-                    We typically respond within 24-48 hours.
-                  </Text>
-                </Box>
               </VStack>
             </Dialog.Body>
+
+            <Dialog.Footer
+              bg="var(--gradient-modal)"
+              borderTop="1px solid var(--color-border)"
+              p={6}
+            >
+              <VStack gap={1} w="100%">
+                <Text
+                  fontSize="xs"
+                  color="var(--color-text-tertiary)"
+                  lineHeight="1.6"
+                  textAlign="center"
+                >
+                  Your email client will open with a pre-filled template.
+                </Text>
+                <Text
+                  fontSize="xs"
+                  color="var(--color-text-tertiary)"
+                  lineHeight="1.6"
+                  textAlign="center"
+                >
+                  We typically respond within 24-48 hours.
+                </Text>
+              </VStack>
+            </Dialog.Footer>
           </Dialog.Content>
         </Dialog.Positioner>
       </Dialog.Root>
