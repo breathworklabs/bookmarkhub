@@ -910,14 +910,16 @@ class LocalStorageService {
     if (collection.isSmartCollection && collection.smartCriteria) {
       switch (collection.smartCriteria.type) {
         case 'starred':
-          return bookmarks.filter((b) => b.is_starred)
+          return bookmarks.filter((b) => b.is_starred && !b.is_deleted)
         case 'recent':
           const daysAgo = collection.smartCriteria.days || 7
           const cutoffDate = new Date()
           cutoffDate.setDate(cutoffDate.getDate() - daysAgo)
-          return bookmarks.filter((b) => new Date(b.created_at) >= cutoffDate)
+          return bookmarks.filter(
+            (b) => !b.is_deleted && new Date(b.created_at) >= cutoffDate
+          )
         case 'archived':
-          return bookmarks.filter((b) => b.is_archived)
+          return bookmarks.filter((b) => b.is_archived && !b.is_deleted)
         case 'uncategorized':
           return bookmarks.filter(
             (b) =>
