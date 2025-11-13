@@ -1,6 +1,6 @@
-# BookmarkX Chrome Extension - Direct Import Version
+# BookmarkHub Chrome Extension - Direct Import Version
 
-This version of the BookmarkX Chrome extension uses the **direct DOM extraction** approach to import Twitter/X bookmarks. This is the recommended version for Chrome Web Store submission.
+This version of the BookmarkHub Chrome extension uses the **direct DOM extraction** approach to import Twitter/X bookmarks. This is the recommended version for Chrome Web Store submission.
 
 ## How It Works
 
@@ -8,7 +8,7 @@ This version of the BookmarkX Chrome extension uses the **direct DOM extraction*
 2. **Extension opens Twitter's bookmarks page** (`https://twitter.com/i/bookmarks`)
 3. **Content script auto-scrolls** to load all bookmarks
 4. **Extracts bookmark data** from the loaded DOM elements
-5. **Saves to Chrome storage** and opens BookmarkX with imported data
+5. **Saves to Chrome storage** and opens BookmarkHub with imported data
 
 ## Technical Approach
 
@@ -28,14 +28,14 @@ This version of the BookmarkX Chrome extension uses the **direct DOM extraction*
 
 - Listens for extraction completion
 - Saves bookmarks to `chrome.storage.local`
-- Opens BookmarkX app with import parameters
+- Opens BookmarkHub app with import parameters
 - Handles tab updates for injection
 
 ### Popup (`popup/popup.html`, `popup.js`, `popup.css`)
 
 - Clean, user-friendly interface
 - "Import Bookmarks" button
-- "Open BookmarkX" button
+- "Open BookmarkHub" button
 - Progress tracking
 - Status messages
 
@@ -51,11 +51,11 @@ This version of the BookmarkX Chrome extension uses the **direct DOM extraction*
 
 ### For Testing
 
-1. Click the BookmarkX extension icon
+1. Click the BookmarkHub extension icon
 2. Click "Import Bookmarks"
 3. Wait for Twitter bookmarks page to open
 4. The extension will auto-scroll and extract
-5. When complete, click "Open in BookmarkX"
+5. When complete, click "Open in BookmarkHub"
 6. Your bookmarks will be imported
 
 ## Chrome Web Store Submission
@@ -128,15 +128,15 @@ Each bookmark is saved with:
 }
 ```
 
-## Integration with BookmarkX App
+## Integration with BookmarkHub App
 
-The extension saves bookmarks to `chrome.storage.local` and opens BookmarkX with URL parameters:
+The extension saves bookmarks to `chrome.storage.local` and opens BookmarkHub with URL parameters:
 
 ```
 http://localhost:5173?import=twitter&count=150
 ```
 
-The BookmarkX app should:
+The BookmarkHub app should:
 
 1. Detect the `import=twitter` parameter
 2. Request bookmark data from Chrome storage via message passing
@@ -147,7 +147,7 @@ The BookmarkX app should:
 
 ### Testing Locally
 
-1. Make sure BookmarkX is running on `localhost:5173`
+1. Make sure BookmarkHub is running on `localhost:5173`
 2. Update `BOOKMARKX_URL` in `popup.js` and `service-worker.js` if using different port
 3. Load the extension in Chrome
 4. Test the import flow
@@ -172,7 +172,7 @@ The BookmarkX app should:
 - Check Twitter's DOM structure hasn't changed
 - View console logs for errors
 
-**BookmarkX not receiving data:**
+**BookmarkHub not receiving data:**
 
 - Check `chrome.storage.local` in DevTools
 - Verify BOOKMARKX_URL is correct
@@ -197,7 +197,7 @@ The BookmarkX app should:
 
 ## License
 
-Same as BookmarkX project
+Same as BookmarkHub project
 
 ## Support
 

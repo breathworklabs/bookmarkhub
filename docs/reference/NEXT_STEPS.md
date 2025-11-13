@@ -1,4 +1,4 @@
-# BookmarkX - Next Steps & Plan
+# BookmarkHub - Next Steps & Plan
 
 ## 📊 Current Status (As of Nov 8, 2025 - Updated)
 

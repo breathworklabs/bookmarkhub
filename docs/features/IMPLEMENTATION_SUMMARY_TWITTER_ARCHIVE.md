@@ -2,7 +2,7 @@
 
 ## Overview
 
-Successfully implemented a complete Twitter Archive Import feature for BookmarkX that allows users to import bookmarks from their Twitter data archive ZIP files.
+Successfully implemented a complete Twitter Archive Import feature for BookmarkHub that allows users to import bookmarks from their Twitter data archive ZIP files.
 
 ## What Was Implemented
 
@@ -51,7 +51,7 @@ Successfully implemented a complete Twitter Archive Import feature for BookmarkX
   2. Extract bookmarks.js
   3. Parse archive format
   4. Validate parsed data
-  5. Transform to BookmarkX format
+  5. Transform to BookmarkHub format
   6. Return results with progress tracking
 
 ### 2. React Hook (`src/hooks/useArchiveImport.ts`)
@@ -231,7 +231,7 @@ Each imported bookmark includes:
 ### For Users:
 
 1. Download Twitter data archive from Twitter
-2. Click "Import" button in BookmarkX
+2. Click "Import" button in BookmarkHub
 3. Select the ZIP file
 4. Wait for import to complete
 5. Bookmarks appear with "Twitter Archive" tag

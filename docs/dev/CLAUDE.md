@@ -1,6 +1,6 @@
 # Claude Development Guidelines
 
-## Project: BookmarkX
+## Project: BookmarkHub
 
 Privacy-focused bookmark management for X/Twitter with React, TypeScript, Chakra UI, and local storage.
 

@@ -69,7 +69,7 @@ X/Twitter URL
        const response = await fetch(url, {
          method: 'HEAD',
          headers: {
-           'User-Agent': 'Mozilla/5.0 (compatible; BookmarkX/1.0)',
+           'User-Agent': 'Mozilla/5.0 (compatible; BookmarkHub/1.0)',
          },
        })
 
@@ -308,7 +308,7 @@ export const validateUrl = async (url: string) => {
 
 ## Alternative: Don't Validate X/Twitter URLs
 
-**Argument:** Since BookmarkX is a privacy-focused tool for personal bookmark management, and X/Twitter URLs are the primary use case, maybe validation isn't necessary?
+**Argument:** Since BookmarkHub is a privacy-focused tool for personal bookmark management, and X/Twitter URLs are the primary use case, maybe validation isn't necessary?
 
 **Pros:**
 - ✅ Simpler architecture

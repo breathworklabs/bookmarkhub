@@ -1,4 +1,4 @@
-# Pre-Launch Checklist - BookmarkX
+# Pre-Launch Checklist - BookmarkHub
 
 **Last Updated:** November 8, 2025
 **Target Deployment:** Railway (bookmarkx.breathworklabs.com)

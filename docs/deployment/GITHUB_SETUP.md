@@ -1,4 +1,4 @@
-# GitHub Repository Setup for BookmarkX
+# GitHub Repository Setup for BookmarkHub
 
 ## Project Information
 

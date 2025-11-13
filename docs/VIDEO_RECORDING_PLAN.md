@@ -139,7 +139,7 @@ docs/
 ```markdown
 # Documentation Videos
 
-This directory contains recorded demos and tutorials for BookmarkX.
+This directory contains recorded demos and tutorials for BookmarkHub.
 
 ## Features
 - `import.webm` - Importing bookmarks from X/Twitter

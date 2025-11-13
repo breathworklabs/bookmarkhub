@@ -4,7 +4,7 @@ This feature allows users to import their bookmarks from a Twitter data archive 
 
 ## Overview
 
-Twitter provides users with the ability to download their complete data archive, which includes their bookmarked tweets in a specific format. This feature extracts and imports those bookmarks into BookmarkX.
+Twitter provides users with the ability to download their complete data archive, which includes their bookmarked tweets in a specific format. This feature extracts and imports those bookmarks into BookmarkHub.
 
 ## How to Use
 
@@ -13,8 +13,8 @@ Twitter provides users with the ability to download their complete data archive,
    - Wait for Twitter to prepare your archive (can take up to 24 hours)
    - Download the ZIP file when ready
 
-2. **Import to BookmarkX**
-   - Click the "Import" button in BookmarkX
+2. **Import to BookmarkHub**
+   - Click the "Import" button in BookmarkHub
    - Select your Twitter archive ZIP file (typically named `twitter-YYYY-MM-DD-xxxxx.zip`)
    - Wait for the import to complete
    - Your bookmarks will be imported with the tag "Twitter Archive"
@@ -48,13 +48,13 @@ window.YTD.bookmarks.part0 = [
 
 1. **ZIP Extraction**: Extract `bookmarks.js` from the archive
 2. **Parsing**: Parse the JavaScript format and extract bookmark data
-3. **Transformation**: Convert to BookmarkX format with metadata
+3. **Transformation**: Convert to BookmarkHub format with metadata
 4. **Validation**: Sanitize and validate each bookmark
 5. **Storage**: Save to local storage
 
 ### Data Mapping
 
-| Twitter Archive Field            | BookmarkX Field                    |
+| Twitter Archive Field            | BookmarkHub Field                    |
 | -------------------------------- | ---------------------------------- |
 | `tweetId`                        | `source_id`                        |
 | `fullText`                       | `title`, `description`, `content`  |
@@ -90,7 +90,7 @@ Located in `src/services/twitterArchiveImport/`:
 - **types.ts**: TypeScript types and interfaces
 - **zipProcessor.ts**: ZIP file extraction using JSZip
 - **archiveParser.ts**: Parse Twitter's JavaScript format
-- **dataTransformer.ts**: Transform to BookmarkX format
+- **dataTransformer.ts**: Transform to BookmarkHub format
 - **index.ts**: Main service export
 
 ### React Hook

@@ -1,4 +1,4 @@
-# BookmarkX Pre-Launch Documentation Review - Complete Index
+# BookmarkHub Pre-Launch Documentation Review - Complete Index
 
 **Review Date:** November 8, 2025  
 **Reviewer:** Claude Code  
@@ -8,7 +8,7 @@
 
 ## Overview
 
-This documentation review identified **10 major issues** that must be addressed before the BookmarkX application can go live. The app has solid architecture and passing tests, but the **build is broken** with 38 TypeScript errors that prevent deployment.
+This documentation review identified **10 major issues** that must be addressed before the BookmarkHub application can go live. The app has solid architecture and passing tests, but the **build is broken** with 38 TypeScript errors that prevent deployment.
 
 **Estimated time to launch:** 4-6 hours
 
@@ -140,7 +140,7 @@ Critical docs contain incorrect information that will mislead users.
   - VITE_GA_MEASUREMENT_ID (not configured)
   - VITE_SENTRY_DSN (not configured)
 - `GITHUB_SETUP.md`: References wrong org and repo names
-- Project name inconsistency: bookmarksx vs BookmarkX vs Markspace
+- Project name inconsistency: bookmarksx vs BookmarkHub vs Markspace
 
 **Action:** Clarify actual domain and organization, update both docs
 **Time:** 30 minutes
@@ -263,7 +263,7 @@ npm run dev    # Must work
 Before proceeding with deployment, clarify:
 
 1. **What's the actual project name?**
-   - Currently inconsistent: bookmarksx vs BookmarkX vs Markspace
+   - Currently inconsistent: bookmarksx vs BookmarkHub vs Markspace
    - Should be used everywhere
 
 2. **What's the production domain?**

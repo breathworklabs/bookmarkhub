@@ -1,4 +1,4 @@
-# BookmarkX - Pre-Launch Documentation & Code Quality Review
+# BookmarkHub - Pre-Launch Documentation & Code Quality Review
 
 **Date: November 8, 2025**
 **Status: Critical Issues Found - Build Fails, Tests Pass**
@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-The BookmarkX application has **CRITICAL blockers** preventing deployment:
+The BookmarkHub application has **CRITICAL blockers** preventing deployment:
 
 1. **TypeScript Build Fails** - 38 compilation errors (MUST FIX BEFORE LAUNCH)
 2. **Incomplete Features** - Smart tagging infrastructure incomplete
@@ -122,7 +122,7 @@ src/services/smartTagging/strategies/UrlPatternStrategy.ts
 
 **Issues:**
 
-- Project name: `bookmarksx` vs `BookmarkX` vs `Markspace` (in PROJECT_STRUCTURE.md)
+- Project name: `bookmarksx` vs `BookmarkHub` vs `Markspace` (in PROJECT_STRUCTURE.md)
 - Documentation calls it different names
 - Extension folder still exists but docs don't mention status
 - Purpose stated as "X/Twitter bookmarks" but implementation is general bookmarks
@@ -131,7 +131,7 @@ src/services/smartTagging/strategies/UrlPatternStrategy.ts
 
 - `PROJECT_STRUCTURE.md:1` - Says "Markspace Project Structure"
 - `PROJECT_STRUCTURE.md:183-191` - Mentions Chrome extension integration
-- `README.md:1` - Says "BookmarkX - X/Twitter bookmark management"
+- `README.md:1` - Says "BookmarkHub - X/Twitter bookmark management"
 - `package.json` - Says `bookmarkx`
 
 **Question:** Is this:
@@ -375,7 +375,7 @@ src/services/smartTagging/strategies/UrlPatternStrategy.ts
 - **GITHUB_SETUP.md** - Wrong org/repo references
 - **NEXT_STEPS.md** - Severely outdated (1+ month)
 - **No PRE_LAUNCH_CHECKLIST.md** - Missing critical checklist
-- **PROJECT_STRUCTURE.md** - Wrong project name (Markspace vs BookmarkX)
+- **PROJECT_STRUCTURE.md** - Wrong project name (Markspace vs BookmarkHub)
 
 ### Missing Documentation:
 
@@ -423,7 +423,7 @@ npm run dev         ✅ Must work without errors
    - **Time estimate:** 2-3 hours
 
 2. **Update Project Identity**
-   - [ ] Confirm actual project name (BookmarkX vs Markspace)
+   - [ ] Confirm actual project name (BookmarkHub vs Markspace)
    - [ ] Confirm actual domain/org
    - [ ] Update DEPLOYMENT.md with correct info
    - [ ] Update GITHUB_SETUP.md with correct org/repo
@@ -533,7 +533,7 @@ Suggested changes:
 ### PROJECT_STRUCTURE.md - FIX PROJECT NAME
 
 ```markdown
-Change "Markspace Project Structure" to "BookmarkX Project Structure"
+Change "Markspace Project Structure" to "BookmarkHub Project Structure"
 or use whatever the actual project name is
 ```
 

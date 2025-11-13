@@ -1,4 +1,4 @@
-# BookmarkX Pre-Launch Review - Quick Reference Guide
+# BookmarkHub Pre-Launch Review - Quick Reference Guide
 
 **Date:** November 8, 2025
 **Status:** NOT READY FOR PRODUCTION - 3 Critical Blockers
@@ -193,7 +193,7 @@ What's the actual production domain?
 
 ## Key Questions to Answer
 
-1. **What's the actual project name?** BookmarkX? Markspace? bookmarksx?
+1. **What's the actual project name?** BookmarkHub? Markspace? bookmarksx?
 2. **What domain will be used?** breathworklabs.com? Custom?
 3. **Is the browser extension shipping?** Or is it just the web app?
 4. **Is smart tagging required for MVP?** Or can it launch later?

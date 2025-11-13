@@ -1,8 +1,8 @@
-# BookmarkX: Refresh & Social Data Update Functionality - Search Results
+# BookmarkHub: Refresh & Social Data Update Functionality - Search Results
 
 ## Executive Summary
 
-The BookmarkX application **does not have explicit refresh functionality for updating existing bookmarks with new social metrics** (likes, retweets, replies). However, it has a **one-time data import mechanism** that captures social metrics at import time. Here's the detailed breakdown:
+The BookmarkHub application **does not have explicit refresh functionality for updating existing bookmarks with new social metrics** (likes, retweets, replies). However, it has a **one-time data import mechanism** that captures social metrics at import time. Here's the detailed breakdown:
 
 ---
 
@@ -336,7 +336,7 @@ To add social metrics refresh functionality:
 
 ## Summary
 
-BookmarkX is **import-focused**, not **refresh-focused**. It captures social metrics once during import and stores them statically. There is no automatic or manual mechanism to refresh these metrics for existing bookmarks. The only "refresh" is a full reimport of NEW bookmarks from the extension.
+BookmarkHub is **import-focused**, not **refresh-focused**. It captures social metrics once during import and stores them statically. There is no automatic or manual mechanism to refresh these metrics for existing bookmarks. The only "refresh" is a full reimport of NEW bookmarks from the extension.
 
 To enable true social metrics refresh, a new subsystem would need to be built that:
 
