@@ -131,6 +131,7 @@ export const FeedbackMenu = memo<FeedbackMenuProps>(({ isOpen, onClose }) => {
             boxShadow="0 25px 50px rgba(0, 0, 0, 0.6)"
             maxW="480px"
             w="90vw"
+            overflow="hidden"
           >
             <Dialog.Header
               bg="var(--gradient-modal)"
