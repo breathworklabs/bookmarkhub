@@ -1,15 +1,15 @@
 /**
- * BookmarkX Integration Utilities
+ * BookmarkHub Integration Utilities
  *
- * Helper functions for integrating with the BookmarkX app
+ * Helper functions for integrating with the BookmarkHub app
  */
 
 /**
- * Format extracted Twitter bookmark for BookmarkX
+ * Format extracted Twitter bookmark for BookmarkHub
  * @param {Object} twitterBookmark - Raw Twitter bookmark data
- * @returns {Object} BookmarkX-compatible bookmark
+ * @returns {Object} BookmarkHub-compatible bookmark
  */
-export function formatForBookmarkX(twitterBookmark) {
+export function formatForBookmarkHub(twitterBookmark) {
   return {
     id: `twitter_${twitterBookmark.id}`,
     url: twitterBookmark.url,
@@ -139,7 +139,7 @@ export async function exportToJSON() {
 }
 
 /**
- * Generate BookmarkX import URL
+ * Generate BookmarkHub import URL
  * @param {number} count - Number of bookmarks
  * @param {string} source - Source platform (default: 'twitter')
  * @returns {string} Import URL

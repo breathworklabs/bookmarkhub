@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "BookmarkX - Twitter Bookmark Manager",
+  "name": "BookmarkHub - Twitter Bookmark Manager",
   "version": "1.1.2",
-  "description": "Import and manage your Twitter/X bookmarks with BookmarkX's powerful interface",
+  "description": "Import and manage your Twitter/X bookmarks with BookmarkHub's powerful interface",
   "permissions": ["scripting", "tabs", "storage", "activeTab"],
   "host_permissions": ["*://twitter.com/*", "*://x.com/*"],
   "action": {
@@ -28,8 +28,8 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["http://localhost:5173/*", "https://bookmarksx.vercel.app/*"],
-      "js": ["content-scripts/bookmarkx-bridge.js"],
+      "matches": ["http://localhost:5173/*", "https://bookmarkhub.vercel.app/*"],
+      "js": ["content-scripts/bookmarkhub-bridge.js"],
       "run_at": "document_start"
     }
   ],

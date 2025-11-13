@@ -1,5 +1,5 @@
 /**
- * Simple Popup Script for BookmarkX Extension
+ * Simple Popup Script for BookmarkHub Extension
  * Direct extraction without content scripts
  */
 
@@ -138,13 +138,13 @@ class SimplePopupManager {
           if (tabs.length === 0) {
             this.showInfo(
               'Complete!',
-              `Extracted <strong>${result.count} bookmarks</strong>. Opening BookmarkX app to view them...`,
+              `Extracted <strong>${result.count} bookmarks</strong>. Opening BookmarkHub app to view them...`,
               'success'
             )
           } else {
             this.showInfo(
               'Complete!',
-              `Extracted <strong>${result.count} bookmarks</strong>. Refresh your BookmarkX app to see them!`,
+              `Extracted <strong>${result.count} bookmarks</strong>. Refresh your BookmarkHub app to see them!`,
               'success'
             )
           }
@@ -414,7 +414,7 @@ class SimplePopupManager {
       } else {
         // Ask user for their app URL
         const appUrl = prompt(
-          'Enter your BookmarkX URL:',
+          'Enter your BookmarkHub URL:',
           'http://localhost:3000'
         )
 

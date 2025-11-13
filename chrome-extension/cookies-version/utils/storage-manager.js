@@ -1,5 +1,5 @@
 /**
- * StorageManager - Handle local storage integration with BookmarkX
+ * StorageManager - Handle local storage integration with BookmarkHub
  * Manages bookmark storage and communication with the main app
  */
 

@@ -758,4 +758,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 })
 
-console.log('BookmarkX - Service Worker initialized')
+console.log('BookmarkHub - Service Worker initialized')

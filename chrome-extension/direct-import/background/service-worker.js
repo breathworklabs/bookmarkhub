@@ -1,6 +1,6 @@
-// Background service worker for BookmarkX Chrome Extension
+// Background service worker for BookmarkHub Chrome Extension
 
-// BookmarkX app URL
+// BookmarkHub app URL
 const BOOKMARKX_URL = 'http://localhost:5173'
 
 // Listen for messages from content script and popup
@@ -11,19 +11,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return true // Keep channel open for async response
 
     case 'OPEN_BOOKMARKX':
-      openBookmarkX()
+      openBookmarkHub()
       sendResponse({ success: true })
       break
 
     case 'GET_EXTRACTED_BOOKMARKS':
-      // BookmarkX app requesting data via bridge content script
+      // BookmarkHub app requesting data via bridge content script
       chrome.storage.local.get(
         ['extractedBookmarks', 'extractedAt'],
         (result) => {
           const bookmarks = result.extractedBookmarks || []
           const extractedAt = result.extractedAt || null
           console.log(
-            `[BookmarkX Background] Sending ${bookmarks.length} bookmarks to app`
+            `[BookmarkHub Background] Sending ${bookmarks.length} bookmarks to app`
           )
           sendResponse({
             success: true,
@@ -81,13 +81,13 @@ function handleExtractionComplete(bookmarks, sendResponse) {
   )
 }
 
-function openBookmarkX() {
+function openBookmarkHub() {
   chrome.storage.local.get(['extractedBookmarks'], (result) => {
     const bookmarks = result.extractedBookmarks || []
     const count = bookmarks.length
     const targetUrl = `${BOOKMARKX_URL}?import=twitter&count=${count}`
 
-    // Open BookmarkX - the page will request data from extension
+    // Open BookmarkHub - the page will request data from extension
     chrome.tabs.create({
       url: targetUrl,
       active: true,

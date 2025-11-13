@@ -1,4 +1,4 @@
-// Popup script for BookmarkX Chrome Extension
+// Popup script for BookmarkHub Chrome Extension
 const importBtn = document.getElementById('importBtn')
 const openAppBtn = document.getElementById('openAppBtn')
 const status = document.getElementById('status')
@@ -6,7 +6,7 @@ const progress = document.getElementById('progress')
 const progressFill = document.getElementById('progressFill')
 const progressText = document.getElementById('progressText')
 
-// BookmarkX app URL (update this to your deployed URL or localhost)
+// BookmarkHub app URL (update this to your deployed URL or localhost)
 const BOOKMARKX_URL = 'http://localhost:5173'
 
 // Listen for messages from content script
@@ -47,7 +47,7 @@ importBtn.addEventListener('click', async () => {
   }
 })
 
-// Open BookmarkX app
+// Open BookmarkHub app
 openAppBtn.addEventListener('click', () => {
   chrome.tabs.create({ url: BOOKMARKX_URL })
 })
@@ -79,7 +79,7 @@ function handleExtractionComplete(bookmarks) {
       extractedAt: new Date().toISOString(),
     },
     () => {
-      // Open BookmarkX with import flag
+      // Open BookmarkHub with import flag
       chrome.tabs.create({
         url: `${BOOKMARKX_URL}?import=twitter&count=${bookmarks.length}`,
       })

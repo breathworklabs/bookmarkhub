@@ -52,7 +52,7 @@
         ✓ ${count} Bookmarks Ready
       </h3>
       <p style="margin: 0 0 12px 0; font-size: 14px; opacity: 0.9;">
-        Your bookmarks are ready to import into BookmarkX!
+        Your bookmarks are ready to import into BookmarkHub!
       </p>
       <button id="bookmarkx-import-btn" style="
         background: white;
@@ -66,7 +66,7 @@
         width: 100%;
         margin-bottom: 8px;
       ">
-        Import into BookmarkX
+        Import into BookmarkHub
       </button>
       <button id="bookmarkx-refetch-btn" style="
         background: transparent;
@@ -92,11 +92,11 @@
         chrome.runtime.sendMessage({ type: 'OPEN_BOOKMARKX' }, (response) => {
           if (chrome.runtime.lastError) {
             console.error(
-              '[BookmarkX API] Error opening BookmarkX:',
+              '[BookmarkHub API] Error opening BookmarkHub:',
               chrome.runtime.lastError.message
             )
             showError(
-              'Failed to open BookmarkX. Is the extension installed correctly?'
+              'Failed to open BookmarkHub. Is the extension installed correctly?'
             )
           }
         })
@@ -136,13 +136,13 @@
 
     banner.innerHTML = `
       <div style="display: flex; align-items: center; margin-bottom: 12px;">
-        <img src="${chrome.runtime.getURL('assets/icon-48.png')}" alt="BookmarkX" style="width: 32px; height: 32px; margin-right: 12px;">
+        <img src="${chrome.runtime.getURL('assets/icon-48.png')}" alt="BookmarkHub" style="width: 32px; height: 32px; margin-right: 12px;">
         <h3 style="margin: 0; font-size: 18px; font-weight: 600;">
           Import Your Bookmarks
         </h3>
       </div>
       <p style="margin: 0 0 16px 0; font-size: 14px; opacity: 0.9;">
-        Import all your X/Twitter bookmarks to BookmarkX in seconds. No scrolling needed!
+        Import all your X/Twitter bookmarks to BookmarkHub in seconds. No scrolling needed!
       </p>
       <button id="bookmarkx-fetch-btn" style="
         background: white;
@@ -180,7 +180,7 @@
       showProgressBanner()
       await fetchAllBookmarks()
     } catch (error) {
-      console.error('[BookmarkX API] Error:', error)
+      console.error('[BookmarkHub API] Error:', error)
       showError(error.message)
       isCollecting = false
     }
@@ -206,7 +206,7 @@
 
     banner.innerHTML = `
       <div style="display: flex; align-items: center; margin-bottom: 12px;">
-        <img src="${chrome.runtime.getURL('assets/icon-48.png')}" alt="BookmarkX" style="width: 32px; height: 32px; margin-right: 12px;">
+        <img src="${chrome.runtime.getURL('assets/icon-48.png')}" alt="BookmarkHub" style="width: 32px; height: 32px; margin-right: 12px;">
         <h3 style="margin: 0; font-size: 18px; font-weight: 600;">
           Fetching Bookmarks...
         </h3>
@@ -257,7 +257,7 @@
         // Small delay between requests (be nice to Twitter's API)
         await new Promise((resolve) => setTimeout(resolve, 300))
       } catch (error) {
-        console.error('[BookmarkX API] Fetch error:', error)
+        console.error('[BookmarkHub API] Fetch error:', error)
         throw error
       }
     }
@@ -353,7 +353,7 @@
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('[BookmarkX API] Error response:', errorText)
+      console.error('[BookmarkHub API] Error response:', errorText)
       throw new Error(
         `API request failed: ${response.status} ${response.statusText}`
       )
@@ -391,7 +391,7 @@
         }
       })
     } catch (error) {
-      console.error('[BookmarkX API] Parse error:', error)
+      console.error('[BookmarkHub API] Parse error:', error)
     }
 
     return { bookmarks, nextCursor, hasMore }
@@ -413,14 +413,14 @@
 
       return parseTweet(tweetResults)
     } catch (error) {
-      console.error('[BookmarkX API] Parse tweet error:', error)
+      console.error('[BookmarkHub API] Parse tweet error:', error)
       return null
     }
   }
 
   function parseTweet(tweet) {
     if (!tweet || !tweet.legacy) {
-      console.warn('[BookmarkX API] Invalid tweet structure:', tweet)
+      console.warn('[BookmarkHub API] Invalid tweet structure:', tweet)
       return null
     }
 
@@ -489,7 +489,7 @@
         }
       }
     } catch (error) {
-      console.error('[BookmarkX API] Error extracting queryId:', error)
+      console.error('[BookmarkHub API] Error extracting queryId:', error)
     }
 
     // Fallback to hardcoded query ID if extraction failed
@@ -518,7 +518,7 @@
       progressBanner.remove()
     }
 
-    // Transform to BookmarkX format
+    // Transform to BookmarkHub format
     const bookmarks = allBookmarks.map((tweet) => transformToBookmark(tweet))
 
     // Send transformed bookmarks to background script
@@ -530,7 +530,7 @@
       (response) => {
         if (chrome.runtime.lastError) {
           console.error(
-            '[BookmarkX API] Error sending message:',
+            '[BookmarkHub API] Error sending message:',
             chrome.runtime.lastError.message
           )
         }
@@ -540,12 +540,12 @@
     // Show completion banner
     showCompletionBanner()
 
-    // Automatically open BookmarkX after 1 second
+    // Automatically open BookmarkHub after 1 second
     setTimeout(() => {
       chrome.runtime.sendMessage({ type: 'OPEN_BOOKMARKX' }, (response) => {
         if (chrome.runtime.lastError) {
           console.error(
-            '[BookmarkX API] Error opening BookmarkX:',
+            '[BookmarkHub API] Error opening BookmarkHub:',
             chrome.runtime.lastError.message
           )
         }
@@ -772,7 +772,7 @@
       <p style="margin: 0 0 12px 0; font-size: 14px; opacity: 0.9;">
         Successfully extracted ${allBookmarks.length} bookmarks in seconds!
       </p>
-      <button id="openBookmarkX" style="
+      <button id="openBookmarkHub" style="
         background: white;
         color: #059669;
         border: none;
@@ -783,17 +783,17 @@
         font-size: 14px;
         width: 100%;
       ">
-        Open in BookmarkX
+        Open in BookmarkHub
       </button>
     `
 
     document.body.appendChild(banner)
 
-    document.getElementById('openBookmarkX').addEventListener('click', () => {
+    document.getElementById('openBookmarkHub').addEventListener('click', () => {
       chrome.runtime.sendMessage({ type: 'OPEN_BOOKMARKX' }, (response) => {
         if (chrome.runtime.lastError) {
           console.error(
-            '[BookmarkX API] Error opening BookmarkX:',
+            '[BookmarkHub API] Error opening BookmarkHub:',
             chrome.runtime.lastError.message
           )
         }
