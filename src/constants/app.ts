@@ -14,6 +14,8 @@ export const APP_TAGLINE = 'Privacy-First Bookmark Manager'
 
 export const APP_URL = 'https://bookmarkhub.breathworklabs.com'
 
+export const APP_VERSION = '1.0.0'
+
 export const APP_COPYRIGHT_YEAR = new Date().getFullYear()
 export const APP_COPYRIGHT = `© ${APP_COPYRIGHT_YEAR} ${APP_NAME}. All rights reserved.`
 

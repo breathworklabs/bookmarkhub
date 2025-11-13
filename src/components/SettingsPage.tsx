@@ -23,12 +23,16 @@ import {
   LuChevronDown,
   LuChevronUp,
   LuSettings,
+  LuBug,
+  LuLightbulb,
+  LuMessageSquare,
 } from 'react-icons/lu'
 import { useNavigate } from 'react-router-dom'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import toast from 'react-hot-toast'
 import { useState } from 'react'
+import { APP_NAME, APP_VERSION } from '../constants/app'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useSettingsStore } from '../store/settingsStore'
@@ -1298,6 +1302,135 @@ const SettingsPage = () => {
                         breathworklabs.com
                       </a>
                     </Text>
+                  </VStack>
+                </Box>
+
+                {/* Feedback & Support */}
+                <Box
+                  p={4}
+                  style={{ background: 'var(--color-bg-secondary)' }}
+                  borderRadius="8px"
+                  border="1px solid var(--color-border)"
+                >
+                  <VStack alignItems="stretch" gap={3}>
+                    <Text
+                      fontSize="sm"
+                      fontWeight="500"
+                      style={{ color: 'var(--color-text-primary)' }}
+                    >
+                      Feedback & Support
+                    </Text>
+                    <Text
+                      fontSize="xs"
+                      style={{ color: 'var(--color-text-tertiary)' }}
+                      lineHeight="1.6"
+                    >
+                      Help us improve {APP_NAME}! Share your feedback, report bugs, or request
+                      features.
+                    </Text>
+
+                    <VStack alignItems="stretch" gap={2}>
+                      <Button
+                        onClick={() => {
+                          const systemInfo = {
+                            browser: navigator.userAgent,
+                            platform: navigator.platform,
+                            version: APP_VERSION,
+                            url: window.location.href,
+                            timestamp: new Date().toISOString(),
+                          }
+                          const subject = `Bug Report - ${APP_NAME}`
+                          const body = `Hi ${APP_NAME} Team,\n\nI found a bug:\n\n**What I expected to happen:**\n\n\n**What actually happened:**\n\n\n**Steps to reproduce:**\n1.\n2.\n3.\n\n**Additional details:**\n\n\n---\nSystem Information:\nBrowser: ${systemInfo.browser}\nPlatform: ${systemInfo.platform}\nVersion: ${systemInfo.version}\nURL: ${systemInfo.url}\nTimestamp: ${systemInfo.timestamp}\n`
+                          window.location.href = `mailto:hello@breathworklabs.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+                          toast.success('Email client opened!')
+                        }}
+                        size="sm"
+                        variant="outline"
+                        style={{
+                          justifyContent: 'flex-start',
+                          borderColor: 'var(--color-border)',
+                          color: 'var(--color-text-secondary)',
+                        }}
+                        _hover={{
+                          bg: 'var(--color-bg-hover)',
+                          borderColor: 'var(--color-border-hover)',
+                        }}
+                      >
+                        <HStack gap={2}>
+                          <LuBug size={14} style={{ color: 'var(--color-danger)' }} />
+                          <Text>Report a Bug</Text>
+                        </HStack>
+                      </Button>
+
+                      <Button
+                        onClick={() => {
+                          const subject = `Feature Request - ${APP_NAME}`
+                          const body = `Hi ${APP_NAME} Team,\n\nI'd like to suggest a new feature:\n\n**Feature description:**\n\n\n**Why it would be useful:**\n\n\n**How I imagine it could work:**\n\n\n**Alternative solutions I've considered:**\n\n\nThanks for considering this!\n\n---\nSubmitted from: ${window.location.href}\n`
+                          window.location.href = `mailto:hello@breathworklabs.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+                          toast.success('Email client opened!')
+                        }}
+                        size="sm"
+                        variant="outline"
+                        style={{
+                          justifyContent: 'flex-start',
+                          borderColor: 'var(--color-border)',
+                          color: 'var(--color-text-secondary)',
+                        }}
+                        _hover={{
+                          bg: 'var(--color-bg-hover)',
+                          borderColor: 'var(--color-border-hover)',
+                        }}
+                      >
+                        <HStack gap={2}>
+                          <LuLightbulb size={14} style={{ color: 'var(--color-warning)' }} />
+                          <Text>Request a Feature</Text>
+                        </HStack>
+                      </Button>
+
+                      <Button
+                        onClick={() => {
+                          const systemInfo = {
+                            browser: navigator.userAgent,
+                            url: window.location.href,
+                            timestamp: new Date().toISOString(),
+                          }
+                          const subject = `Feedback - ${APP_NAME}`
+                          const body = `Hi ${APP_NAME} Team,\n\nMy feedback:\n\n\n\n---\nSystem Information:\nBrowser: ${systemInfo.browser}\nURL: ${systemInfo.url}\nTimestamp: ${systemInfo.timestamp}\n`
+                          window.location.href = `mailto:hello@breathworklabs.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+                          toast.success('Email client opened!')
+                        }}
+                        size="sm"
+                        variant="outline"
+                        style={{
+                          justifyContent: 'flex-start',
+                          borderColor: 'var(--color-border)',
+                          color: 'var(--color-text-secondary)',
+                        }}
+                        _hover={{
+                          bg: 'var(--color-bg-hover)',
+                          borderColor: 'var(--color-border-hover)',
+                        }}
+                      >
+                        <HStack gap={2}>
+                          <LuMessageSquare size={14} style={{ color: 'var(--color-primary)' }} />
+                          <Text>General Feedback</Text>
+                        </HStack>
+                      </Button>
+                    </VStack>
+
+                    <Box
+                      pt={2}
+                      borderTopWidth="1px"
+                      style={{ borderColor: 'var(--color-border)' }}
+                    >
+                      <Text
+                        fontSize="xs"
+                        style={{ color: 'var(--color-text-tertiary)' }}
+                        lineHeight="1.6"
+                      >
+                        We typically respond within 24-48 hours.
+                      </Text>
+                    </Box>
                   </VStack>
                 </Box>
               </VStack>

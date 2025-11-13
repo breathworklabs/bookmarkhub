@@ -20,8 +20,9 @@ import {
   LuLayoutList,
   LuChevronLeft,
   LuChevronRight,
+  LuMessageSquare,
 } from 'react-icons/lu'
-import { useMemo, useCallback, memo } from 'react'
+import { useMemo, useCallback, memo, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
@@ -29,6 +30,7 @@ import { useSettingsStore } from '../store/settingsStore'
 import { useModal } from './modals/ModalProvider'
 import { useIsMobile } from '../hooks/useMobile'
 import CollectionsList from './collections/CollectionsList'
+import { FeedbackMenu } from './FeedbackMenu'
 import { useNavigationStyles } from '../hooks/useStyles'
 import { componentStyles } from '../styles/components'
 import logoImage from '../assets/logo_v2 1.png'
@@ -85,6 +87,9 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
     (state) => state.setActiveCollection
   )
   const isMobile = useIsMobile()
+
+  // Feedback menu state
+  const [isFeedbackMenuOpen, setIsFeedbackMenuOpen] = useState(false)
 
   // Memoized event handlers
   const handleNavItemClick = useCallback(
@@ -518,6 +523,16 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
             gap={2}
           >
             <NavItem
+              icon={<LuMessageSquare size={18} />}
+              label="Feedback"
+              onClick={() => {
+                setIsFeedbackMenuOpen(true)
+                onItemClick?.()
+              }}
+              active={false}
+            />
+
+            <NavItem
               icon={<LuSettings size={18} />}
               label="Settings"
               onClick={() => {
@@ -571,6 +586,12 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
           </VStack>
         </VStack>
       </VStack>
+
+      {/* Feedback Menu Modal */}
+      <FeedbackMenu
+        isOpen={isFeedbackMenuOpen}
+        onClose={() => setIsFeedbackMenuOpen(false)}
+      />
     </Box>
   )
 })
