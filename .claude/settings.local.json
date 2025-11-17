@@ -15,7 +15,8 @@
       "Bash(git add:*)",
       "Bash(npm outdated:*)",
       "Bash(npm run test:coverage:*)",
-      "Bash(npm audit:*)"
+      "Bash(npm audit:*)",
+      "Bash(xargs ls:*)"
     ],
     "deny": [],
     "ask": []

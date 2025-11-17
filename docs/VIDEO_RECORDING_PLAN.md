@@ -220,6 +220,512 @@ brew install --cask obs
 
 ---
 
+## Phase 4: Video Ad Production for Social Media (Marketing Videos)
+
+**Status:** Research completed - 2025-11-17
+**Purpose:** Tools for creating 15-30 second video ads for Twitter/X, Instagram, TikTok
+
+### Overview
+
+For creating short-form video ads (not documentation), different tools excel at different tasks:
+- **Screen recording**: Capture BookmarksX interface interactions
+- **Video editing**: Add text overlays, effects, transitions
+- **Post-production**: Final polish, exports optimized for social media
+
+---
+
+### Recommended Mac Software for Video Ads
+
+#### Option 1: Screen Studio (BEST FOR PRODUCT DEMOS) 💎
+**Website:** https://screen.studio/
+**Price:** ~$89 one-time purchase
+
+**What makes it special:**
+- ✅ **Automatic zoom on mouse actions** - Perfect for highlighting UI interactions
+- ✅ **Smooth cursor movement** - Professional polish without manual editing
+- ✅ **Built-in animations and effects** - No separate editing software needed
+- ✅ **5-minute workflow** - Record to polished video in minutes
+- ✅ **macOS-optimized** - Native performance on Apple Silicon
+- ✅ **Ideal for 15-30 second demos** - Purpose-built for product showcases
+
+**Best for:**
+- Recording BookmarksX interface demonstrations
+- Showing drag-and-drop, search, collections features
+- Creating professional demos with minimal effort
+
+**When to use:**
+- Primary tool for screen recording product demos
+- Final export ready for social media with minimal editing
+
+---
+
+#### Option 2: CapCut (BEST FREE OPTION) ⭐
+**Download:** CapCut.com (Mac desktop app)
+**Price:** FREE (no watermark!)
+
+**Features:**
+- ✅ **Completely free** with professional features
+- ✅ **Auto-captions** - AI-generated subtitles for engagement
+- ✅ **Text-to-speech and AI tools** - Voiceovers without recording
+- ✅ **Template library** - Quick start with pre-made styles
+- ✅ **Optimized for TikTok, Reels, Shorts** - Export presets included
+- ✅ **Timeline editing** - Professional multi-track editing
+- ✅ **Effects and transitions** - Large library included
+
+**Best for:**
+- Adding text overlays with user pain points
+- Creating multiple video variants quickly
+- A/B testing different hooks and messaging
+- Adding effects, transitions, and music
+
+**When to use:**
+- Primary editing tool for free workflow
+- Adding text overlays to Playwright/QuickTime recordings
+- Creating variants from single screen recording
+
+---
+
+#### Option 3: ScreenFlow (BEST ALL-IN-ONE) 🎬
+**Website:** https://www.telestream.net/screenflow/
+**Price:** $169 one-time purchase
+
+**Features:**
+- ✅ **Screen recording + video editing** in one app
+- ✅ **Transitions, text animations, annotations**
+- ✅ **Styles and Templates** - Consistent branding across videos
+- ✅ **Multi-channel audio** - Add music + voiceover simultaneously
+- ✅ **iPhone/iPad screen mirroring** - Record mobile versions
+- ✅ **Professional output quality** - Broadcast-ready exports
+
+**Best for:**
+- Complete workflow from recording to final export
+- Teams needing consistent branding across videos
+- Creating reusable templates for video series
+
+**When to use:**
+- All-in-one solution if you want single software
+- Building template library for ongoing video production
+- Professional quality with full control
+
+---
+
+#### Option 4: iMovie (EASIEST START) 🍎
+**Price:** FREE (built-in on Mac)
+
+**Features:**
+- ✅ **Already installed** - No download needed
+- ✅ **Simple, intuitive interface** - Zero learning curve
+- ✅ **Basic transitions and text overlays**
+- ✅ **Export optimized for social media**
+- ✅ **Good enough for testing concepts**
+
+**Best for:**
+- Absolute beginners
+- Quick concept testing
+- Learning video editing basics
+
+**When to use:**
+- First video attempts before investing in paid tools
+- Simple edits to Playwright-recorded demos
+
+---
+
+#### Option 5: Final Cut Pro (PROFESSIONAL) 🎥
+**Price:** $299 one-time purchase (Apple)
+
+**Features:**
+- ✅ **Apple's professional video editor**
+- ✅ **AI-powered auto-captions**
+- ✅ **Automatic social media formatting**
+- ✅ **Text-to-video conversion**
+- ✅ **Optimized for Apple Silicon** - Blazing fast
+- ✅ **Magnetic Timeline** - Revolutionary editing workflow
+
+**Best for:**
+- Long-term investment in video content
+- Professional-quality marketing materials
+- High-volume video production
+
+**When to use:**
+- Planning to create lots of video content
+- Need maximum control and quality
+- Budget allows for professional tools
+
+---
+
+### Comparison Table
+
+| Software | Price | Screen Recording | Video Editing | Learning Curve | Speed | Best For |
+|----------|-------|------------------|---------------|----------------|-------|----------|
+| **Screen Studio** | $89 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | Low | ⚡️ Fast | Product demos |
+| **CapCut** | FREE | ❌ | ⭐⭐⭐⭐⭐ | Low | ⚡️ Fast | Social media ads |
+| **ScreenFlow** | $169 | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | Medium | Medium | All-in-one |
+| **iMovie** | FREE | ❌ | ⭐⭐⭐ | Very Low | Fast | Beginners |
+| **Final Cut Pro** | $299 | ❌ | ⭐⭐⭐⭐⭐ | High | ⚡️ Fast | Professionals |
+| **QuickTime** | FREE | ⭐⭐ | ❌ | Very Low | Fast | Basic recording |
+
+---
+
+### Recommended Workflows
+
+#### Workflow A: Free Stack (Start Here) 💰
+
+**Tools:**
+1. **QuickTime** (built-in) - Screen recording
+2. **CapCut** (free) - Editing, text overlays, effects
+3. **Export** - Optimized for Twitter/X, Instagram, TikTok
+
+**Process:**
+```bash
+1. Record screen with QuickTime (⌘+Ctrl+N)
+2. Import to CapCut
+3. Add text overlays with pain points
+4. Add auto-captions
+5. Export 1080p MP4
+```
+
+**Cost:** $0
+**Time:** 30-60 minutes per video (after learning)
+**Quality:** Good - Professional enough for social media
+
+---
+
+#### Workflow B: Premium Workflow (Recommended) 🏆
+
+**Tools:**
+1. **Screen Studio** ($89) - Record & auto-polish
+2. **CapCut** (free) - Optional extra effects/text
+3. **Export** - High-quality MP4
+
+**Process:**
+```bash
+1. Record with Screen Studio (automatic zoom, smooth cursor)
+2. Export polished demo
+3. Optional: Import to CapCut for text overlays
+4. Export for social media
+```
+
+**Cost:** $89 one-time
+**Time:** 5-15 minutes per video
+**Quality:** Excellent - Professional product demos
+
+---
+
+#### Workflow C: All-in-One Professional 🎬
+
+**Tools:**
+1. **ScreenFlow** ($169) - Complete production
+2. **Export** - Multiple format outputs
+
+**Process:**
+```bash
+1. Record screen in ScreenFlow
+2. Edit with templates (transitions, text, music)
+3. Apply consistent branding
+4. Export with presets
+```
+
+**Cost:** $169 one-time
+**Time:** 20-40 minutes per video
+**Quality:** Excellent - Full creative control
+
+---
+
+#### Workflow D: Automated + Manual Hybrid (Best Value) 🤖
+
+**Tools:**
+1. **Playwright** (free, already installed) - Automated screen recording
+2. **CapCut** (free) - Manual editing and polish
+
+**Process:**
+```bash
+# 1. Automated recording
+npm run docs:record
+
+# 2. Locate video in test-results/
+# 3. Import to CapCut
+# 4. Add text overlays, effects, music
+# 5. Export for social media
+```
+
+**Cost:** $0
+**Time:** 10-20 minutes per video (after automation setup)
+**Quality:** Good - Consistent demos with creative editing
+
+---
+
+### Quick Start Guide
+
+#### Day 1: Test Concepts (Free)
+1. **Install CapCut** (free download)
+2. **Record with QuickTime** or Playwright
+3. **Edit in CapCut** - Try 3 different hooks
+4. **Export and test** on Twitter/X
+
+#### Week 1: Evaluate Results
+- Analyze which hooks perform best
+- Determine if you need faster workflow
+- Decide on tool investment
+
+#### Investment Decision:
+- **If creating 10+ videos:** Buy Screen Studio ($89)
+- **If need full control:** Buy ScreenFlow ($169)
+- **If budget allows:** Buy Final Cut Pro ($299)
+- **If unsure:** Stick with free tools for now
+
+---
+
+### Video Ad-Specific Features
+
+#### Text Overlays (Pain Points)
+**Best tools:**
+- CapCut: Built-in templates, animations
+- ScreenFlow: Customizable text styles
+- Final Cut Pro: Advanced motion graphics
+
+**Example text overlays:**
+- "Twitter only shows 780 bookmarks"
+- "No search. No folders. No hope."
+- "Deleted tweets = Lost bookmarks"
+
+---
+
+#### Auto-Captions
+**Best tools:**
+- CapCut: FREE auto-captions (AI-powered)
+- Final Cut Pro: Built-in auto-captions
+- Descript: Specialized transcription ($12/month)
+
+**Why use captions:**
+- 85% of social media videos watched without sound
+- Better engagement and accessibility
+- SEO benefits for video content
+
+---
+
+#### Social Media Export Presets
+**Best tools:**
+- CapCut: TikTok, Instagram Reels, YouTube Shorts presets
+- ScreenFlow: Custom export templates
+- Final Cut Pro: Social media destinations
+
+**Recommended formats:**
+- **Twitter/X:** 1080x1920 (vertical) or 1920x1080 (horizontal)
+- **Instagram Reels:** 1080x1920 (9:16 aspect ratio)
+- **TikTok:** 1080x1920 (9:16 aspect ratio)
+- **YouTube Shorts:** 1080x1920 (9:16 aspect ratio)
+
+---
+
+### Integration with Existing Playwright Setup
+
+You already have Playwright configured! Use it for automated video recording:
+
+#### Current Config (from playwright.config.ts):
+```typescript
+video: 'retain-on-failure'
+```
+
+#### For Marketing Videos:
+```typescript
+// Add to playwright.config.ts
+{
+  name: 'marketing-videos',
+  testDir: './tests/e2e/marketing',
+  use: {
+    video: 'on',  // Always record
+    viewport: { width: 1920, height: 1080 },
+  }
+}
+```
+
+#### Create Marketing Demo Tests:
+```typescript
+// tests/e2e/marketing/twitter-problem-demo.spec.ts
+test('Demo: Twitter bookmark search problem', async ({ page }) => {
+  await page.goto('http://localhost:5173')
+
+  // Simulate user trying to find bookmark
+  await page.click('[data-testid="bookmarks-list"]')
+  await page.waitForTimeout(2000) // Show scrolling frustration
+
+  // Show BookmarksX search solution
+  await page.click('[data-testid="search-input"]')
+  await page.fill('[data-testid="search-input"]', 'productivity')
+  await page.waitForTimeout(1000)
+
+  // Results appear instantly
+  // Video saved automatically
+})
+```
+
+**Benefits:**
+- ✅ Reproducible demos (same quality every time)
+- ✅ No manual recording needed
+- ✅ Update videos by re-running tests
+- ✅ Version control for video content
+
+---
+
+### Recommended Tech Stack by Budget
+
+#### Budget: $0 (Free)
+```
+Recording: QuickTime + Playwright
+Editing: CapCut
+Export: Social media presets
+```
+**Time investment:** High (manual recording)
+**Quality:** Good
+
+---
+
+#### Budget: $89 (Best Value)
+```
+Recording: Screen Studio
+Editing: CapCut (for text overlays)
+Export: MP4 high-quality
+```
+**Time investment:** Low (automated polish)
+**Quality:** Excellent
+
+---
+
+#### Budget: $169 (All-in-One)
+```
+Recording: ScreenFlow
+Editing: ScreenFlow
+Export: ScreenFlow templates
+```
+**Time investment:** Medium (single tool)
+**Quality:** Excellent
+
+---
+
+#### Budget: $299+ (Professional)
+```
+Recording: Screen Studio
+Editing: Final Cut Pro
+Export: Social media destinations
+```
+**Time investment:** Medium (full control)
+**Quality:** Outstanding
+
+---
+
+### Additional Tools Research
+
+#### For Post-Production Polish:
+
+**Descript** ($12/month)
+- AI-powered transcription and editing
+- Edit video by editing text
+- Remove filler words automatically
+- Great for voiceover videos
+
+**Motion** (Free templates)
+- Pre-made motion graphics templates
+- Can use with Final Cut Pro
+- Professional animations
+
+**Epidemic Sound** ($15/month)
+- Royalty-free music library
+- Safe for social media monetization
+- High-quality tracks
+
+---
+
+### Best Practices for Video Ads
+
+#### Keep It Short
+- **Twitter/X:** 15-30 seconds optimal
+- **Instagram Reels:** 15-60 seconds
+- **TikTok:** 15-60 seconds
+- **YouTube Shorts:** Under 60 seconds
+
+#### Hook Within 3 Seconds
+- Use text overlay with pain point
+- Show problem immediately
+- Create curiosity gap
+
+#### Always Include:
+- ✅ Problem statement (0-3s)
+- ✅ Solution demo (3-15s)
+- ✅ Key benefit (15-20s)
+- ✅ Clear CTA (20-30s)
+
+#### Optimize for Sound-Off Viewing:
+- ✅ Add captions to all videos
+- ✅ Use text overlays for key points
+- ✅ Visual storytelling (don't rely on audio)
+
+---
+
+### Sample Video Production Timeline
+
+#### Video 1: "No Search Problem"
+- **Recording:** 5 min (Screen Studio)
+- **Editing:** 10 min (add text overlays in CapCut)
+- **Export:** 2 min
+- **Total:** ~17 minutes
+
+#### Video 2: "800 Bookmark Limit"
+- **Recording:** 5 min
+- **Editing:** 10 min
+- **Export:** 2 min
+- **Total:** ~17 minutes
+
+#### Video 3-5: Additional Variants
+- **Per video:** ~15-20 minutes
+- **Total for 5 videos:** ~90 minutes
+
+**With automation (Playwright):**
+- **Setup tests:** 2 hours (one-time)
+- **Per video:** 10 minutes editing only
+- **Total for 5 videos:** ~50 minutes (after setup)
+
+---
+
+### Next Steps for Video Ad Production
+
+1. **Immediate (Today):**
+   - Download CapCut (free)
+   - Record first test video with QuickTime
+   - Edit in CapCut with pain point text overlay
+   - Export and review quality
+
+2. **This Week:**
+   - Test 3-5 different hooks
+   - Evaluate performance on Twitter/X
+   - Decide on tool investment based on results
+
+3. **After Validation:**
+   - Purchase Screen Studio ($89) if creating regular content
+   - Set up Playwright marketing demos for automation
+   - Build template library for consistent branding
+
+---
+
+### References & Resources
+
+**Software Downloads:**
+- [Screen Studio](https://screen.studio/) - Product demo specialist
+- [CapCut Desktop](https://www.capcut.com/) - Free video editor
+- [ScreenFlow](https://www.telestream.net/screenflow/) - All-in-one Mac solution
+- [Final Cut Pro](https://www.apple.com/final-cut-pro/) - Apple's professional editor
+
+**Tutorials:**
+- CapCut tutorials: YouTube search "CapCut desktop tutorial"
+- Screen Studio docs: Built-in help system
+- ScreenFlow tutorials: Telestream website
+
+**Best Practices:**
+- Twitter Video Specs: [Twitter Media Guide](https://developer.twitter.com/en/docs/twitter-api/v1/media/upload-media/overview)
+- Instagram Specs: [Instagram Help Center](https://help.instagram.com/1631821640426723)
+- TikTok Specs: [TikTok Creator Portal](https://www.tiktok.com/creators/creator-portal/)
+
+---
+
 ## Phase 3: Post-Processing (Optional)
 
 ### Video Conversion Tools
@@ -348,3 +854,22 @@ Videos currently saved to: `test-results/` directory
 ---
 
 **Note:** This is a planning document. Implementation pending user approval.
+
+
+---
+
+inal 15-Second Intro Video Script
+
+  "Tired of losing Twitter bookmarks? BookmarkHub brings smart organization with drag-and-drop collections, powerful search filters, and bulk operations - all stored privately on your device. No
+  tracking. Just organized bookmarks."
+
+  ---
+  Visual Guide:
+
+  - 0-3s: Chaotic bookmarks → Clean BookmarkHub interface
+  - 3-6s: Drag-and-drop demonstration
+  - 6-9s: Search with filters
+  - 9-12s: Bulk operations
+  - 12-15s: Privacy emphasis + CTA
+
+  ---
