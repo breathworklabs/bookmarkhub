@@ -48,8 +48,12 @@ export interface SettingsState {
   privacy: PrivacySettings
   onboarding: OnboardingState
   hasSeenSplash: boolean
+  extensionInstalled: boolean
+  isDemoMode: boolean
+  showDemoInfoModal: boolean
 
   // Extension settings actions
+  setExtensionInstalled: (installed: boolean) => void
   updateExtensionSettings: (settings: Partial<ExtensionSettings>) => void
   setAutoSyncInterval: (interval: ExtensionSettings['autoSyncInterval']) => void
   setSyncNotifications: (enabled: boolean) => void
@@ -78,6 +82,8 @@ export interface SettingsState {
 
   // App state actions
   setHasSeenSplash: (seen: boolean) => void
+  setDemoMode: (isDemo: boolean) => void
+  setShowDemoInfoModal: (show: boolean) => void
 
   // Reset actions
   resetExtensionSettings: () => void
@@ -164,6 +170,7 @@ const consolidatedStorage = {
                 },
               },
               hasSeenSplash: actualSettings.hasSeenSplash ?? false,
+              isDemoMode: actualSettings.isDemoMode ?? false,
             } as Partial<SettingsState>
             // Return in Zustand v5 persist format
             return {
@@ -226,8 +233,12 @@ export const useSettingsStore = create<SettingsState>()(
       privacy: defaultPrivacySettings,
       onboarding: defaultOnboardingState,
       hasSeenSplash: false,
+      extensionInstalled: false,
+      isDemoMode: false,
+      showDemoInfoModal: false,
 
       // Extension settings actions
+      setExtensionInstalled: (installed) => set({ extensionInstalled: installed }),
       updateExtensionSettings: (settings) =>
         set((state) => ({
           extension: { ...state.extension, ...settings },
@@ -337,6 +348,8 @@ export const useSettingsStore = create<SettingsState>()(
 
       // App state actions
       setHasSeenSplash: (seen) => set({ hasSeenSplash: seen }),
+      setDemoMode: (isDemo) => set({ isDemoMode: isDemo }),
+      setShowDemoInfoModal: (show) => set({ showDemoInfoModal: show }),
 
       // Reset actions
       resetExtensionSettings: () =>
@@ -349,6 +362,7 @@ export const useSettingsStore = create<SettingsState>()(
           privacy: defaultPrivacySettings,
           onboarding: defaultOnboardingState,
           hasSeenSplash: false,
+          isDemoMode: false,
         }),
     }),
     {

@@ -36,6 +36,9 @@ import {
   findPresetById,
   type SavedFilterPreset,
 } from '../utils/filterPresets'
+import { useSettingsStore } from './settingsStore'
+import { useCollectionsStore } from './collectionsStore'
+import { fetchPopularTechTweets } from '../lib/fetchLiveTweets'
 
 export interface DateRangeFilter {
   type: 'all' | 'today' | 'week' | 'month' | 'custom'
@@ -183,6 +186,8 @@ interface BookmarkState {
   importBookmarks: (file: File) => Promise<void>
   importXBookmarks: (data: any[], limit?: number) => Promise<void>
   clearAllData: () => Promise<void>
+  loadDemoData: () => Promise<void>
+  exitDemoMode: () => void
 
   // Initialize store
   initialize: () => Promise<void>
@@ -428,6 +433,14 @@ export const useBookmarkStore = create<BookmarkState>()(
           }
 
           // No duplicates, proceed with adding
+
+          // Exit demo mode if active (user is adding their first real bookmark)
+          if (useSettingsStore.getState().isDemoMode) {
+            useSettingsStore.getState().setDemoMode(false)
+            // Clear demo bookmarks before adding real bookmark
+            set({ bookmarks: [] }, false, 'addBookmark:exit-demo')
+          }
+
           const newBookmark =
             await localStorageService.createBookmark(sanitizedBookmark)
 
@@ -748,6 +761,11 @@ export const useBookmarkStore = create<BookmarkState>()(
             )
           }
 
+          // Exit demo mode if active
+          if (useSettingsStore.getState().isDemoMode) {
+            useSettingsStore.getState().setDemoMode(false)
+          }
+
           await localStorageService.importData(data)
           await get().loadBookmarks()
           // Settings are managed by settingsStore now
@@ -791,6 +809,11 @@ export const useBookmarkStore = create<BookmarkState>()(
             throw new Error(
               `Invalid X bookmark data: ${validation.errors.join(', ')}`
             )
+          }
+
+          // Exit demo mode if active
+          if (useSettingsStore.getState().isDemoMode) {
+            useSettingsStore.getState().setDemoMode(false)
           }
 
           // Transform X bookmarks to our format
@@ -872,6 +895,106 @@ export const useBookmarkStore = create<BookmarkState>()(
         } finally {
           set({ isLoading: false }, false, 'clearAllData:complete')
         }
+      },
+
+      loadDemoData: async () => {
+        try {
+          set({ isLoading: true, error: null }, false, 'loadDemoData:start')
+
+          logger.info('Loading demo data...')
+
+          // Try to fetch live tweets from popular tech accounts
+          let demoBookmarks = await fetchPopularTechTweets()
+
+          // If live fetch fails or returns empty, fall back to static mock data
+          if (demoBookmarks.length === 0) {
+            logger.warn(
+              'Live tweet fetch failed or returned no data, using static mock bookmarks'
+            )
+            demoBookmarks = mockBookmarks
+          }
+
+          // Persist demo bookmarks to localStorage
+          logger.info('Persisting demo bookmarks to localStorage...')
+          for (const bookmark of demoBookmarks) {
+            try {
+              await localStorageService.createBookmark(bookmark)
+            } catch (error) {
+              logger.warn(`Failed to persist demo bookmark: ${bookmark.title}`, error)
+            }
+          }
+
+          // Load bookmarks into the store
+          set(
+            {
+              bookmarks: demoBookmarks,
+              selectedTags: [],
+              searchQuery: '',
+              activeTab: 0,
+              selectedBookmarks: [],
+              isLoading: false,
+            },
+            false,
+            'loadDemoData:success'
+          )
+
+          // Calculate filter options with demo bookmarks
+          get().calculateFilterOptions()
+
+          // Initialize collections store to load default smart collections
+          // (uncategorized, starred, recent, archived)
+          const collectionsStore = useCollectionsStore.getState()
+          logger.info('Initializing collections store with default smart collections...')
+          await collectionsStore.initialize()
+
+          // Clear the "data cleared" flag since we're loading demo data
+          localStorageService.setHasBeenCleared(false)
+
+          // Set demo mode flag in settings and show info modal
+          useSettingsStore.getState().setDemoMode(true)
+          useSettingsStore.getState().setShowDemoInfoModal(true)
+
+          // Log activity
+          const source = demoBookmarks === mockBookmarks ? 'static' : 'live'
+          get().addActivityLog(
+            'Loaded demo data',
+            `${demoBookmarks.length} ${source} sample bookmarks`
+          )
+
+          logger.info(
+            `Demo mode activated with ${demoBookmarks.length} ${source} bookmarks`
+          )
+        } catch (error) {
+          logger.error('Failed to load demo data', error, { notify: true })
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to load demo data',
+              isLoading: false,
+            },
+            false,
+            'loadDemoData:error'
+          )
+        }
+      },
+
+      exitDemoMode: () => {
+        // Exit demo mode and clear demo bookmarks
+        useSettingsStore.getState().setDemoMode(false)
+        set(
+          {
+            bookmarks: [],
+            selectedTags: [],
+            searchQuery: '',
+            activeTab: 0,
+            selectedBookmarks: [],
+          },
+          false,
+          'exitDemoMode'
+        )
+        logger.info('Demo mode deactivated')
       },
 
       // Sync Actions (unchanged)

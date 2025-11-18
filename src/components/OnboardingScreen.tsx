@@ -1,11 +1,20 @@
-import { Box, Flex, VStack, Text, Button, HStack } from '@chakra-ui/react'
-import { LuImport, LuBookmarkPlus, LuFolderOpen } from 'react-icons/lu'
+import { Box, Flex, VStack, Text, Button, HStack, Link } from '@chakra-ui/react'
+import {
+  LuImport,
+  LuBookmarkPlus,
+  LuFolderOpen,
+  LuDownload,
+  LuSparkles,
+} from 'react-icons/lu'
 import toast from 'react-hot-toast'
 import { componentStyles } from '../styles/components'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { logger } from '../lib/logger'
+import { CHROME_EXTENSION_URL } from '../constants/app'
 
 const OnboardingScreen = () => {
+  const loadDemoData = useBookmarkStore((state) => state.loadDemoData)
+
   const handleFileChosen = async (file: File) => {
     try {
       const text = await file.text()
@@ -47,6 +56,16 @@ const OnboardingScreen = () => {
     }
   }
 
+  const handleTryDemo = async () => {
+    try {
+      await loadDemoData()
+      // Modal will be shown in XBookmarkManager after transition
+    } catch (error) {
+      logger.error('Failed to load demo data', { error })
+      toast.error('Failed to load demo data. Please try again.')
+    }
+  }
+
   return (
     <Box
       {...componentStyles.container.background}
@@ -74,6 +93,7 @@ const OnboardingScreen = () => {
         justify="center"
         textAlign="center"
         gap={8}
+        px={4}
         style={{ color: 'var(--color-text-tertiary)' }}
       >
         <Box style={{ color: 'var(--color-blue)' }} fontSize="6xl">
@@ -85,49 +105,150 @@ const OnboardingScreen = () => {
             fontWeight="600"
             style={{ color: 'var(--color-text-primary)' }}
           >
-            No bookmarks yet
+            Welcome to BookmarkHub
           </Text>
-          <Text fontSize="lg" maxW="500px">
-            Get started by importing your existing bookmarks or adding new ones
-            manually.
+          <Text fontSize="lg" maxW="550px" lineHeight="1.6">
+            Your privacy-first bookmark manager for X/Twitter. Get started by
+            exploring the demo or importing your bookmarks.
           </Text>
         </VStack>
-        <HStack gap={4}>
+
+        {/* Primary Action - Try Demo */}
+        <VStack gap={6} w="100%" maxW="600px">
           <Button
             size="lg"
-            style={{ background: 'var(--color-blue)' }}
-            color="white"
-            _hover={{ bg: 'var(--color-blue-hover)' }}
-            onClick={() => {
-              const input = document.querySelector(
-                'input[data-testid="import-input"]'
-              ) as HTMLInputElement | null
-              input?.click()
-            }}
-          >
-            <HStack gap={2}>
-              <LuImport />
-              <Text>Import Bookmarks</Text>
-            </HStack>
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
+            h="auto"
+            py={5}
+            px={8}
+            w={{ base: '100%', sm: 'auto' }}
+            minW={{ sm: '320px' }}
             style={{
-              borderColor: 'var(--color-border)',
-              color: 'var(--color-text-primary)',
+              background:
+                'linear-gradient(135deg, var(--color-blue) 0%, #3b82f6 100%)',
             }}
+            color="white"
             _hover={{
-              bg: 'var(--color-border)',
-              borderColor: 'var(--color-border-hover)',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 8px 24px rgba(29, 78, 216, 0.35)',
             }}
+            _active={{
+              transform: 'translateY(0)',
+            }}
+            transition="all 0.3s ease"
+            onClick={handleTryDemo}
           >
-            <HStack gap={2}>
-              <LuBookmarkPlus />
-              <Text>Add Bookmark</Text>
-            </HStack>
+            <VStack gap={1} align="center">
+              <HStack gap={2} fontSize="xl" fontWeight="600">
+                <LuSparkles size={24} />
+                <Text>Try Demo</Text>
+              </HStack>
+              <Text fontSize="sm" fontWeight="400" opacity={0.9}>
+                See how it works with sample posts
+              </Text>
+            </VStack>
           </Button>
-        </HStack>
+
+          {/* Divider */}
+          <Flex align="center" gap={3} w="100%">
+            <Box h="1px" flex="1" bg="var(--color-border)" />
+            <Text fontSize="sm" color="var(--color-text-tertiary)">
+              or
+            </Text>
+            <Box h="1px" flex="1" bg="var(--color-border)" />
+          </Flex>
+
+          {/* Secondary Actions */}
+          <VStack gap={3} w="100%">
+            <HStack
+              gap={3}
+              flexWrap="wrap"
+              justify="center"
+              w="100%"
+              align="stretch"
+            >
+              <Button
+                size="md"
+                flex={{ base: '1 1 100%', sm: '1' }}
+                minW={{ sm: '150px' }}
+                style={{
+                  borderColor: 'var(--color-blue)',
+                  color: 'var(--color-blue)',
+                }}
+                variant="outline"
+                _hover={{
+                  bg: 'var(--color-blue)',
+                  transform: 'translateY(-1px)',
+                }}
+                _active={{
+                  transform: 'translateY(0)',
+                }}
+                transition="all 0.2s ease"
+                onClick={() => {
+                  const input = document.querySelector(
+                    'input[data-testid="import-input"]'
+                  ) as HTMLInputElement | null
+                  input?.click()
+                }}
+                css={{
+                  '&:hover, &:hover *': {
+                    color: 'white !important',
+                  },
+                }}
+              >
+                <HStack gap={2}>
+                  <LuImport />
+                  <Text>Import Bookmarks</Text>
+                </HStack>
+              </Button>
+              <Button
+                size="md"
+                flex={{ base: '1 1 100%', sm: '1' }}
+                minW={{ sm: '150px' }}
+                style={{
+                  borderColor: 'var(--color-blue)',
+                  color: 'var(--color-blue)',
+                }}
+                variant="outline"
+                _hover={{
+                  bg: 'var(--color-blue)',
+                  transform: 'translateY(-1px)',
+                }}
+                _active={{
+                  transform: 'translateY(0)',
+                }}
+                transition="all 0.2s ease"
+                onClick={() => window.open(CHROME_EXTENSION_URL, '_blank')}
+                css={{
+                  '&:hover, &:hover *': {
+                    color: 'white !important',
+                  },
+                }}
+              >
+                <HStack gap={2}>
+                  <LuDownload />
+                  <Text>Install Extension</Text>
+                </HStack>
+              </Button>
+            </HStack>
+
+            {/* Tertiary Action - Add Manually */}
+            <Link
+              fontSize="sm"
+              style={{ color: 'var(--color-text-tertiary)' }}
+              _hover={{
+                color: 'var(--color-blue)',
+                textDecoration: 'underline',
+              }}
+              cursor="pointer"
+              display="flex"
+              alignItems="center"
+              gap={1}
+            >
+              <LuBookmarkPlus size={16} />
+              <Text>Add bookmark manually</Text>
+            </Link>
+          </VStack>
+        </VStack>
       </Flex>
     </Box>
   )
