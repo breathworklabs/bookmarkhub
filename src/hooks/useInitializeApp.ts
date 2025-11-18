@@ -11,10 +11,12 @@ export const useInitializeApp = () => {
   const [hasExistingBookmarks, setHasExistingBookmarks] = useState<
     boolean | null
   >(null)
+  const [isInitializing, setIsInitializing] = useState(false)
   const isLoading = useBookmarkStore((state) => state.isLoading)
   const error = useBookmarkStore((state) => state.error)
   const collectionsLoading = useCollectionsStore((state) => state.isLoading)
   const collectionsError = useCollectionsStore((state) => state.error)
+  const bookmarks = useBookmarkStore((state) => state.bookmarks)
 
   const hasInitialized = useRef(false)
 
@@ -30,7 +32,7 @@ export const useInitializeApp = () => {
     initAllPerformanceMonitoring()
 
     // First, synchronously check if we have existing bookmarks
-    const checkExistingBookmarks = () => {
+    const checkExistingBookmarks = async () => {
       try {
         // Direct synchronous localStorage check from consolidated storage
         const stored = localStorage.getItem('x-bookmark-manager-data')
@@ -39,20 +41,75 @@ export const useInitializeApp = () => {
         const hasBookmarks = Array.isArray(bookmarks) && bookmarks.length > 0
         setHasExistingBookmarks(hasBookmarks)
 
-        // If we have bookmarks, initialize stores immediately
+        // If we have bookmarks, initialize stores immediately and wait
         if (hasBookmarks) {
-          Promise.all([
+          setIsInitializing(true)
+          await Promise.all([
             useBookmarkStore.getState().initialize(),
             useCollectionsStore.getState().initialize(),
           ])
+          setIsInitializing(false)
         }
       } catch (error) {
         logger.error('Error checking existing bookmarks', error)
         setHasExistingBookmarks(false)
+        setIsInitializing(false)
       }
     }
 
     checkExistingBookmarks()
+  }, [])
+
+  // Watch for bookmark changes (e.g., when demo data is loaded)
+  useEffect(() => {
+    if (hasExistingBookmarks !== null) {
+      const hasBookmarks = bookmarks.length > 0
+      if (hasBookmarks !== hasExistingBookmarks) {
+        setHasExistingBookmarks(hasBookmarks)
+      }
+    }
+  }, [bookmarks, hasExistingBookmarks])
+
+  // Extension Detection: Check if Chrome extension is installed
+  useEffect(() => {
+    const checkExtensionInstalled = () => {
+      const timeout = setTimeout(() => {
+        // Extension didn't respond within 1 second
+        useSettingsStore.getState().setExtensionInstalled(false)
+        logger.debug('Extension detection: Not installed or not responding')
+      }, 1000)
+
+      const handleExtensionPing = (event: MessageEvent) => {
+        if (
+          event.data?.type === 'X_EXTENSION_READY' &&
+          event.data?.source === 'x-bookmark-manager-extension'
+        ) {
+          clearTimeout(timeout)
+          useSettingsStore.getState().setExtensionInstalled(true)
+          logger.debug('Extension detection: Installed and ready')
+          window.removeEventListener('message', handleExtensionPing)
+        }
+      }
+
+      window.addEventListener('message', handleExtensionPing)
+
+      // Send ping to extension
+      window.postMessage(
+        {
+          type: 'X_CHECK_EXTENSION',
+          source: 'x-bookmark-manager-app',
+        },
+        '*'
+      )
+
+      return () => {
+        clearTimeout(timeout)
+        window.removeEventListener('message', handleExtensionPing)
+      }
+    }
+
+    const cleanup = checkExtensionInstalled()
+    return cleanup
   }, [])
 
   // Phase 1: Listen for bookmark updates from Chrome extension
@@ -164,9 +221,14 @@ export const useInitializeApp = () => {
     }
   }, [hasExistingBookmarks])
 
-  // Only show loading when we're actually loading and have existing bookmarks
+  // Show loading when:
+  // 1. Still checking localStorage (hasExistingBookmarks === null)
+  // 2. Initializing stores (isInitializing === true)
+  // 3. Loading bookmarks/collections (isLoading || collectionsLoading)
   const showLoading =
-    hasExistingBookmarks === true && (isLoading || collectionsLoading)
+    hasExistingBookmarks === null ||
+    isInitializing ||
+    (hasExistingBookmarks === true && (isLoading || collectionsLoading))
 
   return {
     isLoading: showLoading,
