@@ -309,8 +309,16 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
               bg: 'var(--color-border)',
               color: 'var(--color-text-primary)',
             }}
+            minW="32px"
+            h="32px"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            p={0}
           >
-            <LuMenu size={20} />
+            <Box position="relative" top="-2px">
+              <LuMenu size={20} />
+            </Box>
           </IconButton>
         )}
 

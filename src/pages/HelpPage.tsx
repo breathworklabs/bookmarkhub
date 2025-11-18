@@ -1269,9 +1269,10 @@ const GettingStartedGuide = () => {
                     lineHeight: '1.6',
                   }}
                 >
-                  Start by importing your existing bookmarks from X/Twitter or
-                  upload a JSON file. Click the "Import" button in the header to
-                  get started.
+                  Install the BookmarkHub Chrome extension to import your
+                  X/Twitter bookmarks automatically. Alternatively, you can
+                  manually upload a JSON file. Click the "Import" button in the
+                  header to get started.
                 </Text>
                 <Box
                   mt={2}

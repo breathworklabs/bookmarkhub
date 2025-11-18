@@ -136,18 +136,18 @@ const ImageModal = ({
         )}
 
         {/* Image */}
-        <Box maxW="90vw" maxH="90vh">
+        <Box w="60vw" h="60vh">
           <LazyImage
             src={currentImage}
             alt={title || `Image ${currentIndex + 1}`}
-            w="auto"
-            h="auto"
+            w="100%"
+            h="100%"
             objectFit="contain"
             borderRadius="8px"
             fallback={
               <Box
-                minW="300px"
-                minH="200px"
+                w="100%"
+                h="100%"
                 style={{
                   background: 'var(--color-bg-primary)',
                   color: 'var(--color-text-tertiary)',

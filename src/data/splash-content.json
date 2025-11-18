@@ -33,7 +33,9 @@
         "Assign bookmarks to multiple collections",
         "Visual collection management",
         "Quick collection switching and filtering"
-      ]
+      ],
+      "image": "/src/assets/splash_images/collections.jpg",
+      "video": "/src/assets/splash_videos/collections.mp4"
     },
     {
       "badge": "Search & Filter",
@@ -100,6 +102,30 @@
         "Complete data privacy",
         "No server dependencies"
       ]
+    }
+  ],
+  "howItWorksSection": {
+    "title": "Quick Start Guide",
+    "subtitle": "Get started in three simple steps"
+  },
+  "steps": [
+    {
+      "number": "01",
+      "title": "Install the Chrome Extension",
+      "description": "Install the BookmarkHub Chrome extension from the Chrome Web Store to import your X/Twitter bookmarks and automatically sync your saved tweets.",
+      "icon": "download"
+    },
+    {
+      "number": "02",
+      "title": "Import & Organize",
+      "description": "Once installed, the extension will import your X/Twitter bookmarks. Then create custom collections, add tags, and use advanced filters to organize everything your way.",
+      "icon": "organize"
+    },
+    {
+      "number": "03",
+      "title": "Access Anywhere, Anytime",
+      "description": "All your bookmarks are stored locally in your browser for instant access, even offline. Export anytime for backups or to migrate your data.",
+      "icon": "cloud"
     }
   ],
   "cta": {
