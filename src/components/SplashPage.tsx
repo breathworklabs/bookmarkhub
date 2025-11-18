@@ -11,11 +11,20 @@ import {
 } from '@chakra-ui/react'
 import { useNavigate, Link as RouterLink } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
-import { LuCheck } from 'react-icons/lu'
+import { LuCheck, LuPlay, LuDownload, LuFolderTree, LuCloud } from 'react-icons/lu'
 import splashContent from '../data/splash-content.json'
 import { useSettingsStore } from '../store/settingsStore'
+import { useModal } from './modals/ModalProvider'
 import logoImage from '../assets/logo_v2 1.png'
-import { APP_NAME, APP_COPYRIGHT } from '../constants/app'
+import appScreenshot from '../assets/splash_images/app-screenshot.jpg'
+import themeSwitchingImage from '../assets/splash_images/theme-switching.jpg'
+import dataExportImage from '../assets/splash_images/data-export.jpg'
+import collectionsImage from '../assets/splash_images/collections.jpg'
+import themeVideo from '../assets/splash_videos/theme.mp4'
+import exportVideo from '../assets/splash_videos/export.mp4'
+import filtersVideo from '../assets/splash_videos/filters.mp4'
+import collectionsVideo from '../assets/splash_videos/collections.mp4'
+import { APP_NAME, APP_COPYRIGHT, CHROME_EXTENSION_URL } from '../constants/app'
 
 interface FeatureShowcaseProps {
   badge: string
@@ -23,6 +32,9 @@ interface FeatureShowcaseProps {
   description: string
   highlights: string[]
   index: number
+  onImageClick?: () => void
+  videoSrc?: string
+  thumbnailSrc?: string
 }
 
 const FeatureShowcase = ({
@@ -31,9 +43,14 @@ const FeatureShowcase = ({
   description,
   highlights,
   index,
+  onImageClick,
+  videoSrc,
+  thumbnailSrc,
 }: FeatureShowcaseProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -53,6 +70,28 @@ const FeatureShowcase = ({
 
     return () => observer.disconnect()
   }, [])
+
+  const handlePlayVideo = () => {
+    console.log('Play button clicked', { videoRef: videoRef.current, videoSrc })
+    setIsPlaying(true)
+  }
+
+  useEffect(() => {
+    if (isPlaying && videoRef.current) {
+      console.log('Attempting to play video')
+      videoRef.current.play()
+        .then(() => {
+          console.log('Video playing successfully')
+        })
+        .catch((error) => {
+          console.error('Error playing video:', error)
+        })
+    }
+  }, [isPlaying])
+
+  const handleVideoEnd = () => {
+    setIsPlaying(false)
+  }
 
   return (
     <Flex
@@ -95,7 +134,7 @@ const FeatureShowcase = ({
           as="h3"
           fontSize={{ base: '1.8rem', md: '2.5rem' }}
           fontWeight="700"
-          color="var(--color-text-primary)"
+          color="white"
         >
           {title}
         </Heading>
@@ -124,30 +163,95 @@ const FeatureShowcase = ({
         </VStack>
       </VStack>
 
-      {/* Feature Image Placeholder */}
+      {/* Feature Image/Video */}
       <Box flex={1} minW={{ base: 'auto', md: '300px' }} w="100%">
-        <Box
-          w="100%"
-          aspectRatio="16/10"
-          bg="rgba(255, 255, 255, 0.03)"
-          border="2px dashed rgba(255, 255, 255, 0.2)"
-          borderRadius="20px"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          color="#666"
-          fontSize="1rem"
-          transition="all 0.3s ease"
-          css={{
-            backdropFilter: 'blur(10px)',
-            '&:hover': {
-              transform: 'scale(1.02)',
-              borderColor: 'rgba(102, 126, 234, 0.5)',
-            },
-          }}
-        >
-          Screenshot: {title}
-        </Box>
+        {videoSrc && thumbnailSrc ? (
+          <Box position="relative" w="100%">
+            {!isPlaying ? (
+              <>
+                <Image
+                  src={thumbnailSrc}
+                  alt={title}
+                  w="100%"
+                  borderRadius="20px"
+                  objectFit="cover"
+                  boxShadow="0 10px 40px rgba(0, 0, 0, 0.4)"
+                  transition="all 0.3s ease"
+                />
+                <Box
+                  position="absolute"
+                  top="50%"
+                  left="50%"
+                  transform="translate(-50%, -50%)"
+                  background="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                  borderRadius="50%"
+                  w="80px"
+                  h="80px"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  cursor="pointer"
+                  onClick={handlePlayVideo}
+                  transition="all 0.3s ease"
+                  boxShadow="0 4px 15px rgba(102, 126, 234, 0.4)"
+                  _hover={{
+                    transform: 'translate(-50%, -50%) scale(1.1)',
+                    boxShadow: '0 6px 20px rgba(102, 126, 234, 0.6)',
+                  }}
+                >
+                  <LuPlay size={40} color="white" style={{ marginLeft: '4px' }} />
+                </Box>
+              </>
+            ) : (
+              <Box
+                as="video"
+                ref={videoRef}
+                src={videoSrc}
+                w="100%"
+                borderRadius="20px"
+                boxShadow="0 10px 40px rgba(0, 0, 0, 0.4)"
+                onEnded={handleVideoEnd}
+                controls
+              />
+            )}
+          </Box>
+        ) : title === 'Data Export' ? (
+          <Image
+            src={dataExportImage}
+            alt="Data Export and Backup"
+            w="100%"
+            borderRadius="20px"
+            objectFit="cover"
+            boxShadow="0 10px 40px rgba(0, 0, 0, 0.4)"
+            transition="all 0.3s ease"
+            cursor="pointer"
+            onClick={onImageClick}
+            _hover={{ transform: 'scale(1.05)', boxShadow: '0 15px 50px rgba(102, 126, 234, 0.5)' }}
+          />
+        ) : (
+          <Box
+            w="100%"
+            aspectRatio="16/10"
+            bg="rgba(255, 255, 255, 0.03)"
+            border="2px dashed rgba(255, 255, 255, 0.2)"
+            borderRadius="20px"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            color="#666"
+            fontSize="1rem"
+            transition="all 0.3s ease"
+            css={{
+              backdropFilter: 'blur(10px)',
+              '&:hover': {
+                transform: 'scale(1.02)',
+                borderColor: 'rgba(102, 126, 234, 0.5)',
+              },
+            }}
+          >
+            Screenshot: {title}
+          </Box>
+        )}
       </Box>
     </Flex>
   )
@@ -156,10 +260,28 @@ const FeatureShowcase = ({
 const SplashPage = () => {
   const navigate = useNavigate()
   const setHasSeenSplash = useSettingsStore((state) => state.setHasSeenSplash)
+  const { showImageModal } = useModal()
 
   const handleGetStarted = () => {
     setHasSeenSplash(true)
     navigate('/')
+  }
+
+  // Image mapping for features
+  const featureImages: Record<string, string> = {
+    'Dark & Light Mode': themeSwitchingImage,
+    'Data Export': dataExportImage,
+  }
+
+  const handleImageClick = (title: string) => {
+    const imageSrc = featureImages[title]
+    if (imageSrc) {
+      showImageModal({
+        images: [imageSrc],
+        initialIndex: 0,
+        title,
+      })
+    }
   }
 
   return (
@@ -217,7 +339,14 @@ const SplashPage = () => {
           _hover={{ opacity: 0.8 }}
           transition="opacity 0.2s"
         >
-          <Image src={logoImage} alt={`${APP_NAME} Logo`} h="40px" w="40px" />
+          <Image
+            src={logoImage}
+            alt={`${APP_NAME} Logo`}
+            h="40px"
+            w="auto"
+            borderRadius="8px"
+            objectFit="contain"
+          />
           <Heading
             fontSize="1.5rem"
             fontWeight="700"
@@ -238,7 +367,15 @@ const SplashPage = () => {
           borderRadius="8px"
           fontWeight="600"
           onClick={handleGetStarted}
-          _hover={{ bg: 'var(--color-blue-hover)' }}
+          _hover={{
+            bg: 'var(--color-blue-hover)',
+            transform: 'translateY(-1px)',
+            boxShadow: '0 4px 12px rgba(29, 78, 216, 0.3)',
+          }}
+          _active={{
+            transform: 'translateY(0)',
+          }}
+          transition="all 0.2s ease"
         >
           Get Started
         </Button>
@@ -294,7 +431,15 @@ const SplashPage = () => {
             py={7}
             onClick={handleGetStarted}
             css={{ animation: 'fadeInUp 0.8s ease 0.4s backwards' }}
-            _hover={{ bg: 'var(--color-blue-hover)' }}
+            _hover={{
+              bg: 'var(--color-blue-hover)',
+              transform: 'translateY(-1px)',
+              boxShadow: '0 4px 12px rgba(29, 78, 216, 0.3)',
+            }}
+            _active={{
+              transform: 'translateY(0)',
+            }}
+            transition="all 0.2s ease"
           >
             {splashContent.hero.ctaText}
           </Button>
@@ -353,26 +498,26 @@ const SplashPage = () => {
               />
             </HStack>
 
-            {/* Screenshot Placeholder */}
-            <Box
+            {/* App Screenshot */}
+            <Image
+              src={appScreenshot}
+              alt="BookmarkHub Dashboard"
               w="100%"
-              aspectRatio="16/9"
-              bg="rgba(255, 255, 255, 0.02)"
-              border="2px dashed rgba(102, 126, 234, 0.3)"
               borderRadius="12px"
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              color="#667eea"
-              fontSize="1.1rem"
               mt="20px"
-            >
-              Main App Screenshot Goes Here
-              <Text fontSize="0.85rem" color="#888" mt={2}>
-                (Dashboard view with collections, search bar, and bookmarks)
-              </Text>
-            </Box>
+              objectFit="cover"
+              boxShadow="0 10px 40px rgba(0, 0, 0, 0.4)"
+              cursor="pointer"
+              transition="all 0.3s ease"
+              onClick={() =>
+                showImageModal({
+                  images: [appScreenshot],
+                  initialIndex: 0,
+                  title: 'BookmarkHub Dashboard',
+                })
+              }
+              _hover={{ transform: 'scale(1.02)', boxShadow: '0 15px 50px rgba(102, 126, 234, 0.5)' }}
+            />
           </Box>
         </Box>
       </Flex>
@@ -401,16 +546,179 @@ const SplashPage = () => {
             </Text>
           </VStack>
 
-          {splashContent.features.map((feature, index) => (
-            <FeatureShowcase
-              key={index}
-              badge={feature.badge}
-              title={feature.title}
-              description={feature.description}
-              highlights={feature.highlights}
-              index={index}
-            />
-          ))}
+          {splashContent.features.map((feature, index) => {
+            // Use video/image from JSON data if available, otherwise fallback to hardcoded imports
+            const getVideoAndThumbnail = () => {
+              // First check if feature has video/image defined in JSON
+              if (feature.video && feature.image) {
+                return {
+                  videoSrc: feature.video,
+                  thumbnailSrc: feature.image
+                }
+              }
+
+              // Fallback to hardcoded mappings for backwards compatibility
+              if (feature.title === 'Custom Collections') {
+                return { videoSrc: collectionsVideo, thumbnailSrc: collectionsImage }
+              }
+              if (feature.title === 'Dark & Light Mode') {
+                return { videoSrc: themeVideo, thumbnailSrc: themeSwitchingImage }
+              }
+              if (feature.title === 'Data Export') {
+                return { videoSrc: exportVideo, thumbnailSrc: dataExportImage }
+              }
+              if (feature.title === 'Advanced Filtering') {
+                return { videoSrc: filtersVideo, thumbnailSrc: appScreenshot }
+              }
+              return { videoSrc: undefined, thumbnailSrc: undefined }
+            }
+            const { videoSrc, thumbnailSrc } = getVideoAndThumbnail()
+
+            return (
+              <FeatureShowcase
+                key={index}
+                badge={feature.badge}
+                title={feature.title}
+                description={feature.description}
+                highlights={feature.highlights}
+                index={index}
+                onImageClick={() => handleImageClick(feature.title)}
+                videoSrc={videoSrc}
+                thumbnailSrc={thumbnailSrc}
+              />
+            )
+          })}
+        </Box>
+      </Box>
+
+      {/* How It Works Section */}
+      <Box px="5%" py={{ base: 16, md: 32 }}>
+        <Box maxW="1200px" mx="auto">
+          <VStack textAlign="center" mb={{ base: 16, md: 20 }}>
+            <Heading
+              as="h2"
+              fontSize={{ base: '2rem', md: '3rem' }}
+              mb={4}
+              pb={2}
+              lineHeight="1.2"
+              css={{
+                background: 'linear-gradient(135deg, #ffffff 0%, #a8a8a8 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              {splashContent.howItWorksSection.title}
+            </Heading>
+            <Text color="#a0a0a0" fontSize="1.1rem">
+              {splashContent.howItWorksSection.subtitle}
+            </Text>
+          </VStack>
+
+          <Flex
+            gap={{ base: 8, md: 12 }}
+            direction={{ base: 'column', md: 'row' }}
+            justify="center"
+            align="stretch"
+          >
+            {splashContent.steps.map((step, index) => {
+              const IconComponent =
+                step.icon === 'download' ? LuDownload :
+                step.icon === 'organize' ? LuFolderTree :
+                LuCloud
+
+              return (
+                <VStack
+                  key={index}
+                  flex={1}
+                  p={{ base: 8, md: 10 }}
+                  bg="rgba(255, 255, 255, 0.03)"
+                  border="1px solid rgba(255, 255, 255, 0.1)"
+                  borderRadius="20px"
+                  gap={6}
+                  transition="all 0.3s ease"
+                  css={{
+                    backdropFilter: 'blur(10px)',
+                    '&:hover': {
+                      transform: 'translateY(-8px)',
+                      borderColor: 'rgba(102, 126, 234, 0.5)',
+                      boxShadow: '0 20px 40px rgba(102, 126, 234, 0.2)',
+                    },
+                  }}
+                >
+                  <Box
+                    fontSize="3rem"
+                    fontWeight="800"
+                    css={{
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}
+                  >
+                    {step.number}
+                  </Box>
+
+                  <Box
+                    p={4}
+                    bg="rgba(102, 126, 234, 0.2)"
+                    borderRadius="50%"
+                    border="1px solid rgba(102, 126, 234, 0.3)"
+                  >
+                    <IconComponent size={32} color="#667eea" />
+                  </Box>
+
+                  <Heading
+                    as="h3"
+                    fontSize="1.5rem"
+                    fontWeight="700"
+                    color="white"
+                    textAlign="center"
+                  >
+                    {step.title}
+                  </Heading>
+
+                  <Text
+                    color="#a0a0a0"
+                    fontSize="1rem"
+                    lineHeight="1.7"
+                    textAlign="center"
+                  >
+                    {step.description}
+                  </Text>
+
+                  {step.icon === 'download' && (
+                    <Button
+                      as="a"
+                      href={CHROME_EXTENSION_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      size="md"
+                      style={{ background: 'var(--color-blue)' }}
+                      color="white"
+                      fontWeight="600"
+                      borderRadius="8px"
+                      px={6}
+                      py={5}
+                      mt={2}
+                      _hover={{
+                        bg: 'var(--color-blue-hover)',
+                        color: 'white',
+                        transform: 'translateY(-1px)',
+                        boxShadow: '0 4px 12px rgba(29, 78, 216, 0.3)',
+                      }}
+                      _active={{
+                        transform: 'translateY(0)',
+                      }}
+                      transition="all 0.2s ease"
+                    >
+                      Install Extension
+                    </Button>
+                  )}
+                </VStack>
+              )
+            })}
+          </Flex>
         </Box>
       </Box>
 
@@ -437,7 +745,15 @@ const SplashPage = () => {
           px={10}
           py={7}
           onClick={handleGetStarted}
-          _hover={{ bg: 'var(--color-blue-hover)' }}
+          _hover={{
+            bg: 'var(--color-blue-hover)',
+            transform: 'translateY(-1px)',
+            boxShadow: '0 4px 12px rgba(29, 78, 216, 0.3)',
+          }}
+          _active={{
+            transform: 'translateY(0)',
+          }}
+          transition="all 0.2s ease"
         >
           {splashContent.cta.primaryButton}
         </Button>

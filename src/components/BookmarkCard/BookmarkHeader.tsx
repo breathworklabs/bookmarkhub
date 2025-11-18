@@ -162,7 +162,7 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
             alt={`${getAuthorName()} profile`}
             w="100%"
             h="100%"
-            objectFit="cover"
+            objectFit="contain"
             position="absolute"
             top={0}
             left={0}
@@ -220,7 +220,7 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
                 alt={`${getAuthorName()} verified`}
                 w="14px"
                 h="14px"
-                objectFit="cover"
+                objectFit="contain"
                 borderRadius="1px"
                 fallback={
                   <Box
@@ -240,6 +240,21 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
               />
             </Box>
           )}
+          {(bookmark as any)._isDemo && (
+            <Box
+              px={2}
+              py={0.5}
+              borderRadius="full"
+              fontSize="10px"
+              fontWeight="600"
+              bg="rgba(59, 130, 246, 0.1)"
+              color="var(--color-blue)"
+              border="1px solid rgba(59, 130, 246, 0.3)"
+              title="Demo bookmark - Import your data to get started"
+            >
+              DEMO
+            </Box>
+          )}
         </HStack>
         <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }}>
           {getAuthorUsername()} · {getTimestamp()}
@@ -257,6 +272,8 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
             h="32px"
             minW="32px"
             border="1px solid var(--color-border)"
+            alignSelf="flex-start"
+            mt="-4px"
             _hover={{
               bg: 'var(--color-border)',
               color: 'var(--color-text-primary)',
@@ -270,6 +287,8 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
               alignItems="center"
               justifyContent="center"
               h="100%"
+              position="relative"
+              top="-2px"
             >
               <Text fontSize="md" lineHeight="1">
                 ☰
