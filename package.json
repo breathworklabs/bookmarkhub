@@ -21,7 +21,8 @@
     "e2e:ui": "playwright test --ui",
     "e2e:report": "playwright show-report",
     "storybook": "storybook dev -p 6006 -c storybook/config",
-    "build-storybook": "storybook build -c storybook/config"
+    "build-storybook": "storybook build -c storybook/config",
+    "fetch-demo-tweets": "node scripts/fetch-demo-tweets.js"
   },
   "prettier": {
     "semi": false,

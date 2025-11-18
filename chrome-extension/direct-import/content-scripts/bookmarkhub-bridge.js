@@ -345,6 +345,23 @@ window.addEventListener('message', (event) => {
   // Only accept messages from same origin
   if (event.source !== window) return
 
+  // Check for extension detection ping
+  if (
+    event.data?.type === 'X_CHECK_EXTENSION' &&
+    event.data?.source === 'x-bookmark-manager-app'
+  ) {
+    // Respond immediately to let app know extension is installed
+    window.postMessage(
+      {
+        type: 'X_EXTENSION_READY',
+        source: 'x-bookmark-manager-extension',
+      },
+      '*'
+    )
+    console.log('[BookmarkHub Bridge] 📡 Responded to extension detection ping')
+    return
+  }
+
   // Check for sync request
   if (
     event.data?.type === 'X_REQUEST_SYNC' &&
