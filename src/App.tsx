@@ -25,6 +25,28 @@ import { chakraTheme } from './styles/chakraTheme'
 const SentryRoutes = Sentry.withSentryRouting(Routes)
 
 function App() {
+  // Global extension sync handler - works even on onboarding screen
+  useEffect(() => {
+    const handleExtensionSync = () => {
+      // Extension synced bookmarks, reload the page to reflect changes
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
+    }
+
+    const handleExtensionMessage = (event: MessageEvent) => {
+      if (
+        event.data?.type === 'X_BOOKMARKS_UPDATED' &&
+        event.data?.source === 'x-bookmark-manager-extension'
+      ) {
+        handleExtensionSync()
+      }
+    }
+
+    window.addEventListener('message', handleExtensionMessage)
+    return () => window.removeEventListener('message', handleExtensionMessage)
+  }, [])
+
   return (
     <ChakraProvider value={chakraTheme}>
       <ThemeProvider>
@@ -88,9 +110,9 @@ function AppContent() {
     }
   }, [hasSeenSplash, setHasSeenSplash])
 
-  // Check if user has seen splash page on first visit
+  // Check if user has seen splash page on first visit (only if they have NO bookmarks)
   useEffect(() => {
-    if (!hasSeenSplash && hasExistingBookmarks !== null && !isLoading) {
+    if (!hasSeenSplash && hasExistingBookmarks === false && !isLoading) {
       navigate('/welcome')
     }
   }, [hasSeenSplash, hasExistingBookmarks, isLoading, navigate])

@@ -9,16 +9,24 @@ import {
 import toast from 'react-hot-toast'
 import { componentStyles } from '../styles/components'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { useSettingsStore } from '../store/settingsStore'
 import { logger } from '../lib/logger'
 import { CHROME_EXTENSION_URL } from '../constants/app'
 
 const OnboardingScreen = () => {
   const loadDemoData = useBookmarkStore((state) => state.loadDemoData)
+  const setHasSeenSplash = useSettingsStore((state) => state.setHasSeenSplash)
 
   const handleFileChosen = async (file: File) => {
     try {
       const text = await file.text()
       const data = JSON.parse(text)
+
+      logger.debug('Import file parsed', {
+        isArray: Array.isArray(data),
+        hasBookmarks: !!data?.bookmarks,
+        firstItem: Array.isArray(data) ? data[0] : null
+      })
 
       let importedCount = 0
       if (
@@ -27,25 +35,50 @@ const OnboardingScreen = () => {
         (data as any)[0].tweet_id &&
         (data as any)[0].username
       ) {
+        // X/Twitter bookmarks from extension
+        logger.debug('Detected X/Twitter bookmark format, importing...')
         await useBookmarkStore.getState().importXBookmarks(data)
         importedCount = data.length
-      } else {
+        logger.debug(`Import completed: ${importedCount} bookmarks`)
+      } else if (data?.bookmarks && Array.isArray(data.bookmarks)) {
+        // BookmarkHub export format
+        logger.debug('Detected BookmarkHub export format, importing...')
         await useBookmarkStore.getState().importBookmarks(file)
-        // Get count from the imported data
-        const imported = data?.bookmarks || []
-        importedCount = Array.isArray(imported) ? imported.length : 0
+        importedCount = data.bookmarks.length
+        logger.debug(`Import completed: ${importedCount} bookmarks`)
+      } else {
+        throw new Error('Invalid file format. Please select a valid bookmark export file.')
       }
 
-      // Show success toast and auto-refresh
+      // Validate that bookmarks were actually imported
+      if (importedCount === 0) {
+        throw new Error('No bookmarks found in the selected file.')
+      }
+
+      // Verify data is in localStorage before reloading
+      const storedData = localStorage.getItem('x-bookmark-manager-data')
+      const parsed = storedData ? JSON.parse(storedData) : null
+      const actualCount = parsed?.bookmarks?.length || 0
+      logger.debug(`Verified localStorage: ${actualCount} bookmarks stored`)
+
+      if (actualCount === 0) {
+        throw new Error('Import succeeded but bookmarks were not saved to storage. Please try again.')
+      }
+
+      // Mark that user has seen the splash page (since they're actively using the app)
+      setHasSeenSplash(true)
+
+      // Show success toast
       const message =
         importedCount === 1
-          ? '✓ Imported 1 bookmark successfully. Refreshing...'
-          : `✓ Imported ${importedCount} bookmarks successfully. Refreshing...`
+          ? '✓ Imported 1 bookmark successfully!'
+          : `✓ Imported ${importedCount} bookmarks successfully!`
 
-      toast.success(message, { duration: 2500 })
+      toast.success(message, { duration: 2000 })
 
-      // Auto-refresh after showing toast
+      // Wait for toast to show, then reload
       setTimeout(() => {
+        logger.debug('Reloading page after successful import')
         window.location.reload()
       }, 2500)
     } catch (error) {

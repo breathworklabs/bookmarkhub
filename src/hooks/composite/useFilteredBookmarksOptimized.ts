@@ -3,6 +3,7 @@ import { type Bookmark } from '../../types/bookmark'
 import { filterBookmarksOptimized } from '../../utils/bookmarkFilteringOptimized'
 import { useBookmarkStore } from '../../store/bookmarkStore'
 import { useCollectionsStore } from '../../store/collectionsStore'
+import { useSettingsStore } from '../../store/settingsStore'
 
 /**
  * Optimized hook for filtered bookmarks using single-pass algorithm
@@ -24,6 +25,10 @@ export const useFilteredBookmarksOptimized = (): Bookmark[] => {
   const activeCollectionId = useCollectionsStore((state) => state.activeCollectionId)
   const collectionBookmarks = useCollectionsStore((state) => state.collectionBookmarks)
 
+  // Get sorting preferences from settings store
+  const sortBy = useSettingsStore((state) => state.display.sortBy)
+  const sortOrder = useSettingsStore((state) => state.display.sortOrder)
+
   return useMemo(() => {
     return filterBookmarksOptimized({
       bookmarks,
@@ -38,6 +43,8 @@ export const useFilteredBookmarksOptimized = (): Bookmark[] => {
       quickFilters,
       activeCollectionId,
       collectionBookmarks,
+      sortBy,
+      sortOrder,
     })
   }, [
     bookmarks,
@@ -52,6 +59,8 @@ export const useFilteredBookmarksOptimized = (): Bookmark[] => {
     quickFilters,
     activeCollectionId,
     collectionBookmarks,
+    sortBy,
+    sortOrder,
   ])
 }
 

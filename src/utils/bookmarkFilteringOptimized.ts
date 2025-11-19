@@ -17,6 +17,8 @@ export interface FilterParams {
   quickFilters: string[]
   activeCollectionId: string | null
   collectionBookmarks: Record<string, number[]>
+  sortBy?: 'date' | 'title' | 'author' | 'domain'
+  sortOrder?: 'asc' | 'desc'
 }
 
 /**
@@ -46,6 +48,8 @@ export const filterBookmarksOptimized = ({
   quickFilters,
   activeCollectionId,
   collectionBookmarks,
+  sortBy = 'date',
+  sortOrder = 'desc',
 }: FilterParams): Bookmark[] => {
   // Pre-compute values outside the filter loop
   const hasTagFilter = selectedTags.length > 0
@@ -232,10 +236,34 @@ export const filterBookmarksOptimized = ({
     return true
   })
 
-  // Sort by date descending (newest first)
+  // Apply sorting based on sortBy and sortOrder
   return filtered.sort((a, b) => {
-    const dateA = getBookmarkDate(a)
-    const dateB = getBookmarkDate(b)
-    return dateB.getTime() - dateA.getTime()
+    let comparison = 0
+
+    switch (sortBy) {
+      case 'date': {
+        const dateA = getBookmarkDate(a)
+        const dateB = getBookmarkDate(b)
+        comparison = dateB.getTime() - dateA.getTime() // Default descending (newest first)
+        break
+      }
+      case 'title':
+        comparison = a.title.localeCompare(b.title)
+        break
+      case 'author':
+        comparison = a.author.localeCompare(b.author)
+        break
+      case 'domain':
+        comparison = a.domain.localeCompare(b.domain)
+        break
+      default:
+        // Fallback to date
+        const dateA = getBookmarkDate(a)
+        const dateB = getBookmarkDate(b)
+        comparison = dateB.getTime() - dateA.getTime()
+    }
+
+    // Apply sort order (reverse if ascending)
+    return sortOrder === 'asc' ? -comparison : comparison
   })
 }

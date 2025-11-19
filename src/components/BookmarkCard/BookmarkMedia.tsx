@@ -15,28 +15,37 @@ const BookmarkMedia = memo(
     const { showImageModal } = useModal()
 
     const hasMedia = () => {
-      // Check for general media fields
-      const hasGeneralMedia =
-        (bookmark as any).hasMedia || (bookmark as any).thumbnail_url
+      // Check for general thumbnail
+      if ((bookmark as any).thumbnail_url) {
+        return true
+      }
 
-      // Check for X bookmark specific media
+      // Check for X bookmark specific media (content images or video)
       const metadata = (bookmark as any).metadata
-      const hasXMedia =
-        metadata &&
-        ((metadata.images && metadata.images.length > 0) || metadata.has_video)
+      if (metadata) {
+        const hasContentImages = metadata.images && metadata.images.length > 0
+        const hasVideo = metadata.has_video || false
+        return hasContentImages || hasVideo
+      }
 
-      return hasGeneralMedia || hasXMedia
+      return false
     }
 
     const getMediaContent = () => {
       const metadata = (bookmark as any).metadata
 
       // Handle X bookmark media
-      if (metadata && (metadata.images || metadata.has_video)) {
-        return {
-          type: metadata.has_video ? 'video' : 'images',
-          images: metadata.images || [],
-          hasVideo: metadata.has_video || false,
+      if (metadata) {
+        const hasContentImages = metadata.images && metadata.images.length > 0
+        const hasVideo = metadata.has_video || false
+
+        // Only show media if there are actual content images OR a video
+        if (hasContentImages || hasVideo) {
+          return {
+            type: hasVideo ? 'video' : 'images',
+            images: metadata.images || [],
+            hasVideo: hasVideo,
+          }
         }
       }
 

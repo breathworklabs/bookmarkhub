@@ -225,22 +225,38 @@
     document.body.appendChild(banner)
   }
 
-  function updateProgress(count, status) {
+  function updateProgress(count, status, progress = null) {
     const countEl = document.getElementById('bookmarkx-count')
     const statusEl = document.getElementById('bookmarkx-status')
+    const progressBar = document.getElementById('bookmarkx-progress-bar')
 
     if (countEl) countEl.textContent = `Found ${count} bookmarks`
     if (statusEl) statusEl.textContent = status
+
+    // Update progress bar if progress value provided
+    if (progressBar && progress !== null) {
+      progressBar.style.width = `${progress}%`
+    }
   }
 
   async function fetchAllBookmarks() {
     let cursor = null
     let hasMore = true
     let requestCount = 0
+    let estimatedTotal = 100 // Initial estimate, will adjust as we fetch
 
     while (hasMore) {
       requestCount++
-      updateProgress(allBookmarks.length, `Request ${requestCount}...`)
+
+      // Calculate progress percentage (indeterminate but shows activity)
+      // Use a logarithmic approach to slow down as we progress
+      const progressPercent = Math.min(95, 20 + (requestCount * 5))
+
+      updateProgress(
+        allBookmarks.length,
+        `Request ${requestCount}...`,
+        progressPercent
+      )
 
       try {
         const result = await fetchBookmarksPage(cursor)
@@ -261,6 +277,9 @@
         throw error
       }
     }
+
+    // Set to 100% when complete
+    updateProgress(allBookmarks.length, 'Complete!', 100)
 
     finishCollection()
   }
@@ -573,6 +592,9 @@
     }
     cleanText = cleanText.trim()
 
+    // Extract content images and videos (filter out profile images)
+    const mediaData = extractMediaData(tweet)
+
     return {
       id: Date.now() + Math.random(),
       user_id: 'chrome-extension',
@@ -580,7 +602,7 @@
       url: tweetUrl,
       description: cleanText.substring(0, 200),
       content: htmlContent,
-      thumbnail_url: extractThumbnail(tweet),
+      thumbnail_url: mediaData.thumbnail,
       favicon_url: tweet.user.profile_image_url,
       author: `${tweet.user.name} (@${tweet.user.screen_name})`,
       domain: 'x.com',
@@ -598,6 +620,15 @@
       tags: extractHashtags(tweet),
       collections: ['Imported from X'],
       metadata: {
+        platform: 'x.com',
+        tweet_date: new Date(tweet.created_at).toISOString(),
+        extracted_at: new Date().toISOString(),
+        username: tweet.user.screen_name,
+        display_name: tweet.user.name,
+        has_video: mediaData.hasVideo,
+        images: mediaData.images, // Only content images, not profile images
+        profile_image_normal: tweet.user.profile_image_url.replace('_400x400', '_normal'),
+        profile_image_bigger: tweet.user.profile_image_url.replace('_400x400', '_bigger'),
         user: {
           id: tweet.user.id,
           name: tweet.user.name,
@@ -618,15 +649,60 @@
         import_date: new Date().toISOString(),
         import_source: 'chrome-extension-api',
         plain_text: tweet.text,
-        has_media: !!(tweet.extended_entities?.media || tweet.entities?.media),
-        media_count: (
-          tweet.extended_entities?.media ||
-          tweet.entities?.media ||
-          []
-        ).length,
+        has_media: mediaData.images.length > 0 || mediaData.hasVideo,
+        media_count: mediaData.images.length + (mediaData.hasVideo ? 1 : 0),
       },
       created_at: new Date(tweet.created_at).toISOString(),
       updated_at: new Date().toISOString(),
+    }
+  }
+
+  /**
+   * Extract media data from tweet, separating content images from profile images
+   * Returns: { images: string[], hasVideo: boolean, thumbnail: string }
+   */
+  function extractMediaData(tweet) {
+    const media = tweet.extended_entities?.media || tweet.entities?.media || []
+    const contentImages = []
+    let hasVideo = false
+    let thumbnail = null
+
+    // Process each media item
+    media.forEach((item) => {
+      const mediaUrl = item.media_url_https || item.media_url
+
+      // Check if it's a video
+      if (item.type === 'video' || item.type === 'animated_gif') {
+        hasVideo = true
+        // Use video thumbnail as the first image
+        if (mediaUrl && !thumbnail) {
+          thumbnail = mediaUrl
+        }
+      }
+
+      // Check if it's a photo
+      if (item.type === 'photo' && mediaUrl) {
+        // Filter out profile images (containing _normal, _bigger, or _400x400)
+        const isProfileImage =
+          mediaUrl.includes('_normal') ||
+          mediaUrl.includes('_bigger') ||
+          mediaUrl.includes('_400x400') ||
+          mediaUrl.includes('profile_images')
+
+        if (!isProfileImage) {
+          contentImages.push(mediaUrl)
+          // Use first content image as thumbnail if no thumbnail yet
+          if (!thumbnail) {
+            thumbnail = mediaUrl
+          }
+        }
+      }
+    })
+
+    return {
+      images: contentImages,
+      hasVideo: hasVideo,
+      thumbnail: thumbnail,
     }
   }
 

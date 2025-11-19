@@ -18,6 +18,66 @@ interface XBookmarkData {
 }
 
 /**
+ * Normalize various date formats to ISO 8601 format
+ * Handles:
+ * - ISO 8601 strings (already correct)
+ * - Twitter-style dates like "2:01 AM · Nov 18, 2025"
+ * - Unix timestamps
+ * - Standard date strings
+ */
+function normalizeDateToISO(dateInput: string | number): string {
+  if (!dateInput) {
+    logger.warn('Empty date input, using current date')
+    return new Date().toISOString()
+  }
+
+  try {
+    // If it's already a valid ISO string, return as-is
+    if (typeof dateInput === 'string' && dateInput.match(/^\d{4}-\d{2}-\d{2}T/)) {
+      return dateInput
+    }
+
+    // Handle Twitter-style dates: "2:01 AM · Nov 18, 2025"
+    if (typeof dateInput === 'string' && dateInput.includes('·')) {
+      // Remove the middot separator and parse
+      const cleanedDate = dateInput.replace('·', '').trim()
+      const parsedDate = new Date(cleanedDate)
+
+      if (!isNaN(parsedDate.getTime())) {
+        return parsedDate.toISOString()
+      }
+
+      // If that didn't work, try extracting just the date part (after the middot)
+      const parts = dateInput.split('·')
+      if (parts.length === 2) {
+        const timePart = parts[0].trim()
+        const datePart = parts[1].trim()
+        const combined = `${datePart} ${timePart}`
+        const parsedDate2 = new Date(combined)
+
+        if (!isNaN(parsedDate2.getTime())) {
+          return parsedDate2.toISOString()
+        }
+      }
+    }
+
+    // Try to parse the date directly
+    const parsedDate = new Date(dateInput)
+
+    // Check if the date is valid
+    if (isNaN(parsedDate.getTime())) {
+      logger.warn(`Invalid date format: ${dateInput}, using current date`)
+      return new Date().toISOString()
+    }
+
+    return parsedDate.toISOString()
+  } catch (error) {
+    logger.error('Error parsing date:', error, { context: { dateInput } })
+    return new Date().toISOString()
+  }
+}
+
+/**
  * Transform X/Twitter bookmark data to our Bookmark format
  */
 export function transformXBookmark(
@@ -55,6 +115,10 @@ export function transformXBookmark(
     images: xBookmark.images,
   })
 
+  // Parse and normalize the tweet date to ISO 8601 format
+  const normalizedTweetDate = normalizeDateToISO(xBookmark.tweet_date)
+  const normalizedExtractedAt = normalizeDateToISO(xBookmark.extracted_at)
+
   const bookmark: BookmarkInsert = {
     user_id: userId,
     title: title,
@@ -79,8 +143,8 @@ export function transformXBookmark(
     collections: [],
     metadata: {
       platform: 'x.com',
-      tweet_date: xBookmark.tweet_date,
-      extracted_at: xBookmark.extracted_at,
+      tweet_date: normalizedTweetDate,
+      extracted_at: normalizedExtractedAt,
       username: xBookmark.username,
       display_name: xBookmark.display_name,
       has_video: xBookmark.has_video || false,

@@ -68,6 +68,7 @@ const useFilterData = () => {
   const contentTypeFilter = useBookmarkStore((state) => state.contentTypeFilter)
   const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)
   const quickFilters = useBookmarkStore((state) => state.quickFilters)
+  const selectedTags = useBookmarkStore((state) => state.selectedTags)
 
   return useMemo(
     () => ({
@@ -78,6 +79,7 @@ const useFilterData = () => {
       contentTypeFilter,
       dateRangeFilter,
       quickFilters,
+      selectedTags,
     }),
     [
       searchQuery,
@@ -87,6 +89,7 @@ const useFilterData = () => {
       contentTypeFilter,
       dateRangeFilter,
       quickFilters,
+      selectedTags,
     ]
   )
 }
@@ -121,6 +124,8 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
     if (filterData.contentTypeFilter.trim()) count++
     if (filterData.quickFilters.length > 0)
       count += filterData.quickFilters.length
+    if (filterData.selectedTags.length > 0)
+      count += filterData.selectedTags.length
     return count
   }, [
     filterData.dateRangeFilter.type,
@@ -128,6 +133,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
     filterData.domainFilter,
     filterData.contentTypeFilter,
     filterData.quickFilters.length,
+    filterData.selectedTags.length,
   ])
 
   const importXBookmarks = useBookmarkStore((state) => state.importXBookmarks)
