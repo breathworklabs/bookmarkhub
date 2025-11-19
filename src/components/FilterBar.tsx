@@ -9,7 +9,7 @@ import { componentStyles } from '../styles/components'
 const FILTER_TABS = ['All', 'Today', 'This Week', 'Threads', 'Media']
 
 const FilterBar = memo(() => {
-  const { activeTab, setActiveTab } = useBookmarkSelectors()
+  const { activeTab, setActiveTab, setDateRangeFilter } = useBookmarkSelectors()
 
   const resetFilters = useFilterReset()
 
@@ -18,8 +18,19 @@ const FilterBar = memo(() => {
     (index: number) => {
       setActiveTab(index)
       resetFilters()
+
+      // Sync with DateRangeFilter
+      // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=Threads, 4=Media
+      if (index === 0) {
+        setDateRangeFilter({ type: 'all' })
+      } else if (index === 1) {
+        setDateRangeFilter({ type: 'today' })
+      } else if (index === 2) {
+        setDateRangeFilter({ type: 'week' })
+      }
+      // Threads and Media don't have corresponding date filters
     },
-    [setActiveTab, resetFilters]
+    [setActiveTab, setDateRangeFilter, resetFilters]
   )
 
   return (

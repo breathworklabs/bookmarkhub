@@ -24,6 +24,7 @@ const DateRangeFilterComponent = () => {
   const setActiveSidebarItem = useBookmarkStore(
     (state) => state.setActiveSidebarItem
   )
+  const setActiveTab = useBookmarkStore((state) => state.setActiveTab)
   const setActiveCollection = useCollectionsStore(
     (state) => state.setActiveCollection
   )
@@ -56,6 +57,17 @@ const DateRangeFilterComponent = () => {
       setDateRangeFilter(newFilter)
       setActiveSidebarItem('All Bookmarks')
       setActiveCollection(null)
+
+      // Sync with FilterBar tabs
+      // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=Threads, 4=Media
+      if (type === 'all') {
+        setActiveTab(0)
+      } else if (type === 'today') {
+        setActiveTab(1)
+      } else if (type === 'week') {
+        setActiveTab(2)
+      }
+      // month and custom don't have corresponding tabs, leave as-is
     }
   }
 
