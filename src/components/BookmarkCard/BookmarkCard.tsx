@@ -90,8 +90,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
             for (const bookmarkId of bookmarkIds) {
               // Get current bookmark state to avoid stale data
               const currentBookmark = bookmarks.find((b) => b.id === bookmarkId)
-              const currentCollections = (currentBookmark as any)
-                ?.collections || ['uncategorized']
+              const currentCollections = currentBookmark?.collections || ['uncategorized']
 
               // If moving TO uncategorized, remove from all other collections first
               if (dropResult.collectionId === 'uncategorized') {
@@ -157,31 +156,41 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
     preview(getEmptyImage(), { captureDraggingState: true })
   }, [preview])
 
+  // Cleanup long-press timer on unmount
+  useEffect(() => {
+    return () => {
+      if (longPressTimer.current) {
+        clearTimeout(longPressTimer.current)
+        longPressTimer.current = null
+      }
+    }
+  }, [])
+
   // Style hooks
   const cardStyles = useCardStyles(isSelected)
 
   // Helper functions
-  const hasMedia = () => {
+  const hasMedia = (): boolean => {
     // Check for general media fields
-    const hasGeneralMedia =
-      (bookmark as any).hasMedia || (bookmark as any).thumbnail_url
+    const hasGeneralMedia = !!bookmark.thumbnail_url
 
     // Check for X bookmark specific media
-    const metadata = (bookmark as any).metadata
+    const metadata = bookmark.metadata
     const hasXMedia =
       metadata &&
+      metadata.platform === 'x.com' &&
       ((metadata.images && metadata.images.length > 0) || metadata.has_video)
 
-    return hasGeneralMedia || hasXMedia
+    return hasGeneralMedia || !!hasXMedia
   }
 
   const getContent = useMemo(() => {
     return (
-      (bookmark as any).content ||
-      (bookmark as any).description ||
+      bookmark.content ||
+      bookmark.description ||
       'No content available'
     )
-  }, [(bookmark as any).content, (bookmark as any).description])
+  }, [bookmark.content, bookmark.description])
 
   // Event handlers
   const handleCardClick = useCallback(
@@ -249,9 +258,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
   const handleMoveToCollection = useCallback(
     async (collectionId: string | null) => {
       try {
-        const currentCollections = (bookmark as any)?.collections || [
-          'uncategorized',
-        ]
+        const currentCollections = bookmark.collections || ['uncategorized']
 
         // Remove from all collections first
         for (const colId of currentCollections) {
@@ -302,11 +309,11 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
 
   // Get current collection ID for picker
   const currentCollectionId = useMemo(() => {
-    const collections = (bookmark as any)?.collections || []
+    const collections = bookmark.collections || []
     return collections.length > 0 && collections[0] !== 'uncategorized'
       ? collections[0]
       : null
-  }, [bookmark])
+  }, [bookmark.collections])
 
   return (
     <>

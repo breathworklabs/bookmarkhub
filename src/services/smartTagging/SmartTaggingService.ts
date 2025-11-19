@@ -13,6 +13,7 @@ import type {
 import type { Bookmark } from '../../types/bookmark'
 import { DEFAULT_TAGGING_OPTIONS } from './config'
 import { TagDeduplicator } from './core/TagDeduplicator'
+import { logger } from '../../lib/logger'
 import { DomainTagStrategy } from './strategies/DomainTagStrategy'
 import { UrlPatternStrategy } from './strategies/UrlPatternStrategy'
 import { NlpKeywordStrategy } from './strategies/NlpKeywordStrategy'
@@ -60,7 +61,7 @@ export class SmartTaggingService {
     for (const strategyName of mergedOptions.enabledStrategies) {
       const strategy = this.strategies.get(strategyName)
       if (!strategy) {
-        console.warn(`Strategy "${strategyName}" not found`)
+        logger.warn(`Strategy "${strategyName}" not found`)
         continue
       }
 
@@ -68,7 +69,7 @@ export class SmartTaggingService {
         const suggestions = await strategy.generateTags(bookmark, context)
         allSuggestions.push(...suggestions)
       } catch (error) {
-        console.error(`Error in strategy "${strategyName}":`, error)
+        logger.error(`Error in strategy "${strategyName}":`, error)
         // Continue with other strategies
       }
     }

@@ -4,6 +4,7 @@
  */
 
 import type { Bookmark } from '../types/bookmark'
+import { logger } from '../lib/logger'
 
 export interface ValidationResult {
   id: number
@@ -194,7 +195,7 @@ export const loadCachedValidationResults = (): ValidationResult[] => {
       checkedAt: new Date(r.checkedAt),
     }))
   } catch (error) {
-    console.error('Failed to load cached validation results:', error)
+    logger.error('Failed to load cached validation results', error)
     return []
   }
 }
@@ -211,7 +212,7 @@ export const saveCachedValidationResults = (
       JSON.stringify(results)
     )
   } catch (error) {
-    console.error('Failed to save validation results:', error)
+    logger.error('Failed to save validation results', error)
   }
 }
 

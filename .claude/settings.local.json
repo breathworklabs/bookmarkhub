@@ -16,7 +16,10 @@
       "Bash(npm outdated:*)",
       "Bash(npm run test:coverage:*)",
       "Bash(npm audit:*)",
-      "Bash(xargs ls:*)"
+      "Bash(xargs ls:*)",
+      "Bash(sips:*)",
+      "mcp__playwright__browser_navigate",
+      "WebFetch(domain:twitterapi.io)"
     ],
     "deny": [],
     "ask": []

@@ -4,6 +4,7 @@
  */
 
 import { ImportExportError } from '../../utils/errorHandling'
+import { logger } from '../../lib/logger'
 import type {
   TwitterArchiveBookmark,
   ParsedTwitterBookmark,
@@ -175,9 +176,10 @@ export function parseTwitterArchive(
 
     // Log warnings for skipped items
     if (errors.length > 0) {
-      console.warn(
-        `Skipped ${errors.length} invalid bookmarks:`,
-        errors.slice(0, 5)
+      logger.warn(
+        `Skipped ${errors.length} invalid bookmarks`,
+        undefined,
+        { context: { errors: errors.slice(0, 5) } }
       )
     }
 

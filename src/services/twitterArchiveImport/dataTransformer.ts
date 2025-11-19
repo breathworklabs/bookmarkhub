@@ -5,6 +5,7 @@
 import type { BookmarkInsert, XTwitterMetadata } from '../../types/bookmark'
 import type { ParsedTwitterBookmark, ProgressCallback } from './types'
 import { DataProcessingService } from '../dataProcessingService'
+import { logger } from '../../lib/logger'
 
 /**
  * Transform parsed Twitter bookmark to BookmarkInsert format
@@ -124,9 +125,10 @@ export function transformTwitterBookmarks(
 
   // Log errors if any
   if (errors.length > 0) {
-    console.warn(
-      `Transformation errors (${errors.length}):`,
-      errors.slice(0, 5)
+    logger.warn(
+      `Transformation errors (${errors.length})`,
+      undefined,
+      { context: { errors: errors.slice(0, 5) } }
     )
   }
 

@@ -12,6 +12,7 @@ import TermsOfService from './components/legal/TermsOfService'
 import PrivacyPolicy from './components/legal/PrivacyPolicy'
 import CookiePolicy from './components/legal/CookiePolicy'
 import HelpPage from './pages/HelpPage'
+import UpcomingFeaturesPage from './pages/UpcomingFeaturesPage'
 import { useInitializeApp } from './hooks/useInitializeApp'
 import { ModalProvider } from './components/modals/ModalProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -19,7 +20,6 @@ import * as Sentry from '@sentry/react'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { useSettingsStore } from './store/settingsStore'
 import { chakraTheme } from './styles/chakraTheme'
-// import { AuthDebug } from './components/debug/AuthDebug'
 
 // Wrap Router with Sentry for better error tracking
 const SentryRoutes = Sentry.withSentryRouting(Routes)
@@ -60,6 +60,7 @@ function App() {
                 <Route path="/trash" element={<TrashView />} />
                 <Route path="/shared" element={<SharedView />} />
                 <Route path="/help" element={<HelpPage />} />
+                <Route path="/upcoming-features" element={<UpcomingFeaturesPage />} />
                 <Route path="/terms" element={<TermsOfService />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/cookies" element={<CookiePolicy />} />
@@ -163,12 +164,7 @@ function AppContent() {
   }
 
   // Has existing bookmarks - show main app
-  return (
-    <>
-      <XBookmarkManager />
-      {/* <AuthDebug /> */}
-    </>
-  )
+  return <XBookmarkManager />
 }
 
 export default App

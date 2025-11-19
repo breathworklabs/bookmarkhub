@@ -427,7 +427,7 @@ const getInitialColumnWidths = (): ColumnWidths => {
       }
     }
   } catch (error) {
-    console.error('Failed to load column widths:', error)
+    logger.error('Failed to load column widths', error)
   }
   return {
     author: 150,

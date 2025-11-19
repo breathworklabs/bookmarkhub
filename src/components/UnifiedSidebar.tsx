@@ -21,9 +21,10 @@ import {
   LuChevronLeft,
   LuChevronRight,
   LuMessageSquare,
+  LuSparkles,
 } from 'react-icons/lu'
 import { useMemo, useCallback, memo, useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useCollectionsStore } from '../store/collectionsStore'
 import { useSettingsStore } from '../store/settingsStore'
@@ -32,6 +33,7 @@ import { useIsMobile } from '../hooks/useMobile'
 import CollectionsList from './collections/CollectionsList'
 import { FeedbackMenu } from './FeedbackMenu'
 import { useNavigationStyles } from '../hooks/useStyles'
+import { useNavigateWithCleanup } from '../hooks/useNavigateWithCleanup'
 import { componentStyles } from '../styles/components'
 import logoImage from '../assets/logo_v2 1.png'
 import { logger } from '../lib/logger'
@@ -63,7 +65,7 @@ interface UnifiedSidebarProps {
 }
 
 const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
-  const navigate = useNavigate()
+  const navigateWithCleanup = useNavigateWithCleanup()
   const location = useLocation()
   const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
   const setActiveSidebarItem = useBookmarkStore(
@@ -105,17 +107,17 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
       //   toggleAIPanel()
       // } else
       if (label === 'All Bookmarks') {
-        navigate('/')
+        navigateWithCleanup('/', onItemClick)
+      } else {
+        // Close mobile drawer if callback provided
+        onItemClick?.()
       }
-
-      // Close mobile drawer if callback provided
-      onItemClick?.()
     },
     [
       setActiveSidebarItem,
       setActiveCollection,
       toggleAIPanel,
-      navigate,
+      navigateWithCleanup,
       onItemClick,
     ]
   )
@@ -245,7 +247,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
           style={{ borderColor: 'var(--color-border)' }}
           justifyContent={isSidebarCollapsed ? 'center' : 'flex-start'}
           cursor="pointer"
-          onClick={() => navigate('/')}
+          onClick={() => navigateWithCleanup('/')}
           _hover={{ opacity: 0.8 }}
           transition="opacity 0.2s"
         >
@@ -396,12 +398,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
             badge={
               bookmarkCounts.shared > 0 ? bookmarkCounts.shared : undefined
             }
-            onClick={() => {
-              setActiveCollection(null)
-              useBookmarkStore.getState().clearBookmarkSelection()
-              navigate('/shared')
-              onItemClick?.()
-            }}
+            onClick={() => navigateWithCleanup('/shared', onItemClick)}
             active={isActive('Shared')}
           />
 
@@ -411,12 +408,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
             badge={
               bookmarkCounts.deleted > 0 ? bookmarkCounts.deleted : undefined
             }
-            onClick={() => {
-              setActiveCollection(null)
-              useBookmarkStore.getState().clearBookmarkSelection()
-              navigate('/trash')
-              onItemClick?.()
-            }}
+            onClick={() => navigateWithCleanup('/trash', onItemClick)}
             active={isActive('Trash')}
           />
 
@@ -533,14 +525,16 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
             />
 
             <NavItem
+              icon={<LuSparkles size={18} />}
+              label="Upcoming Features"
+              onClick={() => navigateWithCleanup('/upcoming-features', onItemClick)}
+              active={isActive('Upcoming Features')}
+            />
+
+            <NavItem
               icon={<LuSettings size={18} />}
               label="Settings"
-              onClick={() => {
-                setActiveCollection(null)
-                useBookmarkStore.getState().clearBookmarkSelection()
-                navigate('/settings')
-                onItemClick?.()
-              }}
+              onClick={() => navigateWithCleanup('/settings', onItemClick)}
               active={isActive('Settings')}
             />
 

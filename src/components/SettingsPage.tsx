@@ -1031,9 +1031,9 @@ const SettingsPage = () => {
                                 value={['json']}
                                 onValueChange={(details) => {
                                   // Export format preference removed - defaults to JSON
-                                  console.log(
-                                    'Export format:',
-                                    details.value[0]
+                                  logger.debug(
+                                    'Export format',
+                                    { context: { format: details.value[0] } }
                                   )
                                 }}
                                 size="sm"

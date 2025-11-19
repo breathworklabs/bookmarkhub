@@ -6,6 +6,7 @@
  */
 
 import type { Collection } from '../types/collections'
+import { logger } from '../lib/logger'
 
 export interface CollectionTreeNode {
   collection: Collection
@@ -98,9 +99,7 @@ export function getCollectionDepth(
 
     // Safety check: prevent infinite loops
     if (depth > 100) {
-      console.warn(
-        'Possible circular reference detected in collection hierarchy'
-      )
+      logger.warn('Possible circular reference detected in collection hierarchy')
       break
     }
   }
@@ -150,7 +149,7 @@ export function isDescendantOf(
 
     // Prevent infinite loops
     if (visited.has(currentParentId)) {
-      console.warn('Circular reference detected in collection hierarchy')
+      logger.warn('Circular reference detected in collection hierarchy')
       return false
     }
     visited.add(currentParentId)
@@ -179,7 +178,7 @@ export function getAncestorIds(
 
   while (currentParentId) {
     if (visited.has(currentParentId)) {
-      console.warn('Circular reference detected in collection hierarchy')
+      logger.warn('Circular reference detected in collection hierarchy')
       break
     }
     visited.add(currentParentId)
@@ -211,7 +210,7 @@ export function getCollectionPath(
 
   while (currentParentId) {
     if (visited.has(currentParentId)) {
-      console.warn('Circular reference detected in collection hierarchy')
+      logger.warn('Circular reference detected in collection hierarchy')
       break
     }
     visited.add(currentParentId)

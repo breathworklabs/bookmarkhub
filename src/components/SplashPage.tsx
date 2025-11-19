@@ -15,6 +15,7 @@ import { LuCheck, LuPlay, LuDownload, LuFolderTree, LuCloud } from 'react-icons/
 import splashContent from '../data/splash-content.json'
 import { useSettingsStore } from '../store/settingsStore'
 import { useModal } from './modals/ModalProvider'
+import { logger } from '../lib/logger'
 import logoImage from '../assets/logo_v2 1.png'
 import appScreenshot from '../assets/splash_images/app-screenshot.jpg'
 import themeSwitchingImage from '../assets/splash_images/theme-switching.jpg'
@@ -72,19 +73,19 @@ const FeatureShowcase = ({
   }, [])
 
   const handlePlayVideo = () => {
-    console.log('Play button clicked', { videoRef: videoRef.current, videoSrc })
+    logger.debug('Play button clicked', { context: { videoRef: videoRef.current, videoSrc } })
     setIsPlaying(true)
   }
 
   useEffect(() => {
     if (isPlaying && videoRef.current) {
-      console.log('Attempting to play video')
+      logger.debug('Attempting to play video')
       videoRef.current.play()
         .then(() => {
-          console.log('Video playing successfully')
+          logger.debug('Video playing successfully')
         })
         .catch((error) => {
-          console.error('Error playing video:', error)
+          logger.error('Error playing video:', error)
         })
     }
   }, [isPlaying])
@@ -203,13 +204,14 @@ const FeatureShowcase = ({
                 </Box>
               </>
             ) : (
-              <Box
-                as="video"
+              <video
                 ref={videoRef}
                 src={videoSrc}
-                w="100%"
-                borderRadius="20px"
-                boxShadow="0 10px 40px rgba(0, 0, 0, 0.4)"
+                style={{
+                  width: '100%',
+                  borderRadius: '20px',
+                  boxShadow: '0 10px 40px rgba(0, 0, 0, 0.4)',
+                }}
                 onEnded={handleVideoEnd}
                 controls
               />
@@ -688,32 +690,35 @@ const SplashPage = () => {
                   </Text>
 
                   {step.icon === 'download' && (
-                    <Button
-                      as="a"
+                    <Link
                       href={CHROME_EXTENSION_URL}
                       target="_blank"
                       rel="noopener noreferrer"
-                      size="md"
-                      style={{ background: 'var(--color-blue)' }}
-                      color="white"
-                      fontWeight="600"
-                      borderRadius="8px"
-                      px={6}
-                      py={5}
-                      mt={2}
-                      _hover={{
-                        bg: 'var(--color-blue-hover)',
-                        color: 'white',
-                        transform: 'translateY(-1px)',
-                        boxShadow: '0 4px 12px rgba(29, 78, 216, 0.3)',
-                      }}
-                      _active={{
-                        transform: 'translateY(0)',
-                      }}
-                      transition="all 0.2s ease"
+                      _hover={{ textDecoration: 'none' }}
                     >
-                      Install Extension
-                    </Button>
+                      <Button
+                        size="md"
+                        style={{ background: 'var(--color-blue)' }}
+                        color="white"
+                        fontWeight="600"
+                        borderRadius="8px"
+                        px={6}
+                        py={5}
+                        mt={2}
+                        _hover={{
+                          bg: 'var(--color-blue-hover)',
+                          color: 'white',
+                          transform: 'translateY(-1px)',
+                          boxShadow: '0 4px 12px rgba(29, 78, 216, 0.3)',
+                        }}
+                        _active={{
+                          transform: 'translateY(0)',
+                        }}
+                        transition="all 0.2s ease"
+                      >
+                        Install Extension
+                      </Button>
+                    </Link>
                   )}
                 </VStack>
               )

@@ -1,5 +1,6 @@
 import type { BookmarkInsert, XTwitterMetadata } from '../types/bookmark'
 import { DataProcessingService } from '../services/dataProcessingService'
+import { logger } from './logger'
 
 // X/Twitter bookmark data structure from the JSON file
 interface XBookmarkData {
@@ -113,8 +114,11 @@ export function transformXBookmarks(
     try {
       return transformXBookmark(xBookmark)
     } catch (error) {
-      console.error(`Error transforming bookmark at index ${index}:`, error)
-      console.error('Bookmark data:', xBookmark)
+      logger.error(
+        `Error transforming bookmark at index ${index}`,
+        error,
+        { context: { bookmarkData: xBookmark } }
+      )
       throw new Error(
         `Failed to transform bookmark at index ${index}: ${error instanceof Error ? error.message : 'Unknown error'}`
       )
