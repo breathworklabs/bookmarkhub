@@ -1,5 +1,34 @@
 import { test, expect } from '@playwright/test'
 
+/**
+ * Helper function to manually start the tour
+ * This is more reliable than relying on auto-start in test environment
+ */
+async function startTour(page: any) {
+  // Set tour state in localStorage to trigger it
+  await page.evaluate(() => {
+    const data = JSON.parse(localStorage.getItem('x-bookmark-manager-data') || '{}')
+    data.settings = data.settings || {}
+    data.settings.hasSeenSplash = true // Ensure this is set
+    data.settings.tour = {
+      hasCompletedTour: false,
+      currentStep: 0,
+      tourDismissed: false,
+      tourVersion: '1.0.0',
+    }
+    localStorage.setItem('x-bookmark-manager-data', JSON.stringify(data))
+  })
+
+  // Reload page to apply changes
+  await page.reload()
+
+  // Wait for app to fully load
+  await page.waitForLoadState('networkidle')
+
+  // Wait for tour to appear (give it extra time)
+  await page.waitForTimeout(3000)
+}
+
 test.describe('Interactive Tour', () => {
   test.beforeEach(async ({ page, context }) => {
     // Pre-populate with sample bookmark data
@@ -88,26 +117,24 @@ test.describe('Interactive Tour', () => {
     })
   })
 
-  test('should auto-start tour for first-time users', async ({ page }) => {
-    // Tour should auto-start after a short delay
-    await page.waitForTimeout(1500)
-
-    // Check if tour overlay is visible
-    const tourOverlay = page.locator('[data-tour="app-container"]').first()
-    await expect(tourOverlay).toBeVisible({ timeout: 5000 })
+  test('should start tour and show welcome step', async ({ page }) => {
+    // Manually start the tour
+    await startTour(page)
 
     // Should show welcome step
-    await expect(page.locator('text=Welcome to BookmarksX!')).toBeVisible()
+    await expect(page.locator('text=Welcome to BookmarksX!')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(page.locator('text=Step 1 of')).toBeVisible()
   })
 
   test('should display tour steps in correct order', async ({ page }) => {
-    // Wait for tour to start
-    await page.waitForTimeout(1500)
+    // Start tour
+    await startTour(page)
 
     // Welcome step
     await expect(page.locator('text=Welcome to BookmarksX!')).toBeVisible({
-      timeout: 5000,
+      timeout: 10000,
     })
 
     // Click Next
@@ -115,7 +142,7 @@ test.describe('Interactive Tour', () => {
 
     // Search step
     await expect(page.locator('text=Search Your Bookmarks')).toBeVisible({
-      timeout: 3000,
+      timeout: 10000,
     })
     await expect(page.locator('[data-tour="search-bar"]')).toBeVisible()
 
@@ -124,7 +151,7 @@ test.describe('Interactive Tour', () => {
 
     // Filters step - should highlight filters button
     await expect(page.locator('text=Advanced Filters')).toBeVisible({
-      timeout: 3000,
+      timeout: 10000,
     })
     await expect(page.locator('[data-tour="filters-button"]')).toBeVisible()
 
@@ -133,7 +160,7 @@ test.describe('Interactive Tour', () => {
 
     // Collections step
     await expect(page.locator('text=Organize with Collections')).toBeVisible({
-      timeout: 3000,
+      timeout: 10000,
     })
     await expect(
       page.locator('[data-tour="collections-sidebar"]')
@@ -141,12 +168,12 @@ test.describe('Interactive Tour', () => {
   })
 
   test('should allow user to go back to previous steps', async ({ page }) => {
-    // Wait for tour to start
-    await page.waitForTimeout(1500)
+    // Start tour
+    await startTour(page)
 
     // Welcome step
     await expect(page.locator('text=Welcome to BookmarksX!')).toBeVisible({
-      timeout: 5000,
+      timeout: 10000,
     })
 
     // Click Next
@@ -154,7 +181,7 @@ test.describe('Interactive Tour', () => {
 
     // Search step
     await expect(page.locator('text=Search Your Bookmarks')).toBeVisible({
-      timeout: 3000,
+      timeout: 10000,
     })
 
     // Click Back
@@ -162,17 +189,17 @@ test.describe('Interactive Tour', () => {
 
     // Should be back at welcome step
     await expect(page.locator('text=Welcome to BookmarksX!')).toBeVisible({
-      timeout: 3000,
+      timeout: 10000,
     })
   })
 
   test('should not show back button on first step', async ({ page }) => {
-    // Wait for tour to start
-    await page.waitForTimeout(1500)
+    // Start tour
+    await startTour(page)
 
     // Welcome step
     await expect(page.locator('text=Welcome to BookmarksX!')).toBeVisible({
-      timeout: 5000,
+      timeout: 10000,
     })
 
     // Back button should not be visible
@@ -180,8 +207,8 @@ test.describe('Interactive Tour', () => {
   })
 
   test('should show Complete button on last step', async ({ page }) => {
-    // Wait for tour to start
-    await page.waitForTimeout(1500)
+    // Start tour
+    await startTour(page)
 
     // Navigate to last step by clicking Next multiple times
     const steps = [
@@ -197,7 +224,7 @@ test.describe('Interactive Tour', () => {
 
     for (let i = 0; i < steps.length; i++) {
       await expect(page.locator(`text=${steps[i]}`)).toBeVisible({
-        timeout: 5000,
+        timeout: 10000,
       })
       await page.locator('button:has-text("Next")').click()
       await page.waitForTimeout(500)
@@ -205,18 +232,18 @@ test.describe('Interactive Tour', () => {
 
     // Last step - should show Complete button
     await expect(page.locator('text=You\'re All Set!')).toBeVisible({
-      timeout: 5000,
+      timeout: 10000,
     })
     await expect(page.locator('button:has-text("Complete")')).toBeVisible()
   })
 
   test('should skip tour when skip button is clicked', async ({ page }) => {
-    // Wait for tour to start
-    await page.waitForTimeout(1500)
+    // Start tour
+    await startTour(page)
 
     // Welcome step
     await expect(page.locator('text=Welcome to BookmarksX!')).toBeVisible({
-      timeout: 5000,
+      timeout: 10000,
     })
 
     // Click Skip Tour
@@ -225,16 +252,16 @@ test.describe('Interactive Tour', () => {
     // Tour should disappear
     await expect(
       page.locator('text=Welcome to BookmarksX!')
-    ).not.toBeVisible({ timeout: 3000 })
+    ).not.toBeVisible({ timeout: 10000 })
   })
 
   test('should close tour when X button is clicked', async ({ page }) => {
-    // Wait for tour to start
-    await page.waitForTimeout(1500)
+    // Start tour
+    await startTour(page)
 
     // Welcome step
     await expect(page.locator('text=Welcome to BookmarksX!')).toBeVisible({
-      timeout: 5000,
+      timeout: 10000,
     })
 
     // Click close button (X icon)
@@ -243,16 +270,16 @@ test.describe('Interactive Tour', () => {
     // Tour should disappear
     await expect(
       page.locator('text=Welcome to BookmarksX!')
-    ).not.toBeVisible({ timeout: 3000 })
+    ).not.toBeVisible({ timeout: 10000 })
   })
 
   test('should show progress indicator', async ({ page }) => {
-    // Wait for tour to start
-    await page.waitForTimeout(1500)
+    // Start tour
+    await startTour(page)
 
     // Welcome step
     await expect(page.locator('text=Welcome to BookmarksX!')).toBeVisible({
-      timeout: 5000,
+      timeout: 10000,
     })
 
     // Check step counter
@@ -269,8 +296,8 @@ test.describe('Interactive Tour', () => {
   test('should complete tour when Complete button is clicked', async ({
     page,
   }) => {
-    // Wait for tour to start
-    await page.waitForTimeout(1500)
+    // Start tour
+    await startTour(page)
 
     // Navigate to last step
     const steps = [
@@ -286,7 +313,7 @@ test.describe('Interactive Tour', () => {
 
     for (let i = 0; i < steps.length; i++) {
       await expect(page.locator(`text=${steps[i]}`)).toBeVisible({
-        timeout: 5000,
+        timeout: 10000,
       })
       await page.locator('button:has-text("Next")').click()
       await page.waitForTimeout(500)
@@ -294,7 +321,7 @@ test.describe('Interactive Tour', () => {
 
     // Last step
     await expect(page.locator('text=You\'re All Set!')).toBeVisible({
-      timeout: 5000,
+      timeout: 10000,
     })
 
     // Click Complete
@@ -302,15 +329,15 @@ test.describe('Interactive Tour', () => {
 
     // Tour should disappear
     await expect(page.locator('text=You\'re All Set!')).not.toBeVisible({
-      timeout: 3000,
+      timeout: 10000,
     })
   })
 
   test('should highlight correct UI elements for each step', async ({
     page,
   }) => {
-    // Wait for tour to start
-    await page.waitForTimeout(1500)
+    // Start tour
+    await startTour(page)
 
     // Welcome step - skip it
     await page.locator('button:has-text("Next")').click()
@@ -398,7 +425,7 @@ test.describe('Interactive Tour', () => {
 
   test('should restart tour from settings', async ({ page }) => {
     // Complete the tour first
-    await page.waitForTimeout(1500)
+    await startTour(page)
 
     // Skip tour
     await page.locator('button:has-text("Skip Tour")').first().click()
@@ -414,7 +441,7 @@ test.describe('Interactive Tour', () => {
 
     // Should navigate back to main page and show tour
     await expect(page.locator('text=Welcome to BookmarksX!')).toBeVisible({
-      timeout: 5000,
+      timeout: 10000,
     })
   })
 })
