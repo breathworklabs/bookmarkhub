@@ -1,4 +1,4 @@
-import { Badge, Text, IconButton } from '@chakra-ui/react'
+import { Badge, Text, Box } from '@chakra-ui/react'
 import { LuX } from 'react-icons/lu'
 import { memo, useCallback } from 'react'
 import { useTagCategoriesStore } from '../../store/tagCategoriesStore'
@@ -144,23 +144,42 @@ const TagChip = memo(
           #{tag}
         </Text>
         {isRemovable && (
-          <IconButton
-            size="xs"
-            variant="ghost"
+          <Box
+            as="button"
             aria-label={`Remove ${tag} tag`}
+            display="inline-flex"
+            alignItems="center"
+            justifyContent="center"
             w="16px"
             h="16px"
             minW="16px"
+            flexShrink={0}
+            ml={1}
+            p={0}
+            border="none"
             borderRadius="full"
-            color="inherit"
+            bg="rgba(0, 0, 0, 0.25)"
+            color="white"
+            cursor="pointer"
+            transition="all 0.15s ease"
             _hover={{
-              bg: 'rgba(255, 255, 255, 0.2)',
-              color: 'inherit',
+              bg: 'rgba(0, 0, 0, 0.4)',
+              transform: 'scale(1.05)',
+            }}
+            _active={{
+              transform: 'scale(0.95)',
             }}
             onClick={handleRemove}
           >
-            <LuX size={10} />
-          </IconButton>
+            <Box
+              as="span"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <LuX size={12} strokeWidth={2.5} />
+            </Box>
+          </Box>
         )}
       </Badge>
     )

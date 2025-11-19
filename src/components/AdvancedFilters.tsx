@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react'
 import { Tooltip } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LuTag, LuX } from 'react-icons/lu'
+import { LuTag, LuX, LuSettings } from 'react-icons/lu'
 import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
 import { useFilterReset } from '../utils/filterUtils'
 import DateRangeFilter from './DateRangeFilter'
@@ -18,6 +18,9 @@ import AuthorFilter from './AuthorFilter'
 import DomainFilter from './DomainFilter'
 import SavedFilterPresets from './filters/SavedFilterPresets'
 import SaveFilterPresetButton from './filters/SaveFilterPresetButton'
+import TagChip from './tags/TagChip'
+import TagInput from './tags/TagInput'
+import { useModal } from './modals/ModalProvider'
 
 const MotionBox = motion.create(Box)
 
@@ -26,13 +29,17 @@ const AdvancedFilters = () => {
     isFiltersPanelOpen,
     contentTypeFilter,
     quickFilters,
+    selectedTags,
     setContentTypeFilter,
     toggleQuickFilter,
+    addTag,
+    removeTag,
     clearAdvancedFilters,
     setFiltersPanelOpen,
   } = useBookmarkSelectors()
 
   const resetFilters = useFilterReset()
+  const { showTagManager } = useModal()
 
   return (
     <AnimatePresence>
@@ -301,6 +308,84 @@ const AdvancedFilters = () => {
                     )}
                   </For>
                 </HStack>
+              </VStack>
+
+              {/* Tag Filters */}
+              <VStack alignItems="start" gap={2} w="100%">
+                <HStack justify="space-between" w="100%" alignItems="center">
+                  <HStack gap={2} alignItems="center">
+                    <LuTag
+                      size={14}
+                      style={{ color: 'var(--color-text-tertiary)' }}
+                    />
+                    <Text
+                      fontSize="13px"
+                      fontWeight="500"
+                      style={{ color: 'var(--color-text-primary)' }}
+                    >
+                      Tag Filters
+                    </Text>
+                  </HStack>
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    style={{
+                      color: 'var(--color-text-tertiary)',
+                    }}
+                    fontSize="11px"
+                    fontWeight="500"
+                    h="24px"
+                    px={2}
+                    _hover={{
+                      color: 'var(--color-text-primary)',
+                      bg: 'var(--color-bg-tertiary)',
+                    }}
+                    onClick={showTagManager}
+                  >
+                    <HStack gap={1}>
+                      <LuSettings size={14} />
+                      <Text>Manage Tags</Text>
+                    </HStack>
+                  </Button>
+                </HStack>
+
+                {/* Tag input with autocomplete */}
+                <VStack alignItems="start" gap={2} w="100%">
+                  <Box w="100%">
+                    <TagInput
+                      selectedTags={[]}
+                      onTagAdd={(tag) => {
+                        addTag(tag)
+                        resetFilters()
+                      }}
+                      onTagRemove={() => {}}
+                      placeholder="Type to search and add tags..."
+                      size="sm"
+                    />
+                  </Box>
+
+                  {/* Active tag filters */}
+                  {selectedTags.length > 0 && (
+                    <HStack gap={2} wrap="wrap" w="100%">
+                      <For each={selectedTags}>
+                        {(tag) => (
+                          <TagChip
+                            key={tag}
+                            tag={tag}
+                            isActive={true}
+                            isRemovable={true}
+                            variant="filter"
+                            size="md"
+                            onRemove={(removedTag) => {
+                              removeTag(removedTag)
+                              resetFilters()
+                            }}
+                          />
+                        )}
+                      </For>
+                    </HStack>
+                  )}
+                </VStack>
               </VStack>
 
               {/* Actions */}

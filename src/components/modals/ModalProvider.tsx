@@ -15,7 +15,7 @@ import {
   Input,
   VStack,
   Textarea,
-  Badge,
+  For,
   SelectTrigger,
   SelectContent,
   SelectItem,
@@ -30,6 +30,8 @@ import ImageModal from './ImageModal'
 import TagManagerModal from '../tags/TagManagerModal'
 import TagMergeModal from '../tags/TagMergeModal'
 import DuplicateBookmarkDialog from './DuplicateBookmarkDialog'
+import TagInput from '../tags/TagInput'
+import TagChip from '../tags/TagChip'
 import { useCollectionsStore } from '../../store/collectionsStore'
 import {
   getCollectionPathString,
@@ -172,8 +174,6 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     tags: [],
     collections: [],
   })
-  const [isAddingTag, setIsAddingTag] = useState(false)
-  const [newTagInput, setNewTagInput] = useState('')
   const [collectionFormData, setCollectionFormData] =
     useState<CollectionInsert>({
       name: '',
@@ -255,8 +255,6 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       collections: ['uncategorized'],
       primaryCollection: 'uncategorized',
     })
-    setIsAddingTag(false)
-    setNewTagInput('')
   }
 
   const showEditBookmark = (options: EditBookmarkOptions) => {
@@ -279,8 +277,6 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       tags: options.bookmark.tags || [],
       collections: options.bookmark.collections || [],
     })
-    setIsAddingTag(false)
-    setNewTagInput('')
   }
 
   const closeModal = useCallback(() => {
@@ -304,8 +300,6 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       collections: ['uncategorized'],
       primaryCollection: 'uncategorized',
     })
-    setIsAddingTag(false)
-    setNewTagInput('')
   }, [])
 
   const handleDeleteConfirm = () => {
@@ -366,36 +360,22 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     []
   )
 
+  const addBookmarkTag = useCallback((tag: string) => {
+    const trimmedTag = tag.trim()
+    if (trimmedTag && !bookmarkFormData.tags.includes(trimmedTag)) {
+      setBookmarkFormData((prev) => ({
+        ...prev,
+        tags: [...prev.tags, trimmedTag],
+      }))
+    }
+  }, [bookmarkFormData.tags])
+
   const removeBookmarkTag = useCallback((tagToRemove: string) => {
     setBookmarkFormData((prev) => ({
       ...prev,
       tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }))
   }, [])
-
-  const handleAddBookmarkTag = useCallback(() => {
-    const tag = newTagInput.trim()
-    if (tag && !bookmarkFormData.tags.includes(tag)) {
-      setBookmarkFormData((prev) => ({
-        ...prev,
-        tags: [...prev.tags, tag],
-      }))
-      setNewTagInput('')
-      setIsAddingTag(false)
-    }
-  }, [newTagInput, bookmarkFormData.tags])
-
-  const handleNewTagKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter') {
-        handleAddBookmarkTag()
-      } else if (e.key === 'Escape') {
-        setIsAddingTag(false)
-        setNewTagInput('')
-      }
-    },
-    [handleAddBookmarkTag]
-  )
 
   // Collection handlers
   const showCreateCollection = (options: CreateCollectionOptions) => {
@@ -871,90 +851,31 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                       <Text fontSize="sm" color="var(--color-text-secondary)">
                         Tags
                       </Text>
+                      {/* Tag Input without displaying selected tags inside it */}
+                      <Box w="100%">
+                        <TagInput
+                          selectedTags={[]}
+                          onTagAdd={addBookmarkTag}
+                          onTagRemove={() => {}}
+                          placeholder="Add tags..."
+                          size="md"
+                        />
+                      </Box>
+                      {/* Display selected tags below the input */}
                       {bookmarkFormData.tags.length > 0 && (
                         <HStack wrap="wrap" gap={2}>
-                          {bookmarkFormData.tags.map((tag) => (
-                            <Badge
-                              key={tag}
-                              style={{
-                                background: 'var(--color-border)',
-                                color: 'var(--color-text-primary)',
-                              }}
-                              px={3}
-                              py={1}
-                              borderRadius="full"
-                              cursor="pointer"
-                              _hover={{ bg: 'var(--color-border-hover)' }}
-                              onClick={() => removeBookmarkTag(tag)}
-                            >
-                              {tag} ×
-                            </Badge>
-                          ))}
-                        </HStack>
-                      )}
-                      {!isAddingTag ? (
-                        <Button
-                          type="button"
-                          onClick={() => setIsAddingTag(true)}
-                          size="sm"
-                          variant="outline"
-                          bg="transparent"
-                          border="1px solid var(--color-border)"
-                          style={{ color: 'var(--color-text-tertiary)' }}
-                          alignSelf="flex-start"
-                          _hover={{
-                            bg: 'var(--color-bg-tertiary)',
-                            color: 'var(--color-text-primary)',
-                            borderColor: 'var(--color-border-hover)',
-                          }}
-                        >
-                          + Add Tag
-                        </Button>
-                      ) : (
-                        <HStack gap={2}>
-                          <Input
-                            value={newTagInput}
-                            onChange={(e) => setNewTagInput(e.target.value)}
-                            onKeyDown={handleNewTagKeyDown}
-                            placeholder="Enter tag name..."
-                            size="sm"
-                            style={{
-                              background: 'var(--color-border)',
-                              color: 'var(--color-text-primary)',
-                            }}
-                            border="1px solid var(--color-border-hover)"
-                            _hover={{
-                              borderColor: 'var(--color-border-hover)',
-                            }}
-                            _focus={{
-                              borderColor: 'var(--color-blue)',
-                              boxShadow: '0 0 0 1px var(--color-blue)',
-                            }}
-                            _placeholder={{
-                              color: 'var(--color-text-tertiary)',
-                            }}
-                            autoFocus
-                          />
-                          <Button
-                            size="sm"
-                            style={{ background: 'var(--color-blue)' }}
-                            color="white"
-                            _hover={{ bg: 'var(--color-blue-hover)' }}
-                            onClick={handleAddBookmarkTag}
-                            disabled={!newTagInput.trim()}
-                          >
-                            Add
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => {
-                              setIsAddingTag(false)
-                              setNewTagInput('')
-                            }}
-                          >
-                            Cancel
-                          </Button>
+                          <For each={bookmarkFormData.tags}>
+                            {(tag) => (
+                              <TagChip
+                                key={tag}
+                                tag={tag}
+                                isRemovable={true}
+                                variant="editable"
+                                size="md"
+                                onRemove={removeBookmarkTag}
+                              />
+                            )}
+                          </For>
                         </HStack>
                       )}
                     </VStack>
