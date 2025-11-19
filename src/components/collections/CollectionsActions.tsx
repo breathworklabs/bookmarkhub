@@ -235,6 +235,7 @@ const CollectionsActions = memo(() => {
       borderBottomWidth="1px"
       style={{ borderColor: 'var(--color-border)' }}
       boxShadow="0 2px 8px rgba(0, 0, 0, 0.1)"
+      data-testid={showBulkActions ? 'bulk-actions-bar' : undefined}
     >
       {showBulkActions && showTagInput ? (
         // Bulk Tag Input Mode
@@ -319,6 +320,7 @@ const CollectionsActions = memo(() => {
                     }}
                     onClick={handleShowTagInput}
                     fontSize="sm"
+                    data-testid="bulk-tag"
                   >
                     <HStack gap={1}>
                       <LuTag size={14} />
@@ -336,6 +338,7 @@ const CollectionsActions = memo(() => {
                     }}
                     onClick={handleBulkArchive}
                     fontSize="sm"
+                    data-testid="bulk-archive"
                   >
                     <HStack gap={1}>
                       <LuArchive size={14} />
@@ -353,6 +356,7 @@ const CollectionsActions = memo(() => {
                     }}
                     onClick={handleBulkDelete}
                     fontSize="sm"
+                    data-testid="bulk-delete"
                   >
                     <HStack gap={1}>
                       <LuTrash2 size={14} />
