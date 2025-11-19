@@ -64,14 +64,15 @@ const XBookmarkManager = () => {
     // 2. User hasn't completed the tour
     // 3. User hasn't dismissed the tour
     // 4. Not on mobile (tour is better on desktop)
-    if (hasSeenSplash && !hasCompletedTour && !tourDismissed && !isMobile) {
+    // 5. Demo modal is not showing (tour will start when modal closes instead)
+    if (hasSeenSplash && !hasCompletedTour && !tourDismissed && !isMobile && !showDemoInfoModal) {
       // Delay slightly to ensure all components are mounted
       const timer = setTimeout(() => {
         startTour()
       }, 1000)
       return () => clearTimeout(timer)
     }
-  }, [hasSeenSplash, hasCompletedTour, tourDismissed, isMobile, startTour])
+  }, [hasSeenSplash, hasCompletedTour, tourDismissed, isMobile, showDemoInfoModal, startTour])
 
   return (
     <Box
