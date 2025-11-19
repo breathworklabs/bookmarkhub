@@ -82,7 +82,7 @@ export const tourSteps: TourStep[] = [
     title: 'Bookmark Cards',
     description:
       'Each bookmark shows key information. Click to view details, star favorites, or use the menu for more actions like archive and delete.',
-    placement: 'top',
+    placement: 'right',
     showArrow: true,
     spotlightPadding: 16,
   },
