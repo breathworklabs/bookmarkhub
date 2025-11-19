@@ -92,7 +92,7 @@ export const tourSteps: TourStep[] = [
     title: 'Bulk Actions',
     description:
       'Select multiple bookmarks by checking the boxes (visible on hover). Use bulk actions to archive, delete, or tag multiple bookmarks at once.',
-    placement: 'top',
+    placement: 'right',
     showArrow: true,
     spotlightPadding: 12,
   },
