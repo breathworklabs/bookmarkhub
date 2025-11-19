@@ -320,6 +320,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
       <Card.Root
         ref={drag as unknown as React.Ref<HTMLDivElement>}
         data-testid="bookmark-card"
+        data-tour="bookmark-card"
         {...cardStyles}
         opacity={isDragging ? 0.5 : 1}
         cursor={isDragging ? 'grabbing' : isInBulkMode ? 'pointer' : 'grab'}

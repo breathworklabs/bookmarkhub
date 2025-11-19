@@ -42,11 +42,19 @@ export interface OnboardingState {
   checklistDismissed: boolean
 }
 
+export interface TourState {
+  hasCompletedTour: boolean
+  currentStep: number | null // null = not active
+  tourDismissed: boolean
+  tourVersion: string // for future tour updates
+}
+
 export interface SettingsState {
   extension: ExtensionSettings
   display: DisplaySettings
   privacy: PrivacySettings
   onboarding: OnboardingState
+  tour: TourState
   hasSeenSplash: boolean
   extensionInstalled: boolean
   isDemoMode: boolean
@@ -79,6 +87,15 @@ export interface SettingsState {
   // Onboarding actions
   toggleChecklistItem: (itemKey: keyof OnboardingState['checklistProgress']) => void
   setChecklistDismissed: (dismissed: boolean) => void
+
+  // Tour actions
+  setTourCompleted: (completed: boolean) => void
+  setTourStep: (step: number | null) => void
+  setTourDismissed: (dismissed: boolean) => void
+  startTour: () => void
+  nextTourStep: () => void
+  previousTourStep: () => void
+  skipTour: () => void
 
   // App state actions
   setHasSeenSplash: (seen: boolean) => void
@@ -130,6 +147,13 @@ const defaultOnboardingState: OnboardingState = {
   checklistDismissed: false,
 }
 
+const defaultTourState: TourState = {
+  hasCompletedTour: false,
+  currentStep: null,
+  tourDismissed: false,
+  tourVersion: '1.0.0',
+}
+
 // Custom storage that uses consolidated localStorage
 // Zustand v5 persist expects StorageValue<S> = { state: S, version?: number }
 const consolidatedStorage = {
@@ -168,6 +192,10 @@ const consolidatedStorage = {
                   ...defaultOnboardingState.checklistProgress,
                   ...(actualSettings.onboarding?.checklistProgress || {}),
                 },
+              },
+              tour: {
+                ...defaultTourState,
+                ...(actualSettings.tour || {}),
               },
               hasSeenSplash: actualSettings.hasSeenSplash ?? false,
               isDemoMode: actualSettings.isDemoMode ?? false,
@@ -232,6 +260,7 @@ export const useSettingsStore = create<SettingsState>()(
       display: defaultDisplaySettings,
       privacy: defaultPrivacySettings,
       onboarding: defaultOnboardingState,
+      tour: defaultTourState,
       hasSeenSplash: false,
       extensionInstalled: false,
       isDemoMode: false,
@@ -346,6 +375,56 @@ export const useSettingsStore = create<SettingsState>()(
           onboarding: { ...state.onboarding, checklistDismissed: dismissed },
         })),
 
+      // Tour actions
+      setTourCompleted: (completed) =>
+        set((state) => ({
+          tour: { ...state.tour, hasCompletedTour: completed },
+        })),
+
+      setTourStep: (step) =>
+        set((state) => ({
+          tour: { ...state.tour, currentStep: step },
+        })),
+
+      setTourDismissed: (dismissed) =>
+        set((state) => ({
+          tour: { ...state.tour, tourDismissed: dismissed },
+        })),
+
+      startTour: () =>
+        set((state) => ({
+          tour: { ...state.tour, currentStep: 0 },
+        })),
+
+      nextTourStep: () =>
+        set((state) => ({
+          tour: {
+            ...state.tour,
+            currentStep:
+              state.tour.currentStep !== null ? state.tour.currentStep + 1 : 0,
+          },
+        })),
+
+      previousTourStep: () =>
+        set((state) => ({
+          tour: {
+            ...state.tour,
+            currentStep:
+              state.tour.currentStep !== null && state.tour.currentStep > 0
+                ? state.tour.currentStep - 1
+                : 0,
+          },
+        })),
+
+      skipTour: () =>
+        set((state) => ({
+          tour: {
+            ...state.tour,
+            currentStep: null,
+            tourDismissed: true,
+          },
+        })),
+
       // App state actions
       setHasSeenSplash: (seen) => set({ hasSeenSplash: seen }),
       setDemoMode: (isDemo) => set({ isDemoMode: isDemo }),
@@ -361,6 +440,7 @@ export const useSettingsStore = create<SettingsState>()(
           display: defaultDisplaySettings,
           privacy: defaultPrivacySettings,
           onboarding: defaultOnboardingState,
+          tour: defaultTourState,
           hasSeenSplash: false,
           isDemoMode: false,
         }),

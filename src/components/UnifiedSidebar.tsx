@@ -156,6 +156,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
     badgeColor,
     onClick,
     active,
+    ...rest
   }: {
     icon: React.ReactNode
     label: string
@@ -164,7 +165,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
     badgeColor?: string
     onClick: () => void
     active: boolean
-  }) => {
+  } & Record<string, any>) => {
     const content = (
       <HStack
         {...useNavigationStyles(active)}
@@ -175,6 +176,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
         onClick={onClick}
         justifyContent={isSidebarCollapsed ? 'center' : 'flex-start'}
         position="relative"
+        {...rest}
       >
         <Box
           w={isSidebarCollapsed ? '20px' : '18px'}
@@ -237,6 +239,8 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
       transition="width 0.2s ease"
       overflow="hidden"
       px={isSidebarCollapsed ? 2 : 5}
+      data-tour="collections-sidebar"
+      data-collapsed={isSidebarCollapsed ? 'true' : 'false'}
     >
       <VStack alignItems="stretch" gap={6} h="full">
         {/* Logo */}
@@ -536,6 +540,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
               label="Settings"
               onClick={() => navigateWithCleanup('/settings', onItemClick)}
               active={isActive('Settings')}
+              data-tour="settings-button"
             />
 
             {/* Toggle Collapse Button - Desktop Only */}
@@ -562,6 +567,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
                 title={
                   isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'
                 }
+                data-tour="sidebar-toggle"
               >
                 <Box w="18px" h="18px">
                   {isSidebarCollapsed ? (

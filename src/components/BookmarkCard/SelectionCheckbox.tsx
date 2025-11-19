@@ -16,6 +16,7 @@ const SelectionCheckbox = memo(
         <Box
           {...selectionStyles}
           data-testid="bookmark-checkbox"
+          data-tour="bookmark-checkbox"
           onClick={onToggle}
           // Prevent any layout shifts
           flexShrink={0}

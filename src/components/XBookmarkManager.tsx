@@ -1,7 +1,7 @@
 import { Box, Flex } from '@chakra-ui/react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { componentStyles } from '../styles/components'
 import { useBookmarkStore } from '../store/bookmarkStore'
 import { useSettingsStore } from '../store/settingsStore'
@@ -19,6 +19,7 @@ import CollectionsActions from './collections/CollectionsActions'
 import InfiniteBookmarkGrid from './InfiniteBookmarkGrid'
 import { BulkActionsBar } from './BulkActionsBar'
 import { DemoModeInfoModal } from './modals/DemoModeInfoModal'
+import InteractiveTour from './tour/InteractiveTour'
 
 const XBookmarkManager = () => {
   const isMobile = useIsMobile()
@@ -31,10 +32,33 @@ const XBookmarkManager = () => {
   const showDemoInfoModal = useSettingsStore((state) => state.showDemoInfoModal)
   const setShowDemoInfoModal = useSettingsStore((state) => state.setShowDemoInfoModal)
 
+  // Tour state
+  const hasCompletedTour = useSettingsStore((state) => state.tour.hasCompletedTour)
+  const tourDismissed = useSettingsStore((state) => state.tour.tourDismissed)
+  const hasSeenSplash = useSettingsStore((state) => state.hasSeenSplash)
+  const startTour = useSettingsStore((state) => state.startTour)
+
+  // Auto-start tour for first-time users
+  useEffect(() => {
+    // Start tour if:
+    // 1. User has seen the splash page (not a brand new user)
+    // 2. User hasn't completed the tour
+    // 3. User hasn't dismissed the tour
+    // 4. Not on mobile (tour is better on desktop)
+    if (hasSeenSplash && !hasCompletedTour && !tourDismissed && !isMobile) {
+      // Delay slightly to ensure all components are mounted
+      const timer = setTimeout(() => {
+        startTour()
+      }, 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [hasSeenSplash, hasCompletedTour, tourDismissed, isMobile, startTour])
+
   return (
     <Box
       {...componentStyles.container.background}
       data-testid="x-bookmark-manager"
+      data-tour="app-container"
       w="100vw"
       h="100vh"
       overflow="hidden"
@@ -157,6 +181,9 @@ const XBookmarkManager = () => {
         isOpen={showDemoInfoModal}
         onClose={() => setShowDemoInfoModal(false)}
       />
+
+      {/* Interactive Tour */}
+      <InteractiveTour />
     </Box>
   )
 }

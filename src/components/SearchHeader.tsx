@@ -329,7 +329,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
         )}
 
         {/* Search Area */}
-        <Box position="relative" maxW={{ base: '100%', md: '400px' }} flex={1}>
+        <Box position="relative" maxW={{ base: '100%', md: '400px' }} flex={1} data-tour="search-bar">
           <HStack {...componentStyles.input.search} gap={2}>
             <Box
               w="16px"
@@ -422,6 +422,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
               bg="var(--color-bg-secondary)"
               borderRadius="8px"
               p="2px"
+              data-tour="view-controls"
             >
               <Button
                 {...secondaryButtonStyles}

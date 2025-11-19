@@ -52,6 +52,7 @@ const AdvancedFilters = () => {
           borderBottomWidth="1px"
           px={{ base: 3, md: 6 }}
           py={0}
+          data-tour="filter-section"
           initial={{
             height: 0,
             opacity: 0,

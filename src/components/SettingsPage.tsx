@@ -26,6 +26,7 @@ import {
   LuBug,
   LuLightbulb,
   LuMessageSquare,
+  LuPlay,
 } from 'react-icons/lu'
 import { useNavigate } from 'react-router-dom'
 import { DndProvider } from 'react-dnd'
@@ -82,6 +83,16 @@ const SettingsPage = () => {
 
   // Collections
   const collections = useCollectionsStore((state) => state.collections)
+
+  // Tour state
+  const startTour = useSettingsStore((state) => state.startTour)
+
+  const handleRestartTour = () => {
+    startTour()
+    toast.success('Tour started! Navigating to main page...')
+    // Navigate back to main page where tour will start
+    setTimeout(() => navigate('/'), 500)
+  }
 
   const handleClearAllData = async () => {
     if (
@@ -1414,6 +1425,26 @@ const SettingsPage = () => {
                         <HStack gap={2}>
                           <LuMessageSquare size={14} style={{ color: 'var(--color-primary)' }} />
                           <Text>General Feedback</Text>
+                        </HStack>
+                      </Button>
+
+                      <Button
+                        onClick={handleRestartTour}
+                        size="sm"
+                        variant="outline"
+                        style={{
+                          justifyContent: 'flex-start',
+                          borderColor: 'var(--color-border)',
+                          color: 'var(--color-text-secondary)',
+                        }}
+                        _hover={{
+                          bg: 'var(--color-bg-hover)',
+                          borderColor: 'var(--color-border-hover)',
+                        }}
+                      >
+                        <HStack gap={2}>
+                          <LuPlay size={14} style={{ color: 'var(--color-accent)' }} />
+                          <Text>Restart Tour</Text>
                         </HStack>
                       </Button>
                     </VStack>
