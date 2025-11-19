@@ -43,10 +43,10 @@ export const tourSteps: TourStep[] = [
   },
   {
     id: 'filters',
-    target: '[data-tour="filter-section"]',
-    title: 'Filter Your View',
+    target: '[data-tour="filters-button"]',
+    title: 'Advanced Filters',
     description:
-      'Filter bookmarks by source (Twitter, manual), starred status, or read status. Combine multiple filters to narrow your results.',
+      'Click the "Filters" button to access advanced filtering options. Filter bookmarks by date range, author, domain, tags, starred status, and more. Combine multiple filters to find exactly what you need.',
     placement: 'bottom',
     showArrow: true,
     spotlightPadding: 12,
@@ -112,7 +112,7 @@ export const tourSteps: TourStep[] = [
     title: 'Settings & Preferences',
     description:
       'Access app settings to customize themes, manage extensions, configure sync options, and export your data.',
-    placement: 'left',
+    placement: 'right',
     showArrow: true,
     spotlightPadding: 12,
   },

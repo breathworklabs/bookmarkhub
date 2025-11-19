@@ -54,6 +54,10 @@ const InteractiveTour = memo(() => {
       return
     }
 
+    let retryCount = 0
+    const maxRetries = 20 // Try for up to 2 seconds
+    let retryTimer: NodeJS.Timeout
+
     const updatePosition = () => {
       const targetSelector = activeStep.target
       const element = document.querySelector(targetSelector)
@@ -66,23 +70,31 @@ const InteractiveTour = memo(() => {
           width: rect.width,
           height: rect.height,
         })
+      } else if (retryCount < maxRetries) {
+        // Element not found, retry after a short delay
+        retryCount++
+        retryTimer = setTimeout(updatePosition, 100)
       } else {
-        setTargetPosition(null)
+        // Give up after max retries - skip to next step
+        console.warn(`Tour: Could not find target element: ${targetSelector}`)
+        nextTourStep()
       }
     }
 
-    // Initial position
-    updatePosition()
+    // Initial position with small delay to allow DOM to settle
+    const initialTimer = setTimeout(updatePosition, 100)
 
     // Update on resize/scroll
     window.addEventListener('resize', updatePosition)
     window.addEventListener('scroll', updatePosition, true)
 
     return () => {
+      clearTimeout(initialTimer)
+      clearTimeout(retryTimer)
       window.removeEventListener('resize', updatePosition)
       window.removeEventListener('scroll', updatePosition, true)
     }
-  }, [isTourActive, activeStep])
+  }, [isTourActive, activeStep, nextTourStep])
 
   // Handle step actions
   useEffect(() => {

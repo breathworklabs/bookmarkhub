@@ -652,6 +652,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
           ) : (
             <Button
               {...secondaryButtonStyles}
+              data-tour="filters-button"
               style={{
                 background: filterData.isFiltersPanelOpen
                   ? 'var(--color-blue)'
