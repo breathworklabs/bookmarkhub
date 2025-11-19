@@ -38,6 +38,18 @@ const XBookmarkManager = () => {
   const hasSeenSplash = useSettingsStore((state) => state.hasSeenSplash)
   const startTour = useSettingsStore((state) => state.startTour)
 
+  // Handle demo modal close - start tour after dismissing demo modal
+  const handleDemoModalClose = () => {
+    setShowDemoInfoModal(false)
+    // Start tour after modal closes if user hasn't completed it yet
+    if (!hasCompletedTour && !tourDismissed && !isMobile) {
+      // Delay slightly to ensure modal is fully closed
+      setTimeout(() => {
+        startTour()
+      }, 500)
+    }
+  }
+
   // Expose startTour for e2e testing
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -186,7 +198,7 @@ const XBookmarkManager = () => {
       {/* Demo Mode Info Modal */}
       <DemoModeInfoModal
         isOpen={showDemoInfoModal}
-        onClose={() => setShowDemoInfoModal(false)}
+        onClose={handleDemoModalClose}
       />
 
       {/* Interactive Tour */}
