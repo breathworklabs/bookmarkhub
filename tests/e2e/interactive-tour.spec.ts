@@ -2,31 +2,35 @@ import { test, expect } from '@playwright/test'
 
 /**
  * Helper function to manually start the tour
- * This is more reliable than relying on auto-start in test environment
+ * Uses the exposed __startTour method from XBookmarkManager
  */
 async function startTour(page: any) {
-  // Set tour state in localStorage to trigger it
+  // Wait a moment for the app to fully initialize
+  await page.waitForTimeout(1000)
+
+  // Call the exposed startTour method
   await page.evaluate(() => {
-    const data = JSON.parse(localStorage.getItem('x-bookmark-manager-data') || '{}')
-    data.settings = data.settings || {}
-    data.settings.hasSeenSplash = true // Ensure this is set
-    data.settings.tour = {
-      hasCompletedTour: false,
-      currentStep: 0,
-      tourDismissed: false,
-      tourVersion: '1.0.0',
+    // The __startTour method is exposed by XBookmarkManager
+    if ((window as any).__startTour) {
+      (window as any).__startTour()
+    } else {
+      // Fallback: manually set the tour state
+      const data = JSON.parse(localStorage.getItem('x-bookmark-manager-data') || '{}')
+      data.settings = data.settings || {}
+      data.settings.hasSeenSplash = true
+      data.settings.tour = {
+        hasCompletedTour: false,
+        currentStep: 0,
+        tourDismissed: false,
+        tourVersion: '1.0.0',
+      }
+      localStorage.setItem('x-bookmark-manager-data', JSON.stringify(data))
+      window.location.reload()
     }
-    localStorage.setItem('x-bookmark-manager-data', JSON.stringify(data))
   })
 
-  // Reload page to apply changes
-  await page.reload()
-
-  // Wait for app to fully load
-  await page.waitForLoadState('networkidle')
-
-  // Wait for tour to appear (give it extra time)
-  await page.waitForTimeout(3000)
+  // Wait for tour to appear
+  await page.waitForTimeout(2000)
 }
 
 test.describe('Interactive Tour', () => {
@@ -217,15 +221,22 @@ test.describe('Interactive Tour', () => {
       'Advanced Filters',
       'Organize with Collections',
       'Bookmark Cards',
-      'Bulk Actions',
+      'Bulk Actions', // This title appears in the tour tooltip
       'Customize Your View',
       'Settings & Preferences',
     ]
 
     for (let i = 0; i < steps.length; i++) {
-      await expect(page.locator(`text=${steps[i]}`)).toBeVisible({
-        timeout: 10000,
-      })
+      // Use more specific selector for "Bulk Actions" to avoid ambiguity
+      if (steps[i] === 'Bulk Actions') {
+        await expect(page.locator('p:text-is("Bulk Actions")').first()).toBeVisible({
+          timeout: 10000,
+        })
+      } else {
+        await expect(page.locator(`text=${steps[i]}`)).toBeVisible({
+          timeout: 10000,
+        })
+      }
       await page.locator('button:has-text("Next")').click()
       await page.waitForTimeout(500)
     }
@@ -306,15 +317,22 @@ test.describe('Interactive Tour', () => {
       'Advanced Filters',
       'Organize with Collections',
       'Bookmark Cards',
-      'Bulk Actions',
+      'Bulk Actions', // This title appears in the tour tooltip
       'Customize Your View',
       'Settings & Preferences',
     ]
 
     for (let i = 0; i < steps.length; i++) {
-      await expect(page.locator(`text=${steps[i]}`)).toBeVisible({
-        timeout: 10000,
-      })
+      // Use more specific selector for "Bulk Actions" to avoid ambiguity
+      if (steps[i] === 'Bulk Actions') {
+        await expect(page.locator('p:text-is("Bulk Actions")').first()).toBeVisible({
+          timeout: 10000,
+        })
+      } else {
+        await expect(page.locator(`text=${steps[i]}`)).toBeVisible({
+          timeout: 10000,
+        })
+      }
       await page.locator('button:has-text("Next")').click()
       await page.waitForTimeout(500)
     }
@@ -437,7 +455,10 @@ test.describe('Interactive Tour', () => {
 
     // Find and click Restart Tour button
     await page.locator('button:has-text("Restart Tour")').click()
-    await page.waitForTimeout(1000)
+
+    // Wait for navigation back to main page
+    await page.waitForURL('http://localhost:5173/', { timeout: 5000 })
+    await page.waitForTimeout(2000) // Give tour time to initialize
 
     // Should navigate back to main page and show tour
     await expect(page.locator('text=Welcome to BookmarksX!')).toBeVisible({

@@ -38,6 +38,13 @@ const XBookmarkManager = () => {
   const hasSeenSplash = useSettingsStore((state) => state.hasSeenSplash)
   const startTour = useSettingsStore((state) => state.startTour)
 
+  // Expose startTour for e2e testing
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).__startTour = startTour
+    }
+  }, [startTour])
+
   // Auto-start tour for first-time users
   useEffect(() => {
     // Start tour if:
