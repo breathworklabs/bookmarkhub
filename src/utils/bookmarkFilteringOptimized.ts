@@ -87,6 +87,8 @@ export const filterBookmarksOptimized = ({
       case 'today':
         rangeStartDate = new Date()
         rangeStartDate.setHours(0, 0, 0, 0)
+        rangeEndDate = new Date()
+        rangeEndDate.setHours(23, 59, 59, 999)
         break
       case 'week':
         rangeStartDate = new Date()
