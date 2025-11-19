@@ -59,15 +59,17 @@ const DateRangeFilterComponent = () => {
       setActiveCollection(null)
 
       // Sync with FilterBar tabs
-      // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=Threads, 4=Media
+      // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=This Month, 4=Threads, 5=Media
       if (type === 'all') {
         setActiveTab(0)
       } else if (type === 'today') {
         setActiveTab(1)
       } else if (type === 'week') {
         setActiveTab(2)
+      } else if (type === 'month') {
+        setActiveTab(3)
       }
-      // month and custom don't have corresponding tabs, leave as-is
+      // custom doesn't have a corresponding tab, leave as-is
     }
   }
 

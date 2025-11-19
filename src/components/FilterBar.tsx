@@ -6,7 +6,7 @@ import { useFilterTabStyles } from '../hooks/useStyles'
 import { componentStyles } from '../styles/components'
 
 // Memoized filter tabs array
-const FILTER_TABS = ['All', 'Today', 'This Week', 'Threads', 'Media']
+const FILTER_TABS = ['All', 'Today', 'This Week', 'This Month', 'Threads', 'Media']
 
 const FilterBar = memo(() => {
   const { activeTab, setActiveTab, setDateRangeFilter } = useBookmarkSelectors()
@@ -20,13 +20,15 @@ const FilterBar = memo(() => {
       resetFilters()
 
       // Sync with DateRangeFilter
-      // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=Threads, 4=Media
+      // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=This Month, 4=Threads, 5=Media
       if (index === 0) {
         setDateRangeFilter({ type: 'all' })
       } else if (index === 1) {
         setDateRangeFilter({ type: 'today' })
       } else if (index === 2) {
         setDateRangeFilter({ type: 'week' })
+      } else if (index === 3) {
+        setDateRangeFilter({ type: 'month' })
       }
       // Threads and Media don't have corresponding date filters
     },

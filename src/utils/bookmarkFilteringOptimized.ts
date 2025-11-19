@@ -70,13 +70,20 @@ export const filterBookmarksOptimized = ({
     : null
 
   // Pre-compute date thresholds for activeTab
+  // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=This Month, 4=Threads, 5=Media
   let tabDateThreshold: Date | null = null
   if (activeTab === 1) {
+    // Today
     tabDateThreshold = new Date()
     tabDateThreshold.setHours(0, 0, 0, 0)
   } else if (activeTab === 2) {
+    // This Week
     tabDateThreshold = new Date()
     tabDateThreshold.setDate(tabDateThreshold.getDate() - 7)
+  } else if (activeTab === 3) {
+    // This Month
+    tabDateThreshold = new Date()
+    tabDateThreshold.setMonth(tabDateThreshold.getMonth() - 1)
   }
 
   // Pre-compute date range thresholds
@@ -135,19 +142,20 @@ export const filterBookmarksOptimized = ({
     }
 
     // 4. Active tab filter
+    // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=This Month, 4=Threads, 5=Media
     if (activeTab >= 1) {
       const bookmarkDate = getBookmarkDate(bookmark)
 
-      if (activeTab === 1 || activeTab === 2) {
-        // Today or This Week
+      if (activeTab === 1 || activeTab === 2 || activeTab === 3) {
+        // Today, This Week, or This Month
         if (bookmarkDate < tabDateThreshold!) return false
-      } else if (activeTab === 3) {
+      } else if (activeTab === 4) {
         // Threads
         const isThread = (bookmark.content && bookmark.content.length > 200) ||
           bookmark.domain === 'x.com' ||
           bookmark.domain === 'twitter.com'
         if (!isThread) return false
-      } else if (activeTab === 4) {
+      } else if (activeTab === 5) {
         // Media
         const hasMedia = bookmark.thumbnail_url ||
           bookmark.url.includes('youtube.com') ||
