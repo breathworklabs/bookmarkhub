@@ -47,8 +47,9 @@ const FILTER_OPTIONS = [
   { index: 0, label: 'All Time', icon: LuCalendar },
   { index: 1, label: 'Today', icon: LuCalendar },
   { index: 2, label: 'This Week', icon: LuCalendar },
-  { index: 3, label: 'Threads', icon: LuMessageSquare },
-  { index: 4, label: 'Media', icon: LuImage },
+  { index: 3, label: 'This Month', icon: LuCalendar },
+  { index: 4, label: 'Threads', icon: LuMessageSquare },
+  { index: 5, label: 'Media', icon: LuImage },
 ]
 
 // Helper function to get the active filter label
