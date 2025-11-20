@@ -407,6 +407,7 @@ See also: **Bulk Operations** section
 - **All Bookmarks**: Show everything
 - **Today**: Bookmarks added today
 - **This Week**: Bookmarks from past 7 days
+- **This Month**: Bookmarks from past 30 days
 - **Threads**: Multi-part content
 - **Media**: Bookmarks with images/videos
 

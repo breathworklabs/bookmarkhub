@@ -2848,6 +2848,12 @@ const SearchFiltersGuide = () => {
                   fontSize="sm"
                   style={{ color: 'var(--color-text-secondary)' }}
                 >
+                  • <strong>This Month</strong> - Last 30 days
+                </Text>
+                <Text
+                  fontSize="sm"
+                  style={{ color: 'var(--color-text-secondary)' }}
+                >
                   • <strong>Threads</strong> - Multi-part content
                 </Text>
                 <Text
