@@ -109,7 +109,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
   const navigate = useNavigate()
 
   // Time Range dropdown selectors
-  const { activeTab, setActiveTab } = useBookmarkSelectors()
+  const { activeTab, setActiveTab, setDateRangeFilter } = useBookmarkSelectors()
   const resetFilters = useFilterReset()
 
   // Call hooks unconditionally to avoid "Rendered fewer hooks" error
@@ -297,8 +297,21 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
     (index: number) => {
       setActiveTab(index)
       resetFilters()
+
+      // Sync with DateRangeFilter
+      // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=This Month, 4=Threads, 5=Media
+      if (index === 0) {
+        setDateRangeFilter({ type: 'all' })
+      } else if (index === 1) {
+        setDateRangeFilter({ type: 'today' })
+      } else if (index === 2) {
+        setDateRangeFilter({ type: 'week' })
+      } else if (index === 3) {
+        setDateRangeFilter({ type: 'month' })
+      }
+      // Threads and Media don't have corresponding date filters
     },
-    [setActiveTab, resetFilters]
+    [setActiveTab, setDateRangeFilter, resetFilters]
   )
 
   return (
