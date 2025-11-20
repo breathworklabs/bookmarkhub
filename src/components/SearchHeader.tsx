@@ -521,7 +521,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
                       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
                     }}
                   >
-                    <For each={FILTER_OPTIONS.slice(0, 3)}>
+                    <For each={FILTER_OPTIONS.slice(0, 4)}>
                       {(option) => {
                         const Icon = option.icon
                         const isActive = activeTab === option.index
@@ -559,7 +559,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
                       borderColor="var(--color-border)"
                       opacity={0.5}
                     />
-                    <For each={FILTER_OPTIONS.slice(3)}>
+                    <For each={FILTER_OPTIONS.slice(4)}>
                       {(option) => {
                         const Icon = option.icon
                         const isActive = activeTab === option.index
