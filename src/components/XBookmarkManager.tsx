@@ -171,6 +171,11 @@ const XBookmarkManager = () => {
                     <AdvancedFilters />
                   </ErrorBoundary>
 
+                  {/* Filter Bar */}
+                  <ErrorBoundary context="FilterBar">
+                    <FilterBar />
+                  </ErrorBoundary>
+
                   {/* Collections Actions Panel - Desktop only */}
                   <ErrorBoundary context="CollectionsActions">
                     <CollectionsActions />
