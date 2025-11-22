@@ -84,13 +84,13 @@ const OnboardingScreen = () => {
       toast.success(message, { duration: 2000 })
 
       // Wait for toast to show, then reload using hard reload
-      const reloadTimeout = setTimeout(() => {
+      setTimeout(() => {
         logger.debug('Reloading page after successful import')
         // Use hard reload to bypass cache and ensure fresh data
         window.location.href = window.location.origin
       }, 2500)
 
-      logger.debug('Reload timeout scheduled', { timeoutId: reloadTimeout })
+      logger.debug('Reload timeout scheduled')
     } catch (error) {
       logger.error('Import failed', { error })
       toast.error(

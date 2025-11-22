@@ -5,7 +5,6 @@ import {
   Text,
   Badge,
   Separator,
-  IconButton,
   Button,
   Image,
 } from '@chakra-ui/react'
