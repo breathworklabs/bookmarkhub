@@ -16,11 +16,24 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://platform.twitter.com", "https://cdn.jsdelivr.net"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "'unsafe-eval'",
+        "https://platform.twitter.com",
+        "https://cdn.jsdelivr.net",
+        "https://static.cloudflareinsights.com"
+      ],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
-      connectSrc: ["'self'", "https://api.twitter.com", "https://x.com", "https://*.sentry.io"],
+      connectSrc: [
+        "'self'",
+        "https://api.twitter.com",
+        "https://x.com",
+        "https://*.sentry.io",
+        "https://cloudflareinsights.com"
+      ],
       frameSrc: ["'self'", "https://platform.twitter.com"],
       mediaSrc: ["'self'", "https:", "blob:"],
     },
