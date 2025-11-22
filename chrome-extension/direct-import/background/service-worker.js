@@ -1,7 +1,7 @@
 // Background service worker for BookmarkHub Chrome Extension
 
-// BookmarkHub app URL
-const BOOKMARKX_URL = 'http://localhost:5173'
+// BookmarkHub app URL - simplified to always use bookmarkhub.app
+const BOOKMARKX_URL = 'https://bookmarkhub.app'
 
 // Listen for messages from content script and popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

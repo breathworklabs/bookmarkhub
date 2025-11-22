@@ -674,9 +674,13 @@
       // Check if it's a video
       if (item.type === 'video' || item.type === 'animated_gif') {
         hasVideo = true
-        // Use video thumbnail as the first image
-        if (mediaUrl && !thumbnail) {
-          thumbnail = mediaUrl
+        // Add video thumbnail to images array
+        if (mediaUrl) {
+          contentImages.push(mediaUrl)
+          // Use video thumbnail as the first image
+          if (!thumbnail) {
+            thumbnail = mediaUrl
+          }
         }
       }
 

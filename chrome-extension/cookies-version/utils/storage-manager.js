@@ -164,7 +164,7 @@ class StorageManager {
         tabs.forEach((tab) => {
           if (
             tab.url &&
-            (tab.url.includes('localhost') ||
+            (tab.url.includes(APP_URL.replace('http://', '').replace('https://', '').split('/')[0]) ||
               tab.url.includes('x-bookmark-manager'))
           ) {
             chrome.tabs

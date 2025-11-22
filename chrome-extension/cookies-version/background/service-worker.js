@@ -3,6 +3,9 @@
  * This runs in a privileged context and can make API calls without CORS restrictions
  */
 
+// Import configuration
+importScripts('../config.js')
+
 class BookmarkExtractor {
   constructor() {
     this.queryId = 'ire7TB3NNzZOIa2SeD8pLA' // Current as of Oct 2025
@@ -107,7 +110,7 @@ class BookmarkExtractor {
       // Save to storage
       const saveResult = await this.saveBookmarks(bookmarks)
 
-      // Notify all localhost tabs to sync immediately
+      // Notify all BookmarkHub tabs to sync immediately
       await this.notifyLocalhostTabs()
 
       return {
@@ -497,6 +500,8 @@ class BookmarkExtractor {
           tweet.entities?.media ||
           []
         ).length,
+        has_video: this.hasVideo(tweet),
+        images: this.extractImages(tweet),
       },
       created_at: new Date(tweet.created_at).toISOString(),
       updated_at: new Date().toISOString(),
@@ -512,6 +517,29 @@ class BookmarkExtractor {
       return media[0].media_url_https || media[0].media_url
     }
     return tweet.user.profile_image_url || null
+  }
+
+  /**
+   * Check if tweet has video
+   */
+  hasVideo(tweet) {
+    const media = tweet.extended_entities?.media || tweet.entities?.media
+    if (!media || media.length === 0) return false
+
+    return media.some(m => m.type === 'video' || m.type === 'animated_gif')
+  }
+
+  /**
+   * Extract all image URLs from tweet
+   */
+  extractImages(tweet) {
+    const media = tweet.extended_entities?.media || tweet.entities?.media
+    if (!media || media.length === 0) return []
+
+    return media
+      .filter(m => m.type === 'photo' || m.type === 'video' || m.type === 'animated_gif')
+      .map(m => m.media_url_https || m.media_url)
+      .filter(url => url) // Remove any null/undefined
   }
 
   /**
@@ -670,17 +698,17 @@ class BookmarkExtractor {
   }
 
   /**
-   * Notify localhost tabs to sync immediately
+   * Notify BookmarkHub tabs to sync immediately
    */
   async notifyLocalhostTabs() {
     try {
-      // Find all localhost tabs
+      // Find all BookmarkHub tabs
       const tabs = await chrome.tabs.query({
-        url: ['http://localhost/*', 'http://127.0.0.1/*'],
+        url: [APP_URL_PATTERN],
       })
 
       console.log(
-        `📢 Notifying ${tabs.length} localhost tab(s) to sync bookmarks`
+        `📢 Notifying ${tabs.length} BookmarkHub tab(s) to sync bookmarks`
       )
 
       // Send sync message to each tab
@@ -695,8 +723,8 @@ class BookmarkExtractor {
 
       // Also create/activate a tab if none exist
       if (tabs.length === 0) {
-        console.log('📌 No localhost tabs found, opening default URL...')
-        await chrome.tabs.create({ url: 'http://localhost:3000' })
+        console.log('📌 No BookmarkHub tabs found, opening default URL...')
+        await chrome.tabs.create({ url: APP_URL })
       }
     } catch (error) {
       console.error('Error notifying tabs:', error)

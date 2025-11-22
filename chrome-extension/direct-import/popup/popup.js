@@ -6,8 +6,8 @@ const progress = document.getElementById('progress')
 const progressFill = document.getElementById('progressFill')
 const progressText = document.getElementById('progressText')
 
-// BookmarkHub app URL (update this to your deployed URL or localhost)
-const BOOKMARKX_URL = 'http://localhost:5173'
+// BookmarkHub app URL - simplified to always use bookmarkhub.app
+const BOOKMARKX_URL = 'https://bookmarkhub.app'
 
 // Listen for messages from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

@@ -132,7 +132,7 @@ class SimplePopupManager {
         // Check if app is open
         setTimeout(async () => {
           const tabs = await chrome.tabs.query({
-            url: ['http://localhost/*', 'http://127.0.0.1/*'],
+            url: [APP_URL_PATTERN, APP_URL_PATTERN],
           })
 
           if (tabs.length === 0) {
@@ -398,14 +398,14 @@ class SimplePopupManager {
 
       console.log(`📦 ${bookmarks.length} bookmarks ready for auto-sync`)
 
-      // Find localhost tabs (any port)
-      const localhostTabs = await chrome.tabs.query({
-        url: ['http://localhost/*', 'http://127.0.0.1/*'],
+      // Find BookmarkHub tabs (any port)
+      const bookmarkHubTabs = await chrome.tabs.query({
+        url: [APP_URL_PATTERN, APP_URL_PATTERN],
       })
 
-      if (localhostTabs.length > 0) {
-        // Use first localhost tab found
-        const managerTab = localhostTabs[0]
+      if (bookmarkHubTabs.length > 0) {
+        // Use first BookmarkHub tab found
+        const managerTab = bookmarkHubTabs[0]
         console.log(`📍 Opening existing tab at: ${managerTab.url}`)
         await chrome.tabs.update(managerTab.id, { active: true })
         this.updateStatus(
@@ -415,7 +415,7 @@ class SimplePopupManager {
         // Ask user for their app URL
         const appUrl = prompt(
           'Enter your BookmarkHub URL:',
-          'http://localhost:3000'
+          APP_URL
         )
 
         if (!appUrl) {

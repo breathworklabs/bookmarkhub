@@ -28,7 +28,7 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["http://localhost:5173/*", "https://bookmarkhub.vercel.app/*"],
+      "matches": ["https://bookmarkhub.app/*"],
       "js": ["content-scripts/bookmarkhub-bridge.js"],
       "run_at": "document_start"
     }
