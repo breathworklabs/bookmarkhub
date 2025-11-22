@@ -294,7 +294,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
               style={{ borderColor: 'var(--color-border)' }}
               mb={2}
             >
-              <HStack justify="space-between" align="center" px={3} py={3}>
+              <Box px={3} py={3}>
                 <Text
                   fontWeight="600"
                   fontSize="11px"
@@ -304,36 +304,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
                 >
                   Collections
                 </Text>
-                <IconButton
-                  size="xs"
-                  variant="ghost"
-                  aria-label="Create collection"
-                  style={{ color: 'var(--color-text-tertiary)' }}
-                  _hover={{
-                    bg: 'var(--color-border)',
-                    color: 'var(--color-text-primary)',
-                  }}
-                  _focus={{
-                    boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)',
-                    outline: 'none',
-                  }}
-                  minW="24px"
-                  h="24px"
-                  onClick={() =>
-                    showCreateCollection({
-                      onCreate: async (collectionData) => {
-                        try {
-                          await createCollection(collectionData)
-                        } catch (error) {
-                          logger.error('Failed to create collection', { error })
-                        }
-                      },
-                    })
-                  }
-                >
-                  <LuFolderPlus size={14} />
-                </IconButton>
-              </HStack>
+              </Box>
             </Box>
 
             <Box flex={1} overflowY="auto">

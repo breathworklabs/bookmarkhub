@@ -25,6 +25,10 @@ import themeVideo from '../assets/splash_videos/theme.mp4'
 import exportVideo from '../assets/splash_videos/export.mp4'
 import filtersVideo from '../assets/splash_videos/filters.mp4'
 import collectionsVideo from '../assets/splash_videos/collections.mp4'
+import tagsVideo from '../assets/splash_videos/tags.mp4'
+import tagsImage from '../assets/splash_images/tags.png'
+import extensionVideo from '../assets/splash_videos/extension.mp4'
+import extensionImage from '../assets/splash_images/extension.png'
 import { APP_NAME, APP_COPYRIGHT, CHROME_EXTENSION_URL } from '../constants/app'
 
 interface FeatureShowcaseProps {
@@ -571,6 +575,12 @@ const SplashPage = () => {
               }
               if (feature.title === 'Advanced Filtering') {
                 return { videoSrc: filtersVideo, thumbnailSrc: appScreenshot }
+              }
+              if (feature.title === 'Tag Management') {
+                return { videoSrc: tagsVideo, thumbnailSrc: tagsImage }
+              }
+              if (feature.title === 'X/Twitter Import') {
+                return { videoSrc: extensionVideo, thumbnailSrc: extensionImage }
               }
               return { videoSrc: undefined, thumbnailSrc: undefined }
             }

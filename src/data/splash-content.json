@@ -57,7 +57,9 @@
         "Preserves tweet metadata and media",
         "Automatic sync via extension",
         "Keep all your saved tweets organized"
-      ]
+      ],
+      "image": "/src/assets/splash_images/extension.png",
+      "video": "/src/assets/splash_videos/extension.mp4"
     },
     {
       "badge": "Tagging",
@@ -68,7 +70,9 @@
         "Filter and search by tags",
         "Visual tag management",
         "Quick tag assignment and editing"
-      ]
+      ],
+      "image": "/src/assets/splash_images/tags.png",
+      "video": "/src/assets/splash_videos/tags.mp4"
     },
     {
       "badge": "Export & Backup",
@@ -90,17 +94,6 @@
         "Light mode for daytime use",
         "Auto mode follows system preferences",
         "Instant theme switching"
-      ]
-    },
-    {
-      "badge": "Local Storage",
-      "title": "Offline-First",
-      "description": "Your bookmarks, always accessible. Everything stored locally in your browser for instant access, even without internet. No server required, complete privacy, lightning-fast performance.",
-      "highlights": [
-        "Full functionality without internet",
-        "Lightning-fast local storage",
-        "Complete data privacy",
-        "No server dependencies"
       ]
     }
   ],

@@ -23,9 +23,11 @@ const OnboardingScreen = () => {
       const data = JSON.parse(text)
 
       logger.debug('Import file parsed', {
-        isArray: Array.isArray(data),
-        hasBookmarks: !!data?.bookmarks,
-        firstItem: Array.isArray(data) ? data[0] : null
+        context: {
+          isArray: Array.isArray(data),
+          hasBookmarks: !!data?.bookmarks,
+          firstItem: Array.isArray(data) ? data[0] : null
+        }
       })
 
       let importedCount = 0
@@ -65,8 +67,12 @@ const OnboardingScreen = () => {
         throw new Error('Import succeeded but bookmarks were not saved to storage. Please try again.')
       }
 
-      // Mark that user has seen the splash page (since they're actively using the app)
+      // Mark that user has seen the splash page BEFORE reloading
+      // This prevents redirect to /welcome after reload
       setHasSeenSplash(true)
+
+      // Ensure settings are persisted to localStorage immediately
+      await new Promise(resolve => setTimeout(resolve, 100))
 
       // Show success toast
       const message =
@@ -74,13 +80,17 @@ const OnboardingScreen = () => {
           ? '✓ Imported 1 bookmark successfully!'
           : `✓ Imported ${importedCount} bookmarks successfully!`
 
+      logger.debug('Showing success toast, will reload in 2.5s')
       toast.success(message, { duration: 2000 })
 
-      // Wait for toast to show, then reload
-      setTimeout(() => {
+      // Wait for toast to show, then reload using hard reload
+      const reloadTimeout = setTimeout(() => {
         logger.debug('Reloading page after successful import')
-        window.location.reload()
+        // Use hard reload to bypass cache and ensure fresh data
+        window.location.href = window.location.origin
       }, 2500)
+
+      logger.debug('Reload timeout scheduled', { timeoutId: reloadTimeout })
     } catch (error) {
       logger.error('Import failed', { error })
       toast.error(

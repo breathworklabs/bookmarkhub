@@ -1,5 +1,6 @@
 import { Box, SimpleGrid, For } from '@chakra-ui/react'
 import { memo, useCallback } from 'react'
+import { LuExternalLink } from 'react-icons/lu'
 import { type Bookmark } from '../../types/bookmark'
 import { useModal } from '../modals/ModalProvider'
 import LazyImage from '../LazyImage'
@@ -117,7 +118,12 @@ const BookmarkMedia = memo(
             border="1px solid var(--color-border)"
             cursor="pointer"
             _hover={{ filter: 'brightness(1.1)' }}
-            onClick={() => handleImageClick(images, 0)}
+            onClick={() => {
+              if (!isInBulkMode) {
+                window.open(bookmark.url, '_blank')
+              }
+            }}
+            title="Watch on Twitter"
           >
             {images.length > 0 ? (
               <LazyImage
@@ -141,7 +147,7 @@ const BookmarkMedia = memo(
                 🎥 Video Content
               </Box>
             )}
-            {/* Video play overlay */}
+            {/* External link overlay for videos */}
             <Box
               position="absolute"
               top="50%"
@@ -164,7 +170,7 @@ const BookmarkMedia = memo(
               transition="all 0.2s ease"
               cursor="pointer"
             >
-              ▶
+              <LuExternalLink size={24} />
             </Box>
           </Box>
         </Box>
