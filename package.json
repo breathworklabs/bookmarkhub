@@ -42,6 +42,7 @@
     "compromise": "^14.14.4",
     "dompurify": "^3.3.0",
     "framer-motion": "^12.23.16",
+    "http-proxy": "^1.18.1",
     "jszip": "^3.10.1",
     "lucide-react": "^0.544.0",
     "react": "^19.1.1",

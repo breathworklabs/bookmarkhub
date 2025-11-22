@@ -49,3 +49,9 @@ public/*test*.json
 
 *storybook.log
 storybook-static
+
+# SSL certificates
+.certs/
+*.pem
+*.key
+*.crt
