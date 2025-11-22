@@ -273,10 +273,22 @@ const SplashPage = () => {
     navigate('/')
   }
 
-  // Image mapping for features
+  // Image and video mapping for features
   const featureImages: Record<string, string> = {
+    'Custom Collections': collectionsImage,
+    'X/Twitter Import': extensionImage,
+    'Tag Management': tagsImage,
     'Dark & Light Mode': themeSwitchingImage,
     'Data Export': dataExportImage,
+  }
+
+  const featureVideos: Record<string, string> = {
+    'Custom Collections': collectionsVideo,
+    'Advanced Filtering': filtersVideo,
+    'X/Twitter Import': extensionVideo,
+    'Tag Management': tagsVideo,
+    'Data Export': exportVideo,
+    'Dark & Light Mode': themeVideo,
   }
 
   const handleImageClick = (title: string) => {
@@ -553,38 +565,9 @@ const SplashPage = () => {
           </VStack>
 
           {splashContent.features.map((feature, index) => {
-            // Use video/image from JSON data if available, otherwise fallback to hardcoded imports
-            const getVideoAndThumbnail = () => {
-              // First check if feature has video/image defined in JSON
-              if (feature.video && feature.image) {
-                return {
-                  videoSrc: feature.video,
-                  thumbnailSrc: feature.image
-                }
-              }
-
-              // Fallback to hardcoded mappings for backwards compatibility
-              if (feature.title === 'Custom Collections') {
-                return { videoSrc: collectionsVideo, thumbnailSrc: collectionsImage }
-              }
-              if (feature.title === 'Dark & Light Mode') {
-                return { videoSrc: themeVideo, thumbnailSrc: themeSwitchingImage }
-              }
-              if (feature.title === 'Data Export') {
-                return { videoSrc: exportVideo, thumbnailSrc: dataExportImage }
-              }
-              if (feature.title === 'Advanced Filtering') {
-                return { videoSrc: filtersVideo, thumbnailSrc: appScreenshot }
-              }
-              if (feature.title === 'Tag Management') {
-                return { videoSrc: tagsVideo, thumbnailSrc: tagsImage }
-              }
-              if (feature.title === 'X/Twitter Import') {
-                return { videoSrc: extensionVideo, thumbnailSrc: extensionImage }
-              }
-              return { videoSrc: undefined, thumbnailSrc: undefined }
-            }
-            const { videoSrc, thumbnailSrc } = getVideoAndThumbnail()
+            // Use the mapped imports based on feature title
+            const videoSrc = featureVideos[feature.title]
+            const thumbnailSrc = featureImages[feature.title] || appScreenshot
 
             return (
               <FeatureShowcase
