@@ -1050,14 +1050,14 @@ const GettingStartedGuide = () => {
           style={{ color: 'var(--color-text-primary)' }}
           mb={3}
         >
-          Welcome to BookmarksX
+          Welcome to BookmarkHub
         </Text>
         <Text
           fontSize="sm"
           style={{ color: 'var(--color-text-secondary)', lineHeight: '1.6' }}
           mb={4}
         >
-          BookmarksX is a privacy-focused bookmark management tool designed
+          BookmarkHub is a privacy-focused bookmark management tool designed
           specifically for X/Twitter content. All your data stays on your device
           - no servers, no tracking, complete privacy.
         </Text>
@@ -1636,7 +1636,7 @@ const BookmarkManagementGuide = () => {
           fontSize="sm"
           style={{ color: 'var(--color-text-secondary)', lineHeight: '1.6' }}
         >
-          Learn how to add, edit, delete, and organize your bookmarks
+          Learn how to add, approve, delete, and organize your bookmarks
           effectively. BookmarksX gives you complete control over your bookmark
           collection.
         </Text>
@@ -1821,7 +1821,7 @@ const BookmarkManagementGuide = () => {
           style={{ color: 'var(--color-text-primary)' }}
           mb={3}
         >
-          Editing Bookmarks
+          Approving Bookmarks
         </Text>
 
         <VStack alignItems="stretch" gap={4}>
@@ -1837,7 +1837,7 @@ const BookmarkManagementGuide = () => {
                 fontWeight="600"
                 style={{ color: 'var(--color-text-primary)' }}
               >
-                Edit Bookmark Details
+                Approve Bookmark Details
               </Text>
               <Text
                 fontSize="sm"
@@ -1846,9 +1846,10 @@ const BookmarkManagementGuide = () => {
                   lineHeight: '1.6',
                 }}
               >
-                Click on any bookmark card to open the edit dialog. You can
-                update the title, URL, description, tags, and collection
-                assignment. Changes are saved automatically.
+                Click the three-dot menu on any bookmark card and select
+                "Approve" to open the edit dialog. You can update the title,
+                URL, description, tags, and collection assignment, then click
+                "Approve" to save your changes.
               </Text>
               <Box
                 mt={2}
@@ -1862,7 +1863,7 @@ const BookmarkManagementGuide = () => {
                   fontSize="xs"
                   style={{ color: 'var(--color-text-tertiary)' }}
                 >
-                  [GIF: Editing a bookmark]
+                  [GIF: Approving a bookmark]
                 </Text>
               </Box>
             </VStack>

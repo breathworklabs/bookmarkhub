@@ -107,7 +107,7 @@ const PrivacyPolicy = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    X Bookmark Manager is built with privacy as a fundamental
+                    BookmarkHub is built with privacy as a fundamental
                     principle. This Privacy Policy explains how we handle your
                     data and what information we collect (spoiler: it's
                     minimal).
@@ -423,7 +423,7 @@ const PrivacyPolicy = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    X Bookmark Manager does not integrate with third-party
+                    BookmarkHub does not integrate with third-party
                     analytics, advertising, or tracking services. We do not use:
                   </Text>
                   <VStack alignItems="stretch" gap={2} pl={4}>
@@ -615,7 +615,7 @@ const PrivacyPolicy = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    X Bookmark Manager is designed to comply with privacy laws
+                    BookmarkHub is designed to comply with privacy laws
                     including GDPR, CCPA, and others:
                   </Text>
                   <VStack alignItems="stretch" gap={2} pl={4}>
@@ -680,7 +680,7 @@ const PrivacyPolicy = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    X Bookmark Manager does not knowingly collect personal
+                    BookmarkHub does not knowingly collect personal
                     information from children under 13. Since we don't collect
                     personal information from anyone, this is not a concern, but
                     we want to be explicit about our commitment to protecting

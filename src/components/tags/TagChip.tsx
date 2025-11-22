@@ -24,9 +24,12 @@ const TagChip = memo(
     onClick,
     onRemove,
   }: TagChipProps) => {
-    const getCategoryForTag = useTagCategoriesStore(
-      (state) => state.getCategoryForTag
+    // Subscribe to the category for this specific tag
+    // This ensures re-render when the tag's category assignment changes
+    const tagCategory = useTagCategoriesStore((state) =>
+      state.getCategoryForTag(tag)
     )
+    const categoryColor = tagCategory?.color
 
     const handleClick = useCallback(() => {
       onClick?.(tag)
@@ -39,10 +42,6 @@ const TagChip = memo(
       },
       [onRemove, tag]
     )
-
-    // Get category color for the tag
-    const tagCategory = getCategoryForTag(tag)
-    const categoryColor = tagCategory?.color
 
     const getSizeStyles = () => {
       switch (size) {

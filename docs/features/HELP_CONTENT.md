@@ -103,16 +103,17 @@ This document outlines the structure and content for all help topics in Bookmark
 
 - See Import & Export section
 
-#### 2.2 Editing Bookmarks
+#### 2.2 Approving Bookmarks
 
-**Edit Bookmark Details**
+**Approve Bookmark Details**
 
-- [GIF: Editing a bookmark]
-- Click on bookmark card
+- [GIF: Approving a bookmark]
+- Click three-dot menu on bookmark card
+- Select "Approve"
 - Edit title, URL, description
 - Update tags
 - Change collection
-- Save changes
+- Click "Approve" to save changes
 
 **Quick Edit Options**
 

@@ -918,7 +918,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                       }
                     >
                       {modalState.type === 'editBookmark'
-                        ? 'Edit Bookmark'
+                        ? 'Approve'
                         : 'Add Bookmark'}
                     </Button>
                   </HStack>

@@ -96,7 +96,7 @@ const TermsOfService = () => {
                     fontWeight="600"
                     style={{ color: 'var(--color-text-primary)' }}
                   >
-                    Welcome to X Bookmark Manager
+                    Welcome to BookmarkHub
                   </Text>
                   <Text
                     fontSize="sm"
@@ -105,8 +105,8 @@ const TermsOfService = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    These Terms of Service ("Terms") govern your use of X
-                    Bookmark Manager, a privacy-focused bookmark management
+                    These Terms of Service ("Terms") govern your use of
+                    BookmarkHub, a privacy-focused bookmark management
                     application. By using our service, you agree to be bound by
                     these Terms.
                   </Text>
@@ -133,7 +133,7 @@ const TermsOfService = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    X Bookmark Manager is designed with privacy as a core
+                    BookmarkHub is designed with privacy as a core
                     principle. All your data is stored locally on your device
                     and is never transmitted to our servers. We do not collect,
                     store, or process your personal information or bookmark
@@ -286,7 +286,7 @@ const TermsOfService = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    As a user of X Bookmark Manager, you agree to:
+                    As a user of BookmarkHub, you agree to:
                   </Text>
                   <VStack alignItems="stretch" gap={2} pl={4}>
                     <Text
@@ -350,7 +350,7 @@ const TermsOfService = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    X Bookmark Manager is provided "as is" without warranties of
+                    BookmarkHub is provided "as is" without warranties of
                     any kind. We disclaim all warranties, express or implied,
                     including but not limited to:
                   </Text>
@@ -406,7 +406,7 @@ const TermsOfService = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    To the maximum extent permitted by law, X Bookmark Manager
+                    To the maximum extent permitted by law, BookmarkHub
                     and its developers shall not be liable for any indirect,
                     incidental, special, consequential, or punitive damages,
                     including but not limited to loss of profits, data, or use,

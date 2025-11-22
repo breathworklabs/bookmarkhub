@@ -12,6 +12,12 @@ export const APP_DESCRIPTION =
 
 export const APP_TAGLINE = 'Privacy-First Bookmark Manager'
 
+// Dynamic base URL - automatically switches between dev and production
+export const APP_BASE_URL = import.meta.env.DEV
+  ? 'https://bookmarkhub.app:5173'
+  : 'https://bookmarkhub.app'
+
+// Static URL for external references
 export const APP_URL = 'https://bookmarkhub.breathworklabs.com'
 
 // Chrome Extension URL (update with actual URL once published)

@@ -99,7 +99,7 @@ const CookiePolicy = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    X Bookmark Manager is a local-first app. We do not use
+                    BookmarkHub is a local-first app. We do not use
                     analytics, advertising, or profiling cookies. We only use
                     essential browser storage (like localStorage or IndexedDB)
                     to keep your preferences and bookmarks on your device.

@@ -771,14 +771,21 @@ class LocalStorageService {
 
     // Update bookmarks to remove this collection from their collections array
     const bookmarks = await this.getBookmarks()
-    const updatedBookmarks = bookmarks.map((bookmark) => ({
-      ...bookmark,
-      collections: bookmark.collections.filter((cId) => cId !== id),
-      primaryCollection:
-        bookmark.primaryCollection === id
-          ? 'uncategorized'
-          : bookmark.primaryCollection,
-    }))
+    const updatedBookmarks = bookmarks.map((bookmark) => {
+      const newCollections = bookmark.collections.filter((cId) => cId !== id)
+      const wasInDeletedCollection = bookmark.collections.includes(id)
+
+      return {
+        ...bookmark,
+        collections: wasInDeletedCollection && newCollections.length === 0
+          ? ['uncategorized']  // Add to uncategorized if now empty
+          : newCollections,
+        primaryCollection:
+          bookmark.primaryCollection === id
+            ? 'uncategorized'
+            : bookmark.primaryCollection,
+      }
+    })
 
     if (
       this.safeSet(LEGACY_STORAGE_KEYS.COLLECTIONS, filteredCollections) &&

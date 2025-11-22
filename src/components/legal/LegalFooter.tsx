@@ -74,7 +74,7 @@ const LegalFooter = ({ variant = 'minimal' }: LegalFooterProps) => {
           Privacy Policy
         </Button>
         <Text fontSize="13px" style={{ color: 'var(--color-text-tertiary)' }}>
-          X Bookmark Manager - Privacy-First Design
+          BookmarkHub - Privacy-First Design
         </Text>
       </HStack>
     </Box>

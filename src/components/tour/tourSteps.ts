@@ -24,7 +24,7 @@ export const tourSteps: TourStep[] = [
   {
     id: 'welcome',
     target: '[data-tour="app-container"]',
-    title: 'Welcome to BookmarksX!',
+    title: 'Welcome to BookmarkHub!',
     description:
       'Let\'s take a quick tour to help you get started. You can skip this tour anytime by clicking "Skip Tour".',
     placement: 'center',

@@ -101,7 +101,7 @@ test.describe('Bookmark Editing', () => {
     const menuButton = firstBookmark.locator('[aria-label*="menu"]').first()
     await menuButton.click()
 
-    // Click "Edit" option
+    // Click "Approve" option
     await page.getByRole('menuitem', { name: /edit/i }).click()
 
     // Edit modal should be visible
@@ -168,7 +168,7 @@ test.describe('Bookmark Editing', () => {
     await titleInput.fill('Updated Bookmark Title')
 
     // Save changes
-    await page.getByRole('button', { name: /save/i }).click()
+    await page.getByRole('button', { name: /approve/i }).click()
 
     // Wait for modal to close
     await page.waitForTimeout(500)
@@ -191,7 +191,7 @@ test.describe('Bookmark Editing', () => {
     await descriptionTextarea.fill('This is the updated description')
 
     // Save changes
-    await page.getByRole('button', { name: /save/i }).click()
+    await page.getByRole('button', { name: /approve/i }).click()
 
     // Wait for save to complete
     await page.waitForTimeout(500)
@@ -258,7 +258,7 @@ test.describe('Bookmark Editing', () => {
     await expect(existingTag).not.toBeVisible()
 
     // Save changes
-    await page.getByRole('button', { name: /save/i }).click()
+    await page.getByRole('button', { name: /approve/i }).click()
     await page.waitForTimeout(500)
 
     // Reopen modal to verify persistence
@@ -281,7 +281,7 @@ test.describe('Bookmark Editing', () => {
     await titleInput.fill('')
 
     // Try to save
-    const saveButton = page.getByRole('button', { name: /save/i })
+    const saveButton = page.getByRole('button', { name: /approve/i })
     await saveButton.click()
 
     // Modal should still be open (validation failed)
@@ -319,7 +319,7 @@ test.describe('Bookmark Editing', () => {
     await page.waitForTimeout(300)
 
     // Save all changes
-    await page.getByRole('button', { name: /save/i }).click()
+    await page.getByRole('button', { name: /approve/i }).click()
     await page.waitForTimeout(500)
 
     // Verify title is updated
