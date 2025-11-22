@@ -3,16 +3,21 @@ import react from '@vitejs/plugin-react'
 import fs from 'fs'
 import path from 'path'
 
+// Check if certificates exist (only for local development)
+const certsExist = fs.existsSync(path.resolve(__dirname, '.certs/bookmarkhub.app+3-key.pem'))
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
     port: 5173,
-    https: {
-      key: fs.readFileSync(path.resolve(__dirname, '.certs/bookmarkhub.app+3-key.pem')),
-      cert: fs.readFileSync(path.resolve(__dirname, '.certs/bookmarkhub.app+3.pem')),
-    },
+    ...(certsExist && {
+      https: {
+        key: fs.readFileSync(path.resolve(__dirname, '.certs/bookmarkhub.app+3-key.pem')),
+        cert: fs.readFileSync(path.resolve(__dirname, '.certs/bookmarkhub.app+3.pem')),
+      },
+    }),
     allowedHosts: ['bookmarkhub.local', 'www.bookmarkhub.local', 'bookmarkhub.app', 'www.bookmarkhub.app'],
   },
   build: {

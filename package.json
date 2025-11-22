@@ -5,6 +5,10 @@
   "type": "module",
   "author": "Breathwork Labs <hello@breathworklabs.com>",
   "homepage": "https://bookmarkhub.breathworklabs.com",
+  "engines": {
+    "node": ">=20.19.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
