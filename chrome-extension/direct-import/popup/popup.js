@@ -1,18 +1,12 @@
 // Popup script for BookmarkHub Chrome Extension
+// Note: BOOKMARKX_URL is imported from config.js via popup.html
+
 const importBtn = document.getElementById('importBtn')
 const openAppBtn = document.getElementById('openAppBtn')
 const status = document.getElementById('status')
 const progress = document.getElementById('progress')
 const progressFill = document.getElementById('progressFill')
 const progressText = document.getElementById('progressText')
-
-// Environment Configuration
-// Set DEV_MODE to true for local development, false for production
-const DEV_MODE = true
-
-const BOOKMARKX_URL = DEV_MODE
-  ? 'https://localhost:5173'  // Local development
-  : 'https://bookmarkhub.app' // Production (Chrome Web Store)
 
 // Listen for messages from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
