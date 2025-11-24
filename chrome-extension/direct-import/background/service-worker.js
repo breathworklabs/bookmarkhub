@@ -22,7 +22,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         (result) => {
           const bookmarks = result.extractedBookmarks || []
           const extractedAt = result.extractedAt || null
-          console.log(
             `[BookmarkHub Background] Sending ${bookmarks.length} bookmarks to app`
           )
           sendResponse({
