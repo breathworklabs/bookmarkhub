@@ -137,7 +137,7 @@ export const useInitializeApp = () => {
           useCollectionsStore.getState().initialize(),
         ])
           .then(() => {
-            // Phase 4: Show success toast notification (if enabled in settings)
+            // Show success toast notification (if enabled in settings)
             if (showNotification) {
               const message =
                 count === 1
@@ -145,12 +145,12 @@ export const useInitializeApp = () => {
                   : `Imported ${count} new bookmarks from X/Twitter. Refreshing...`
 
               toast.success(message, { duration: 2000 })
-
-              // Auto-refresh the page after a short delay to show the toast
-              setTimeout(() => {
-                window.location.reload()
-              }, 2000)
             }
+
+            // Always refresh the page after sync (with or without notification)
+            setTimeout(() => {
+              window.location.reload()
+            }, showNotification ? 2000 : 500)
           })
           .catch((error) => {
             logger.error('Error reloading stores after extension update', error)
