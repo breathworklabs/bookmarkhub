@@ -3,6 +3,8 @@
 
 const importBtn = document.getElementById('importBtn')
 const openAppBtn = document.getElementById('openAppBtn')
+const closeInfoBtn = document.getElementById('closeInfoBtn')
+const info = document.getElementById('info')
 const status = document.getElementById('status')
 const progress = document.getElementById('progress')
 const progressFill = document.getElementById('progressFill')
@@ -49,6 +51,11 @@ importBtn.addEventListener('click', async () => {
 // Open BookmarkHub app
 openAppBtn.addEventListener('click', () => {
   chrome.tabs.create({ url: BOOKMARKX_URL })
+})
+
+// Close info box
+closeInfoBtn.addEventListener('click', () => {
+  info.style.display = 'none'
 })
 
 function updateStatus(message, type = 'info') {

@@ -16,7 +16,6 @@ body {
 .container {
   display: flex;
   flex-direction: column;
-  min-height: 500px;
 }
 
 .content {
@@ -116,10 +115,40 @@ button {
 }
 
 .info {
+  position: relative;
   background: #f7fafc;
   padding: 16px;
   border-radius: 8px;
   border-left: 4px solid #667eea;
+  margin-bottom: 20px;
+}
+
+.info[style*="display: none"] {
+  display: none !important;
+  margin: 0;
+}
+
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #718096;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #e2e8f0;
+  color: #2d3748;
+  transform: none;
 }
 
 .info h3 {
@@ -127,6 +156,7 @@ button {
   font-weight: 600;
   margin-bottom: 12px;
   color: #2d3748;
+  padding-right: 24px;
 }
 
 .info ol {
@@ -141,7 +171,7 @@ button {
 }
 
 .progress {
-  margin-top: 20px;
+  margin-top: 0;
 }
 
 .progress-bar {
@@ -164,16 +194,4 @@ button {
   font-size: 13px;
   color: #718096;
   text-align: center;
-}
-
-.footer {
-  padding: 16px 20px;
-  background: #f7fafc;
-  border-top: 1px solid #e2e8f0;
-  text-align: center;
-}
-
-.footer p {
-  font-size: 12px;
-  color: #718096;
 }
