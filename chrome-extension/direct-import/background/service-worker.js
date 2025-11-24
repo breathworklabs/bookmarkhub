@@ -1,7 +1,7 @@
 // Background service worker for BookmarkHub Chrome Extension
 
 // Import configuration
-importScripts('config.js')
+importScripts('../config.js')
 
 // Listen for messages from content script and popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
