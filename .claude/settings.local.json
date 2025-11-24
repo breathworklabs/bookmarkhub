@@ -19,7 +19,8 @@
       "Bash(xargs ls:*)",
       "Bash(sips:*)",
       "mcp__playwright__browser_navigate",
-      "WebFetch(domain:twitterapi.io)"
+      "WebFetch(domain:twitterapi.io)",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": []

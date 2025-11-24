@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookmarkHub Extension - Complete Showcase</title>
+    <link rel="stylesheet" href="popup/popup.css" />
+    <style>
+        body {
+            width: auto !important;
+            background: #f0f2f5 !important;
+            padding: 0;
+            margin: 0;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .page-header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            background: white;
+            border-bottom: 2px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .tab {
+            padding: 16px 32px;
+            background: transparent;
+            border: none;
+            color: #4a5568;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: #667eea;
+            background: #f7fafc;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .showcase-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            color: #1a202c;
+            margin-bottom: 40px;
+            font-size: 28px;
+        }
+
+        /* Popup States Styles */
+        .states-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .state-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .state-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .popup-mockup {
+            width: 400px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .info.hidden {
+            display: none !important;
+        }
+
+        /* Twitter Banners Styles */
+        .banners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .banner-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .banner-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .twitter-mockup {
+            width: 100%;
+            min-height: 600px;
+            background: #15202b;
+            border-radius: 12px;
+            position: relative;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        .banner {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            padding: 20px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            width: 400px;
+            box-sizing: border-box;
+        }
+
+        .start-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .progress-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .ready-banner {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .banner-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .banner-icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 12px;
+        }
+
+        .banner h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .banner p {
+            margin: 0 0 16px 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .banner button {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .banner button:hover {
+            transform: translateY(-1px);
+        }
+
+        .banner-primary-btn {
+            background: white;
+            color: #667eea;
+            margin-bottom: 0;
+        }
+
+        .ready-banner .banner-primary-btn {
+            color: #059669;
+            margin-bottom: 8px;
+        }
+
+        .banner-secondary-btn {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.5);
+            padding: 8px 16px;
+            font-weight: 500;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .progress-info p:first-of-type {
+            margin-bottom: 4px;
+        }
+
+        .progress-info p:last-of-type {
+            margin-bottom: 12px;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .progress-bar-container {
+            background: rgba(255,255,255,0.3);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: white;
+            transition: width 0.3s;
+        }
+
+        .twitter-header {
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-left: 16px;
+        }
+
+        .twitter-placeholder {
+            background: #192734;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid #38444d;
+        }
+
+        .placeholder-line {
+            height: 12px;
+            background: #38444d;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .placeholder-line:last-child {
+            width: 60%;
+            margin-bottom: 0;
+        }
+
+        .instructions {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
+        }
+
+        .instructions h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .instructions p {
+            color: #4a5568;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .instructions ul {
+            padding-left: 24px;
+            margin-top: 16px;
+        }
+
+        .instructions li {
+            color: #4a5568;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>📱 BookmarkHub Extension Showcase</h1>
+        <p>Complete visual guide to all extension states and UI elements</p>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('popup')">Extension Popup</button>
+        <button class="tab" onclick="switchTab('twitter')">Twitter Page Banners</button>
+    </div>
+
+    <!-- Tab 1: Extension Popup States -->
+    <div id="popup-tab" class="tab-content active">
+        <div class="showcase-container">
+            <h2 class="section-title">Extension Popup States</h2>
+
+            <div class="states-grid">
+                <!-- State 1: Ready to Import -->
+                <div class="state-wrapper">
+                    <div class="state-title">State 1: Ready to Import</div>
+                    <div class="popup-mockup">
+                        <div class="container">
+                            <div class="content">
+                                <h2>
+                                    <img src="assets/icon-48.png" alt="BookmarkHub" class="heading-icon" />
+                                    Import Your Bookmarks
+                                </h2>
+                                <p class="description">
+                                    Import all your X/Twitter bookmarks to BookmarkHub for powerful search,
+                                    organization, and management.
+                                </p>
+
+                                <div class="status">
+                                    <p>Ready to import</p>
+                                </div>
+
+                                <div class="button-group">
+                                    <button class="primary-btn">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        Import Bookmarks
+                                    </button>
+                                    <button class="secondary-btn">Open BookmarkHub</button>
+                                </div>
+
+                                <div class="info">
+                                    <button class="close-btn">×</button>
+                                    <h3>How it works:</h3>
+                                    <ol>
+                                        <li>Click "Import Bookmarks" above</li>
+                                        <li>Your X/Twitter bookmarks page will open</li>
+                                        <li>Click "Start Import" on the banner</li>
+                                        <li>Wait a few seconds while we fetch your bookmarks</li>
+                                        <li>BookmarkHub opens automatically with your bookmarks!</li>
+                                    </ol>
+                                    <p style="font-size: 12px; color: #718096; margin-top: 12px; font-style: italic;">
+                                        Fast and easy! Imports all your bookmarks in seconds using X's API. No scrolling required.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- State 2: Importing (Progress) -->
+                <div class="state-wrapper">
+                    <div class="state-title">State 2: Importing</div>
+                    <div class="popup-mockup">
+                        <div class="container">
+                            <div class="content">
+                                <h2>
+                                    <img src="assets/icon-48.png" alt="BookmarkHub" class="heading-icon" />
+                                    Import Your Bookmarks
+                                </h2>
+                                <p class="description">
+                                    Import all your X/Twitter bookmarks to BookmarkHub for powerful search,
+                                    organization, and management.
+                                </p>
+
+                                <div class="status">
+                                    <p>Page opened! Scroll to load all bookmarks, then the extraction will begin automatically.</p>
+                                </div>
+
+                                <div class="button-group">
+                                    <button class="primary-btn" disabled>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        Import Bookmarks
+                                    </button>
+                                    <button class="secondary-btn">Open BookmarkHub</button>
+                                </div>
+
+                                <div class="progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 65%"></div>
+                                    </div>
+                                    <p id="progressText">Extracted 325 of 500 bookmarks...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- State 3: Import Complete -->
+                <div class="state-wrapper">
+                    <div class="state-title">State 3: Import Complete</div>
+                    <div class="popup-mockup">
+                        <div class="container">
+                            <div class="content">
+                                <h2>
+                                    <img src="assets/icon-48.png" alt="BookmarkHub" class="heading-icon" />
+                                    Import Your Bookmarks
+                                </h2>
+                                <p class="description">
+                                    Import all your X/Twitter bookmarks to BookmarkHub for powerful search,
+                                    organization, and management.
+                                </p>
+
+                                <div class="status success">
+                                    <p>Successfully extracted 500 bookmarks!</p>
+                                </div>
+
+                                <div class="button-group">
+                                    <button class="primary-btn">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        Import Bookmarks
+                                    </button>
+                                    <button class="secondary-btn">Open BookmarkHub</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- State 4: Info Box Closed -->
+                <div class="state-wrapper">
+                    <div class="state-title">State 4: Compact View</div>
+                    <div class="popup-mockup">
+                        <div class="container">
+                            <div class="content">
+                                <h2>
+                                    <img src="assets/icon-48.png" alt="BookmarkHub" class="heading-icon" />
+                                    Import Your Bookmarks
+                                </h2>
+                                <p class="description">
+                                    Import all your X/Twitter bookmarks to BookmarkHub for powerful search,
+                                    organization, and management.
+                                </p>
+
+                                <div class="status success">
+                                    <p>Last import: 500 bookmarks on 11/24/2025 5:30 PM</p>
+                                </div>
+
+                                <div class="button-group">
+                                    <button class="primary-btn">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        Import Bookmarks
+                                    </button>
+                                    <button class="secondary-btn">Open BookmarkHub</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="instructions">
+                <h2>📸 Extension Popup States</h2>
+                <p>
+                    The extension popup appears when users click the extension icon in their browser toolbar.
+                </p>
+                <ul>
+                    <li><strong>State 1:</strong> Initial "Ready to import" state with instructions visible</li>
+                    <li><strong>State 2:</strong> Active importing state with progress bar showing extraction progress</li>
+                    <li><strong>State 3:</strong> Successful import completion message with total bookmarks count</li>
+                    <li><strong>State 4:</strong> Compact view after user closes the info box - shows last import timestamp</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: Twitter Page Banners -->
+    <div id="twitter-tab" class="tab-content">
+        <div class="showcase-container">
+            <h2 class="section-title">Twitter/X Page Banners</h2>
+
+            <div class="banners-grid">
+                <!-- State 1: Start Banner -->
+                <div class="banner-wrapper">
+                    <div class="banner-title">State 1: Initial Import Banner</div>
+                    <div class="twitter-mockup">
+                        <div class="twitter-header">Bookmarks</div>
+                        <div class="twitter-placeholder">
+                            <div class="placeholder-line"></div>
+                            <div class="placeholder-line"></div>
+                            <div class="placeholder-line"></div>
+                        </div>
+                        <div class="twitter-placeholder">
+                            <div class="placeholder-line"></div>
+                            <div class="placeholder-line"></div>
+                            <div class="placeholder-line"></div>
+                        </div>
+
+                        <div class="banner start-banner">
+                            <div class="banner-header">
+                                <img src="assets/icon-48.png" alt="BookmarkHub" class="banner-icon">
+                                <h3>Import Your Bookmarks</h3>
+                            </div>
+                            <p>Import all your X/Twitter bookmarks to BookmarkHub in seconds. No scrolling needed!</p>
+                            <button class="banner-primary-btn">Start Import</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- State 2: Progress Banner -->
+                <div class="banner-wrapper">
+                    <div class="banner-title">State 2: Fetching Progress</div>
+                    <div class="twitter-mockup">
+                        <div class="twitter-header">Bookmarks</div>
+                        <div class="twitter-placeholder">
+                            <div class="placeholder-line"></div>
+                            <div class="placeholder-line"></div>
+                            <div class="placeholder-line"></div>
+                        </div>
+                        <div class="twitter-placeholder">
+                            <div class="placeholder-line"></div>
+                            <div class="placeholder-line"></div>
+                            <div class="placeholder-line"></div>
+                        </div>
+
+                        <div class="banner progress-banner">
+                            <div class="banner-header">
+                                <img src="assets/icon-48.png" alt="BookmarkHub" class="banner-icon">
+                                <h3>Fetching Bookmarks...</h3>
+                            </div>
+                            <div class="progress-info">
+                                <p>Found 325 bookmarks</p>
+                                <p>Making API requests...</p>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: 65%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- State 3: Ready to Import -->
+                <div class="banner-wrapper">
+                    <div class="banner-title">State 3: Import Complete</div>
+                    <div class="twitter-mockup">
+                        <div class="twitter-header">Bookmarks</div>
+                        <div class="twitter-placeholder">
+                            <div class="placeholder-line"></div>
+                            <div class="placeholder-line"></div>
+                            <div class="placeholder-line"></div>
+                        </div>
+                        <div class="twitter-placeholder">
+                            <div class="placeholder-line"></div>
+                            <div class="placeholder-line"></div>
+                            <div class="placeholder-line"></div>
+                        </div>
+
+                        <div class="banner ready-banner">
+                            <h3 style="margin: 0 0 8px 0;">✓ 500 Bookmarks Ready</h3>
+                            <p style="margin: 0 0 12px 0;">Your bookmarks are ready to import into BookmarkHub!</p>
+                            <button class="banner-primary-btn">Import into BookmarkHub</button>
+                            <button class="banner-secondary-btn">Fetch Again</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="instructions">
+                <h2>🐦 Extension Banners on Twitter/X</h2>
+                <p>
+                    These banners appear on the Twitter/X bookmarks page (twitter.com/i/bookmarks) when the extension is active.
+                </p>
+                <ul>
+                    <li><strong>State 1:</strong> Initial banner prompts user to start the import process</li>
+                    <li><strong>State 2:</strong> Progress banner shows real-time bookmark count and API fetch progress</li>
+                    <li><strong>State 3:</strong> Success banner displays total bookmarks fetched and provides import button</li>
+                </ul>
+                <p style="margin-top: 20px;">
+                    <strong>Note:</strong> Banners appear as fixed overlays in the top-right corner and use the Twitter dark theme background.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
+    </script>
+</body>
+</html>
