@@ -249,7 +249,6 @@ async function syncBookmarksToLocalStorage() {
     try {
       await chrome.storage.local.remove(['extractedBookmarks'])
     } catch (error) {
-      console.warn('[BookmarkHub Bridge] ⚠️ Could not clear extension storage:', error)
       // Non-fatal error, continue with sync
     }
 
