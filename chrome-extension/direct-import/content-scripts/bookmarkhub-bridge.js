@@ -73,9 +73,6 @@ async function syncBookmarksToLocalStorage() {
     const result = await chrome.storage.local.get(['extractedBookmarks'])
     const extensionBookmarks = result.extractedBookmarks || []
 
-      `[BookmarkHub Bridge] 📊 Sync status: ${extensionBookmarks.length} in extension, ${existingData?.bookmarks?.length || 0} in localStorage`
-    )
-
     if (extensionBookmarks.length === 0) {
       isSyncing = false
       return
@@ -125,9 +122,6 @@ async function syncBookmarksToLocalStorage() {
         newBookmarks.push(extBookmark)
       }
     })
-
-      `[BookmarkHub Bridge] 🔍 Duplicate detection complete: ${newBookmarks.length} new, ${bookmarksToReplace.length} to replace, ${extensionBookmarks.length - newBookmarks.length - bookmarksToReplace.length} skipped as duplicates`
-    )
 
     if (newBookmarks.length === 0 && bookmarksToReplace.length === 0) {
       isSyncing = false

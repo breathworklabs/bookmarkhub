@@ -6,8 +6,13 @@ const progress = document.getElementById('progress')
 const progressFill = document.getElementById('progressFill')
 const progressText = document.getElementById('progressText')
 
-// BookmarkHub app URL - simplified to always use bookmarkhub.app
-const BOOKMARKX_URL = 'https://bookmarkhub.app'
+// Environment Configuration
+// Set DEV_MODE to true for local development, false for production
+const DEV_MODE = true
+
+const BOOKMARKX_URL = DEV_MODE
+  ? 'https://localhost:5173'  // Local development
+  : 'https://bookmarkhub.app' // Production (Chrome Web Store)
 
 // Listen for messages from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

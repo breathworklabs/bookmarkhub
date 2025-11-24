@@ -28,8 +28,8 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["https://bookmarkhub.app/*"],
-      "js": ["content-scripts/bookmarkhub-bridge.js"],
+      "matches": ["https://bookmarkhub.app/*", "https://localhost:5173/*", "https://bookmarkhub.local/*"],
+      "js": ["config.js", "content-scripts/bookmarkhub-bridge.js"],
       "run_at": "document_start"
     }
   ],
