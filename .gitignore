@@ -55,3 +55,9 @@ storybook-static
 *.pem
 *.key
 *.crt
+
+# Playwright auth state
+auth.json
+
+# Extension test results
+chrome-extension/**/test-results/
