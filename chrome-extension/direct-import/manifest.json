@@ -3,8 +3,7 @@
   "name": "BookmarkHub - Twitter Bookmark Manager",
   "version": "1.0.0",
   "description": "Import and manage your Twitter/X bookmarks with BookmarkHub's powerful interface",
-  "permissions": ["scripting", "tabs", "storage", "activeTab"],
-  "host_permissions": ["*://twitter.com/*", "*://x.com/*"],
+  "permissions": ["storage"],
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
@@ -23,12 +22,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://twitter.com/*", "*://x.com/*"],
+      "matches": ["https://twitter.com/*", "https://x.com/*"],
       "js": ["content-scripts/twitter-api-client.js"],
       "run_at": "document_idle"
     },
     {
-      "matches": ["https://bookmarkhub.app/*", "https://localhost:5173/*", "https://bookmarkhub.local/*"],
+      "matches": ["https://bookmarkhub.app/*"],
       "js": ["config.js", "content-scripts/bookmarkhub-bridge.js"],
       "run_at": "document_start"
     }
@@ -36,7 +35,7 @@
   "web_accessible_resources": [
     {
       "resources": ["assets/*.png"],
-      "matches": ["*://twitter.com/*", "*://x.com/*"]
+      "matches": ["https://twitter.com/*", "https://x.com/*"]
     }
   ]
 }

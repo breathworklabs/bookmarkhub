@@ -16,9 +16,10 @@ NC='\033[0m' # No Color
 VERSION=$(grep '"version"' manifest.json | cut -d '"' -f 4)
 echo -e "${GREEN}Current version: ${VERSION}${NC}"
 
-# Set package name
-PACKAGE_NAME="bookmarkhub-extension-v${VERSION}.zip"
-OUTPUT_DIR="../.."
+# Set package name (replace dots with dashes in version for filename)
+VERSION_DASHED=$(echo $VERSION | tr '.' '-')
+PACKAGE_NAME="bookmarkhub-extension-v${VERSION_DASHED}.zip"
+OUTPUT_DIR=".."
 
 echo ""
 echo "📋 Pre-flight checks..."
@@ -87,7 +88,10 @@ zip -r "${OUTPUT_DIR}/${PACKAGE_NAME}" . \
   -x "*.md" \
   -x "*.sh" \
   -x "*.git*" \
+  -x ".claude/*" \
   -x "node_modules/*" \
+  -x "test/*" \
+  -x "docs/*" \
   -x "*.map" \
   -x "*.log" \
   -x "*.bak" \

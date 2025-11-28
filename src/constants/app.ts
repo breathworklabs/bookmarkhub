@@ -20,8 +20,8 @@ export const APP_BASE_URL = import.meta.env.DEV
 // Static URL for external references
 export const APP_URL = 'https://bookmarkhub.breathworklabs.com'
 
-// Chrome Extension URL (update with actual URL once published)
-export const CHROME_EXTENSION_URL = 'https://chrome.google.com/webstore/detail/YOUR_EXTENSION_ID'
+// Chrome Extension URL
+export const CHROME_EXTENSION_URL = 'https://chromewebstore.google.com/detail/bookmarkhub-twitter-bookm/dcaiaejmmijbpojelegojkihaegchnak'
 
 export const APP_VERSION = '1.0.0'
 
