@@ -820,13 +820,11 @@ export const useBookmarkStore = create<BookmarkState>()(
           const transformedBookmarks = transformXBookmarks(data, limit)
 
           // Add each bookmark using the existing addBookmark function
-          let successCount = 0
           for (const bookmark of transformedBookmarks) {
             try {
               const sanitized = sanitizeBookmark(bookmark)
               if (sanitized) {
                 await localStorageService.createBookmark(sanitized)
-                successCount++
               }
             } catch (error) {
               logger.warn(`Failed to import bookmark: ${bookmark.title}`, error)

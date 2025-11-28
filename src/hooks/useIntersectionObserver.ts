@@ -80,7 +80,7 @@ export const useIntersectionObserver = ({
               try {
                 currentObserver.disconnect()
                 observerPool.delete(observerKey)
-              } catch (e) {
+              } catch {
                 // Observer already disconnected
               }
             }
@@ -131,7 +131,7 @@ export const clearObserverPool = () => {
   for (const observer of observerPool.values()) {
     try {
       observer.disconnect()
-    } catch (e) {
+    } catch {
       // Observer already disconnected
     }
   }

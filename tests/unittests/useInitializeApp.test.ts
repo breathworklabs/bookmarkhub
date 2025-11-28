@@ -55,14 +55,14 @@ describe('useInitializeApp', () => {
         useBookmarkStore.setState({ isLoading: false })
       }),
       validateAllBookmarks: vi.fn(async () => {}),
-    } as any)
+    } as ReturnType<typeof useBookmarkStore.getState>)
 
     vi.spyOn(useCollectionsStore, 'getState').mockReturnValue({
       ...useCollectionsStore.getState(),
       initialize: vi.fn(async () => {
         useCollectionsStore.setState({ isLoading: false })
       }),
-    } as any)
+    } as ReturnType<typeof useCollectionsStore.getState>)
 
     // Configure settingsStore with valid autoSyncInterval
     useSettingsStore.setState({
@@ -91,14 +91,14 @@ describe('useInitializeApp', () => {
       }),
       length: 0,
       key: vi.fn(),
-    } as any
+    } as Storage
 
     // Mock window.addEventListener for message events
     messageListeners = []
     vi.spyOn(window, 'addEventListener').mockImplementation(
       (event, handler) => {
         if (event === 'message') {
-          messageListeners.push(handler as any)
+          messageListeners.push(handler as (event: MessageEvent) => void)
         }
       }
     )
@@ -106,7 +106,7 @@ describe('useInitializeApp', () => {
     vi.spyOn(window, 'removeEventListener').mockImplementation(
       (event, handler) => {
         if (event === 'message') {
-          const index = messageListeners.indexOf(handler as any)
+          const index = messageListeners.indexOf(handler as (event: MessageEvent) => void)
           if (index > -1) {
             messageListeners.splice(index, 1)
           }
@@ -531,9 +531,9 @@ describe('useInitializeApp', () => {
       })
 
       // Get the mocked validateAllBookmarks function
-      const validateSpy = useBookmarkStore.getState().validateAllBookmarks as any
+      const validateSpy = useBookmarkStore.getState().validateAllBookmarks
 
-      const { result } = renderHook(() => useInitializeApp())
+      renderHook(() => useInitializeApp())
 
       // Wait for async initialization
       await act(async () => {
@@ -554,7 +554,7 @@ describe('useInitializeApp', () => {
     it('should not validate when no bookmarks exist', () => {
       vi.useFakeTimers()
 
-      const validateSpy = useBookmarkStore.getState().validateAllBookmarks as any
+      const validateSpy = useBookmarkStore.getState().validateAllBookmarks
 
       renderHook(() => useInitializeApp())
 
@@ -575,10 +575,10 @@ describe('useInitializeApp', () => {
       })
 
       // Mock validateAllBookmarks to reject
-      const validateSpy = useBookmarkStore.getState().validateAllBookmarks as any
+      const validateSpy = vi.mocked(useBookmarkStore.getState().validateAllBookmarks)
       validateSpy.mockRejectedValue(new Error('Validation failed'))
 
-      const { result } = renderHook(() => useInitializeApp())
+      renderHook(() => useInitializeApp())
 
       // Wait for async initialization
       await act(async () => {
@@ -603,7 +603,7 @@ describe('useInitializeApp', () => {
         bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }],
       })
 
-      const validateSpy = useBookmarkStore.getState().validateAllBookmarks as any
+      const validateSpy = useBookmarkStore.getState().validateAllBookmarks
 
       const { unmount } = renderHook(() => useInitializeApp())
 

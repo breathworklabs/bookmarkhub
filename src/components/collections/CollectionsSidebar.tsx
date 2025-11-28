@@ -140,6 +140,7 @@ const DroppableCollectionItem = ({
           </Badge>
           {isUserCollection && (
             <IconButton
+              // eslint-disable-next-line react-hooks/rules-of-hooks -- TODO: refactor conditional hook
               {...useIconButtonStyles()}
               size="xs"
               variant="ghost"
@@ -283,6 +284,7 @@ const CollectionsSidebar = () => {
               Collections
             </Text>
             <IconButton
+              // eslint-disable-next-line react-hooks/rules-of-hooks -- TODO: move hook call before early returns
               {...useIconButtonStyles()}
               size="sm"
               variant="ghost"

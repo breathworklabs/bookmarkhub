@@ -8,13 +8,13 @@ import {
 } from '../../src/hooks/useIntersectionObserver'
 
 describe('useIntersectionObserver', () => {
-  let mockIntersectionObserver: any
+  let mockIntersectionObserver: ReturnType<typeof vi.fn>
   let observeCallback: ((entries: IntersectionObserverEntry[]) => void) | null =
     null
 
   beforeEach(() => {
     // Mock IntersectionObserver
-    mockIntersectionObserver = vi.fn((callback, options) => {
+    mockIntersectionObserver = vi.fn((callback) => {
       observeCallback = callback
       return {
         observe: vi.fn(),
@@ -64,7 +64,7 @@ describe('useIntersectionObserver', () => {
 
     // Mock element attachment
     const mockElement = document.createElement('div')
-    ;(result.current as any).current = mockElement
+    Object.defineProperty(result.current, 'current', { value: mockElement, writable: true })
 
     expect(result.current.current).toBe(mockElement)
   })
@@ -89,7 +89,7 @@ describe('useIntersectionObserver', () => {
 
     // Attach mock element
     const mockElement = document.createElement('div')
-    ;(result.current as any).current = mockElement
+    Object.defineProperty(result.current, 'current', { value: mockElement, writable: true })
 
     // Trigger intersection
     if (observeCallback) {

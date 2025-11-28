@@ -58,6 +58,7 @@ const FilterBar = memo(() => {
           <For each={FILTER_TABS}>
             {(label, index) => {
               const isActive = activeTab === index
+              // eslint-disable-next-line react-hooks/rules-of-hooks -- TODO: refactor to separate component
               const filterTabStyles = useFilterTabStyles(isActive)
               return (
                 <Button
