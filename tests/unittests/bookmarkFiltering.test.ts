@@ -243,7 +243,8 @@ describe('bookmarkFiltering', () => {
       expect(result[0].id).toBe(1)
     })
 
-    it('should filter threads for tab 3', () => {
+    it('should filter threads for tab 4', () => {
+      // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=This Month, 4=Threads, 5=Media
       const bookmarks = [
         createTestBookmark({
           id: 1,
@@ -262,7 +263,7 @@ describe('bookmarkFiltering', () => {
       const result = filterBookmarks(
         createDefaultParams({
           bookmarks,
-          activeTab: 3,
+          activeTab: 4,
         })
       )
 
@@ -270,7 +271,8 @@ describe('bookmarkFiltering', () => {
       expect(result.map((b) => b.id).sort()).toEqual([2, 3, 4])
     })
 
-    it('should filter media for tab 4', () => {
+    it('should filter media for tab 5', () => {
+      // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=This Month, 4=Threads, 5=Media
       const bookmarks = [
         createTestBookmark({ id: 1, url: 'https://example.com/page' }),
         createTestBookmark({
@@ -285,7 +287,7 @@ describe('bookmarkFiltering', () => {
       const result = filterBookmarks(
         createDefaultParams({
           bookmarks,
-          activeTab: 4,
+          activeTab: 5,
         })
       )
 

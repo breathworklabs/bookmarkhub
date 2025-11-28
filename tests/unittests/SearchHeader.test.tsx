@@ -72,6 +72,8 @@ describe('SearchHeader Debouncing', () => {
         authorFilter: '',
         domainFilter: '',
         contentTypeFilter: '',
+        selectedTags: [],
+        isFiltersPanelOpen: false,
       }
       return selector ? selector(state) : state
     })
