@@ -1,8 +1,11 @@
-# Use Node.js 22 Alpine for npm 10.9+ compatibility
+# Use Node.js 22 Alpine
 FROM node:22-alpine AS builder
 
 # Set working directory
 WORKDIR /app
+
+# Upgrade npm to match local version (lock file compatibility)
+RUN npm install -g npm@11.6.0
 
 # Copy package files
 COPY package*.json ./
@@ -20,6 +23,9 @@ RUN npm run build
 FROM node:22-alpine
 
 WORKDIR /app
+
+# Upgrade npm to match lock file version (generated with npm 11)
+RUN npm install -g npm@11.6.0
 
 # Copy package files
 COPY package*.json ./
