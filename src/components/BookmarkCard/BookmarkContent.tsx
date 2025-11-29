@@ -9,14 +9,15 @@ interface BookmarkContentProps {
 }
 
 const BookmarkContent = memo(({ bookmark, hasMedia }: BookmarkContentProps) => {
+  // Extract content values for dependency array
+  const content = bookmark.content
+  const description = bookmark.description
+
   const getContent = useMemo(() => {
-    const rawContent =
-      (bookmark as any).content ||
-      (bookmark as any).description ||
-      'No content available'
+    const rawContent = content || description || 'No content available'
     // Sanitize HTML to prevent XSS attacks
     return sanitizeBookmarkContent(rawContent)
-  }, [(bookmark as any).content, (bookmark as any).description])
+  }, [content, description])
 
   return (
     <Box flex={1}>

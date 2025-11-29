@@ -77,8 +77,7 @@ export const BookmarkContextMenu = memo<BookmarkContextMenuProps>(
     onDelete,
     onOpenInNewTab,
   }) => {
-    const isStarred =
-      (bookmark as any).isStarred || (bookmark as any).is_starred || false
+    const isStarred = bookmark.isStarred || bookmark.is_starred || false
 
     const handleAction = (action: () => void) => {
       action()
