@@ -23,7 +23,7 @@ const BookmarkActions = memo(
     const [isCopied, setIsCopied] = useState(false)
 
     const isStarred = () => {
-      return bookmark.isStarred || bookmark.is_starred || false
+      return bookmark.is_starred || false
     }
 
     const starButtonStyles = useIconButtonStyles(
