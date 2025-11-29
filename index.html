@@ -17,6 +17,7 @@
     <title>BookmarkHub - Privacy-First Bookmark Manager for X/Twitter</title>
     <meta name="description" content="Privacy-focused bookmark management for X/Twitter. Local-first, no tracking, works offline. Organize, search, and manage your saved tweets with powerful tagging and filtering." />
     <meta name="keywords" content="bookmarks, twitter, x, privacy, local-first, bookmark manager, tweet saver" />
+    <link rel="canonical" href="https://bookmarkhub.app/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -31,6 +32,35 @@
     <meta name="twitter:title" content="BookmarkHub - Privacy-First Bookmark Manager" />
     <meta name="twitter:description" content="Privacy-focused bookmark management for X/Twitter. Local-first, no tracking, works offline." />
     <meta name="twitter:image" content="/logo_v2 1.png" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "BookmarkHub",
+      "description": "Privacy-focused bookmark management for X/Twitter. Local-first, no tracking, works offline.",
+      "url": "https://bookmarkhub.app",
+      "applicationCategory": "ProductivityApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "BookmarkHub"
+      },
+      "featureList": [
+        "Privacy-first local storage",
+        "X/Twitter bookmark import",
+        "Smart tagging and filtering",
+        "Works offline",
+        "No account required"
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

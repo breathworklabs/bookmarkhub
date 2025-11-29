@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import Sitemap from 'vite-plugin-sitemap'
 import fs from 'fs'
 import path from 'path'
 
@@ -8,7 +9,24 @@ const certsExist = fs.existsSync(path.resolve(__dirname, '.certs/bookmarkhub.app
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    Sitemap({
+      hostname: 'https://bookmarkhub.app',
+      dynamicRoutes: [
+        '/welcome',
+        '/help',
+        '/upcoming-features',
+        '/terms',
+        '/privacy',
+        '/cookies',
+      ],
+      exclude: ['/trash', '/shared', '/settings'],
+      changefreq: 'monthly',
+      priority: 0.8,
+      generateRobotsTxt: false, // Use our custom robots.txt from public folder
+    }),
+  ],
   server: {
     host: true,
     port: 5173,
