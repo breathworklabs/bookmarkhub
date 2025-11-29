@@ -1,5 +1,5 @@
-# Use Node.js 20 Alpine for smaller image size (Vite requires 20.19+)
-FROM node:20-alpine AS builder
+# Use Node.js 22 Alpine for npm 10.9+ compatibility
+FROM node:22-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Clean install dependencies
-RUN npm clean-install --prefer-offline --no-audit --no-fund
+RUN npm ci --no-audit --no-fund
 
 # Copy application files
 COPY . .
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:20-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
@@ -25,7 +25,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install production dependencies only
-RUN npm clean-install --prefer-offline --no-audit --no-fund --omit=dev && \
+RUN npm ci --no-audit --no-fund --omit=dev && \
     npm cache clean --force
 
 # Copy built application from builder
