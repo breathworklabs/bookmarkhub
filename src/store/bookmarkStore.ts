@@ -811,9 +811,10 @@ export const useBookmarkStore = create<BookmarkState>()(
             )
           }
 
-          // Exit demo mode if active
+          // Exit demo mode if active — also purge demo bookmarks from localStorage
           if (useSettingsStore.getState().isDemoMode) {
             useSettingsStore.getState().setDemoMode(false)
+            await localStorageService.clearAllData()
           }
 
           // Transform X bookmarks to our format
