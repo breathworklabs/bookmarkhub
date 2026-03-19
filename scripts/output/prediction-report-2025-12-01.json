@@ -1,0 +1,1757 @@
+{
+  "generated_at": "2025-12-01T11:32:30.679Z",
+  "analysis_period": {
+    "days_back": 7,
+    "start": "2025-11-24T11:32:30.679Z",
+    "end": "2025-12-01T11:32:30.679Z"
+  },
+  "methodology": {
+    "scoring_weights": {
+      "keyword": 0.15,
+      "sentiment": 0.25,
+      "specificity": 0.2,
+      "accuracy": 0.4
+    },
+    "sentiment_model": "ProsusAI/finbert",
+    "price_sources": [
+      "CoinGecko",
+      "Yahoo Finance"
+    ]
+  },
+  "market_summary": {
+    "crypto": {
+      "BTC": {
+        "fromPrice": 86783.84766839583,
+        "toPrice": 86410.50728301537,
+        "changePercent": -0.43,
+        "direction": "down"
+      },
+      "ETH": {
+        "fromPrice": 2799.8149340924633,
+        "toPrice": 2843.5989135468085,
+        "changePercent": 1.56,
+        "direction": "up"
+      },
+      "SOL": {
+        "fromPrice": 130.84897517738048,
+        "toPrice": 127.11596897934949,
+        "changePercent": -2.85,
+        "direction": "down"
+      },
+      "XRP": {
+        "fromPrice": 2.0449210167731326,
+        "toPrice": 2.041975657996601,
+        "changePercent": -0.14,
+        "direction": "down"
+      },
+      "DOGE": {
+        "fromPrice": 0.14503697936177498,
+        "toPrice": 0.13685601044914314,
+        "changePercent": -5.64,
+        "direction": "down"
+      }
+    },
+    "stocks": {
+      "SPY": {
+        "fromPrice": 668.72998046875,
+        "toPrice": 683.3900146484375,
+        "changePercent": 2.19,
+        "direction": "up"
+      },
+      "QQQ": {
+        "fromPrice": 605.1599731445312,
+        "toPrice": 619.25,
+        "changePercent": 2.33,
+        "direction": "up"
+      },
+      "DIA": {
+        "fromPrice": 464.44000244140625,
+        "toPrice": 477.17999267578125,
+        "changePercent": 2.74,
+        "direction": "up"
+      },
+      "NVDA": {
+        "fromPrice": 182.5500030517578,
+        "toPrice": 177,
+        "changePercent": -3.04,
+        "direction": "down"
+      },
+      "TSLA": {
+        "fromPrice": 417.7799987792969,
+        "toPrice": 430.1700134277344,
+        "changePercent": 2.97,
+        "direction": "up"
+      },
+      "AAPL": {
+        "fromPrice": 275.9200134277344,
+        "toPrice": 278.8500061035156,
+        "changePercent": 1.06,
+        "direction": "up"
+      },
+      "MSFT": {
+        "fromPrice": 474,
+        "toPrice": 492.010009765625,
+        "changePercent": 3.8,
+        "direction": "up"
+      },
+      "AMZN": {
+        "fromPrice": 226.27999877929688,
+        "toPrice": 233.22000122070312,
+        "changePercent": 3.07,
+        "direction": "up"
+      }
+    }
+  },
+  "summary": {
+    "total_accounts": 9,
+    "total_predictions": 27,
+    "avg_accuracy_rate": 49
+  },
+  "top_predictors": [
+    {
+      "username": "CryptoAllFather",
+      "displayName": "FatherOfCrypto☠",
+      "followers": 47582,
+      "isVerified": true,
+      "profileUrl": "https://x.com/CryptoAllFather",
+      "predictions": [
+        {
+          "tweetId": "1994882198357279213",
+          "tweetUrl": "https://x.com/CryptoAllFather/status/1994882198357279213",
+          "text": "ever wondered why meme tokens often crash? 🤔\n\n@bitdealernet flips the script with asset-backed memes! tied to iGaming, these tokens don't just fade away - they thrive with real game revenue!\n\n> asset-backed memes\n> powered by $BIT on Solana\n\nmore here: https://t.co/ZKjyIwdxFw #Bitdealer",
+          "predictedAt": "Sat Nov 29 21:32:33 +0000 2025",
+          "engagement": {
+            "likes": 82,
+            "retweets": 9,
+            "replies": 42,
+            "views": 8787
+          },
+          "analysis": {
+            "finalScore": 5.28,
+            "components": {
+              "keyword": 5,
+              "sentiment": 5,
+              "specificity": 2,
+              "accuracy": 2.85
+            },
+            "patterns": {
+              "tickers": [
+                "BIT"
+              ],
+              "priceTargets": [],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "sol"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "SOL",
+                "type": "crypto",
+                "change": -2.85,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 91,
+            "finbert": null
+          }
+        }
+      ],
+      "stats": {
+        "predictionCount": 1,
+        "avgFinalScore": 5.28,
+        "avgAccuracy": 2.85,
+        "avgSentiment": 5,
+        "avgSpecificity": 2,
+        "totalEngagement": 91,
+        "correctPredictions": 1,
+        "totalChecked": 1,
+        "accuracyRate": 100,
+        "accountScore": 6.12
+      }
+    },
+    {
+      "username": "leshka_eth",
+      "displayName": "Leshka.eth ⛩",
+      "followers": 173787,
+      "isVerified": true,
+      "profileUrl": "https://x.com/leshka_eth",
+      "predictions": [
+        {
+          "tweetId": "1994891896976818432",
+          "tweetUrl": "https://x.com/leshka_eth/status/1994891896976818432",
+          "text": "Williams %R: -50 (neutral zone)\n\n&gt; Fell from -20 (overbought peak)\n&gt; Failed to hold momentum\n&gt; No oversold bounce signal yet\n\nIndicator showing loss of bullish impulse\nNext stop: -80 oversold capitulation zone https://t.co/D8Ca8R25ZR",
+          "predictedAt": "Sat Nov 29 22:11:06 +0000 2025",
+          "engagement": {
+            "likes": 52,
+            "retweets": 12,
+            "replies": 11,
+            "views": 9516
+          },
+          "analysis": {
+            "finalScore": 5.22,
+            "components": {
+              "keyword": 4,
+              "sentiment": 5,
+              "specificity": 3,
+              "accuracy": 2.85
+            },
+            "patterns": {
+              "tickers": [],
+              "priceTargets": [
+                50,
+                20,
+                80,
+                8,
+                8,
+                25
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "sol"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "SOL",
+                "type": "crypto",
+                "change": -2.85,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 64,
+            "finbert": null
+          }
+        }
+      ],
+      "stats": {
+        "predictionCount": 1,
+        "avgFinalScore": 5.22,
+        "avgAccuracy": 2.85,
+        "avgSentiment": 5,
+        "avgSpecificity": 3,
+        "totalEngagement": 64,
+        "correctPredictions": 1,
+        "totalChecked": 1,
+        "accuracyRate": 100,
+        "accountScore": 6.11
+      }
+    },
+    {
+      "username": "Rizzabeast",
+      "displayName": "Rizza",
+      "followers": 11879,
+      "isVerified": true,
+      "profileUrl": "https://x.com/Rizzabeast",
+      "predictions": [
+        {
+          "tweetId": "1994901408093802890",
+          "tweetUrl": "https://x.com/Rizzabeast/status/1994901408093802890",
+          "text": "Stock Market Crashes at Highs\n- **1929 Crash**: Dow peaked Sept 1929; fell 89% in Great Depression due to speculation, margin debt.\n- **Black Monday 1987**: S&P at postwar P/E high; 22% single-day drop from program trading, overvaluation.\n- **Dot-Com Bust 2000-2002**: Nasdaq hit Mar 2000 peak; 78% decline from tech bubble burst.\n- **2008 Financial Crisis**: S&P peaked Oct 2007; 57% drop from housing collapse, leverage.\n- **COVID-19 Crash 2020**: Feb 2020 all-time high; 34% plunge in weeks from pandemic lockdowns.\n- **2025 Tariff Crash**: S&P peaked pre-Apr 2025; 16%+ drop from Trump's global tariffs.\n\n### Bitcoin Crashes at Highs\n- **2011 Mt. Gox Hack**: Jun peak ~$32; 99% flash crash from exchange theft.\n- **2013 Bubble Burst**: Dec peak ~$1,150; 80% drop to $200 from speculation, Silk Road shutdown.\n- **2017-2018 Crypto Winter**: Dec peak ~$20,000; 84% decline to $3,200 from hype, regulations, hacks.\n- **2021 China Ban**: May peak ~$64,000; 54% fall to $29,000 from mining crackdown.\n- **2022 Terra/FTX Collapse**: Nov 2021 peak ~$69,000; 77% drop to $15,500 from stablecoin fail, exchange bankruptcy.\n- **2024-2025 Post-ATH Dip**: Oct 2025 peak ~$126,000; 30%+ pullback from leverage liquidations, ETF outflows, tariffs.",
+          "predictedAt": "Sat Nov 29 22:48:53 +0000 2025",
+          "engagement": {
+            "likes": 5,
+            "retweets": 0,
+            "replies": 0,
+            "views": 984
+          },
+          "analysis": {
+            "finalScore": 4.77,
+            "components": {
+              "keyword": 10,
+              "sentiment": 5,
+              "specificity": 6,
+              "accuracy": 0.11
+            },
+            "patterns": {
+              "tickers": [],
+              "priceTargets": [
+                1929,
+                1929,
+                89,
+                1987,
+                22,
+                2000,
+                2002,
+                2000,
+                78,
+                2008,
+                2007,
+                57,
+                19,
+                2020,
+                2020,
+                34,
+                2025,
+                2025,
+                16,
+                2011,
+                32,
+                99,
+                2013,
+                1150,
+                80,
+                200,
+                2017,
+                2018,
+                20000,
+                84,
+                3200,
+                2021,
+                64000,
+                54,
+                29000,
+                2022,
+                2021,
+                69000,
+                77,
+                15500,
+                2024,
+                2025,
+                2025,
+                126000,
+                30
+              ],
+              "percentDrops": [
+                78,
+                57,
+                80,
+                84,
+                54,
+                77
+              ],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "btc"
+                ],
+                "stocks": [
+                  "spy",
+                  "qqq",
+                  "dia"
+                ]
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "BTC",
+                "type": "crypto",
+                "change": -0.43,
+                "direction": "down",
+                "correct": true
+              },
+              {
+                "asset": "SPY",
+                "type": "stock",
+                "change": 2.19,
+                "direction": "up",
+                "correct": false
+              },
+              {
+                "asset": "QQQ",
+                "type": "stock",
+                "change": 2.33,
+                "direction": "up",
+                "correct": false
+              },
+              {
+                "asset": "DIA",
+                "type": "stock",
+                "change": 2.74,
+                "direction": "up",
+                "correct": false
+              }
+            ],
+            "engagement": 5,
+            "finbert": null
+          }
+        }
+      ],
+      "stats": {
+        "predictionCount": 1,
+        "avgFinalScore": 4.77,
+        "avgAccuracy": 0.11,
+        "avgSentiment": 5,
+        "avgSpecificity": 6,
+        "totalEngagement": 5,
+        "correctPredictions": 1,
+        "totalChecked": 4,
+        "accuracyRate": 25,
+        "accountScore": 5.47
+      }
+    },
+    {
+      "username": "seth_fin",
+      "displayName": "Crypto Seth",
+      "followers": 87906,
+      "isVerified": true,
+      "profileUrl": "https://x.com/seth_fin",
+      "predictions": [
+        {
+          "tweetId": "1994911015486816360",
+          "tweetUrl": "https://x.com/seth_fin/status/1994911015486816360",
+          "text": "Clueless retail in crypto still wonder why MM and whales pump and dump $BTC...\n\nhttps://t.co/YkPETdzX8Y",
+          "predictedAt": "Sat Nov 29 23:27:04 +0000 2025",
+          "engagement": {
+            "likes": 83,
+            "retweets": 4,
+            "replies": 20,
+            "views": 14838
+          },
+          "analysis": {
+            "finalScore": 4.27,
+            "components": {
+              "keyword": 3,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 0.43
+            },
+            "patterns": {
+              "tickers": [
+                "BTC"
+              ],
+              "priceTargets": [
+                8
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "btc"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "BTC",
+                "type": "crypto",
+                "change": -0.43,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 87,
+            "finbert": null
+          }
+        }
+      ],
+      "stats": {
+        "predictionCount": 1,
+        "avgFinalScore": 4.27,
+        "avgAccuracy": 0.43,
+        "avgSentiment": 5,
+        "avgSpecificity": 5,
+        "totalEngagement": 87,
+        "correctPredictions": 1,
+        "totalChecked": 1,
+        "accuracyRate": 100,
+        "accountScore": 4.97
+      }
+    },
+    {
+      "username": "MarzellCrypto",
+      "displayName": "Marzell",
+      "followers": 43001,
+      "isVerified": true,
+      "profileUrl": "https://x.com/MarzellCrypto",
+      "predictions": [
+        {
+          "tweetId": "1994881734286917793",
+          "tweetUrl": "https://x.com/MarzellCrypto/status/1994881734286917793",
+          "text": "$ETH Price Action Update – Quick TA Breakdown\n\nETH just slipped back under the $3,000 mark, trading around $2,991, and the 1-hour chart is showing clear signs of short-term weakness.\n\nWe’ve got:\n\nBearish structure forming with lower highs since the rejection at $3,098. Price trading below the MA7, MA14, and MA28, showing sellers still in control. A clean bounce at $2,961, which is now the key support holding the chart together. \n\nIf ETH loses $2,961, momentum could accelerate to the downside.\nBut a reclaim and close above $3,015–$3,030 would flip short-term sentiment and reopen the road toward $3,100.\n\n🗝️ For now, the key level to watch is $2,961 - that’s where bulls need to step in. 💪\n\n💬 Want my full setup + real-time trade calls?\nJoin my private trading community on Telegram 👇\nhttps://t.co/v8hsbkz7B2",
+          "predictedAt": "Sat Nov 29 21:30:43 +0000 2025",
+          "engagement": {
+            "likes": 2,
+            "retweets": 0,
+            "replies": 1,
+            "views": 465
+          },
+          "analysis": {
+            "finalScore": 3.75,
+            "components": {
+              "keyword": 6,
+              "sentiment": 5,
+              "specificity": 6,
+              "accuracy": 0
+            },
+            "patterns": {
+              "tickers": [
+                "ETH"
+              ],
+              "priceTargets": [
+                3000,
+                2991,
+                1,
+                3098,
+                7,
+                14,
+                28,
+                2961,
+                2961,
+                3015,
+                3030,
+                3100,
+                2961,
+                8,
+                7,
+                2
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "eth"
+                ],
+                "stocks": [
+                  "dia"
+                ]
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "ETH",
+                "type": "crypto",
+                "change": 1.56,
+                "direction": "up",
+                "correct": false
+              },
+              {
+                "asset": "DIA",
+                "type": "stock",
+                "change": 2.74,
+                "direction": "up",
+                "correct": false
+              }
+            ],
+            "engagement": 2,
+            "finbert": null
+          }
+        }
+      ],
+      "stats": {
+        "predictionCount": 1,
+        "avgFinalScore": 3.75,
+        "avgAccuracy": 0,
+        "avgSentiment": 5,
+        "avgSpecificity": 6,
+        "totalEngagement": 2,
+        "correctPredictions": 0,
+        "totalChecked": 2,
+        "accuracyRate": 0,
+        "accountScore": 4.34
+      }
+    },
+    {
+      "username": "MarketProphit",
+      "displayName": "Market Prophit",
+      "followers": 68441,
+      "isVerified": false,
+      "profileUrl": "https://x.com/MarketProphit",
+      "predictions": [
+        {
+          "tweetId": "1994905471397105993",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994905471397105993",
+          "text": "$SOL Sentiment \n\nCROWD = Bearish 🟥\nMP = Bullish 🟩 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/DlmRIB2bCF",
+          "predictedAt": "Sat Nov 29 23:05:02 +0000 2025",
+          "engagement": {
+            "likes": 1,
+            "retweets": 0,
+            "replies": 0,
+            "views": 67
+          },
+          "analysis": {
+            "finalScore": 3.97,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 2.85
+            },
+            "patterns": {
+              "tickers": [
+                "SOL"
+              ],
+              "priceTargets": [
+                73,
+                2
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "sol"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "SOL",
+                "type": "crypto",
+                "change": -2.85,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 1,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994909246157430981",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994909246157430981",
+          "text": "Top 3 Bearish Sentiment Cryptos: CROWD\n\n 🟥 $TCT $AXS $BOME\n\nTop 3 Bearish Cryptos: MP \n\n 🟥 $SOL\n    \nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S",
+          "predictedAt": "Sat Nov 29 23:20:02 +0000 2025",
+          "engagement": {
+            "likes": 0,
+            "retweets": 0,
+            "replies": 0,
+            "views": 101
+          },
+          "analysis": {
+            "finalScore": 3.84,
+            "components": {
+              "keyword": 3,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 2.85
+            },
+            "patterns": {
+              "tickers": [
+                "TCT",
+                "AXS",
+                "BOME",
+                "SOL"
+              ],
+              "priceTargets": [
+                3,
+                3,
+                73
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "sol"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "SOL",
+                "type": "crypto",
+                "change": -2.85,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 0,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994897918898418061",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994897918898418061",
+          "text": "Top 3 Bearish Sentiment Cryptos: CROWD\n\n 🟥 $GME $SOL $ARC\n    \nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S",
+          "predictedAt": "Sat Nov 29 22:35:01 +0000 2025",
+          "engagement": {
+            "likes": 0,
+            "retweets": 0,
+            "replies": 0,
+            "views": 103
+          },
+          "analysis": {
+            "finalScore": 3.84,
+            "components": {
+              "keyword": 3,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 2.85
+            },
+            "patterns": {
+              "tickers": [
+                "GME",
+                "SOL",
+                "ARC"
+              ],
+              "priceTargets": [
+                3,
+                73
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "sol"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "SOL",
+                "type": "crypto",
+                "change": -2.85,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 0,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994915538699768189",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994915538699768189",
+          "text": "$SOL Sentiment \n\nCROWD = Bearish 🟥\nMP = Bullish 🟩 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/jBKwWLfch6",
+          "predictedAt": "Sat Nov 29 23:45:02 +0000 2025",
+          "engagement": {
+            "likes": 0,
+            "retweets": 0,
+            "replies": 0,
+            "views": 56
+          },
+          "analysis": {
+            "finalScore": 3.69,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 2.85
+            },
+            "patterns": {
+              "tickers": [
+                "SOL"
+              ],
+              "priceTargets": [
+                73,
+                6
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "sol"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "SOL",
+                "type": "crypto",
+                "change": -2.85,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 0,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994900439507390705",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994900439507390705",
+          "text": "$SOL Sentiment \n\nCROWD = Bullish 🟩\nMP = Bearish 🟥 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/X4tEHAoGD2",
+          "predictedAt": "Sat Nov 29 22:45:02 +0000 2025",
+          "engagement": {
+            "likes": 0,
+            "retweets": 0,
+            "replies": 0,
+            "views": 56
+          },
+          "analysis": {
+            "finalScore": 3.69,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 2.85
+            },
+            "patterns": {
+              "tickers": [
+                "SOL"
+              ],
+              "priceTargets": [
+                73,
+                4,
+                2
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "sol"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "SOL",
+                "type": "crypto",
+                "change": -2.85,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 0,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994890371445526937",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994890371445526937",
+          "text": "$SOL Sentiment \n\nCROWD = Bearish 🟥\nMP = Bullish 🟩 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/6BrlnWzmMI",
+          "predictedAt": "Sat Nov 29 22:05:02 +0000 2025",
+          "engagement": {
+            "likes": 0,
+            "retweets": 0,
+            "replies": 0,
+            "views": 74
+          },
+          "analysis": {
+            "finalScore": 3.69,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 2.85
+            },
+            "patterns": {
+              "tickers": [
+                "SOL"
+              ],
+              "priceTargets": [
+                73,
+                6
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "sol"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "SOL",
+                "type": "crypto",
+                "change": -2.85,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 0,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994885340256243856",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994885340256243856",
+          "text": "$SOL Sentiment \n\nCROWD = Bearish 🟥\nMP = Bearish 🟥 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/LgBMcdCsH1",
+          "predictedAt": "Sat Nov 29 21:45:02 +0000 2025",
+          "engagement": {
+            "likes": 0,
+            "retweets": 0,
+            "replies": 0,
+            "views": 54
+          },
+          "analysis": {
+            "finalScore": 3.69,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 2.85
+            },
+            "patterns": {
+              "tickers": [
+                "SOL"
+              ],
+              "priceTargets": [
+                73,
+                1
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "sol"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "SOL",
+                "type": "crypto",
+                "change": -2.85,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 0,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994913023161761914",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994913023161761914",
+          "text": "$BTC Sentiment \n\nCROWD = Bullish 🟩\nMP = Bearish 🟥 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/JreJV81cZ8",
+          "predictedAt": "Sat Nov 29 23:35:03 +0000 2025",
+          "engagement": {
+            "likes": 2,
+            "retweets": 0,
+            "replies": 0,
+            "views": 529
+          },
+          "analysis": {
+            "finalScore": 3.05,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 0.43
+            },
+            "patterns": {
+              "tickers": [
+                "BTC"
+              ],
+              "priceTargets": [
+                73,
+                81,
+                8
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "btc"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "BTC",
+                "type": "crypto",
+                "change": -0.43,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 2,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994907988071780842",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994907988071780842",
+          "text": "$BTC Sentiment \n\nCROWD = Bearish 🟥\nMP = Bullish 🟩 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/h3jL6DNK7T",
+          "predictedAt": "Sat Nov 29 23:15:02 +0000 2025",
+          "engagement": {
+            "likes": 1,
+            "retweets": 0,
+            "replies": 1,
+            "views": 73
+          },
+          "analysis": {
+            "finalScore": 2.93,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 0.43
+            },
+            "patterns": {
+              "tickers": [
+                "BTC"
+              ],
+              "priceTargets": [
+                73,
+                3,
+                6,
+                7
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "btc"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "BTC",
+                "type": "crypto",
+                "change": -0.43,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 1,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994892889432961471",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994892889432961471",
+          "text": "$BTC Sentiment \n\nCROWD = Bearish 🟥\nMP = Bearish 🟥 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/pRhWvh2NBz",
+          "predictedAt": "Sat Nov 29 22:15:02 +0000 2025",
+          "engagement": {
+            "likes": 1,
+            "retweets": 0,
+            "replies": 0,
+            "views": 73
+          },
+          "analysis": {
+            "finalScore": 2.93,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 0.43
+            },
+            "patterns": {
+              "tickers": [
+                "BTC"
+              ],
+              "priceTargets": [
+                73,
+                2
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "btc"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "BTC",
+                "type": "crypto",
+                "change": -0.43,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 1,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994882821413114370",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994882821413114370",
+          "text": "$BTC Sentiment \n\nCROWD = Bearish 🟥\nMP = Bearish 🟥 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/71OxJXWkht",
+          "predictedAt": "Sat Nov 29 21:35:02 +0000 2025",
+          "engagement": {
+            "likes": 1,
+            "retweets": 0,
+            "replies": 0,
+            "views": 84
+          },
+          "analysis": {
+            "finalScore": 2.93,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 0.43
+            },
+            "patterns": {
+              "tickers": [
+                "BTC"
+              ],
+              "priceTargets": [
+                73,
+                71
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "btc"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "BTC",
+                "type": "crypto",
+                "change": -0.43,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 1,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994894145576653133",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994894145576653133",
+          "text": "$ETH Sentiment \n\nCROWD = Bearish 🟥\nMP = Bullish 🟩 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/dtZpn4O9GA",
+          "predictedAt": "Sat Nov 29 22:20:02 +0000 2025",
+          "engagement": {
+            "likes": 2,
+            "retweets": 0,
+            "replies": 1,
+            "views": 83
+          },
+          "analysis": {
+            "finalScore": 2.85,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 0
+            },
+            "patterns": {
+              "tickers": [
+                "ETH"
+              ],
+              "priceTargets": [
+                73,
+                4,
+                9
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "eth"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "ETH",
+                "type": "crypto",
+                "change": 1.56,
+                "direction": "up",
+                "correct": false
+              }
+            ],
+            "engagement": 2,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994897920160899144",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994897920160899144",
+          "text": "$BTC Sentiment \n\nCROWD = Bearish 🟥\nMP = Bullish 🟩 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/UfuCPb3W8g",
+          "predictedAt": "Sat Nov 29 22:35:02 +0000 2025",
+          "engagement": {
+            "likes": 0,
+            "retweets": 0,
+            "replies": 0,
+            "views": 68
+          },
+          "analysis": {
+            "finalScore": 2.72,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 0.43
+            },
+            "patterns": {
+              "tickers": [
+                "BTC"
+              ],
+              "priceTargets": [
+                73,
+                3,
+                8
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "btc"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "BTC",
+                "type": "crypto",
+                "change": -0.43,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 0,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994887856872194115",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994887856872194115",
+          "text": "$BTC Sentiment \n\nCROWD = Bearish 🟥\nMP = Bearish 🟥 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/QRW9XiMqqb",
+          "predictedAt": "Sat Nov 29 21:55:02 +0000 2025",
+          "engagement": {
+            "likes": 0,
+            "retweets": 0,
+            "replies": 1,
+            "views": 69
+          },
+          "analysis": {
+            "finalScore": 2.72,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 0.43
+            },
+            "patterns": {
+              "tickers": [
+                "BTC"
+              ],
+              "priceTargets": [
+                73,
+                9
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "btc"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "BTC",
+                "type": "crypto",
+                "change": -0.43,
+                "direction": "down",
+                "correct": true
+              }
+            ],
+            "engagement": 0,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994914278701502767",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994914278701502767",
+          "text": "$ETH Sentiment \n\nCROWD = Bearish 🟥\nMP = Bullish 🟩 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/AMaZhACC6N",
+          "predictedAt": "Sat Nov 29 23:40:02 +0000 2025",
+          "engagement": {
+            "likes": 0,
+            "retweets": 0,
+            "replies": 0,
+            "views": 57
+          },
+          "analysis": {
+            "finalScore": 2.55,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 0
+            },
+            "patterns": {
+              "tickers": [
+                "ETH"
+              ],
+              "priceTargets": [
+                73,
+                6
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "eth"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "ETH",
+                "type": "crypto",
+                "change": 1.56,
+                "direction": "up",
+                "correct": false
+              }
+            ],
+            "engagement": 0,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994909246585278841",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994909246585278841",
+          "text": "$ETH Sentiment \n\nCROWD = Bullish 🟩\nMP = Bearish 🟥 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/EpBw2O8ai8",
+          "predictedAt": "Sat Nov 29 23:20:02 +0000 2025",
+          "engagement": {
+            "likes": 0,
+            "retweets": 0,
+            "replies": 0,
+            "views": 62
+          },
+          "analysis": {
+            "finalScore": 2.55,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 0
+            },
+            "patterns": {
+              "tickers": [
+                "ETH"
+              ],
+              "priceTargets": [
+                73,
+                2,
+                8,
+                8
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "eth"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "ETH",
+                "type": "crypto",
+                "change": 1.56,
+                "direction": "up",
+                "correct": false
+              }
+            ],
+            "engagement": 0,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994904222815719762",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994904222815719762",
+          "text": "$ETH Sentiment \n\nCROWD = Bearish 🟥\nMP = Bullish 🟩 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/BvRQyXGVuF",
+          "predictedAt": "Sat Nov 29 23:00:04 +0000 2025",
+          "engagement": {
+            "likes": 0,
+            "retweets": 0,
+            "replies": 0,
+            "views": 62
+          },
+          "analysis": {
+            "finalScore": 2.55,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 0
+            },
+            "patterns": {
+              "tickers": [
+                "ETH"
+              ],
+              "priceTargets": [
+                73
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "eth"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "ETH",
+                "type": "crypto",
+                "change": 1.56,
+                "direction": "up",
+                "correct": false
+              }
+            ],
+            "engagement": 0,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994889116098744466",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994889116098744466",
+          "text": "$ETH Sentiment \n\nCROWD = Bearish 🟥\nMP = Bearish 🟥 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/MYb1VzwoM7",
+          "predictedAt": "Sat Nov 29 22:00:03 +0000 2025",
+          "engagement": {
+            "likes": 0,
+            "retweets": 0,
+            "replies": 0,
+            "views": 43
+          },
+          "analysis": {
+            "finalScore": 2.55,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 0
+            },
+            "patterns": {
+              "tickers": [
+                "ETH"
+              ],
+              "priceTargets": [
+                73,
+                1,
+                7
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "eth"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "ETH",
+                "type": "crypto",
+                "change": 1.56,
+                "direction": "up",
+                "correct": false
+              }
+            ],
+            "engagement": 0,
+            "finbert": null
+          }
+        },
+        {
+          "tweetId": "1994884080425734184",
+          "tweetUrl": "https://x.com/MarketProphit/status/1994884080425734184",
+          "text": "$ETH Sentiment \n\nCROWD = Bearish 🟥\nMP = Bearish 🟥 \n\nCheck out sentiment and other crypto stats at https://t.co/HQDyBNv73S https://t.co/aubGMyvC6W",
+          "predictedAt": "Sat Nov 29 21:40:02 +0000 2025",
+          "engagement": {
+            "likes": 0,
+            "retweets": 0,
+            "replies": 0,
+            "views": 67
+          },
+          "analysis": {
+            "finalScore": 2.55,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 5,
+              "accuracy": 0
+            },
+            "patterns": {
+              "tickers": [
+                "ETH"
+              ],
+              "priceTargets": [
+                73,
+                6
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "eth"
+                ],
+                "stocks": []
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "ETH",
+                "type": "crypto",
+                "change": 1.56,
+                "direction": "up",
+                "correct": false
+              }
+            ],
+            "engagement": 0,
+            "finbert": null
+          }
+        }
+      ],
+      "stats": {
+        "predictionCount": 19,
+        "avgFinalScore": 3.12,
+        "avgAccuracy": 1.19,
+        "avgSentiment": 5,
+        "avgSpecificity": 5,
+        "totalEngagement": 8,
+        "correctPredictions": 13,
+        "totalChecked": 19,
+        "accuracyRate": 68,
+        "accountScore": 4.31
+      }
+    },
+    {
+      "username": "TgMacro",
+      "displayName": "Tony Greer",
+      "followers": 57415,
+      "isVerified": true,
+      "profileUrl": "https://x.com/TgMacro",
+      "predictions": [
+        {
+          "tweetId": "1994901663128109260",
+          "tweetUrl": "https://x.com/TgMacro/status/1994901663128109260",
+          "text": "Retail bought the Tariff Tantrum dip down to S&amp;P 5K in April and then inhaled equities up to S&amp;P7K in the face of a 36% Bitcoin correction in November.  \n\nTake AMERICAN RETAIL off the list of sucker traders please. They’re a market force of nature.",
+          "predictedAt": "Sat Nov 29 22:49:54 +0000 2025",
+          "engagement": {
+            "likes": 100,
+            "retweets": 8,
+            "replies": 12,
+            "views": 21569
+          },
+          "analysis": {
+            "finalScore": 3.67,
+            "components": {
+              "keyword": 2,
+              "sentiment": 5,
+              "specificity": 4,
+              "accuracy": 0.21
+            },
+            "patterns": {
+              "tickers": [],
+              "priceTargets": [
+                5,
+                7,
+                36
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [
+                  "btc"
+                ],
+                "stocks": [
+                  "dia"
+                ]
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "BTC",
+                "type": "crypto",
+                "change": -0.43,
+                "direction": "down",
+                "correct": true
+              },
+              {
+                "asset": "DIA",
+                "type": "stock",
+                "change": 2.74,
+                "direction": "up",
+                "correct": false
+              }
+            ],
+            "engagement": 108,
+            "finbert": null
+          }
+        }
+      ],
+      "stats": {
+        "predictionCount": 1,
+        "avgFinalScore": 3.67,
+        "avgAccuracy": 0.21,
+        "avgSentiment": 5,
+        "avgSpecificity": 4,
+        "totalEngagement": 108,
+        "correctPredictions": 1,
+        "totalChecked": 2,
+        "accuracyRate": 50,
+        "accountScore": 4.26
+      }
+    },
+    {
+      "username": "APEXPENNYSTOCKS",
+      "displayName": "buyittradeit",
+      "followers": 11776,
+      "isVerified": true,
+      "profileUrl": "https://x.com/APEXPENNYSTOCKS",
+      "predictions": [
+        {
+          "tweetId": "1994886997681336694",
+          "tweetUrl": "https://x.com/APEXPENNYSTOCKS/status/1994886997681336694",
+          "text": "I like bears. But I also like stats. What usually happens the following year after a crash to the $SPY $SPX #NQ_F $QQQQ your welcome what you do with this info is on you lol. You don't have to trade a lot but you do have to enjoy  life. https://t.co/lHUqO2NTM5",
+          "predictedAt": "Sat Nov 29 21:51:38 +0000 2025",
+          "engagement": {
+            "likes": 1,
+            "retweets": 0,
+            "replies": 1,
+            "views": 85
+          },
+          "analysis": {
+            "finalScore": 3.12,
+            "components": {
+              "keyword": 3,
+              "sentiment": 5,
+              "specificity": 6,
+              "accuracy": 0
+            },
+            "patterns": {
+              "tickers": [
+                "SPY",
+                "SPX",
+                "QQQQ"
+              ],
+              "priceTargets": [
+                2,
+                5
+              ],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [],
+                "stocks": [
+                  "spy",
+                  "qqq"
+                ]
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "SPY",
+                "type": "stock",
+                "change": 2.19,
+                "direction": "up",
+                "correct": false
+              },
+              {
+                "asset": "QQQ",
+                "type": "stock",
+                "change": 2.33,
+                "direction": "up",
+                "correct": false
+              }
+            ],
+            "engagement": 1,
+            "finbert": null
+          }
+        }
+      ],
+      "stats": {
+        "predictionCount": 1,
+        "avgFinalScore": 3.12,
+        "avgAccuracy": 0,
+        "avgSentiment": 5,
+        "avgSpecificity": 6,
+        "totalEngagement": 1,
+        "correctPredictions": 0,
+        "totalChecked": 2,
+        "accuracyRate": 0,
+        "accountScore": 3.58
+      }
+    },
+    {
+      "username": "acethebullly",
+      "displayName": "Ace of Trades",
+      "followers": 12269,
+      "isVerified": true,
+      "profileUrl": "https://x.com/acethebullly",
+      "predictions": [
+        {
+          "tweetId": "1994892831878516826",
+          "tweetUrl": "https://x.com/acethebullly/status/1994892831878516826",
+          "text": "On the monthly charts, $SPY and $QQQ formed red Hanging Man candles, showing stronger bearish pressure after their uptrends. $IWM green Hanging Man signals weaker bearish intent, as buyers held the close higher. \n\nNext month’s action will be key to confirm if a reversal is underway.",
+          "predictedAt": "Sat Nov 29 22:14:49 +0000 2025",
+          "engagement": {
+            "likes": 7,
+            "retweets": 0,
+            "replies": 1,
+            "views": 1357
+          },
+          "analysis": {
+            "finalScore": 3,
+            "components": {
+              "keyword": 4,
+              "sentiment": 5,
+              "specificity": 3,
+              "accuracy": 0
+            },
+            "patterns": {
+              "tickers": [
+                "SPY",
+                "QQQ",
+                "IWM"
+              ],
+              "priceTargets": [],
+              "percentDrops": [],
+              "timeframes": [],
+              "assets": {
+                "crypto": [],
+                "stocks": [
+                  "spy",
+                  "qqq"
+                ]
+              }
+            },
+            "accuracyDetails": [
+              {
+                "asset": "SPY",
+                "type": "stock",
+                "change": 2.19,
+                "direction": "up",
+                "correct": false
+              },
+              {
+                "asset": "QQQ",
+                "type": "stock",
+                "change": 2.33,
+                "direction": "up",
+                "correct": false
+              }
+            ],
+            "engagement": 7,
+            "finbert": null
+          }
+        }
+      ],
+      "stats": {
+        "predictionCount": 1,
+        "avgFinalScore": 3,
+        "avgAccuracy": 0,
+        "avgSentiment": 5,
+        "avgSpecificity": 3,
+        "totalEngagement": 7,
+        "correctPredictions": 0,
+        "totalChecked": 2,
+        "accuracyRate": 0,
+        "accountScore": 3.44
+      }
+    }
+  ]
+}
