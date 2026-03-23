@@ -59,6 +59,8 @@ export interface SettingsState {
   extensionInstalled: boolean
   isDemoMode: boolean
   showDemoInfoModal: boolean
+  showWhatsNewModal: boolean
+  lastSeenChangelogVersion: string | null
 
   // Extension settings actions
   setExtensionInstalled: (installed: boolean) => void
@@ -101,6 +103,8 @@ export interface SettingsState {
   setHasSeenSplash: (seen: boolean) => void
   setDemoMode: (isDemo: boolean) => void
   setShowDemoInfoModal: (show: boolean) => void
+  setShowWhatsNewModal: (show: boolean) => void
+  setLastSeenChangelogVersion: (version: string) => void
 
   // Reset actions
   resetExtensionSettings: () => void
@@ -199,6 +203,7 @@ const consolidatedStorage = {
               },
               hasSeenSplash: actualSettings.hasSeenSplash ?? false,
               isDemoMode: actualSettings.isDemoMode ?? false,
+              lastSeenChangelogVersion: actualSettings.lastSeenChangelogVersion ?? null,
             } as Partial<SettingsState>
             // Return in Zustand v5 persist format
             return {
@@ -265,6 +270,8 @@ export const useSettingsStore = create<SettingsState>()(
       extensionInstalled: false,
       isDemoMode: false,
       showDemoInfoModal: false,
+      showWhatsNewModal: false,
+      lastSeenChangelogVersion: null,
 
       // Extension settings actions
       setExtensionInstalled: (installed) => set({ extensionInstalled: installed }),
@@ -429,6 +436,8 @@ export const useSettingsStore = create<SettingsState>()(
       setHasSeenSplash: (seen) => set({ hasSeenSplash: seen }),
       setDemoMode: (isDemo) => set({ isDemoMode: isDemo }),
       setShowDemoInfoModal: (show) => set({ showDemoInfoModal: show }),
+      setShowWhatsNewModal: (show) => set({ showWhatsNewModal: show }),
+      setLastSeenChangelogVersion: (version) => set({ lastSeenChangelogVersion: version }),
 
       // Reset actions
       resetExtensionSettings: () =>

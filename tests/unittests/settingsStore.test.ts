@@ -461,4 +461,35 @@ describe('SettingsStore', () => {
       expect(useSettingsStore.getState().extension.defaultTags).toEqual([])
     })
   })
+
+  describe('Changelog State', () => {
+    it('should initialize lastSeenChangelogVersion as null', () => {
+      expect(useSettingsStore.getState().lastSeenChangelogVersion).toBeNull()
+    })
+
+    it('should initialize showWhatsNewModal as false', () => {
+      expect(useSettingsStore.getState().showWhatsNewModal).toBe(false)
+    })
+
+    it('should update lastSeenChangelogVersion', () => {
+      useSettingsStore.getState().setLastSeenChangelogVersion('2026-03-23')
+      expect(useSettingsStore.getState().lastSeenChangelogVersion).toBe('2026-03-23')
+    })
+
+    it('should update showWhatsNewModal', () => {
+      useSettingsStore.getState().setShowWhatsNewModal(true)
+      expect(useSettingsStore.getState().showWhatsNewModal).toBe(true)
+
+      useSettingsStore.getState().setShowWhatsNewModal(false)
+      expect(useSettingsStore.getState().showWhatsNewModal).toBe(false)
+    })
+
+    it('should not reset lastSeenChangelogVersion on resetAllSettings', () => {
+      useSettingsStore.getState().setLastSeenChangelogVersion('2026-03-23')
+      useSettingsStore.getState().resetAllSettings()
+      // lastSeenChangelogVersion is intentionally excluded from reset
+      // so users don't see the changelog again after a settings reset
+      expect(useSettingsStore.getState().lastSeenChangelogVersion).toBe('2026-03-23')
+    })
+  })
 })

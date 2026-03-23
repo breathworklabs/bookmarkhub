@@ -186,7 +186,7 @@ const UpcomingFeaturesPage = () => {
   ]
 
   return (
-    <Box {...componentStyles.container.background} minH="100vh" w="100%" overflowY="auto">
+    <Box {...componentStyles.container.background} h="100vh" w="100%" overflowY="auto">
       <VStack align="stretch" gap={8} maxW="1200px" mx="auto" p={6}>
         {/* Header */}
         <VStack align="stretch" gap={3}>

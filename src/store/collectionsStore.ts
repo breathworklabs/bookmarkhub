@@ -127,11 +127,15 @@ export const useCollectionsStore = create<CollectionsStore>()(
             }
           }
 
-          // Update with collection bookmarks map
+          // Update with collection bookmarks map, merging with any state updates
+          // that happened during the async load to avoid overwriting concurrent moves
           set(
-            {
-              collectionBookmarks,
-            },
+            (state) => ({
+              collectionBookmarks: {
+                ...collectionBookmarks,
+                ...state.collectionBookmarks,
+              },
+            }),
             false,
             'collections:backgroundLoad'
           )
@@ -374,8 +378,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
               collectionBookmarks: {
                 ...state.collectionBookmarks,
                 [collectionId]: [
-                  ...(state.collectionBookmarks[collectionId] || []),
-                  bookmarkId,
+                  ...new Set([...(state.collectionBookmarks[collectionId] || []), bookmarkId]),
                 ],
               },
             }),

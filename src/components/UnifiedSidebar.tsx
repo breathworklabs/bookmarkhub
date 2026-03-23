@@ -9,6 +9,7 @@ import {
   Image,
 } from '@chakra-ui/react'
 import { APP_NAME } from '../constants/app'
+import { LATEST_CHANGELOG_VERSION } from '../data/changelog'
 import {
   LuMenu,
   LuExternalLink,
@@ -21,6 +22,7 @@ import {
   LuChevronRight,
   LuMessageSquare,
   LuSparkles,
+  LuScrollText,
 } from 'react-icons/lu'
 import { useMemo, useCallback, memo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
@@ -76,6 +78,12 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
   const isSidebarCollapsed = useSettingsStore(
     (state) => state.display.isSidebarCollapsed
   )
+  const lastSeenChangelogVersion = useSettingsStore(
+    (state) => state.lastSeenChangelogVersion
+  )
+  const hasUnseenChangelog =
+    lastSeenChangelogVersion === null ||
+    lastSeenChangelogVersion < LATEST_CHANGELOG_VERSION
   // Don't select the function from state - call it directly from getState()
   const toggleSidebarCollapsed = () =>
     useSettingsStore.getState().toggleSidebarCollapsed()
@@ -503,6 +511,19 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
               label="Upcoming Features"
               onClick={() => navigateWithCleanup('/upcoming-features', onItemClick)}
               active={isActive('Upcoming Features')}
+            />
+
+            <NavItem
+              icon={<LuScrollText size={18} />}
+              label="What's New"
+              badge={hasUnseenChangelog ? 'New' : undefined}
+              badgeBg={hasUnseenChangelog ? 'var(--color-error)' : undefined}
+              badgeColor={hasUnseenChangelog ? 'white' : undefined}
+              active={false}
+              onClick={() => {
+                useSettingsStore.getState().setShowWhatsNewModal(true)
+                onItemClick?.()
+              }}
             />
 
             <NavItem
