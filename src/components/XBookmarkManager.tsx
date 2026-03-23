@@ -19,6 +19,8 @@ import CollectionsActions from './collections/CollectionsActions'
 import InfiniteBookmarkGrid from './InfiniteBookmarkGrid'
 import { BulkActionsBar } from './BulkActionsBar'
 import { DemoModeInfoModal } from './modals/DemoModeInfoModal'
+import { WhatsNewModal } from './modals/WhatsNewModal'
+import { LATEST_CHANGELOG_VERSION } from '../data/changelog'
 import InteractiveTour from './tour/InteractiveTour'
 
 const XBookmarkManager = () => {
@@ -32,11 +34,21 @@ const XBookmarkManager = () => {
   const showDemoInfoModal = useSettingsStore((state) => state.showDemoInfoModal)
   const setShowDemoInfoModal = useSettingsStore((state) => state.setShowDemoInfoModal)
 
+  // What's New modal state
+  const showWhatsNewModal = useSettingsStore((state) => state.showWhatsNewModal)
+  const setShowWhatsNewModal = useSettingsStore((state) => state.setShowWhatsNewModal)
+
   // Tour state
   const hasCompletedTour = useSettingsStore((state) => state.tour.hasCompletedTour)
   const tourDismissed = useSettingsStore((state) => state.tour.tourDismissed)
   const hasSeenSplash = useSettingsStore((state) => state.hasSeenSplash)
   const startTour = useSettingsStore((state) => state.startTour)
+
+  // What's New modal close handler
+  const handleWhatsNewClose = () => {
+    setShowWhatsNewModal(false)
+    useSettingsStore.getState().setLastSeenChangelogVersion(LATEST_CHANGELOG_VERSION)
+  }
 
   // Handle demo modal close - start tour after dismissing demo modal
   const handleDemoModalClose = () => {
@@ -73,6 +85,19 @@ const XBookmarkManager = () => {
       return () => clearTimeout(timer)
     }
   }, [hasSeenSplash, hasCompletedTour, tourDismissed, isMobile, showDemoInfoModal, startTour])
+
+  // Auto-show What's New for returning users when there are unseen changes
+  useEffect(() => {
+    if (!hasSeenSplash) return
+    if (showDemoInfoModal) return
+    const { lastSeenChangelogVersion } = useSettingsStore.getState()
+    if (lastSeenChangelogVersion === null || lastSeenChangelogVersion < LATEST_CHANGELOG_VERSION) {
+      const timer = setTimeout(() => {
+        setShowWhatsNewModal(true)
+      }, 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [hasSeenSplash, showDemoInfoModal, setShowWhatsNewModal])
 
   return (
     <Box
@@ -200,6 +225,12 @@ const XBookmarkManager = () => {
       <DemoModeInfoModal
         isOpen={showDemoInfoModal}
         onClose={handleDemoModalClose}
+      />
+
+      {/* What's New Modal */}
+      <WhatsNewModal
+        isOpen={showWhatsNewModal}
+        onClose={handleWhatsNewClose}
       />
 
       {/* Interactive Tour */}
