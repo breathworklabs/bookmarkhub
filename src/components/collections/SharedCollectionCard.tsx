@@ -1,6 +1,6 @@
 import { Flex, HStack, Text, Button } from '@chakra-ui/react'
 import { LuFolder, LuCopy, LuExternalLink, LuX, LuClock } from 'react-icons/lu'
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import type { Collection } from '../../types/collections'
 import { useCollectionsStore } from '../../store/collectionsStore'
@@ -12,6 +12,7 @@ interface SharedCollectionCardProps {
 
 export const SharedCollectionCard = memo<SharedCollectionCardProps>(
   ({ collection }) => {
+    const [isHovered, setIsHovered] = useState(false)
     const revokeShare = useCollectionsStore((state) => state.revokeShare)
     const collectionBookmarks = useCollectionsStore(
       (state) => state.collectionBookmarks[collection.id]
@@ -83,7 +84,13 @@ export const SharedCollectionCard = memo<SharedCollectionCardProps>(
     }
 
     return (
-      <Flex justifyContent="space-between" alignItems="center" gap={4}>
+      <Flex
+        justifyContent="space-between"
+        alignItems="center"
+        gap={4}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <HStack gap={2} flex={1} minW={0}>
           <LuFolder size={14} color="var(--color-blue)" style={{ flexShrink: 0 }} />
 
@@ -121,7 +128,7 @@ export const SharedCollectionCard = memo<SharedCollectionCardProps>(
         </HStack>
 
         {/* Actions */}
-        <HStack gap={2} flexShrink={0} data-actions opacity={0} transition="opacity 0.15s">
+        <HStack gap={2} flexShrink={0} style={{ opacity: isHovered ? 1 : 0, transition: 'opacity 0.15s' }}>
           <Button
             onClick={handleCopyLink}
             size="sm"
