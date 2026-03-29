@@ -7,6 +7,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '2026-03-29',
+    title: 'Share Collections Feature',
+    date: 'March 29, 2026',
+    changes: [
+      { type: 'feature', description: 'Share your bookmark collections with generate shareable links' },
+      { type: 'feature', description: 'Set expiration dates (7 days, 30 days, or never) and access limits on shared collections' },
+      { type: 'feature', description: 'View beautiful public collection pages at bookmarkhub.app/s/{id}' },
+      { type: 'improvement', description: 'Import shared collections directly into your own library' },
+    ],
+  },
+  {
     version: '2026-03-23',
     title: 'March 2026 Update',
     date: 'March 23, 2026',

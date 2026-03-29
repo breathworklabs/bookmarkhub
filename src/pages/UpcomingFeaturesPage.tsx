@@ -13,6 +13,7 @@ import {
   LuGlobe,
   LuUsers,
   LuTrendingUp,
+  LuShare,
 } from 'react-icons/lu'
 import { componentStyles } from '../styles/components'
 
@@ -47,6 +48,14 @@ const features: Feature[] = [
     icon: <LuDownload size={24} />,
     title: 'Import & Export',
     description: 'Import your X/Twitter bookmarks and export your data anytime. Full data portability with JSON format support.',
+    tier: 'free',
+    status: 'available',
+    category: 'productivity',
+  },
+  {
+    icon: <LuShare size={24} />,
+    title: 'Share Collections',
+    description: 'Share your curated bookmark collections with others. Generate shareable links with optional expiration dates and access limits. Perfect for collaboration and content discovery.',
     tier: 'free',
     status: 'available',
     category: 'productivity',
