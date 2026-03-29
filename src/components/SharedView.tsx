@@ -236,6 +236,7 @@ const SharedView = () => {
                       border="1px solid var(--color-border)"
                       _hover={{ borderColor: 'var(--color-border-hover)' }}
                       transition="all 0.2s"
+                      css={{ '&:hover [data-actions]': { opacity: 1 } }}
                     >
                       <SharedCollectionCard collection={collection} />
                     </Box>
@@ -319,6 +320,9 @@ const SharedView = () => {
                           border="1px solid var(--color-border)"
                           _hover={{ borderColor: 'var(--color-border-hover)' }}
                           transition="all 0.2s"
+                          css={{
+                            '&:hover [data-actions]': { opacity: 1 },
+                          }}
                         >
                           <Flex
                             justifyContent="space-between"
@@ -385,43 +389,38 @@ const SharedView = () => {
                               </HStack>
                             </VStack>
 
-                            <HStack gap={2} flexShrink={0}>
+                            <HStack
+                              gap={2}
+                              flexShrink={0}
+                              data-actions
+                              opacity={0}
+                              transition="opacity 0.15s"
+                            >
                               <Button
                                 onClick={() => handleCopyLink(bookmark.url)}
                                 size="sm"
                                 variant="ghost"
-                                style={{ color: 'var(--color-text-secondary)' }}
-                                _hover={{
-                                  bg: 'var(--color-bg-hover)',
-                                  color: 'var(--color-text-primary)',
-                                }}
-                                _focus={{
-                                  boxShadow:
-                                    '0 0 0 3px rgba(59, 130, 246, 0.3)',
-                                }}
+                                style={{ color: 'var(--color-text-tertiary)' }}
+                                _hover={{ bg: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                                fontSize="sm"
                               >
-                                <LuCopy
-                                  size={16}
-                                  style={{ marginRight: '6px' }}
-                                />
-                                Copy
+                                <HStack gap={1}>
+                                  <LuCopy size={14} />
+                                  <Text>Copy</Text>
+                                </HStack>
                               </Button>
                               <Button
                                 onClick={() => handleOpenLink(bookmark.url)}
                                 size="sm"
                                 variant="ghost"
                                 style={{ color: 'var(--color-blue)' }}
-                                _hover={{ bg: 'var(--color-bg-hover)' }}
-                                _focus={{
-                                  boxShadow:
-                                    '0 0 0 3px rgba(59, 130, 246, 0.3)',
-                                }}
+                                _hover={{ bg: 'var(--color-border)' }}
+                                fontSize="sm"
                               >
-                                <LuExternalLink
-                                  size={16}
-                                  style={{ marginRight: '6px' }}
-                                />
-                                Open
+                                <HStack gap={1}>
+                                  <LuExternalLink size={14} />
+                                  <Text>Open</Text>
+                                </HStack>
                               </Button>
                             </HStack>
                           </Flex>

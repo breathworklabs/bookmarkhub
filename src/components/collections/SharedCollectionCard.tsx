@@ -121,7 +121,7 @@ export const SharedCollectionCard = memo<SharedCollectionCardProps>(
         </HStack>
 
         {/* Actions */}
-        <HStack gap={2} flexShrink={0}>
+        <HStack gap={2} flexShrink={0} data-actions opacity={0} transition="opacity 0.15s">
           <Button
             onClick={handleCopyLink}
             size="sm"
