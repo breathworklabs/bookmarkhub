@@ -61,3 +61,13 @@ auth.json
 
 # Extension test results
 chrome-extension/**/test-results/
+
+# OpenCode
+.opencode/
+.opencode-skillful.json
+
+# Playwright MCP
+.playwright-mcp/
+
+# Wrangler
+workers/share-api/.wrangler/
