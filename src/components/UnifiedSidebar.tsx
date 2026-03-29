@@ -42,23 +42,25 @@ import { logger } from '../lib/logger'
 // Optimized selector for bookmark data
 const useBookmarkCounts = () => {
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
+  const collections = useCollectionsStore((state) => state.collections)
 
   return useMemo(() => {
     const weekAgo = new Date()
     weekAgo.setDate(weekAgo.getDate() - 7)
+    const sharedCollectionsCount = collections.filter((c) => c.shareSettings).length
 
     return {
       total: bookmarks.filter((b) => !b.is_deleted).length,
       starred: bookmarks.filter((b) => b.is_starred && !b.is_deleted).length,
       archived: bookmarks.filter((b) => b.is_archived && !b.is_deleted).length,
-      shared: bookmarks.filter((b) => b.is_shared && !b.is_deleted).length,
+      shared: bookmarks.filter((b) => b.is_shared && !b.is_deleted).length + sharedCollectionsCount,
       deleted: bookmarks.filter((b) => b.is_deleted).length,
       recent: bookmarks.filter((b) => {
         const date = new Date(b.created_at)
         return date >= weekAgo && !b.is_deleted
       }).length,
     }
-  }, [bookmarks])
+  }, [bookmarks, collections])
 }
 
 interface UnifiedSidebarProps {

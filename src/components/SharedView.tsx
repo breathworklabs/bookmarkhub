@@ -8,17 +8,20 @@ import {
   Badge,
   Link,
 } from '@chakra-ui/react'
-import { LuExternalLink, LuShare2, LuInfo, LuCopy } from 'react-icons/lu'
+import { LuExternalLink, LuShare2, LuInfo, LuCopy, LuFolder } from 'react-icons/lu'
 import { useEffect, useState, useMemo } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useBookmarkStore } from '../store/bookmarkStore'
+import { useCollectionsStore } from '../store/collectionsStore'
 import type { Bookmark } from '../types/bookmark'
 import toast from 'react-hot-toast'
 import UnifiedSidebar from './UnifiedSidebar'
+import { SharedCollectionCard } from './collections/SharedCollectionCard'
 
 const SharedView = () => {
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
+  const collections = useCollectionsStore((state) => state.collections)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -30,6 +33,11 @@ const SharedView = () => {
   const sharedBookmarks = useMemo(() => {
     return bookmarks.filter((b) => b.is_shared && !b.is_deleted)
   }, [bookmarks])
+
+  // Filter shared collections
+  const sharedCollections = useMemo(() => {
+    return collections.filter((c) => c.shareSettings)
+  }, [collections])
 
   // Group bookmarks by week
   const groupedByWeek = useMemo(() => {
@@ -160,8 +168,8 @@ const SharedView = () => {
                     fontSize="sm"
                     style={{ color: 'var(--color-text-tertiary)' }}
                   >
-                    {sharedBookmarks.length} item
-                    {sharedBookmarks.length !== 1 ? 's' : ''}
+                    {sharedBookmarks.length + sharedCollections.length} item
+                    {sharedBookmarks.length + sharedCollections.length !== 1 ? 's' : ''}
                   </Text>
                 </VStack>
               </HStack>
@@ -190,8 +198,54 @@ const SharedView = () => {
               </HStack>
             </Box>
 
+            {/* Shared Collections */}
+            {sharedCollections.length > 0 && (
+              <Box mb={6}>
+                <HStack
+                  mb={3}
+                  pb={2}
+                  borderBottomWidth="1px"
+                  style={{ borderColor: 'var(--color-border)' }}
+                >
+                  <LuFolder size={16} style={{ color: 'var(--color-blue)' }} />
+                  <Text
+                    fontSize="sm"
+                    fontWeight="600"
+                    style={{ color: 'var(--color-text-primary)' }}
+                  >
+                    Shared Collections
+                  </Text>
+                  <Badge
+                    bg="var(--color-border)"
+                    color="var(--color-text-tertiary)"
+                    fontSize="11px"
+                    px={2}
+                    py={1}
+                    borderRadius="4px"
+                  >
+                    {sharedCollections.length}
+                  </Badge>
+                </HStack>
+                <VStack alignItems="stretch" gap={2}>
+                  {sharedCollections.map((collection) => (
+                    <Box
+                      key={collection.id}
+                      p={4}
+                      borderRadius="8px"
+                      style={{ background: 'var(--color-bg-tertiary)' }}
+                      border="1px solid var(--color-border)"
+                      _hover={{ borderColor: 'var(--color-border-hover)' }}
+                      transition="all 0.2s"
+                    >
+                      <SharedCollectionCard collection={collection} />
+                    </Box>
+                  ))}
+                </VStack>
+              </Box>
+            )}
+
             {/* Shared Bookmarks - Grouped by Week */}
-            {sharedBookmarks.length === 0 ? (
+            {sharedBookmarks.length === 0 && sharedCollections.length === 0 ? (
               <Flex
                 h="400px"
                 alignItems="center"
@@ -213,13 +267,13 @@ const SharedView = () => {
                     fontWeight="500"
                     style={{ color: 'var(--color-text-secondary)' }}
                   >
-                    No shared bookmarks yet
+                    No shared items yet
                   </Text>
                   <Text
                     fontSize="sm"
                     style={{ color: 'var(--color-text-tertiary)' }}
                   >
-                    Bookmarks you share will appear here
+                    Bookmarks and collections you share will appear here
                   </Text>
                 </VStack>
               </Flex>
