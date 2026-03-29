@@ -13,6 +13,14 @@ export interface Collection {
   updatedAt: string
   bookmarkCount: number
   userId: string
+  shareSettings?: {
+    shareId: string
+    shareUrl: string
+    expiresAt: string | null
+    maxAccess: number | null
+    accessCount: number
+    sharedAt: string
+  }
 }
 
 export interface SmartCollectionCriteria {

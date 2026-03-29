@@ -1,4 +1,4 @@
-import { Box, Flex, VStack, HStack, Text, Button, Badge } from '@chakra-ui/react'
+import { Flex, HStack, Text, Button } from '@chakra-ui/react'
 import { LuFolder, LuCopy, LuExternalLink, LuX, LuClock } from 'react-icons/lu'
 import { memo, useCallback } from 'react'
 import toast from 'react-hot-toast'
@@ -63,7 +63,8 @@ export const SharedCollectionCard = memo<SharedCollectionCardProps>(
       if (diffDays === 1) return 'Expires in 1 day'
       if (diffDays < 7) return `Expires in ${diffDays} days`
       if (diffDays < 30) return `Expires in ${Math.floor(diffDays / 7)} weeks`
-      return `Expires in ${Math.floor(diffDays / 30)} months`
+      const months = Math.floor(diffDays / 30)
+      return `Expires in ${months} month${months !== 1 ? 's' : ''}`
     }
 
     const formatSharedTime = (sharedAt?: string) => {
@@ -82,121 +83,86 @@ export const SharedCollectionCard = memo<SharedCollectionCardProps>(
     }
 
     return (
-      <Box
-        p={4}
-        borderRadius="10px"
-        bg="var(--color-bg-tertiary)"
-        border="1px solid var(--color-border)"
-        _hover={{ borderColor: 'var(--color-border-hover)' }}
-        transition="all 0.2s"
-      >
-        <Flex justifyContent="space-between" alignItems="flex-start" gap={4}>
-          <HStack gap={3} flex={1} minW={0}>
-            {/* Folder Icon */}
-            <Box
-              p={2}
-              borderRadius="8px"
-              bg="var(--color-bg-secondary)"
-              flexShrink={0}
-            >
-              <LuFolder size={20} color="var(--color-blue)" />
-            </Box>
+      <Flex justifyContent="space-between" alignItems="center" gap={4}>
+        <HStack gap={2} flex={1} minW={0}>
+          <LuFolder size={14} color="var(--color-blue)" style={{ flexShrink: 0 }} />
 
-            <VStack alignItems="flex-start" gap={1} flex={1} minW={0}>
-              {/* Collection Name with Badge */}
-              <HStack gap={2} flexWrap="wrap">
-                <Text
-                  fontSize="sm"
-                  fontWeight="500"
-                  color="var(--color-text-primary)"
-                  css={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {collection.name}
-                </Text>
-                <Badge
-                  bg="var(--color-blue)"
-                  color="white"
-                  fontSize="10px"
-                  px={2}
-                  py={0.5}
-                  borderRadius="4px"
-                  fontWeight="600"
-                >
-                  COLLECTION
-                </Badge>
-              </HStack>
+          <Text
+            fontSize="sm"
+            fontWeight="500"
+            color="var(--color-text-primary)"
+            css={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+          >
+            {collection.name}
+          </Text>
 
-              {/* Meta Info */}
-              <HStack gap={3} flexWrap="wrap">
-                <Text fontSize="xs" color="var(--color-text-tertiary)">
-                  {bookmarkCount} bookmark{bookmarkCount !== 1 ? 's' : ''}
-                </Text>
-                <Text fontSize="xs" color="var(--color-text-tertiary)">
-                  Shared {formatSharedTime(collection.shareSettings?.sharedAt)}
-                </Text>
-                {expiresAt && (
-                  <HStack gap={1}>
-                    <LuClock size={12} color="var(--color-text-tertiary)" />
-                    <Text fontSize="xs" color="var(--color-text-tertiary)">
-                      {formatExpiryTime(expiresAt)}
-                    </Text>
-                  </HStack>
-                )}
-                {collection.shareSettings?.maxAccess && (
-                  <Text fontSize="xs" color="var(--color-text-tertiary)">
-                    {collection.shareSettings.accessCount || 0}/
-                    {collection.shareSettings.maxAccess} accesses
-                  </Text>
-                )}
-              </HStack>
-            </VStack>
-          </HStack>
+          <Text fontSize="xs" color="var(--color-text-tertiary)" flexShrink={0}>
+            {bookmarkCount} bookmark{bookmarkCount !== 1 ? 's' : ''}
+          </Text>
 
-          {/* Actions */}
-          <HStack gap={2} flexShrink={0}>
-            <Button
-              onClick={handleCopyLink}
-              size="sm"
-              variant="ghost"
-              color="var(--color-text-secondary)"
-              _hover={{
-                bg: 'var(--color-bg-hover)',
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              <LuCopy size={16} style={{ marginRight: '6px' }} />
-              Copy
-            </Button>
-            <Button
-              onClick={handleOpenLink}
-              size="sm"
-              variant="ghost"
-              color="var(--color-blue)"
-              _hover={{ bg: 'var(--color-bg-hover)' }}
-            >
-              <LuExternalLink size={16} style={{ marginRight: '6px' }} />
-              Open
-            </Button>
-            <Button
-              onClick={handleRevokeShare}
-              size="sm"
-              variant="ghost"
-              color="var(--color-error)"
-              _hover={{
-                bg: 'var(--color-bg-hover)',
-                color: 'var(--color-error-hover)',
-              }}
-            >
-              <LuX size={16} style={{ marginRight: '6px' }} />
-              Revoke
-            </Button>
-          </HStack>
-        </Flex>
-      </Box>
+          <Text fontSize="xs" color="var(--color-text-tertiary)" flexShrink={0}>
+            · Shared {formatSharedTime(collection.shareSettings?.sharedAt)}
+          </Text>
+
+          {expiresAt && (
+            <HStack gap={1} flexShrink={0}>
+              <LuClock size={11} color="var(--color-text-tertiary)" />
+              <Text fontSize="xs" color="var(--color-text-tertiary)">
+                {formatExpiryTime(expiresAt)}
+              </Text>
+            </HStack>
+          )}
+
+          {collection.shareSettings?.maxAccess && (
+            <Text fontSize="xs" color="var(--color-text-tertiary)" flexShrink={0}>
+              · {collection.shareSettings.accessCount || 0}/{collection.shareSettings.maxAccess} accesses
+            </Text>
+          )}
+        </HStack>
+
+        {/* Actions */}
+        <HStack gap={2} flexShrink={0}>
+          <Button
+            onClick={handleCopyLink}
+            size="sm"
+            variant="ghost"
+            style={{ color: 'var(--color-text-tertiary)' }}
+            _hover={{ bg: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+            fontSize="sm"
+          >
+            <HStack gap={1}>
+              <LuCopy size={14} />
+              <Text>Copy</Text>
+            </HStack>
+          </Button>
+          <Button
+            onClick={handleOpenLink}
+            size="sm"
+            variant="ghost"
+            style={{ color: 'var(--color-blue)' }}
+            _hover={{ bg: 'var(--color-border)' }}
+            fontSize="sm"
+          >
+            <HStack gap={1}>
+              <LuExternalLink size={14} />
+              <Text>Open</Text>
+            </HStack>
+          </Button>
+          <Button
+            onClick={handleRevokeShare}
+            size="sm"
+            variant="ghost"
+            color="var(--color-error)"
+            _hover={{ bg: 'var(--color-border)', color: 'var(--color-error-hover)' }}
+            fontSize="sm"
+          >
+            <HStack gap={1}>
+              <LuX size={14} />
+              <Text>Revoke</Text>
+            </HStack>
+          </Button>
+        </HStack>
+      </Flex>
     )
   }
 )

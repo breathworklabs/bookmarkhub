@@ -8,11 +8,11 @@ import type {
 // API base URL - will be configured for production
 const API_BASE_URL =
   import.meta.env.VITE_SHARE_API_URL ||
-  'https://share-api.bookmarkhub.breathworklabs.com'
+  'https://bookmarkhub-share-api.bartlomiej-sobera.workers.dev'
 
 const SHARE_BASE_URL =
   import.meta.env.VITE_SHARE_BASE_URL ||
-  'https://bookmarkhub.breathworklabs.com/s'
+  'https://bookmarkhub.app/s'
 
 /**
  * Create a new shared collection

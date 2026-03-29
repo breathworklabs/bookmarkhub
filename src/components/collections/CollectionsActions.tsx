@@ -7,6 +7,7 @@ import {
   LuX,
   LuTag,
   LuChevronRight,
+  LuShare2,
 } from 'react-icons/lu'
 import { useCallback, memo, useState, useMemo } from 'react'
 import { useCollectionsStore } from '../../store/collectionsStore'
@@ -17,6 +18,7 @@ import TagInput from '../tags/TagInput'
 import SmartTagSuggestions from '../tags/SmartTagSuggestions'
 import { getCollectionPath } from '../../utils/collectionHierarchy'
 import { logger } from '../../lib/logger'
+import { SharedCollectionCard } from './SharedCollectionCard'
 
 const CollectionsActions = memo(() => {
   const {
@@ -44,7 +46,7 @@ const CollectionsActions = memo(() => {
   const [showTagInput, setShowTagInput] = useState(false)
   const [selectedBookmarkTags, setSelectedBookmarkTags] = useState<string[]>([])
 
-  const { showCreateCollection, showDeleteConfirmation, showEditCollection } =
+  const { showCreateCollection, showDeleteConfirmation, showEditCollection, showShareCollection } =
     useModal()
   const isMobile = useIsMobile()
 
@@ -78,6 +80,11 @@ const CollectionsActions = memo(() => {
       },
     })
   }, [showCreateCollection, createCollection])
+
+  const handleShareCollection = useCallback(() => {
+    if (!activeCollection || !isUserCollection) return
+    showShareCollection({ collectionId: activeCollection.id })
+  }, [showShareCollection, activeCollection, isUserCollection])
 
   const handleEditCollection = useCallback(() => {
     if (!activeCollection || !isUserCollection) return
@@ -455,6 +462,26 @@ const CollectionsActions = memo(() => {
 
                   {isUserCollection && (
                     <>
+                      {!isMobile && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          style={{ color: 'var(--color-text-tertiary)' }}
+                          _hover={{
+                            color: 'var(--color-text-primary)',
+                            bg: 'var(--color-border)',
+                          }}
+                          onClick={handleShareCollection}
+                          fontSize="sm"
+                          data-testid="share-collection"
+                        >
+                          <HStack gap={1}>
+                            <LuShare2 size={14} />
+                            <Text>Share</Text>
+                          </HStack>
+                        </Button>
+                      )}
+
                       <Button
                         size="sm"
                         variant="ghost"
@@ -494,6 +521,18 @@ const CollectionsActions = memo(() => {
               </>
             )}
           </HStack>
+        </Box>
+      )}
+
+      {/* Active share info strip */}
+      {isUserCollection && activeCollection?.shareSettings && (
+        <Box
+          borderTopWidth="1px"
+          style={{ borderColor: 'var(--color-border)' }}
+          px={6}
+          py={3}
+        >
+          <SharedCollectionCard collection={activeCollection} />
         </Box>
       )}
     </Box>

@@ -36,7 +36,7 @@ export default defineConfig({
         cert: fs.readFileSync(path.resolve(__dirname, '.certs/bookmarkhub.app+3.pem')),
       },
     }),
-    allowedHosts: ['bookmarkhub.local', 'www.bookmarkhub.local', 'bookmarkhub.app', 'www.bookmarkhub.app'],
+    allowedHosts: ['localhost', 'bookmarkhub.local', 'www.bookmarkhub.local', 'bookmarkhub.app', 'www.bookmarkhub.app'],
   },
   build: {
     rollupOptions: {

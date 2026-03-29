@@ -30,6 +30,7 @@ import ImageModal from './ImageModal'
 import TagManagerModal from '../tags/TagManagerModal'
 import TagMergeModal from '../tags/TagMergeModal'
 import DuplicateBookmarkDialog from './DuplicateBookmarkDialog'
+import { ShareCollectionModal } from './ShareCollectionModal'
 import TagInput from '../tags/TagInput'
 import TagChip from '../tags/TagChip'
 import { useCollectionsStore } from '../../store/collectionsStore'
@@ -42,6 +43,10 @@ interface TagMergeOptions {
   initialSourceTags?: string[]
 }
 
+interface ShareCollectionOptions {
+  collectionId: string
+}
+
 interface ModalContextType {
   showDeleteConfirmation: (options: DeleteConfirmationOptions) => void
   showAddTag: (options: AddTagOptions) => void
@@ -49,6 +54,7 @@ interface ModalContextType {
   showEditBookmark: (options: EditBookmarkOptions) => void
   showCreateCollection: (options: CreateCollectionOptions) => void
   showEditCollection: (options: EditCollectionOptions) => void
+  showShareCollection: (options: ShareCollectionOptions) => void
   showImageModal: (options: ImageModalOptions) => void
   showTagManager: () => void
   showTagMerge: (options?: TagMergeOptions) => void
@@ -156,6 +162,10 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     isOpen: false,
     initialSourceTags: [],
   })
+  const [shareCollectionState, setShareCollectionState] = useState<{
+    isOpen: boolean
+    collectionId: string
+  }>({ isOpen: false, collectionId: '' })
   const [tagInput, setTagInput] = useState('')
   const [bookmarkFormData, setBookmarkFormData] = useState<BookmarkInsert>({
     user_id: 'ae879c80-f3fc-4e05-a837-384e4b9bfb28',
@@ -482,6 +492,14 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  const showShareCollection = (options: ShareCollectionOptions) => {
+    setShareCollectionState({ isOpen: true, collectionId: options.collectionId })
+  }
+
+  const closeShareCollection = () => {
+    setShareCollectionState({ isOpen: false, collectionId: '' })
+  }
+
   const contextValue: ModalContextType = {
     showDeleteConfirmation,
     showAddTag,
@@ -489,6 +507,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     showEditBookmark,
     showCreateCollection,
     showEditCollection,
+    showShareCollection,
     showImageModal,
     showTagManager,
     showTagMerge,
@@ -1147,6 +1166,13 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
 
       {/* Duplicate Bookmark Dialog */}
       <DuplicateBookmarkDialog />
+
+      {/* Share Collection Modal */}
+      <ShareCollectionModal
+        isOpen={shareCollectionState.isOpen}
+        onClose={closeShareCollection}
+        collectionId={shareCollectionState.collectionId}
+      />
     </ModalContext.Provider>
   )
 }

@@ -32,7 +32,8 @@ app.use(helmet({
         "https://api.twitter.com",
         "https://x.com",
         "https://*.sentry.io",
-        "https://cloudflareinsights.com"
+        "https://cloudflareinsights.com",
+        "https://bookmarkhub-share-api.bartlomiej-sobera.workers.dev"
       ],
       frameSrc: ["'self'", "https://platform.twitter.com"],
       mediaSrc: ["'self'", "https:", "blob:"],

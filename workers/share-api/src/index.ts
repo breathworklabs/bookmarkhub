@@ -10,7 +10,11 @@ interface SharedBookmark {
   url: string
   author?: string
   description?: string
+  content?: string
   tags?: string[]
+  profileImage?: string
+  images?: string[]
+  hasVideo?: boolean
 }
 
 interface SharedCollection {
@@ -30,6 +34,20 @@ interface CreateShareRequest {
   bookmarks: SharedBookmark[]
   expiryDays?: number
   maxAccess?: number
+}
+
+const ALLOWED_ORIGINS = [
+  'https://bookmarkhub.app',
+  'http://localhost:5173',
+  'https://localhost:5173',
+]
+
+// Helper to resolve allowed origin from request
+function resolveOrigin(requestOrigin: string | null, fallback: string): string {
+  if (requestOrigin && ALLOWED_ORIGINS.includes(requestOrigin)) {
+    return requestOrigin
+  }
+  return fallback
 }
 
 // Helper to create CORS headers
@@ -87,6 +105,16 @@ function sanitizeBookmark(bookmark: SharedBookmark): SharedBookmark {
     tags: bookmark.tags
       ? bookmark.tags.slice(0, 20).map((t) => String(t).slice(0, 50))
       : undefined,
+    profileImage: bookmark.profileImage
+      ? String(bookmark.profileImage).slice(0, 500)
+      : undefined,
+    content: bookmark.content
+      ? String(bookmark.content).slice(0, 5000)
+      : undefined,
+    images: bookmark.images
+      ? bookmark.images.slice(0, 10).map((img) => String(img).slice(0, 500))
+      : undefined,
+    hasVideo: bookmark.hasVideo || undefined,
   }
 }
 
@@ -94,7 +122,7 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
     const path = url.pathname
-    const origin = env.CORS_ORIGIN || '*'
+    const origin = resolveOrigin(request.headers.get('Origin'), env.CORS_ORIGIN || '*')
 
     // Handle CORS preflight
     if (request.method === 'OPTIONS') {

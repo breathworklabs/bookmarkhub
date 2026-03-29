@@ -67,6 +67,13 @@ interface CollectionsActions {
 
   // Initialize collections
   initialize: () => Promise<void>
+
+  // Share operations
+  shareCollection: (
+    collectionId: string,
+    options: { expiryDays?: number; maxAccess?: number }
+  ) => Promise<{ shareUrl: string; expiresAt: string } | null>
+  revokeShare: (collectionId: string) => Promise<void>
 }
 
 export type CollectionsStore = CollectionsState & CollectionsActions
@@ -695,6 +702,139 @@ export const useCollectionsStore = create<CollectionsStore>()(
 
       setLoading: (loading) =>
         set({ isLoading: loading }, false, 'collections:setLoading'),
+
+      // Share a collection by creating a shareable link
+      shareCollection: async (collectionId, options) => {
+        try {
+          set({ isLoading: true, error: null }, false, 'collections:share:start')
+
+          const { collections } = get()
+          const collection = collections.find((c) => c.id === collectionId)
+          if (!collection) throw new Error('Collection not found')
+
+          const bookmarks =
+            await localStorageService.getBookmarksByCollection(collectionId)
+
+          const { createShare } = await import('../lib/shareApi')
+          const result = await createShare({
+            name: collection.name,
+            description: collection.description,
+            bookmarks: bookmarks.map((b) => {
+              const meta = (b as any).metadata
+              const profileImage =
+                meta?.profile_image_normal ||
+                (b.favicon_url && !b.favicon_url.includes('favicon.ico')
+                  ? b.favicon_url
+                  : undefined)
+              const images =
+                meta?.images?.length > 0
+                  ? meta.images
+                  : b.thumbnail_url
+                    ? [b.thumbnail_url]
+                    : undefined
+              return {
+                title: b.title,
+                url: b.url,
+                author: b.author || undefined,
+                description: b.description || undefined,
+                content: b.content || undefined,
+                tags: b.tags || undefined,
+                profileImage: profileImage || undefined,
+                images: images || undefined,
+                hasVideo: meta?.has_video || undefined,
+              }
+            }),
+            expiryDays: options.expiryDays,
+            maxAccess: options.maxAccess,
+          })
+
+          const sharedAt = new Date().toISOString()
+          const shareSettings = {
+            shareId: result.id,
+            shareUrl: result.shareUrl,
+            expiresAt: result.expiresAt || null,
+            maxAccess: options.maxAccess ?? null,
+            accessCount: 0,
+            sharedAt,
+          }
+
+          await localStorageService.updateCollection(collectionId, { shareSettings })
+
+          set(
+            (state) => ({
+              collections: state.collections.map((c) =>
+                c.id === collectionId ? { ...c, shareSettings } : c
+              ),
+            }),
+            false,
+            'collections:share:success'
+          )
+
+          return { shareUrl: result.shareUrl, expiresAt: result.expiresAt || '' }
+        } catch (error) {
+          logger.error('Failed to share collection', error)
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to share collection',
+            },
+            false,
+            'collections:share:error'
+          )
+          return null
+        } finally {
+          set({ isLoading: false }, false, 'collections:share:complete')
+        }
+      },
+
+      // Revoke a shared collection link
+      revokeShare: async (collectionId) => {
+        try {
+          set(
+            { isLoading: true, error: null },
+            false,
+            'collections:revokeShare:start'
+          )
+
+          const shareId = get().collections.find(
+            (c) => c.id === collectionId
+          )?.shareSettings?.shareId
+          if (!shareId) throw new Error('No active share found for this collection')
+
+          const { revokeShare } = await import('../lib/shareApi')
+          await revokeShare(shareId)
+
+          await localStorageService.updateCollection(collectionId, { shareSettings: undefined })
+
+          set(
+            (state) => ({
+              collections: state.collections.map((c) =>
+                c.id === collectionId
+                  ? { ...c, shareSettings: undefined }
+                  : c
+              ),
+            }),
+            false,
+            'collections:revokeShare:success'
+          )
+        } catch (error) {
+          logger.error('Failed to revoke share', error)
+          set(
+            {
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to revoke share',
+            },
+            false,
+            'collections:revokeShare:error'
+          )
+        } finally {
+          set({ isLoading: false }, false, 'collections:revokeShare:complete')
+        }
+      },
     }),
     {
       name: 'collections-store', // Store name for devtools

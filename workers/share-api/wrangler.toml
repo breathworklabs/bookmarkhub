@@ -5,14 +5,11 @@ compatibility_date = "2024-11-01"
 # KV Namespace for storing shared collections
 [[kv_namespaces]]
 binding = "SHARES"
-id = "YOUR_KV_NAMESPACE_ID"  # Replace with actual ID after creating namespace
-
-# For local development
-# Run: wrangler kv:namespace create SHARES
-# Then update the id above
+id = "ea290435e5894bbeb14d15a508a2e1ea"
+preview_id = "4d0dae07e32e4ad58b483340088812da"
 
 [vars]
-CORS_ORIGIN = "https://bookmarkhub.breathworklabs.com"
+CORS_ORIGIN = "https://bookmarkhub.app"
 
 # Development overrides
 [env.dev]
@@ -20,4 +17,4 @@ vars = { CORS_ORIGIN = "http://localhost:5173" }
 
 [[env.dev.kv_namespaces]]
 binding = "SHARES"
-id = "YOUR_DEV_KV_NAMESPACE_ID"  # Replace with preview namespace ID
+id = "4d0dae07e32e4ad58b483340088812da"

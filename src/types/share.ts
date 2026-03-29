@@ -5,7 +5,11 @@ export interface SharedBookmark {
   url: string
   author?: string
   description?: string
+  content?: string
   tags?: string[]
+  profileImage?: string
+  images?: string[]
+  hasVideo?: boolean
 }
 
 export interface SharedCollection {
