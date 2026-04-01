@@ -14,6 +14,7 @@ import CookiePolicy from './components/legal/CookiePolicy'
 import HelpPage from './pages/HelpPage'
 import UpcomingFeaturesPage from './pages/UpcomingFeaturesPage'
 import SharedCollectionPage from './pages/SharedCollectionPage'
+import ChangelogPage from './pages/ChangelogPage'
 import { useInitializeApp } from './hooks/useInitializeApp'
 import { ModalProvider } from './components/modals/ModalProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -62,6 +63,7 @@ function App() {
                 <Route path="/shared" element={<SharedView />} />
                 <Route path="/help" element={<HelpPage />} />
                 <Route path="/upcoming-features" element={<UpcomingFeaturesPage />} />
+                <Route path="/changelog" element={<ChangelogPage />} />
                 <Route path="/s/:shareId" element={<SharedCollectionPage />} />
                 <Route path="/terms" element={<TermsOfService />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
