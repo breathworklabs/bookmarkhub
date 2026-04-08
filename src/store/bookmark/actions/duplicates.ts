@@ -2,7 +2,7 @@ import type { StoreSet, StoreGet } from '@/store/bookmark/types'
 import type { DuplicateMatch } from '@/lib/duplicateDetection'
 import type { BookmarkInsert } from '@/types/bookmark'
 import { localStorageService } from '@/lib/localStorage'
-import { createErrorHandler } from '@/utils/errorHandling'
+import { handleStoreError } from '@/store/utils/handleStoreError'
 
 export const createDuplicateActions = (set: StoreSet, get: StoreGet) => ({
   setDuplicateMatches: (matches: DuplicateMatch[]) => {
@@ -38,15 +38,7 @@ export const createDuplicateActions = (set: StoreSet, get: StoreGet) => ({
         'confirmAddDuplicate:success'
       )
     } catch (error) {
-      const errorHandler = createErrorHandler(
-        'BookmarkStore.confirmAddDuplicate'
-      )
-      const appError = errorHandler(error)
-      set(
-        { error: appError.toUserMessage(), isLoading: false },
-        false,
-        'confirmAddDuplicate:error'
-      )
+      handleStoreError(set, error, 'confirmAddDuplicate', { isLoading: false })
     }
   },
 

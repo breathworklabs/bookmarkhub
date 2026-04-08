@@ -1,4 +1,4 @@
-import { logger } from "./../lib/logger"
+import { logger } from './../lib/logger'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import {
@@ -6,8 +6,8 @@ import {
   type StoredCollection,
   type CollectionInsert,
 } from '@/lib/localStorage'
-import { createErrorHandler } from '@/utils/errorHandling'
 import type { CollectionsState, Collection } from '@/types/collections'
+import { handleStoreError } from '@/store/utils/handleStoreError'
 
 // Re-export Collection type for convenience
 export type { Collection }
@@ -147,16 +147,9 @@ export const useCollectionsStore = create<CollectionsStore>()(
             'collections:backgroundLoad'
           )
         } catch (error) {
-          const errorHandler = createErrorHandler('CollectionsStore.initialize')
-          const appError = errorHandler(error)
-          set(
-            {
-              error: appError.toUserMessage(),
-              isLoading: false,
-            },
-            false,
-            'collections:initialize:error'
-          )
+          handleStoreError(set, error, 'collections:initialize', {
+            isLoading: false,
+          })
         }
       },
 
@@ -203,18 +196,9 @@ export const useCollectionsStore = create<CollectionsStore>()(
             'collections:load:success'
           )
         } catch (error) {
-          logger.error('Failed to load collections', error)
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to load collections',
-              isLoading: false,
-            },
-            false,
-            'collections:load:error'
-          )
+          handleStoreError(set, error, 'collections:load', {
+            isLoading: false,
+          })
         }
       },
 
@@ -248,17 +232,9 @@ export const useCollectionsStore = create<CollectionsStore>()(
             .getState()
             .addActivityLog('Created collection', newCollection.name)
         } catch (error) {
-          logger.error('Failed to create collection', error, { notify: true })
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to create collection',
-            },
-            false,
-            'collections:create:error'
-          )
+          handleStoreError(set, error, 'collections:create', {
+            notify: true,
+          })
         } finally {
           set({ isLoading: false }, false, 'collections:create:complete')
         }
@@ -288,17 +264,9 @@ export const useCollectionsStore = create<CollectionsStore>()(
             'collections:update:success'
           )
         } catch (error) {
-          logger.error('Failed to update collection', error, { notify: true })
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to update collection',
-            },
-            false,
-            'collections:update:error'
-          )
+          handleStoreError(set, error, 'collections:update', {
+            notify: true,
+          })
         } finally {
           set({ isLoading: false }, false, 'collections:update:complete')
         }
@@ -342,17 +310,9 @@ export const useCollectionsStore = create<CollectionsStore>()(
             .getState()
             .addActivityLog('Deleted collection', collectionName)
         } catch (error) {
-          logger.error('Failed to delete collection', error, { notify: true })
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to delete collection',
-            },
-            false,
-            'collections:delete:error'
-          )
+          handleStoreError(set, error, 'collections:delete', {
+            notify: true,
+          })
         } finally {
           set({ isLoading: false }, false, 'collections:delete:complete')
         }
@@ -385,7 +345,10 @@ export const useCollectionsStore = create<CollectionsStore>()(
               collectionBookmarks: {
                 ...state.collectionBookmarks,
                 [collectionId]: [
-                  ...new Set([...(state.collectionBookmarks[collectionId] || []), bookmarkId]),
+                  ...new Set([
+                    ...(state.collectionBookmarks[collectionId] || []),
+                    bookmarkId,
+                  ]),
                 ],
               },
             }),
@@ -410,22 +373,20 @@ export const useCollectionsStore = create<CollectionsStore>()(
             (c) => c.id === collectionId
           )
           const collectionName = collection?.name || 'collection'
-          bookmarkStoreState.addActivityLog('Added to collection', collectionName)
+          bookmarkStoreState.addActivityLog(
+            'Added to collection',
+            collectionName
+          )
           if (bookmark?.is_archived) {
-            bookmarkStoreState.addActivityLog('Unarchived bookmark', bookmark.title)
+            bookmarkStoreState.addActivityLog(
+              'Unarchived bookmark',
+              bookmark.title
+            )
           }
         } catch (error) {
-          logger.error('Failed to add bookmark to collection', error, { notify: true })
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to add bookmark to collection',
-            },
-            false,
-            'collections:addBookmark:error'
-          )
+          handleStoreError(set, error, 'collections:addBookmark', {
+            notify: true,
+          })
         }
       },
 
@@ -457,7 +418,9 @@ export const useCollectionsStore = create<CollectionsStore>()(
             b.id === bookmarkId
               ? {
                   ...b,
-                  collections: b.collections.filter((cId) => cId !== collectionId),
+                  collections: b.collections.filter(
+                    (cId) => cId !== collectionId
+                  ),
                 }
               : b
           )
@@ -468,19 +431,14 @@ export const useCollectionsStore = create<CollectionsStore>()(
             (c) => c.id === collectionId
           )
           const collectionName = collection?.name || 'collection'
-          bookmarkStoreState.addActivityLog('Removed from collection', collectionName)
-        } catch (error) {
-          logger.error('Failed to remove bookmark from collection', error, { notify: true })
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to remove bookmark from collection',
-            },
-            false,
-            'collections:removeBookmark:error'
+          bookmarkStoreState.addActivityLog(
+            'Removed from collection',
+            collectionName
           )
+        } catch (error) {
+          handleStoreError(set, error, 'collections:removeBookmark', {
+            notify: true,
+          })
         }
       },
 
@@ -501,17 +459,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
             'collections:getBookmarks:success'
           )
         } catch (error) {
-          logger.error('Failed to get bookmarks by collection', error)
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to get bookmarks by collection',
-            },
-            false,
-            'collections:getBookmarks:error'
-          )
+          handleStoreError(set, error, 'collections:getBookmarks')
         }
       },
 
@@ -547,17 +495,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
               `to ${collectionName}`
             )
         } catch (error) {
-          logger.error('Failed to move bookmarks', error, { notify: true })
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to move bookmarks',
-            },
-            false,
-            'collections:bulkMove:error'
-          )
+          handleStoreError(set, error, 'collections:bulkMove', { notify: true })
         } finally {
           set({ isLoading: false }, false, 'collections:bulkMove:complete')
         }
@@ -652,17 +590,9 @@ export const useCollectionsStore = create<CollectionsStore>()(
               `${collection?.name} to ${newParent?.name || 'root'}`
             )
         } catch (error) {
-          logger.error('Failed to move collection', error, { notify: true })
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to move collection',
-            },
-            false,
-            'collections:move:error'
-          )
+          handleStoreError(set, error, 'collections:move', {
+            notify: true,
+          })
         }
       },
 
@@ -706,7 +636,11 @@ export const useCollectionsStore = create<CollectionsStore>()(
       // Share a collection by creating a shareable link
       shareCollection: async (collectionId, options) => {
         try {
-          set({ isLoading: true, error: null }, false, 'collections:share:start')
+          set(
+            { isLoading: true, error: null },
+            false,
+            'collections:share:start'
+          )
 
           const { collections } = get()
           const collection = collections.find((c) => c.id === collectionId)
@@ -758,7 +692,9 @@ export const useCollectionsStore = create<CollectionsStore>()(
             sharedAt,
           }
 
-          await localStorageService.updateCollection(collectionId, { shareSettings })
+          await localStorageService.updateCollection(collectionId, {
+            shareSettings,
+          })
 
           set(
             (state) => ({
@@ -770,19 +706,12 @@ export const useCollectionsStore = create<CollectionsStore>()(
             'collections:share:success'
           )
 
-          return { shareUrl: result.shareUrl, expiresAt: result.expiresAt || '' }
+          return {
+            shareUrl: result.shareUrl,
+            expiresAt: result.expiresAt || '',
+          }
         } catch (error) {
-          logger.error('Failed to share collection', error)
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to share collection',
-            },
-            false,
-            'collections:share:error'
-          )
+          handleStoreError(set, error, 'collections:share')
           return null
         } finally {
           set({ isLoading: false }, false, 'collections:share:complete')
@@ -798,39 +727,29 @@ export const useCollectionsStore = create<CollectionsStore>()(
             'collections:revokeShare:start'
           )
 
-          const shareId = get().collections.find(
-            (c) => c.id === collectionId
-          )?.shareSettings?.shareId
-          if (!shareId) throw new Error('No active share found for this collection')
+          const shareId = get().collections.find((c) => c.id === collectionId)
+            ?.shareSettings?.shareId
+          if (!shareId)
+            throw new Error('No active share found for this collection')
 
           const { revokeShare } = await import('@/lib/shareApi')
           await revokeShare(shareId)
 
-          await localStorageService.updateCollection(collectionId, { shareSettings: undefined })
+          await localStorageService.updateCollection(collectionId, {
+            shareSettings: undefined,
+          })
 
           set(
             (state) => ({
               collections: state.collections.map((c) =>
-                c.id === collectionId
-                  ? { ...c, shareSettings: undefined }
-                  : c
+                c.id === collectionId ? { ...c, shareSettings: undefined } : c
               ),
             }),
             false,
             'collections:revokeShare:success'
           )
         } catch (error) {
-          logger.error('Failed to revoke share', error)
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to revoke share',
-            },
-            false,
-            'collections:revokeShare:error'
-          )
+          handleStoreError(set, error, 'collections:revokeShare')
         } finally {
           set({ isLoading: false }, false, 'collections:revokeShare:complete')
         }

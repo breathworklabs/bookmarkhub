@@ -1,15 +1,12 @@
 import type { StoreSet, StoreGet } from '@/store/bookmark/types'
-import {
-  localStorageService,
-  type StoredBookmark,
-} from '@/lib/localStorage'
+import { localStorageService, type StoredBookmark } from '@/lib/localStorage'
 import { sanitizeBookmark } from '@/lib/dataValidation'
-import { createErrorHandler } from '@/utils/errorHandling'
 import { detectDuplicate } from '@/lib/duplicateDetection'
 import { trackOperationPerformance } from '@/lib/performance'
 import { logger } from '@/lib/logger'
 import { mockBookmarks } from '@/data/mockBookmarks'
 import { useSettingsStore } from '@/store/settingsStore'
+import { handleStoreError } from '@/store/utils/handleStoreError'
 
 export const createCrudActions = (set: StoreSet, get: StoreGet) => ({
   initialize: async () => {
@@ -79,17 +76,10 @@ export const createCrudActions = (set: StoreSet, get: StoreGet) => ({
         count: bookmarkCount,
       })
     } catch (error) {
-      const errorHandler = createErrorHandler('BookmarkStore.initialize')
-      const appError = errorHandler(error)
-      set(
-        {
-          error: appError.toUserMessage(),
-          bookmarks: [],
-          isLoading: false,
-        },
-        false,
-        'initialize:error'
-      )
+      handleStoreError(set, error, 'initialize', {
+        isLoading: false,
+        extra: { bookmarks: [] },
+      })
     }
   },
 
@@ -108,16 +98,7 @@ export const createCrudActions = (set: StoreSet, get: StoreGet) => ({
 
       get().calculateFilterOptions()
     } catch (error) {
-      const errorHandler = createErrorHandler('BookmarkStore.loadBookmarks')
-      const appError = errorHandler(error)
-      set(
-        {
-          error: appError.toUserMessage(),
-          isLoading: false,
-        },
-        false,
-        'loadBookmarks:error'
-      )
+      handleStoreError(set, error, 'loadBookmarks', { isLoading: false })
     }
   },
 
@@ -183,9 +164,7 @@ export const createCrudActions = (set: StoreSet, get: StoreGet) => ({
 
       get().addActivityLog('Added bookmark', sanitizedBookmark.title)
     } catch (error) {
-      const errorHandler = createErrorHandler('BookmarkStore.addBookmark')
-      const appError = errorHandler(error)
-      set({ error: appError.toUserMessage() }, false, 'addBookmark:error')
+      handleStoreError(set, error, 'addBookmark')
     } finally {
       set({ isLoading: false }, false, 'addBookmark:complete')
     }
@@ -219,17 +198,7 @@ export const createCrudActions = (set: StoreSet, get: StoreGet) => ({
 
       get().addActivityLog('Updated bookmark', sanitizedBookmark.title)
     } catch (error) {
-      logger.error('Error updating bookmark', error, { notify: true })
-      set(
-        {
-          error:
-            error instanceof Error
-              ? error.message
-              : 'Failed to update bookmark',
-        },
-        false,
-        'updateBookmark:error'
-      )
+      handleStoreError(set, error, 'updateBookmark', { notify: true })
     } finally {
       set({ isLoading: false }, false, 'updateBookmark:complete')
     }
@@ -251,17 +220,7 @@ export const createCrudActions = (set: StoreSet, get: StoreGet) => ({
 
       get().addActivityLog('Moved to trash', updatedBookmark.title)
     } catch (error) {
-      logger.error('Error removing bookmark', error, { notify: true })
-      set(
-        {
-          error:
-            error instanceof Error
-              ? error.message
-              : 'Failed to remove bookmark',
-        },
-        false,
-        'removeBookmark:error'
-      )
+      handleStoreError(set, error, 'removeBookmark', { notify: true })
     } finally {
       set({ isLoading: false }, false, 'removeBookmark:complete')
     }
@@ -284,15 +243,7 @@ export const createCrudActions = (set: StoreSet, get: StoreGet) => ({
         get().addActivityLog('Starred bookmark', updatedBookmark.title)
       }
     } catch (error) {
-      logger.error('Failed to star bookmark', error, { notify: true })
-      set(
-        {
-          error:
-            error instanceof Error ? error.message : 'Failed to toggle star',
-        },
-        false,
-        'toggleStarBookmark:error'
-      )
+      handleStoreError(set, error, 'toggleStarBookmark', { notify: true })
     }
   },
 
@@ -331,15 +282,7 @@ export const createCrudActions = (set: StoreSet, get: StoreGet) => ({
         get().addActivityLog('Unarchived bookmark', updatedBookmark.title)
       }
     } catch (error) {
-      logger.error('Failed to archive bookmark', error, { notify: true })
-      set(
-        {
-          error:
-            error instanceof Error ? error.message : 'Failed to toggle archive',
-        },
-        false,
-        'toggleArchiveBookmark:error'
-      )
+      handleStoreError(set, error, 'toggleArchiveBookmark', { notify: true })
     }
   },
 
@@ -354,17 +297,7 @@ export const createCrudActions = (set: StoreSet, get: StoreGet) => ({
       const results = await localStorageService.searchBookmarks(query)
       set({ bookmarks: results }, false, 'searchBookmarks:success')
     } catch (error) {
-      logger.error('Error searching bookmarks', error)
-      set(
-        {
-          error:
-            error instanceof Error
-              ? error.message
-              : 'Failed to search bookmarks',
-        },
-        false,
-        'searchBookmarks:error'
-      )
+      handleStoreError(set, error, 'searchBookmarks')
     } finally {
       set({ isLoading: false }, false, 'searchBookmarks:complete')
     }

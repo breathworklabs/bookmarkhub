@@ -6,8 +6,8 @@ import {
   saveCachedValidationResults,
   areCachedResultsFresh,
 } from '@/services/bookmarkValidationService'
-import { logger } from '@/lib/logger'
 import { addActivityToLogs, getRecentLogs } from '@/utils/activityLogger'
+import { handleStoreError } from '@/store/utils/handleStoreError'
 
 export const createValidationActions = (set: StoreSet, get: StoreGet) => ({
   addActivityLog: (action: string, details?: string) => {
@@ -88,16 +88,9 @@ export const createValidationActions = (set: StoreSet, get: StoreGet) => ({
         )
       }
     } catch (error) {
-      logger.error('Error validating bookmarks', error)
-      set(
-        {
-          isValidating: false,
-          validationProgress: null,
-          error: 'Failed to validate bookmarks',
-        },
-        false,
-        'validateAllBookmarks:error'
-      )
+      handleStoreError(set, error, 'validateAllBookmarks', {
+        extra: { isValidating: false, validationProgress: null },
+      })
     }
   },
 

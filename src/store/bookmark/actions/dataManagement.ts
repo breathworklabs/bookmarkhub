@@ -1,9 +1,6 @@
 import type { StoreSet, StoreGet } from '@/store/bookmark/types'
 import { localStorageService } from '@/lib/localStorage'
-import {
-  sanitizeBookmark,
-  validateImportData,
-} from '@/lib/dataValidation'
+import { sanitizeBookmark, validateImportData } from '@/lib/dataValidation'
 import {
   transformXBookmarks,
   validateXBookmarkData,
@@ -15,6 +12,7 @@ import { mockBookmarks } from '@/data/mockBookmarks'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useCollectionsStore } from '@/store/collectionsStore'
 import { fetchPopularTechTweets } from '@/lib/fetchLiveTweets'
+import { handleStoreError } from '@/store/utils/handleStoreError'
 
 export const createDataManagementActions = (set: StoreSet, get: StoreGet) => ({
   exportBookmarks: async () => {
@@ -25,17 +23,7 @@ export const createDataManagementActions = (set: StoreSet, get: StoreGet) => ({
       const jsonContent = JSON.stringify(data, null, 2)
       downloadFile(jsonContent, `x-bookmarks-${date}.json`, 'application/json')
     } catch (error) {
-      logger.error('Failed to export bookmarks', error, { notify: true })
-      set(
-        {
-          error:
-            error instanceof Error
-              ? error.message
-              : 'Failed to export bookmarks',
-        },
-        false,
-        'exportBookmarks:error'
-      )
+      handleStoreError(set, error, 'exportBookmarks', { notify: true })
     }
   },
 
@@ -68,17 +56,7 @@ export const createDataManagementActions = (set: StoreSet, get: StoreGet) => ({
         count: importedCount,
       })
     } catch (error) {
-      logger.error('Failed to import bookmarks', error, { notify: true })
-      set(
-        {
-          error:
-            error instanceof Error
-              ? error.message
-              : 'Failed to import bookmarks',
-        },
-        false,
-        'importBookmarks:error'
-      )
+      handleStoreError(set, error, 'importBookmarks', { notify: true })
     } finally {
       set({ isLoading: false }, false, 'importBookmarks:complete')
     }
@@ -119,17 +97,7 @@ export const createDataManagementActions = (set: StoreSet, get: StoreGet) => ({
 
       await get().loadBookmarks()
     } catch (error) {
-      logger.error('Failed to import X bookmarks', error, { notify: true })
-      set(
-        {
-          error:
-            error instanceof Error
-              ? error.message
-              : 'Failed to import X bookmarks',
-        },
-        false,
-        'importXBookmarks:error'
-      )
+      handleStoreError(set, error, 'importXBookmarks', { notify: true })
     } finally {
       set({ isLoading: false }, false, 'importXBookmarks:complete')
     }
@@ -156,15 +124,7 @@ export const createDataManagementActions = (set: StoreSet, get: StoreGet) => ({
         'clearAllData:success'
       )
     } catch (error) {
-      logger.error('Failed to clear data', error, { notify: true })
-      set(
-        {
-          error:
-            error instanceof Error ? error.message : 'Failed to clear data',
-        },
-        false,
-        'clearAllData:error'
-      )
+      handleStoreError(set, error, 'clearAllData', { notify: true })
     } finally {
       set({ isLoading: false }, false, 'clearAllData:complete')
     }
@@ -233,16 +193,10 @@ export const createDataManagementActions = (set: StoreSet, get: StoreGet) => ({
         `Demo mode activated with ${demoBookmarks.length} ${source} bookmarks`
       )
     } catch (error) {
-      logger.error('Failed to load demo data', error, { notify: true })
-      set(
-        {
-          error:
-            error instanceof Error ? error.message : 'Failed to load demo data',
-          isLoading: false,
-        },
-        false,
-        'loadDemoData:error'
-      )
+      handleStoreError(set, error, 'loadDemoData', {
+        isLoading: false,
+        notify: true,
+      })
     }
   },
 
