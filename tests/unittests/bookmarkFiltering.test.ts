@@ -129,6 +129,105 @@ describe('bookmarkFiltering', () => {
 
       expect(result).toHaveLength(0)
     })
+
+    it('should filter starred bookmarks when starred smart collection is active', () => {
+      const bookmarks = [
+        createTestBookmark({ id: 1, is_starred: true }),
+        createTestBookmark({ id: 2, is_starred: false }),
+        createTestBookmark({ id: 3, is_starred: true }),
+      ]
+
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          activeSidebarItem: 'Collections',
+          activeCollectionId: 'starred',
+        })
+      )
+
+      expect(result).toHaveLength(2)
+      expect(result.map((b) => b.id).sort()).toEqual([1, 3])
+    })
+
+    it('should exclude deleted bookmarks from starred smart collection', () => {
+      const bookmarks = [
+        createTestBookmark({ id: 1, is_starred: true, is_deleted: false }),
+        createTestBookmark({ id: 2, is_starred: true, is_deleted: true }),
+      ]
+
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          activeSidebarItem: 'Collections',
+          activeCollectionId: 'starred',
+        })
+      )
+
+      expect(result).toHaveLength(1)
+      expect(result[0].id).toBe(1)
+    })
+
+    it('should filter recent bookmarks when recent smart collection is active', () => {
+      const now = new Date()
+      const threeDaysAgo = new Date(now)
+      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
+      const tenDaysAgo = new Date(now)
+      tenDaysAgo.setDate(tenDaysAgo.getDate() - 10)
+
+      const bookmarks = [
+        createTestBookmark({ id: 1, created_at: threeDaysAgo.toISOString() }),
+        createTestBookmark({ id: 2, created_at: tenDaysAgo.toISOString() }),
+      ]
+
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          activeSidebarItem: 'Collections',
+          activeCollectionId: 'recent',
+        })
+      )
+
+      expect(result).toHaveLength(1)
+      expect(result[0].id).toBe(1)
+    })
+
+    it('should filter archived bookmarks when archived smart collection is active', () => {
+      const bookmarks = [
+        createTestBookmark({ id: 1, is_archived: true }),
+        createTestBookmark({ id: 2, is_archived: false }),
+      ]
+
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          activeSidebarItem: 'Collections',
+          activeCollectionId: 'archived',
+        })
+      )
+
+      expect(result).toHaveLength(1)
+      expect(result[0].id).toBe(1)
+    })
+
+    it('should filter uncategorized bookmarks when uncategorized smart collection is active', () => {
+      const bookmarks = [
+        createTestBookmark({ id: 1, collections: [] }),
+        createTestBookmark({ id: 2, collections: ['work'] }),
+        createTestBookmark({ id: 3, collections: ['uncategorized'] }),
+        createTestBookmark({ id: 4 }),
+      ]
+
+      const result = filterBookmarks(
+        createDefaultParams({
+          bookmarks,
+          activeSidebarItem: 'Collections',
+          activeCollectionId: 'uncategorized',
+        })
+      )
+
+      expect(result).toHaveLength(3)
+      expect(result.map((b) => b.id).sort()).toEqual([1, 3, 4])
+    })
   })
 
   describe('tag filter', () => {
