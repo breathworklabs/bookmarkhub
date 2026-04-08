@@ -326,10 +326,7 @@ test.describe('Extension Import', () => {
         },
         version: '2.0.0',
       }
-      localStorage.setItem(
-        'x-bookmark-manager-data',
-        JSON.stringify(demoData)
-      )
+      localStorage.setItem('x-bookmark-manager-data', JSON.stringify(demoData))
     })
 
     await page.goto('http://localhost:5173')
@@ -385,10 +382,7 @@ test.describe('Extension Import', () => {
         },
         version: '2.0.0',
       }
-      localStorage.setItem(
-        'x-bookmark-manager-data',
-        JSON.stringify(realData)
-      )
+      localStorage.setItem('x-bookmark-manager-data', JSON.stringify(realData))
     })
 
     // Listen for page reload
@@ -717,5 +711,118 @@ test.describe('Extension Import', () => {
 
     // Should still be on onboarding (no auto-sync occurred)
     await expect(page.getByTestId('onboarding-screen')).toBeVisible()
+  })
+
+  test('allows extension import after clear when URL has ?import= parameter', async ({
+    page,
+    context,
+  }) => {
+    await context.addInitScript(() => {
+      const sampleData = {
+        bookmarks: [],
+        collections: [
+          {
+            id: 'uncategorized',
+            name: 'Uncategorized',
+            isPrivate: false,
+            isDefault: true,
+            isSmartCollection: false,
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+            bookmarkCount: 0,
+            userId: 'local-user',
+          },
+        ],
+        bookmarkCollections: [],
+        settings: {},
+        metadata: { version: '2.0.0' },
+        version: '2.0.0',
+        appState: {
+          hasBeenCleared: true,
+        },
+      }
+      localStorage.setItem(
+        'x-bookmark-manager-data',
+        JSON.stringify(sampleData)
+      )
+    })
+
+    await page.goto('http://localhost:5173/?import=twitter&count=2')
+
+    await expect(page.getByTestId('onboarding-screen')).toBeVisible({
+      timeout: 10000,
+    })
+
+    await page.evaluate(() => {
+      const extensionData = {
+        bookmarks: [
+          {
+            id: 1,
+            user_id: 'local-user',
+            title: 'First Extension Import',
+            url: 'https://example.com/first',
+            description: '',
+            content: '',
+            author: 'ExtensionUser',
+            domain: 'example.com',
+            source_platform: 'twitter',
+            engagement_score: 100,
+            is_starred: false,
+            is_read: false,
+            is_archived: false,
+            is_deleted: false,
+            tags: ['first-import'],
+            collections: ['uncategorized'],
+            primaryCollection: 'uncategorized',
+            created_at: '2024-01-01T00:00:00.000Z',
+            updated_at: '2024-01-01T00:00:00.000Z',
+          },
+        ],
+        collections: [
+          {
+            id: 'uncategorized',
+            name: 'Uncategorized',
+            isPrivate: false,
+            isDefault: true,
+            isSmartCollection: false,
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+            bookmarkCount: 1,
+            userId: 'local-user',
+          },
+        ],
+        bookmarkCollections: [],
+        settings: {},
+        metadata: {
+          version: '2.0.0',
+          lastImportSource: 'extension',
+        },
+        version: '2.0.0',
+        appState: {
+          hasBeenCleared: false,
+          lastImportSource: 'extension',
+        },
+      }
+      localStorage.setItem(
+        'x-bookmark-manager-data',
+        JSON.stringify(extensionData)
+      )
+      window.postMessage(
+        {
+          type: 'X_BOOKMARKS_UPDATED',
+          source: 'x-bookmark-extension',
+        },
+        '*'
+      )
+    })
+
+    const reloadPromise = page.waitForEvent('load', { timeout: 10000 })
+    await reloadPromise
+
+    await expect(page.getByTestId('x-bookmark-manager')).toBeVisible({
+      timeout: 10000,
+    })
+
+    await expect(page.getByText('First Extension Import')).toBeVisible()
   })
 })

@@ -6,6 +6,7 @@ import { useCollectionsStore } from '../../src/store/collectionsStore'
 import { useSettingsStore } from '../../src/store/settingsStore'
 import toast from 'react-hot-toast'
 import * as performance from '../../src/lib/performance'
+import { localStorageService } from '../../src/lib/localStorage'
 
 // Mock dependencies
 vi.mock('react-hot-toast', () => ({
@@ -27,6 +28,7 @@ vi.mock('../../src/lib/localStorage', () => ({
     setLastImportSource: vi.fn(),
     getBookmarks: vi.fn(async () => []),
     getCollections: vi.fn(async () => []),
+    setHasBeenCleared: vi.fn(),
   },
 }))
 
@@ -106,7 +108,9 @@ describe('useInitializeApp', () => {
     vi.spyOn(window, 'removeEventListener').mockImplementation(
       (event, handler) => {
         if (event === 'message') {
-          const index = messageListeners.indexOf(handler as (event: MessageEvent) => void)
+          const index = messageListeners.indexOf(
+            handler as (event: MessageEvent) => void
+          )
           if (index > -1) {
             messageListeners.splice(index, 1)
           }
@@ -117,10 +121,10 @@ describe('useInitializeApp', () => {
     // Mock window.postMessage
     vi.spyOn(window, 'postMessage').mockImplementation(() => {})
 
-    // Mock window.location.reload
+    // Mock window.location.reload and search
     Object.defineProperty(window, 'location', {
       writable: true,
-      value: { reload: vi.fn() },
+      value: { reload: vi.fn(), search: '' },
     })
 
     // Clear all mocks
@@ -155,7 +159,7 @@ describe('useInitializeApp', () => {
 
       // Wait a bit for the async checkExistingBookmarks to run
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 100))
+        await new Promise((resolve) => setTimeout(resolve, 100))
       })
 
       // The hook should detect bookmarks exist
@@ -182,7 +186,7 @@ describe('useInitializeApp', () => {
       expect(consoleSpy).toHaveBeenCalledWith(
         '[ERROR] Error checking existing bookmarks',
         expect.objectContaining({
-          error: expect.any(String)
+          error: expect.any(String),
         })
       )
 
@@ -419,7 +423,7 @@ describe('useInitializeApp', () => {
       expect(consoleSpy).toHaveBeenCalledWith(
         '[ERROR] Error reloading stores after extension update',
         expect.objectContaining({
-          error: expect.any(String)
+          error: expect.any(String),
         })
       )
 
@@ -537,7 +541,7 @@ describe('useInitializeApp', () => {
 
       // Wait for async initialization
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 100))
+        await new Promise((resolve) => setTimeout(resolve, 100))
       })
 
       // Fast-forward past the validation delay (2s)
@@ -575,14 +579,16 @@ describe('useInitializeApp', () => {
       })
 
       // Mock validateAllBookmarks to reject
-      const validateSpy = vi.mocked(useBookmarkStore.getState().validateAllBookmarks)
+      const validateSpy = vi.mocked(
+        useBookmarkStore.getState().validateAllBookmarks
+      )
       validateSpy.mockRejectedValue(new Error('Validation failed'))
 
       renderHook(() => useInitializeApp())
 
       // Wait for async initialization
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 100))
+        await new Promise((resolve) => setTimeout(resolve, 100))
       })
 
       // Fast-forward past the validation delay (2s)
@@ -675,6 +681,105 @@ describe('useInitializeApp', () => {
       const { result } = renderHook(() => useInitializeApp())
 
       expect(result.current.error).toBe('Bookmark error')
+    })
+  })
+
+  describe('extension import URL handling', () => {
+    it('should clear hasBeenCleared when URL has ?import= parameter', () => {
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: { reload: vi.fn(), search: '?import=twitter&count=2' },
+      })
+
+      renderHook(() => useInitializeApp())
+
+      expect(localStorageService.setHasBeenCleared).toHaveBeenCalledWith(false)
+    })
+
+    it('should post X_REQUEST_SYNC after 1.5s delay when URL has ?import=', () => {
+      vi.useFakeTimers()
+
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: { reload: vi.fn(), search: '?import=twitter&count=5' },
+      })
+
+      renderHook(() => useInitializeApp())
+
+      expect(window.postMessage).not.toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'X_REQUEST_SYNC' }),
+        '*'
+      )
+
+      act(() => {
+        vi.advanceTimersByTime(1500)
+      })
+
+      expect(window.postMessage).toHaveBeenCalledWith(
+        {
+          type: 'X_REQUEST_SYNC',
+          source: 'x-bookmark-manager-app',
+        },
+        '*'
+      )
+
+      vi.useRealTimers()
+    })
+
+    it('should do nothing when URL has no ?import= parameter', () => {
+      vi.useFakeTimers()
+
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: { reload: vi.fn(), search: '' },
+      })
+
+      renderHook(() => useInitializeApp())
+
+      act(() => {
+        vi.advanceTimersByTime(500)
+      })
+
+      const syncCalls = (
+        window.postMessage as ReturnType<typeof vi.fn>
+      ).mock.calls.filter((call: any[]) => call[0]?.type === 'X_REQUEST_SYNC')
+      expect(syncCalls.length).toBe(1)
+
+      act(() => {
+        vi.advanceTimersByTime(1000)
+      })
+
+      const syncCallsAfter = (
+        window.postMessage as ReturnType<typeof vi.fn>
+      ).mock.calls.filter((call: any[]) => call[0]?.type === 'X_REQUEST_SYNC')
+      expect(syncCallsAfter.length).toBe(1)
+      expect(localStorageService.setHasBeenCleared).not.toHaveBeenCalled()
+
+      vi.useRealTimers()
+    })
+
+    it('should clean up timer on unmount', () => {
+      vi.useFakeTimers()
+
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: { reload: vi.fn(), search: '?import=twitter' },
+      })
+
+      const { unmount } = renderHook(() => useInitializeApp())
+
+      unmount()
+
+      act(() => {
+        vi.advanceTimersByTime(1500)
+      })
+
+      expect(window.postMessage).not.toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'X_REQUEST_SYNC' }),
+        '*'
+      )
+
+      vi.useRealTimers()
     })
   })
 })

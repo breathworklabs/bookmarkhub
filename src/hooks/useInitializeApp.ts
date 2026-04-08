@@ -112,6 +112,25 @@ export const useInitializeApp = () => {
     return cleanup
   }, [])
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.has('import')) {
+      localStorageService.setHasBeenCleared(false)
+
+      const timer = setTimeout(() => {
+        window.postMessage(
+          {
+            type: 'X_REQUEST_SYNC',
+            source: 'x-bookmark-manager-app',
+          },
+          '*'
+        )
+      }, 1500)
+
+      return () => clearTimeout(timer)
+    }
+  }, [])
+
   // Phase 1: Listen for bookmark updates from Chrome extension
   useEffect(() => {
     const handleExtensionMessage = (event: MessageEvent) => {
@@ -148,9 +167,12 @@ export const useInitializeApp = () => {
             }
 
             // Always refresh the page after sync (with or without notification)
-            setTimeout(() => {
-              window.location.reload()
-            }, showNotification ? 2000 : 500)
+            setTimeout(
+              () => {
+                window.location.reload()
+              },
+              showNotification ? 2000 : 500
+            )
           })
           .catch((error) => {
             logger.error('Error reloading stores after extension update', error)
@@ -169,7 +191,8 @@ export const useInitializeApp = () => {
 
   // Auto-sync: Request bookmarks from extension when app opens
   useEffect(() => {
-    const autoSyncInterval = useSettingsStore.getState().extension.autoSyncInterval
+    const autoSyncInterval =
+      useSettingsStore.getState().extension.autoSyncInterval
 
     // Only auto-sync if not set to 'manual' or 'off'
     if (autoSyncInterval === 'manual' || autoSyncInterval === 'off') {
@@ -186,7 +209,9 @@ export const useInitializeApp = () => {
     // Check if user recently imported from a file - don't auto-sync to prevent overwriting
     const lastImportSource = localStorageService.getLastImportSource()
     if (lastImportSource === 'file') {
-      logger.debug('Auto-sync: Disabled (user imported from file - preventing data overwrite)')
+      logger.debug(
+        'Auto-sync: Disabled (user imported from file - preventing data overwrite)'
+      )
       return
     }
 
