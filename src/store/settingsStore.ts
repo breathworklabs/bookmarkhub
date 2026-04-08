@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { logger } from '../lib/logger'
+import { logger } from '@/lib/logger'
 import { persist } from 'zustand/middleware'
 
 export interface ExtensionSettings {

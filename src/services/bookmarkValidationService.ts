@@ -3,8 +3,8 @@
  * Checks if bookmark URLs are still accessible
  */
 
-import type { Bookmark } from '../types/bookmark'
-import { logger } from '../lib/logger'
+import type { Bookmark } from '@/types/bookmark'
+import { logger } from '@/lib/logger'
 
 export interface ValidationResult {
   id: number

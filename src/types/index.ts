@@ -13,4 +13,4 @@ export * from './collections'
 export * from './tags'
 
 // This allows clean imports like:
-// import { Bookmark, Collection, AppSettings, TagStats } from '../types'
+// import { Bookmark, Collection, AppSettings, TagStats } from '@/types'

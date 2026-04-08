@@ -1,4 +1,4 @@
-import type { Bookmark } from '../types/bookmark'
+import type { Bookmark } from '@/types/bookmark'
 
 // Extended Bookmark type with demo flag
 export interface DemoBookmark extends Bookmark {

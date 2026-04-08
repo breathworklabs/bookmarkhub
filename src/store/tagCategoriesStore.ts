@@ -5,7 +5,7 @@ import {
   TagWithCategory,
   DEFAULT_TAG_CATEGORIES,
   getTagCategory,
-} from '../types/tags'
+} from '@/types/tags'
 
 interface TagCategoriesState {
   // Categories

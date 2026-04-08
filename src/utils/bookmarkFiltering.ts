@@ -8,8 +8,8 @@
  * import { filterBookmarksOptimized, type FilterParams } from './bookmarkFilteringOptimized'
  */
 
-import { type Bookmark } from '../types/bookmark'
-import { type DateRangeFilter } from '../store/bookmarkStore'
+import { type Bookmark } from '@/types/bookmark'
+import { type DateRangeFilter } from '@/store/bookmarkStore'
 
 /**
  * @deprecated Use FilterParams from bookmarkFilteringOptimized.ts

@@ -5,8 +5,8 @@
  */
 
 import type { Bookmark } from '@/types/bookmark'
-import type { TaggingStrategy, TagSuggestion, TaggingContext } from '../types'
-import { ContentLinkExtractor } from '../core/ContentLinkExtractor'
+import type { TaggingStrategy, TagSuggestion, TaggingContext } from '@/services/smartTagging/types'
+import { ContentLinkExtractor } from '@/services/smartTagging/core/ContentLinkExtractor'
 import { matchUrlPatterns } from '@/data/smartTagging/urlPatterns'
 
 export class UrlPatternStrategy implements TaggingStrategy {

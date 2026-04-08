@@ -1,5 +1,5 @@
 import { logger } from './logger'
-import type { Bookmark } from '../types/bookmark'
+import type { Bookmark } from '@/types/bookmark'
 
 /**
  * Load demo tweets from pre-generated static JSON file

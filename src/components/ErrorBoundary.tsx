@@ -6,7 +6,7 @@
 
 import { Component, ErrorInfo, ReactNode } from 'react'
 import { Box, Button, Heading, Text, VStack, Code } from '@chakra-ui/react'
-import { logger } from '../lib/logger'
+import { logger } from '@/lib/logger'
 
 interface Props {
   children: ReactNode

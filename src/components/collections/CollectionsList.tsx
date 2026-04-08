@@ -3,7 +3,7 @@ import { useMemo, useCallback, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCollectionsStore } from '@/store/collectionsStore'
 import { useBookmarkStore } from '@/store/bookmarkStore'
-import { useModal } from '../modals/ModalProvider'
+import { useModal } from '@/components/modals/ModalProvider'
 import { CollectionTree } from './tree/CollectionTree'
 import { logger } from '@/lib/logger'
 

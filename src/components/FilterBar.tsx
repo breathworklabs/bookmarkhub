@@ -1,9 +1,9 @@
 import { Box, HStack, Button, For } from '@chakra-ui/react'
 import { useCallback, memo } from 'react'
-import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
-import { useFilterReset } from '../utils/filterUtils'
-import { useFilterTabStyles } from '../hooks/useStyles'
-import { componentStyles } from '../styles/components'
+import { useBookmarkSelectors } from '@/hooks/selectors/useBookmarkSelectors'
+import { useFilterReset } from '@/utils/filterUtils'
+import { useFilterTabStyles } from '@/hooks/useStyles'
+import { componentStyles } from '@/styles/components'
 
 // Memoized filter tabs array
 const FILTER_TABS = ['All', 'Today', 'This Week', 'This Month', 'Threads', 'Media']

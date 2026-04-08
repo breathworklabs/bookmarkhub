@@ -1,4 +1,4 @@
-import type { StoreSet, StoreGet } from '../types'
+import type { StoreSet, StoreGet } from '@/store/bookmark/types'
 import { localStorageService } from '@/lib/localStorage'
 import {
   sanitizeBookmark,

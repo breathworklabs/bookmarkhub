@@ -1,4 +1,4 @@
-import type { StoreSet, StoreGet, DateRangeFilter } from '../types'
+import type { StoreSet, StoreGet, DateRangeFilter } from '@/store/bookmark/types'
 
 export const createFilterActions = (set: StoreSet, get: StoreGet) => ({
   setAuthorFilter: (filter: string) =>

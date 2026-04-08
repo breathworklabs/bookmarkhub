@@ -1,9 +1,9 @@
 import { Box, SimpleGrid, For, Text, Spinner, HStack } from '@chakra-ui/react'
 import { memo, useCallback, useEffect } from 'react'
-import { usePaginatedBookmarksOptimized } from '../hooks/composite/usePaginatedBookmarksOptimized'
-import { useInfiniteScrollObserver } from '../hooks/useIntersectionObserver'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useSettingsStore } from '../store/settingsStore'
+import { usePaginatedBookmarksOptimized } from '@/hooks/composite/usePaginatedBookmarksOptimized'
+import { useInfiniteScrollObserver } from '@/hooks/useIntersectionObserver'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useSettingsStore } from '@/store/settingsStore'
 import BookmarkCard from './BookmarkCard/BookmarkCard'
 import BookmarkList from './BookmarkList'
 

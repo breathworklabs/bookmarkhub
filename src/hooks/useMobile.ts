@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { breakpoints } from '../styles/responsive'
+import { breakpoints } from '@/styles/responsive'
 
 /**
  * Hook to detect if the current viewport is mobile-sized

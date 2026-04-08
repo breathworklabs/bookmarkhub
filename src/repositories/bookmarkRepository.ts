@@ -3,7 +3,7 @@
  * Handles all bookmark-related database operations
  */
 
-import type { Bookmark, BookmarkInsert } from '../types/bookmark'
+import type { Bookmark, BookmarkInsert } from '@/types/bookmark'
 
 export type StoredBookmark = Bookmark
 export type { BookmarkInsert }

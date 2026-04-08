@@ -19,9 +19,9 @@ import { useNavigate } from 'react-router-dom'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useState, useCallback, useEffect } from 'react'
-import UnifiedSidebar from '../components/UnifiedSidebar'
-import { useSettingsStore } from '../store/settingsStore'
-import { useChecklistStatus } from '../hooks/useChecklistStatus'
+import UnifiedSidebar from '@/components/UnifiedSidebar'
+import { useSettingsStore } from '@/store/settingsStore'
+import { useChecklistStatus } from '@/hooks/useChecklistStatus'
 
 type HelpTopic =
   | 'getting-started'

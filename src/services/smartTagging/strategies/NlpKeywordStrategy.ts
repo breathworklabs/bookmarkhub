@@ -4,10 +4,10 @@
  */
 
 import nlp from 'compromise'
-import type { TaggingStrategy, TagSuggestion, TaggingContext } from '../types'
+import type { TaggingStrategy, TagSuggestion, TaggingContext } from '@/services/smartTagging/types'
 import type { Bookmark } from '@/types/bookmark'
 import { findTechKeywords } from '@/data/smartTagging/techKeywords'
-import { TagNormalizer } from '../core/TagNormalizer'
+import { TagNormalizer } from '@/services/smartTagging/core/TagNormalizer'
 import {
   isAmbiguousTechTerm,
   hasTechContext,

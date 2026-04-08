@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useCollectionsStore } from '../store/collectionsStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
 
 /**
  * Utility hook for resetting filters to default state

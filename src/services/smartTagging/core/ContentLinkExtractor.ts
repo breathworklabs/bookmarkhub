@@ -5,8 +5,8 @@
  */
 
 import type { Bookmark } from '@/types/bookmark'
-import type { ExtractedLink } from '../types'
-import { LINK_EXTRACTION_CONFIG } from '../config'
+import type { ExtractedLink } from '@/services/smartTagging/types'
+import { LINK_EXTRACTION_CONFIG } from '@/services/smartTagging/config'
 
 export class ContentLinkExtractor {
   // Regex to match URLs in text (supports http/https)

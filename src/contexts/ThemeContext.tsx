@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, ReactNode } from 'react'
-import { useSettingsStore } from '../store/settingsStore'
+import { useSettingsStore } from '@/store/settingsStore'
 
 interface ThemeContextType {
   theme: 'dark' | 'light' | 'auto'

@@ -18,10 +18,10 @@ import {
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
 import toast from 'react-hot-toast'
-import * as shareApi from '../lib/shareApi'
-import type { SharedCollection } from '../types/share'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useCollectionsStore } from '../store/collectionsStore'
+import * as shareApi from '@/lib/shareApi'
+import type { SharedCollection } from '@/types/share'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
 
 function decodeHtml(html: string): string {
   const txt = document.createElement('textarea')

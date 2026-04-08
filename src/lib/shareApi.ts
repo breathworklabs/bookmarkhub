@@ -3,7 +3,7 @@ import type {
   CreateShareResponse,
   SharedCollection,
   ShareError,
-} from '../types/share'
+} from '@/types/share'
 
 // API base URL - will be configured for production
 const API_BASE_URL =

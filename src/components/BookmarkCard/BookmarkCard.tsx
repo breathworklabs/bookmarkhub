@@ -9,7 +9,7 @@ import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useCollectionsStore } from '@/store/collectionsStore'
 import { useCardStyles } from '@/hooks/useStyles'
 import { useIsMobile } from '@/hooks/useMobile'
-import { CollectionPickerModal } from '../modals/CollectionPickerModal'
+import { CollectionPickerModal } from '@/components/modals/CollectionPickerModal'
 import { BookmarkContextMenu } from './BookmarkContextMenu'
 import { logger } from '@/lib/logger'
 import {

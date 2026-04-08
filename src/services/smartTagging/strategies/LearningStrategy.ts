@@ -3,9 +3,9 @@
  * Learns from user behavior patterns to suggest relevant tags
  */
 
-import type { TaggingStrategy, TagSuggestion, TaggingContext } from '../types'
+import type { TaggingStrategy, TagSuggestion, TaggingContext } from '@/services/smartTagging/types'
 import type { Bookmark } from '@/types/bookmark'
-import { TagNormalizer } from '../core/TagNormalizer'
+import { TagNormalizer } from '@/services/smartTagging/core/TagNormalizer'
 
 interface TagPattern {
   tag: string

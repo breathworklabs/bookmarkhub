@@ -1,11 +1,11 @@
 import { Box, HStack, Text, Button, IconButton } from '@chakra-ui/react'
 import { LuFolder, LuTrash2, LuX } from 'react-icons/lu'
 import { memo, useState } from 'react'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useCollectionsStore } from '../store/collectionsStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
 import { CollectionPickerModal } from './modals/CollectionPickerModal'
 import toast from 'react-hot-toast'
-import { logger } from '../lib/logger'
+import { logger } from '@/lib/logger'
 
 export const BulkActionsBar = memo(() => {
   const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)

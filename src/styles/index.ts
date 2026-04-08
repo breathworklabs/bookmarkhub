@@ -44,4 +44,4 @@ export {
 } from './themes'
 
 // Re-export all style hooks
-export * from '../hooks/useStyles'
+export * from '@/hooks/useStyles'

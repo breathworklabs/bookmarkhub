@@ -8,8 +8,8 @@ import {
   Button,
   Image,
 } from '@chakra-ui/react'
-import { APP_NAME } from '../constants/app'
-import { LATEST_CHANGELOG_VERSION } from '../data/changelog'
+import { APP_NAME } from '@/constants/app'
+import { LATEST_CHANGELOG_VERSION } from '@/data/changelog'
 import {
   LuMenu,
   LuExternalLink,
@@ -26,18 +26,18 @@ import {
 } from 'react-icons/lu'
 import { useMemo, useCallback, memo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useCollectionsStore } from '../store/collectionsStore'
-import { useSettingsStore } from '../store/settingsStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
+import { useSettingsStore } from '@/store/settingsStore'
 import { useModal } from './modals/ModalProvider'
-import { useIsMobile } from '../hooks/useMobile'
+import { useIsMobile } from '@/hooks/useMobile'
 import CollectionsList from './collections/CollectionsList'
 import { FeedbackMenu } from './FeedbackMenu'
-import { useNavigationStyles } from '../hooks/useStyles'
-import { useNavigateWithCleanup } from '../hooks/useNavigateWithCleanup'
-import { componentStyles } from '../styles/components'
-import logoImage from '../assets/logo_v2 1.png'
-import { logger } from '../lib/logger'
+import { useNavigationStyles } from '@/hooks/useStyles'
+import { useNavigateWithCleanup } from '@/hooks/useNavigateWithCleanup'
+import { componentStyles } from '@/styles/components'
+import logoImage from '@/assets/logo_v2 1.png'
+import { logger } from '@/lib/logger'
 
 // Optimized selector for bookmark data
 const useBookmarkCounts = () => {

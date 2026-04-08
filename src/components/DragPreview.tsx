@@ -1,7 +1,7 @@
 import { Box, HStack, Text } from '@chakra-ui/react'
 import { useDragLayer } from 'react-dnd'
 import { LuGripVertical, LuBookmark } from 'react-icons/lu'
-import { ItemTypes } from '../types/dnd'
+import { ItemTypes } from '@/types/dnd'
 
 const getItemStyles = (currentOffset: { x: number; y: number } | null) => {
   if (!currentOffset) {

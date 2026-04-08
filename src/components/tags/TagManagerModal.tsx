@@ -23,7 +23,7 @@ import {
 } from 'react-icons/lu'
 import { useState, useCallback, useMemo, memo } from 'react'
 import { useBookmarkStore } from '@/store/bookmarkStore'
-import { useModal } from '../modals/ModalProvider'
+import { useModal } from '@/components/modals/ModalProvider'
 import TagChip from './TagChip'
 import TagCategoriesManager from './TagCategoriesManager'
 import type { TagStats } from '@/types/tags'

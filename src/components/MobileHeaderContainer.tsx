@@ -1,6 +1,6 @@
 import { Box } from '@chakra-ui/react'
 import { memo, useState, type ReactNode } from 'react'
-import { useBookmarkStore } from '../store/bookmarkStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 
 interface MobileHeaderContainerProps {
   children: ReactNode

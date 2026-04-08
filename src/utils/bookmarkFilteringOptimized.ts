@@ -1,5 +1,5 @@
-import { type Bookmark } from '../types/bookmark'
-import { type DateRangeFilter } from '../store/bookmarkStore'
+import { type Bookmark } from '@/types/bookmark'
+import { type DateRangeFilter } from '@/store/bookmarkStore'
 
 /**
  * Filter parameters interface

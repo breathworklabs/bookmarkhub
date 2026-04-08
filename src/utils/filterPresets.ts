@@ -3,8 +3,8 @@
  * Manages saved filter presets persistence and operations
  */
 
-import { logger } from '../lib/logger'
-import type { DateRangeFilter } from '../store/bookmarkStore'
+import { logger } from '@/lib/logger'
+import type { DateRangeFilter } from '@/store/bookmarkStore'
 
 const PRESETS_STORAGE_KEY = 'x-bookmark-filter-presets'
 

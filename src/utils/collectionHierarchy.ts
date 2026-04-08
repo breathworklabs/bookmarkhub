@@ -5,8 +5,8 @@
  * tree traversal, validation, and hierarchy calculations.
  */
 
-import type { Collection } from '../types/collections'
-import { logger } from '../lib/logger'
+import type { Collection } from '@/types/collections'
+import { logger } from '@/lib/logger'
 
 export interface CollectionTreeNode {
   collection: Collection

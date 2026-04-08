@@ -7,13 +7,13 @@ import type {
   Bookmark,
   BookmarkInsert as BookmarkInsertType,
   AppMetadata,
-} from '../types/bookmark'
+} from '@/types/bookmark'
 
 import type {
   Collection,
   BookmarkCollection,
   CollectionInsert as CollectionInsertType,
-} from '../types/collections'
+} from '@/types/collections'
 import { logger } from './logger'
 
 // Single storage key for consolidated structure
@@ -68,7 +68,7 @@ export type CollectionInsert = CollectionInsertType
 export type StoredBookmarkCollection = BookmarkCollection
 
 // Settings and Metadata types are imported from src/types/bookmark.ts
-// Using imported AppSettings and AppMetadata from '../types/bookmark'
+// Using imported AppSettings and AppMetadata from '@/types/bookmark'
 
 class LocalStorageService {
   private isAvailable(): boolean {

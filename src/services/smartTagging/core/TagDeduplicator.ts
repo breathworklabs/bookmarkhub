@@ -3,7 +3,7 @@
  * Removes duplicate tags and combines suggestions from multiple sources
  */
 
-import type { TagSuggestion } from '../types'
+import type { TagSuggestion } from '@/services/smartTagging/types'
 
 export class TagDeduplicator {
   /**

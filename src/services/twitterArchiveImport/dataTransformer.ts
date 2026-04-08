@@ -4,7 +4,7 @@
 
 import type { BookmarkInsert, XTwitterMetadata } from '@/types/bookmark'
 import type { ParsedTwitterBookmark, ProgressCallback } from './types'
-import { DataProcessingService } from '../dataProcessingService'
+import { DataProcessingService } from '@/services/dataProcessingService'
 import { logger } from '@/lib/logger'
 
 /**

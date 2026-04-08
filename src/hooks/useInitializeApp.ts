@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useCollectionsStore } from '../store/collectionsStore'
-import { useSettingsStore } from '../store/settingsStore'
-import { initAllPerformanceMonitoring } from '../lib/performance'
-import { localStorageService } from '../lib/localStorage'
-import { logger } from '../lib/logger'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
+import { useSettingsStore } from '@/store/settingsStore'
+import { initAllPerformanceMonitoring } from '@/lib/performance'
+import { localStorageService } from '@/lib/localStorage'
+import { logger } from '@/lib/logger'
 
 export const useInitializeApp = () => {
   const [hasExistingBookmarks, setHasExistingBookmarks] = useState<

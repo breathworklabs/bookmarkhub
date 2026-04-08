@@ -12,12 +12,12 @@ import { LuTrash2, LuUndo2, LuInfo } from 'react-icons/lu'
 import { useEffect, useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { localStorageService } from '../lib/localStorage'
-import type { Bookmark } from '../types/bookmark'
+import { localStorageService } from '@/lib/localStorage'
+import type { Bookmark } from '@/types/bookmark'
 import toast from 'react-hot-toast'
-import { useBookmarkStore } from '../store/bookmarkStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 import UnifiedSidebar from './UnifiedSidebar'
-import { logger } from '../lib/logger'
+import { logger } from '@/lib/logger'
 
 const TrashView = () => {
   const [deletedBookmarks, setDeletedBookmarks] = useState<Bookmark[]>([])

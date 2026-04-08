@@ -8,8 +8,8 @@ import type {
   BookmarkInsert,
   ExportData,
   AppMetadata,
-} from '../types/bookmark'
-import { DataProcessingService } from '../services/dataProcessingService'
+} from '@/types/bookmark'
+import { DataProcessingService } from '@/services/dataProcessingService'
 
 // Zod schemas
 export const urlSchema = z.string().url()

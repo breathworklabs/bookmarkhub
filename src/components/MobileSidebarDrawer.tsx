@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react'
 import { memo, useState, useRef, useEffect } from 'react'
 import UnifiedSidebar from './UnifiedSidebar'
-import { mobileConfig } from '../styles/responsive'
+import { mobileConfig } from '@/styles/responsive'
 
 interface MobileSidebarDrawerProps {
   isOpen: boolean

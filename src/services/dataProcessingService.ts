@@ -1,4 +1,4 @@
-import { type BookmarkInsert } from '../types/bookmark'
+import { type BookmarkInsert } from '@/types/bookmark'
 
 /**
  * Centralized data processing service for bookmark operations

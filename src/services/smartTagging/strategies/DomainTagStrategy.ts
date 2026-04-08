@@ -5,8 +5,8 @@
  */
 
 import type { Bookmark } from '@/types/bookmark'
-import type { TaggingStrategy, TagSuggestion, TaggingContext } from '../types'
-import { ContentLinkExtractor } from '../core/ContentLinkExtractor'
+import type { TaggingStrategy, TagSuggestion, TaggingContext } from '@/services/smartTagging/types'
+import { ContentLinkExtractor } from '@/services/smartTagging/core/ContentLinkExtractor'
 import { findDomainRuleWithSubdomain } from '@/data/smartTagging/domainRules'
 
 export class DomainTagStrategy implements TaggingStrategy {

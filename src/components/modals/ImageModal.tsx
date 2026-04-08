@@ -1,7 +1,7 @@
 import { Box, IconButton, Text, HStack } from '@chakra-ui/react'
 import { LuX, LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 import { useState, useEffect } from 'react'
-import LazyImage from '../LazyImage'
+import LazyImage from '@/components/LazyImage'
 
 interface ImageModalProps {
   isOpen: boolean

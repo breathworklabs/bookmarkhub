@@ -7,11 +7,11 @@ import {
   LuSparkles,
 } from 'react-icons/lu'
 import toast from 'react-hot-toast'
-import { componentStyles } from '../styles/components'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useSettingsStore } from '../store/settingsStore'
-import { logger } from '../lib/logger'
-import { CHROME_EXTENSION_URL } from '../constants/app'
+import { componentStyles } from '@/styles/components'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useSettingsStore } from '@/store/settingsStore'
+import { logger } from '@/lib/logger'
+import { CHROME_EXTENSION_URL } from '@/constants/app'
 
 const OnboardingScreen = () => {
   const loadDemoData = useBookmarkStore((state) => state.loadDemoData)

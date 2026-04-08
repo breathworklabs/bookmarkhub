@@ -2,7 +2,7 @@
  * Export bookmarks to different formats
  */
 
-import type { Bookmark } from '../types/bookmark'
+import type { Bookmark } from '@/types/bookmark'
 
 /**
  * Export bookmarks as CSV

@@ -7,9 +7,9 @@ import {
   getNavigationStyle,
   getBadgeStyle,
   getTagStyle,
-} from '../styles/components'
-import { colors } from '../styles/colors'
-import { logger } from '../lib/logger'
+} from '@/styles/components'
+import { colors } from '@/styles/colors'
+import { logger } from '@/lib/logger'
 
 // Style hooks for consistent component styling
 

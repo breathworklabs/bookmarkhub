@@ -5,7 +5,7 @@ import {
   getTourStepByIndex,
   getTourStepCount,
   isValidStepIndex,
-} from '../tourSteps'
+} from '@/components/tour/tourSteps'
 
 describe('tourSteps', () => {
   describe('tourSteps array', () => {

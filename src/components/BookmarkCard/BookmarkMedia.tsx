@@ -2,8 +2,8 @@ import { Box, SimpleGrid, For } from '@chakra-ui/react'
 import { memo, useCallback } from 'react'
 import { LuExternalLink } from 'react-icons/lu'
 import { type Bookmark } from '@/types/bookmark'
-import { useModal } from '../modals/ModalProvider'
-import LazyImage from '../LazyImage'
+import { useModal } from '@/components/modals/ModalProvider'
+import LazyImage from '@/components/LazyImage'
 
 interface BookmarkMediaProps {
   bookmark: Bookmark

@@ -11,7 +11,7 @@ import {
 import { memo, useCallback } from 'react'
 import { type Bookmark } from '@/types/bookmark'
 import { useBookmarkStore } from '@/store/bookmarkStore'
-import TagChip from '../tags/TagChip'
+import TagChip from '@/components/tags/TagChip'
 
 interface BookmarkFooterProps {
   bookmark: Bookmark

@@ -5,7 +5,7 @@ import {
   calculateSimilarity,
   detectDuplicate,
   findUrlDuplicates,
-} from '../duplicateDetection'
+} from '@/lib/duplicateDetection'
 import type { Bookmark } from '@/types/bookmark'
 
 const createMockBookmark = (overrides: Partial<Bookmark> = {}): Bookmark => ({

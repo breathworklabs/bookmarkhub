@@ -3,7 +3,7 @@
  * Detects duplicate bookmarks based on URL and title similarity
  */
 
-import type { Bookmark, BookmarkInsert } from '../types/bookmark'
+import type { Bookmark, BookmarkInsert } from '@/types/bookmark'
 
 /**
  * Normalize URL for comparison by removing trailing slashes, query params, and fragments

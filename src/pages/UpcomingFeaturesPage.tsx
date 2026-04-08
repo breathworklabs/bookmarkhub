@@ -15,7 +15,7 @@ import {
   LuTrendingUp,
   LuShare,
 } from 'react-icons/lu'
-import { componentStyles } from '../styles/components'
+import { componentStyles } from '@/styles/components'
 
 interface Feature {
   icon: React.ReactNode

@@ -3,7 +3,7 @@ import { LuBug, LuLightbulb, LuMessageSquare } from 'react-icons/lu'
 import { Dialog } from '@chakra-ui/react'
 import { memo } from 'react'
 import toast from 'react-hot-toast'
-import { APP_NAME, APP_VERSION } from '../constants/app'
+import { APP_NAME, APP_VERSION } from '@/constants/app'
 
 interface FeedbackMenuProps {
   isOpen: boolean

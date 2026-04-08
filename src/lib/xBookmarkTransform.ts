@@ -1,5 +1,5 @@
-import type { BookmarkInsert, XTwitterMetadata } from '../types/bookmark'
-import { DataProcessingService } from '../services/dataProcessingService'
+import type { BookmarkInsert, XTwitterMetadata } from '@/types/bookmark'
+import { DataProcessingService } from '@/services/dataProcessingService'
 import { logger } from './logger'
 
 // X/Twitter bookmark data structure from the JSON file

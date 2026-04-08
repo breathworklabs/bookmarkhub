@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useCollectionsStore } from '../store/collectionsStore'
-import { useBookmarkStore } from '../store/bookmarkStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 
 /**
  * Custom navigation hook that clears active collection and bookmark selection

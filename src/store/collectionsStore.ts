@@ -5,9 +5,9 @@ import {
   localStorageService,
   type StoredCollection,
   type CollectionInsert,
-} from '../lib/localStorage'
-import { createErrorHandler } from '../utils/errorHandling'
-import type { CollectionsState, Collection } from '../types/collections'
+} from '@/lib/localStorage'
+import { createErrorHandler } from '@/utils/errorHandling'
+import type { CollectionsState, Collection } from '@/types/collections'
 
 // Re-export Collection type for convenience
 export type { Collection }
@@ -715,7 +715,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
           const bookmarks =
             await localStorageService.getBookmarksByCollection(collectionId)
 
-          const { createShare } = await import('../lib/shareApi')
+          const { createShare } = await import('@/lib/shareApi')
           const result = await createShare({
             name: collection.name,
             description: collection.description,
@@ -803,7 +803,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
           )?.shareSettings?.shareId
           if (!shareId) throw new Error('No active share found for this collection')
 
-          const { revokeShare } = await import('../lib/shareApi')
+          const { revokeShare } = await import('@/lib/shareApi')
           await revokeShare(shareId)
 
           await localStorageService.updateCollection(collectionId, { shareSettings: undefined })

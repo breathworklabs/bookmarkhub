@@ -1,4 +1,4 @@
-import type { StoreSet, StoreGet } from '../types'
+import type { StoreSet, StoreGet } from '@/store/bookmark/types'
 
 export const createPaginationActions = (set: StoreSet, get: StoreGet) => ({
   loadMoreBookmarks: () => {

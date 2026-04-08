@@ -24,19 +24,19 @@ import {
 } from 'react-icons/lu'
 import { useMemo, useCallback, memo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useSettingsStore } from '../store/settingsStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useSettingsStore } from '@/store/settingsStore'
 import { useModal } from './modals/ModalProvider'
-import { sanitizeBookmark } from '../lib/dataValidation'
-import { useButtonStyles, useInputStyles } from '../hooks/useStyles'
-import { componentStyles } from '../styles/components'
-import { useIsMobile } from '../hooks/useMobile'
-import { colors } from '../styles/colors'
-import { useFilterReset } from '../utils/filterUtils'
-import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
-import { useDebounce } from '../hooks/useDebounce'
+import { sanitizeBookmark } from '@/lib/dataValidation'
+import { useButtonStyles, useInputStyles } from '@/hooks/useStyles'
+import { componentStyles } from '@/styles/components'
+import { useIsMobile } from '@/hooks/useMobile'
+import { colors } from '@/styles/colors'
+import { useFilterReset } from '@/utils/filterUtils'
+import { useBookmarkSelectors } from '@/hooks/selectors/useBookmarkSelectors'
+import { useDebounce } from '@/hooks/useDebounce'
 import toast from 'react-hot-toast'
-import { logger } from '../lib/logger'
+import { logger } from '@/lib/logger'
 
 interface SearchHeaderProps {
   onMenuClick?: () => void // For opening mobile drawer
@@ -181,8 +181,8 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
             const { importTwitterArchive } = await import(
               '../services/twitterArchiveImport'
             )
-            const { sanitizeBookmark } = await import('../lib/dataValidation')
-            const { localStorageService } = await import('../lib/localStorage')
+            const { sanitizeBookmark } = await import('@/lib/dataValidation')
+            const { localStorageService } = await import('@/lib/localStorage')
 
             const result = await importTwitterArchive(file, 'local-user')
 

@@ -3,8 +3,8 @@
  * Cleans and standardizes tags
  */
 
-import type { NormalizationResult, NormalizationReason } from '../types'
-import { NORMALIZATION_CONFIG } from '../config'
+import type { NormalizationResult, NormalizationReason } from '@/services/smartTagging/types'
+import { NORMALIZATION_CONFIG } from '@/services/smartTagging/config'
 import { isStopWord } from '@/data/smartTagging/stopWords'
 import { applyTagAlias } from '@/data/smartTagging/tagAliases'
 

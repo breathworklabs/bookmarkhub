@@ -33,13 +33,13 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import toast from 'react-hot-toast'
 import { useState } from 'react'
-import { APP_NAME, APP_VERSION } from '../constants/app'
+import { APP_NAME, APP_VERSION } from '@/constants/app'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useSettingsStore } from '../store/settingsStore'
-import { useCollectionsStore } from '../store/collectionsStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useSettingsStore } from '@/store/settingsStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
 import UnifiedSidebar from './UnifiedSidebar'
-import { logger } from '../lib/logger'
+import { logger } from '@/lib/logger'
 
 const MotionBox = motion.create(Box)
 

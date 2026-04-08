@@ -3,14 +3,14 @@
  */
 
 import { useState, useCallback, useMemo } from 'react'
-import { SmartTaggingService } from '../services/smartTagging/SmartTaggingService'
+import { SmartTaggingService } from '@/services/smartTagging/SmartTaggingService'
 import type {
   TaggingResult,
   TaggingOptions,
   TagSuggestion,
-} from '../services/smartTagging/types'
-import type { Bookmark } from '../types/bookmark'
-import { logger } from '../lib/logger'
+} from '@/services/smartTagging/types'
+import type { Bookmark } from '@/types/bookmark'
+import { logger } from '@/lib/logger'
 
 interface UseSmartTaggingOptions extends TaggingOptions {
   autoFetch?: boolean // Auto-fetch suggestions when bookmark changes

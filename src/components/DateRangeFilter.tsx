@@ -13,8 +13,8 @@ import {
 import { LuCalendar } from 'react-icons/lu'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { useBookmarkStore, type DateRangeFilter } from '../store/bookmarkStore'
-import { useCollectionsStore } from '../store/collectionsStore'
+import { useBookmarkStore, type DateRangeFilter } from '@/store/bookmarkStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
 
 const DateRangeFilterComponent = () => {
   const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)

@@ -4,7 +4,7 @@ import { memo, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import type { Collection } from '@/types/collections'
 import { useCollectionsStore } from '@/store/collectionsStore'
-import { useModal } from '../modals/ModalProvider'
+import { useModal } from '@/components/modals/ModalProvider'
 
 interface SharedCollectionCardProps {
   collection: Collection

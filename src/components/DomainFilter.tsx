@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { LuGlobe } from 'react-icons/lu'
-import { useBookmarkSelectors } from '../hooks/selectors/useBookmarkSelectors'
-import { useFilterReset } from '../utils/filterUtils'
+import { useBookmarkSelectors } from '@/hooks/selectors/useBookmarkSelectors'
+import { useFilterReset } from '@/utils/filterUtils'
 import { GenericFilter } from './filters/GenericFilter'
 
 const DomainFilter = () => {

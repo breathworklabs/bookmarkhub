@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { useBookmarkStore } from '../store/bookmarkStore'
-import { useCollectionsStore } from '../store/collectionsStore'
-import { useSettingsStore } from '../store/settingsStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
+import { useSettingsStore } from '@/store/settingsStore'
 
 export interface ChecklistItemStatus {
   id: keyof ReturnType<typeof useChecklistStatus>['items']

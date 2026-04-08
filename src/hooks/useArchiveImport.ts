@@ -4,17 +4,17 @@
  */
 
 import { useState, useCallback } from 'react'
-import { useBookmarkStore } from '../store/bookmarkStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 import {
   importTwitterArchive,
   validateZipFile,
-} from '../services/twitterArchiveImport'
-import { sanitizeBookmark } from '../lib/dataValidation'
-import { localStorageService } from '../lib/localStorage'
+} from '@/services/twitterArchiveImport'
+import { sanitizeBookmark } from '@/lib/dataValidation'
+import { localStorageService } from '@/lib/localStorage'
 import type {
   ImportResult,
   ImportProgress,
-} from '../services/twitterArchiveImport'
+} from '@/services/twitterArchiveImport'
 
 interface UseArchiveImportState {
   isImporting: boolean

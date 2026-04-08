@@ -1,4 +1,4 @@
-import { createErrorHandler } from '../utils/errorHandling'
+import { createErrorHandler } from '@/utils/errorHandling'
 
 /**
  * Hook for using error boundary functionality in functional components
