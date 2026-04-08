@@ -13,8 +13,8 @@ import {
 } from '@chakra-ui/react'
 import { LuSparkles, LuChevronDown, LuChevronUp, LuX } from 'react-icons/lu'
 import { memo, useState, useEffect, useCallback, useMemo } from 'react'
-import { useSmartTagging } from '../../hooks/useSmartTagging'
-import type { Bookmark } from '../../types/bookmark'
+import { useSmartTagging } from '@/hooks/useSmartTagging'
+import type { Bookmark } from '@/types/bookmark'
 import TagSuggestionChip from './TagSuggestionChip'
 
 interface SmartTagSuggestionInlineProps {

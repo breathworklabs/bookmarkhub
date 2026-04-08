@@ -9,7 +9,7 @@ import {
   Badge,
 } from '@chakra-ui/react'
 import { LuScrollText } from 'react-icons/lu'
-import { CHANGELOG } from '../../data/changelog'
+import { CHANGELOG } from '@/data/changelog'
 
 interface WhatsNewModalProps {
   isOpen: boolean

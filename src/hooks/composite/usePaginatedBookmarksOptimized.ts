@@ -1,8 +1,8 @@
 import { useMemo, useEffect, useRef } from 'react'
-import { type Bookmark } from '../../types/bookmark'
-import { filterBookmarksOptimized } from '../../utils/bookmarkFilteringOptimized'
-import { useBookmarkStore } from '../../store/bookmarkStore'
-import { useCollectionsStore } from '../../store/collectionsStore'
+import { type Bookmark } from '@/types/bookmark'
+import { filterBookmarksOptimized } from '@/utils/bookmarkFilteringOptimized'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
 
 export interface PaginatedBookmarksResult {
   bookmarks: Bookmark[]

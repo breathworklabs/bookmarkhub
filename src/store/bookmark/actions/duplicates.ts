@@ -1,8 +1,8 @@
 import type { StoreSet, StoreGet } from '../types'
-import type { DuplicateMatch } from '../../../lib/duplicateDetection'
-import type { BookmarkInsert } from '../../../types/bookmark'
-import { localStorageService } from '../../../lib/localStorage'
-import { createErrorHandler } from '../../../utils/errorHandling'
+import type { DuplicateMatch } from '@/lib/duplicateDetection'
+import type { BookmarkInsert } from '@/types/bookmark'
+import { localStorageService } from '@/lib/localStorage'
+import { createErrorHandler } from '@/utils/errorHandling'
 
 export const createDuplicateActions = (set: StoreSet, get: StoreGet) => ({
   setDuplicateMatches: (matches: DuplicateMatch[]) => {

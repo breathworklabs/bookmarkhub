@@ -3,7 +3,7 @@
  * X/Twitter-aware auto-tagging with rule-based NLP
  */
 
-import type { Bookmark } from '../../types/bookmark'
+import type { Bookmark } from '@/types/bookmark'
 
 // ==================== Core Types ====================
 

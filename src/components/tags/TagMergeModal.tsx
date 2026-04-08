@@ -13,10 +13,10 @@ import {
 } from '@chakra-ui/react'
 import { LuX, LuMerge, LuArrowRight, LuSearch } from 'react-icons/lu'
 import { useState, useCallback, useMemo, memo, useEffect } from 'react'
-import { useBookmarkStore } from '../../store/bookmarkStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 import TagChip from './TagChip'
-import type { TagStats } from '../../types/tags'
-import { logger } from '../../lib/logger'
+import type { TagStats } from '@/types/tags'
+import { logger } from '@/lib/logger'
 
 interface TagMergeModalProps {
   isOpen: boolean

@@ -1,20 +1,20 @@
 import type { StoreSet, StoreGet } from '../types'
-import { localStorageService } from '../../../lib/localStorage'
+import { localStorageService } from '@/lib/localStorage'
 import {
   sanitizeBookmark,
   validateImportData,
-} from '../../../lib/dataValidation'
+} from '@/lib/dataValidation'
 import {
   transformXBookmarks,
   validateXBookmarkData,
-} from '../../../lib/xBookmarkTransform'
-import { downloadFile } from '../../../lib/exportFormats'
-import { trackOperationPerformance } from '../../../lib/performance'
-import { logger } from '../../../lib/logger'
-import { mockBookmarks } from '../../../data/mockBookmarks'
-import { useSettingsStore } from '../../settingsStore'
-import { useCollectionsStore } from '../../collectionsStore'
-import { fetchPopularTechTweets } from '../../../lib/fetchLiveTweets'
+} from '@/lib/xBookmarkTransform'
+import { downloadFile } from '@/lib/exportFormats'
+import { trackOperationPerformance } from '@/lib/performance'
+import { logger } from '@/lib/logger'
+import { mockBookmarks } from '@/data/mockBookmarks'
+import { useSettingsStore } from '@/store/settingsStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
+import { fetchPopularTechTweets } from '@/lib/fetchLiveTweets'
 
 export const createDataManagementActions = (set: StoreSet, get: StoreGet) => ({
   exportBookmarks: async () => {

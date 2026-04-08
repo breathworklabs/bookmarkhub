@@ -6,7 +6,7 @@
 import { extractBookmarksFromZip, validateZipFile } from './zipProcessor'
 import { parseTwitterArchive, validateParsedBookmarks } from './archiveParser'
 import { transformTwitterBookmarks } from './dataTransformer'
-import { ImportExportError } from '../../utils/errorHandling'
+import { ImportExportError } from '@/utils/errorHandling'
 import type { ImportResult, ProgressCallback } from './types'
 
 /**

@@ -1,5 +1,5 @@
-import { useBookmarkStore } from '../../store/bookmarkStore'
-import { useSettingsStore } from '../../store/settingsStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useSettingsStore } from '@/store/settingsStore'
 
 /**
  * Centralized hook for all bookmark store selectors

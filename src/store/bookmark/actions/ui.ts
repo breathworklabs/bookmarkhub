@@ -1,5 +1,5 @@
 import type { StoreSet, StoreGet } from '../types'
-import type { Bookmark } from '../../../types/bookmark'
+import type { Bookmark } from '@/types/bookmark'
 
 export const createUiActions = (set: StoreSet, _get: StoreGet) => ({
   setBookmarks: (bookmarks: Bookmark[]) =>

@@ -16,8 +16,8 @@ import {
   LuX,
 } from 'react-icons/lu'
 import { memo, useState, useMemo } from 'react'
-import { useCollectionsStore } from '../../store/collectionsStore'
-import type { Collection } from '../../types/collections'
+import { useCollectionsStore } from '@/store/collectionsStore'
+import type { Collection } from '@/types/collections'
 
 interface CollectionPickerModalProps {
   isOpen: boolean

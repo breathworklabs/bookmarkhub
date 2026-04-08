@@ -8,8 +8,8 @@ import {
   LuCopy,
 } from 'react-icons/lu'
 import { memo } from 'react'
-import { type Bookmark } from '../../types/bookmark'
-import { logger } from '../../lib/logger'
+import { type Bookmark } from '@/types/bookmark'
+import { logger } from '@/lib/logger'
 
 interface BookmarkContextMenuProps {
   bookmark: Bookmark

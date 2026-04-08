@@ -2,14 +2,14 @@ import type { StoreSet, StoreGet } from '../types'
 import {
   localStorageService,
   type StoredBookmark,
-} from '../../../lib/localStorage'
-import { sanitizeBookmark } from '../../../lib/dataValidation'
-import { createErrorHandler } from '../../../utils/errorHandling'
-import { detectDuplicate } from '../../../lib/duplicateDetection'
-import { trackOperationPerformance } from '../../../lib/performance'
-import { logger } from '../../../lib/logger'
-import { mockBookmarks } from '../../../data/mockBookmarks'
-import { useSettingsStore } from '../../settingsStore'
+} from '@/lib/localStorage'
+import { sanitizeBookmark } from '@/lib/dataValidation'
+import { createErrorHandler } from '@/utils/errorHandling'
+import { detectDuplicate } from '@/lib/duplicateDetection'
+import { trackOperationPerformance } from '@/lib/performance'
+import { logger } from '@/lib/logger'
+import { mockBookmarks } from '@/data/mockBookmarks'
+import { useSettingsStore } from '@/store/settingsStore'
 
 export const createCrudActions = (set: StoreSet, get: StoreGet) => ({
   initialize: async () => {
@@ -322,7 +322,7 @@ export const createCrudActions = (set: StoreSet, get: StoreGet) => ({
         'toggleArchiveBookmark:success'
       )
 
-      const { useCollectionsStore } = await import('../../collectionsStore')
+      const { useCollectionsStore } = await import('@/store/collectionsStore')
       await useCollectionsStore.getState().loadCollections()
 
       if (updatedBookmark.is_archived) {

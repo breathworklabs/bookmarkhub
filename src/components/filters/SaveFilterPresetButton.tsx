@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react'
 import { LuSave } from 'react-icons/lu'
 import { useState, useCallback, memo } from 'react'
-import { useBookmarkStore } from '../../store/bookmarkStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 
 const SaveFilterPresetButton = memo(() => {
   const saveFilterPreset = useBookmarkStore((state) => state.saveFilterPreset)

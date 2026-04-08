@@ -1,11 +1,11 @@
 import { Box, Text, Button } from '@chakra-ui/react'
 import { useMemo, useCallback, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useCollectionsStore } from '../../store/collectionsStore'
-import { useBookmarkStore } from '../../store/bookmarkStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useModal } from '../modals/ModalProvider'
 import { CollectionTree } from './tree/CollectionTree'
-import { logger } from '../../lib/logger'
+import { logger } from '@/lib/logger'
 
 const CollectionsList = memo(() => {
   const {

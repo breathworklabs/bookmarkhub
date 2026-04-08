@@ -5,13 +5,13 @@
 
 import nlp from 'compromise'
 import type { TaggingStrategy, TagSuggestion, TaggingContext } from '../types'
-import type { Bookmark } from '../../../types/bookmark'
-import { findTechKeywords } from '../../../data/smartTagging/techKeywords'
+import type { Bookmark } from '@/types/bookmark'
+import { findTechKeywords } from '@/data/smartTagging/techKeywords'
 import { TagNormalizer } from '../core/TagNormalizer'
 import {
   isAmbiguousTechTerm,
   hasTechContext,
-} from '../../../data/smartTagging/ambiguousTechTerms'
+} from '@/data/smartTagging/ambiguousTechTerms'
 
 export class NlpKeywordStrategy implements TaggingStrategy {
   readonly name = 'nlp'

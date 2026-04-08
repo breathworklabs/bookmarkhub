@@ -31,5 +31,5 @@ export const useBookmarkStore = create<BookmarkState>()(
 )
 
 export type { DateRangeFilter, PaginationState, BookmarkState } from './types'
-export type { ActivityLog } from '../../utils/activityLogger'
-export type { SavedFilterPreset } from '../../utils/filterPresets'
+export type { ActivityLog } from '@/utils/activityLogger'
+export type { SavedFilterPreset } from '@/utils/filterPresets'

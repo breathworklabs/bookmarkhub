@@ -3,7 +3,7 @@
  * Comprehensive database of 50+ URL patterns
  */
 
-import type { UrlPattern } from '../../services/smartTagging/types'
+import type { UrlPattern } from '@/services/smartTagging/types'
 
 export const URL_PATTERNS: UrlPattern[] = [
   // ==================== Documentation Patterns ====================

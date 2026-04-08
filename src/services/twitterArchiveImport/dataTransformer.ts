@@ -2,10 +2,10 @@
  * Transform parsed Twitter Archive bookmarks to BookmarkX format
  */
 
-import type { BookmarkInsert, XTwitterMetadata } from '../../types/bookmark'
+import type { BookmarkInsert, XTwitterMetadata } from '@/types/bookmark'
 import type { ParsedTwitterBookmark, ProgressCallback } from './types'
 import { DataProcessingService } from '../dataProcessingService'
-import { logger } from '../../lib/logger'
+import { logger } from '@/lib/logger'
 
 /**
  * Transform parsed Twitter bookmark to BookmarkInsert format

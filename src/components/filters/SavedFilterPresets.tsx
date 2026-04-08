@@ -13,9 +13,9 @@ import {
 } from '@chakra-ui/react'
 import { LuBookmark, LuTrash2, LuCheck, LuX, LuPencil } from 'react-icons/lu'
 import { useState, memo, useCallback } from 'react'
-import { useBookmarkStore } from '../../store/bookmarkStore'
-import { useFilterReset } from '../../utils/filterUtils'
-import type { SavedFilterPreset } from '../../store/bookmarkStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useFilterReset } from '@/utils/filterUtils'
+import type { SavedFilterPreset } from '@/store/bookmarkStore'
 
 const SavedFilterPresets = memo(() => {
   const savedFilterPresets = useBookmarkStore(

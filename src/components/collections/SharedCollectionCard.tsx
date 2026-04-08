@@ -2,8 +2,8 @@ import { Flex, HStack, Text, Button } from '@chakra-ui/react'
 import { LuFolder, LuCopy, LuExternalLink, LuX, LuClock } from 'react-icons/lu'
 import { memo, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
-import type { Collection } from '../../types/collections'
-import { useCollectionsStore } from '../../store/collectionsStore'
+import type { Collection } from '@/types/collections'
+import { useCollectionsStore } from '@/store/collectionsStore'
 import { useModal } from '../modals/ModalProvider'
 
 interface SharedCollectionCardProps {

@@ -9,8 +9,8 @@ import {
 } from '@chakra-ui/react'
 import { LuInfo, LuExternalLink } from 'react-icons/lu'
 import { memo } from 'react'
-import { useBookmarkStore } from '../../store/bookmarkStore'
-import type { DuplicateMatch } from '../../lib/duplicateDetection'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import type { DuplicateMatch } from '@/lib/duplicateDetection'
 
 const DuplicateBookmarkDialog = memo(() => {
   const showDuplicateDialog = useBookmarkStore(

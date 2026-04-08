@@ -3,7 +3,7 @@
  * Comprehensive database of 500+ domains with their associated tags
  */
 
-import type { DomainRule } from '../../services/smartTagging/types'
+import type { DomainRule } from '@/services/smartTagging/types'
 
 export const DOMAIN_RULES: DomainRule[] = [
   // ==================== Development Platforms ====================

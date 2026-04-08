@@ -1,7 +1,7 @@
 import { Box, Input, VStack, Text, HStack, For, Badge } from '@chakra-ui/react'
 import { useState, useCallback, useMemo, useRef, useEffect, memo } from 'react'
-import { useBookmarkStore } from '../../store/bookmarkStore'
-import { useTagCategoriesStore } from '../../store/tagCategoriesStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useTagCategoriesStore } from '@/store/tagCategoriesStore'
 import TagChip from './TagChip'
 
 interface TagInputProps {

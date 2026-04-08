@@ -4,7 +4,7 @@
  */
 
 import type { TaggingStrategy, TagSuggestion, TaggingContext } from '../types'
-import type { Bookmark } from '../../../types/bookmark'
+import type { Bookmark } from '@/types/bookmark'
 import { TagNormalizer } from '../core/TagNormalizer'
 
 interface TagPattern {

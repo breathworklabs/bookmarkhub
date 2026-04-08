@@ -9,8 +9,8 @@ import {
   WrapItem,
 } from '@chakra-ui/react'
 import { memo, useCallback } from 'react'
-import { type Bookmark } from '../../types/bookmark'
-import { useBookmarkStore } from '../../store/bookmarkStore'
+import { type Bookmark } from '@/types/bookmark'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 import TagChip from '../tags/TagChip'
 
 interface BookmarkFooterProps {

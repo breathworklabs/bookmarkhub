@@ -4,10 +4,10 @@
  * Checks both embedded links and bookmark URL
  */
 
-import type { Bookmark } from '../../../types/bookmark'
+import type { Bookmark } from '@/types/bookmark'
 import type { TaggingStrategy, TagSuggestion, TaggingContext } from '../types'
 import { ContentLinkExtractor } from '../core/ContentLinkExtractor'
-import { matchUrlPatterns } from '../../../data/smartTagging/urlPatterns'
+import { matchUrlPatterns } from '@/data/smartTagging/urlPatterns'
 
 export class UrlPatternStrategy implements TaggingStrategy {
   readonly name = 'url' as const

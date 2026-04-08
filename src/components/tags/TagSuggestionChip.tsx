@@ -5,7 +5,7 @@
 import { Box, HStack, Text, Badge } from '@chakra-ui/react'
 import { LuSparkles, LuPlus } from 'react-icons/lu'
 import { memo } from 'react'
-import type { TagSuggestion } from '../../services/smartTagging/types'
+import type { TagSuggestion } from '@/services/smartTagging/types'
 
 interface TagSuggestionChipProps {
   suggestion: TagSuggestion

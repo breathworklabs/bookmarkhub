@@ -3,8 +3,8 @@
  * Parses bookmarks.js format: window.YTD.bookmarks.part0 = [...]
  */
 
-import { ImportExportError } from '../../utils/errorHandling'
-import { logger } from '../../lib/logger'
+import { ImportExportError } from '@/utils/errorHandling'
+import { logger } from '@/lib/logger'
 import type {
   TwitterArchiveBookmark,
   ParsedTwitterBookmark,

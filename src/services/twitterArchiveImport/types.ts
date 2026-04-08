@@ -3,7 +3,7 @@
  * Handles parsing and processing Twitter data archives
  */
 
-import type { BookmarkInsert } from '../../types/bookmark'
+import type { BookmarkInsert } from '@/types/bookmark'
 
 /**
  * Twitter Archive bookmark structure

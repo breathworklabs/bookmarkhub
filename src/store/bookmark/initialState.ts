@@ -1,5 +1,5 @@
 import type { BookmarkState } from './types'
-import { loadFilterPresets } from '../../utils/filterPresets'
+import { loadFilterPresets } from '@/utils/filterPresets'
 
 export const createInitialState = (): Partial<BookmarkState> => ({
   bookmarks: [],

@@ -4,7 +4,7 @@
  * Handles X/Twitter bookmarks with embedded links
  */
 
-import type { Bookmark } from '../../../types/bookmark'
+import type { Bookmark } from '@/types/bookmark'
 import type { ExtractedLink } from '../types'
 import { LINK_EXTRACTION_CONFIG } from '../config'
 

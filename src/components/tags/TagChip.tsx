@@ -1,8 +1,8 @@
 import { Badge, Text, Box } from '@chakra-ui/react'
 import { LuX } from 'react-icons/lu'
 import { memo, useCallback } from 'react'
-import { useTagCategoriesStore } from '../../store/tagCategoriesStore'
-import { getTagStyle } from '../../styles/components'
+import { useTagCategoriesStore } from '@/store/tagCategoriesStore'
+import { getTagStyle } from '@/styles/components'
 
 interface TagChipProps {
   tag: string

@@ -1,15 +1,15 @@
 import type { NamedSet } from 'zustand/middleware'
-import type { DuplicateMatch } from '../../lib/duplicateDetection'
-import type { Bookmark, BookmarkInsert } from '../../types/bookmark'
+import type { DuplicateMatch } from '@/lib/duplicateDetection'
+import type { Bookmark, BookmarkInsert } from '@/types/bookmark'
 import type {
   ValidationResult,
   ValidationSummary,
-} from '../../services/bookmarkValidationService'
-import type { ActivityLog } from '../../utils/activityLogger'
-import type { SavedFilterPreset } from '../../utils/filterPresets'
+} from '@/services/bookmarkValidationService'
+import type { ActivityLog } from '@/utils/activityLogger'
+import type { SavedFilterPreset } from '@/utils/filterPresets'
 
-export type { ActivityLog } from '../../utils/activityLogger'
-export type { SavedFilterPreset } from '../../utils/filterPresets'
+export type { ActivityLog } from '@/utils/activityLogger'
+export type { SavedFilterPreset } from '@/utils/filterPresets'
 
 export interface DateRangeFilter {
   type: 'all' | 'today' | 'week' | 'month' | 'custom'

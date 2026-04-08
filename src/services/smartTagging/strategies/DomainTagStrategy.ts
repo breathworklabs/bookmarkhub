@@ -4,10 +4,10 @@
  * X/Twitter-aware: checks embedded links first, then bookmark domain
  */
 
-import type { Bookmark } from '../../../types/bookmark'
+import type { Bookmark } from '@/types/bookmark'
 import type { TaggingStrategy, TagSuggestion, TaggingContext } from '../types'
 import { ContentLinkExtractor } from '../core/ContentLinkExtractor'
-import { findDomainRuleWithSubdomain } from '../../../data/smartTagging/domainRules'
+import { findDomainRuleWithSubdomain } from '@/data/smartTagging/domainRules'
 
 export class DomainTagStrategy implements TaggingStrategy {
   readonly name = 'domain' as const

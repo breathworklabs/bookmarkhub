@@ -2,7 +2,7 @@ import { Portal } from '@chakra-ui/react'
 import { Box, Button, HStack, Text, VStack } from '@chakra-ui/react'
 import { LuX, LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 import { memo, useEffect, useState, useRef } from 'react'
-import { useSettingsStore } from '../../store/settingsStore'
+import { useSettingsStore } from '@/store/settingsStore'
 import {
   getTourStepByIndex,
   isValidStepIndex,

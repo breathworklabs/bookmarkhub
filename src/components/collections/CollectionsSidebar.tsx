@@ -20,12 +20,12 @@ import {
   LuFolderOpen,
 } from 'react-icons/lu'
 import { useDrop } from 'react-dnd'
-import { useCollectionsStore } from '../../store/collectionsStore'
-import { useBookmarkStore } from '../../store/bookmarkStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useEffect } from 'react'
-import { ItemTypes, type DragItem, type DropResult } from '../../types/dnd'
-import { useIconButtonStyles } from '../../hooks/useStyles'
-import { componentStyles } from '../../styles/components'
+import { ItemTypes, type DragItem, type DropResult } from '@/types/dnd'
+import { useIconButtonStyles } from '@/hooks/useStyles'
+import { componentStyles } from '@/styles/components'
 
 // Helper component for droppable collection items
 const DroppableCollectionItem = ({

@@ -25,18 +25,18 @@ import { HiDotsHorizontal } from 'react-icons/hi'
 import { memo, useMemo, useRef, useEffect, useState } from 'react'
 import { useDrop, useDrag } from 'react-dnd'
 import toast from 'react-hot-toast'
-import type { Collection } from '../../../types/collections'
-import { ItemTypes, type DragItem, type DropResult } from '../../../types/dnd'
-import { useCollectionsStore } from '../../../store/collectionsStore'
-import { useBookmarkStore } from '../../../store/bookmarkStore'
+import type { Collection } from '@/types/collections'
+import { ItemTypes, type DragItem, type DropResult } from '@/types/dnd'
+import { useCollectionsStore } from '@/store/collectionsStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 import {
   getTotalDepth,
   getHiddenChildrenCount,
   hasDeepNesting,
   getChildCollections,
   wouldCreateCircularReference,
-} from '../../../utils/collectionHierarchy'
-import { logger } from '../../../lib/logger'
+} from '@/utils/collectionHierarchy'
+import { logger } from '@/lib/logger'
 
 interface CollectionTreeItemProps {
   collection: Collection

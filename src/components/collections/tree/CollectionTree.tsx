@@ -6,11 +6,11 @@
 
 import { VStack } from '@chakra-ui/react'
 import { memo, useMemo } from 'react'
-import type { Collection } from '../../../types/collections'
+import type { Collection } from '@/types/collections'
 import { CollectionTreeItem } from './CollectionTreeItem'
 import { CollectionSection } from './CollectionSection'
-import { getRootCollections } from '../../../utils/collectionHierarchy'
-import { useCollectionsStore } from '../../../store/collectionsStore'
+import { getRootCollections } from '@/utils/collectionHierarchy'
+import { useCollectionsStore } from '@/store/collectionsStore'
 
 interface CollectionTreeProps {
   collections: Collection[]

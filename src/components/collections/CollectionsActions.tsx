@@ -10,14 +10,14 @@ import {
   LuShare2,
 } from 'react-icons/lu'
 import { useCallback, memo, useState, useMemo } from 'react'
-import { useCollectionsStore } from '../../store/collectionsStore'
-import { useBookmarkStore } from '../../store/bookmarkStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useModal } from '../modals/ModalProvider'
-import { useIsMobile } from '../../hooks/useMobile'
+import { useIsMobile } from '@/hooks/useMobile'
 import TagInput from '../tags/TagInput'
 import SmartTagSuggestions from '../tags/SmartTagSuggestions'
-import { getCollectionPath } from '../../utils/collectionHierarchy'
-import { logger } from '../../lib/logger'
+import { getCollectionPath } from '@/utils/collectionHierarchy'
+import { logger } from '@/lib/logger'
 import { SharedCollectionCard } from './SharedCollectionCard'
 
 const CollectionsActions = memo(() => {

@@ -13,9 +13,9 @@ import {
 } from '@chakra-ui/react'
 import { LuPlus, LuPencil, LuTrash2, LuCheck, LuX, LuTag } from 'react-icons/lu'
 import { useState, useCallback, memo } from 'react'
-import { useTagCategoriesStore } from '../../store/tagCategoriesStore'
-import { useBookmarkStore } from '../../store/bookmarkStore'
-import { TagCategory } from '../../types/tags'
+import { useTagCategoriesStore } from '@/store/tagCategoriesStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { TagCategory } from '@/types/tags'
 import TagChip from './TagChip'
 
 interface EditingCategory {

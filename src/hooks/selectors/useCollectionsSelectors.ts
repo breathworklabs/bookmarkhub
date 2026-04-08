@@ -1,4 +1,4 @@
-import { useCollectionsStore } from '../../store/collectionsStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
 
 /**
  * Centralized hook for all collections store selectors

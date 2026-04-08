@@ -18,9 +18,9 @@ import {
 import { FaXTwitter } from 'react-icons/fa6'
 import { memo, useState, useCallback } from 'react'
 import toast from 'react-hot-toast'
-import { useCollectionsStore } from '../../store/collectionsStore'
-import * as shareApi from '../../lib/shareApi'
-import type { ExpiryOption, AccessLimitOption } from '../../types/share'
+import { useCollectionsStore } from '@/store/collectionsStore'
+import * as shareApi from '@/lib/shareApi'
+import type { ExpiryOption, AccessLimitOption } from '@/types/share'
 
 interface ShareCollectionModalProps {
   isOpen: boolean

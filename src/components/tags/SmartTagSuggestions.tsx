@@ -1,10 +1,10 @@
 import { Box, VStack, HStack, Text, Button, For, Badge } from '@chakra-ui/react'
 import { LuSparkles, LuPlus } from 'react-icons/lu'
 import { useState, useCallback, useMemo, memo, useEffect } from 'react'
-import { useBookmarkStore } from '../../store/bookmarkStore'
-import { useTagCategoriesStore } from '../../store/tagCategoriesStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useTagCategoriesStore } from '@/store/tagCategoriesStore'
 import TagChip from './TagChip'
-import { logger } from '../../lib/logger'
+import { logger } from '@/lib/logger'
 
 interface SmartTagSuggestionsProps {
   selectedBookmarkIds: number[]

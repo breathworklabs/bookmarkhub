@@ -5,9 +5,9 @@ import {
   loadCachedValidationResults,
   saveCachedValidationResults,
   areCachedResultsFresh,
-} from '../../../services/bookmarkValidationService'
-import { logger } from '../../../lib/logger'
-import { addActivityToLogs, getRecentLogs } from '../../../utils/activityLogger'
+} from '@/services/bookmarkValidationService'
+import { logger } from '@/lib/logger'
+import { addActivityToLogs, getRecentLogs } from '@/utils/activityLogger'
 
 export const createValidationActions = (set: StoreSet, get: StoreGet) => ({
   addActivityLog: (action: string, details?: string) => {

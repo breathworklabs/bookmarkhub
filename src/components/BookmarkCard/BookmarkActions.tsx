@@ -1,11 +1,11 @@
 import { HStack, IconButton } from '@chakra-ui/react'
 import { LuStar, LuShare2, LuExternalLink } from 'react-icons/lu'
 import { memo, useCallback, useState } from 'react'
-import { type Bookmark } from '../../types/bookmark'
-import { useBookmarkStore } from '../../store/bookmarkStore'
-import { useIconButtonStyles, useColor } from '../../hooks/useStyles'
-import { localStorageService } from '../../lib/localStorage'
-import { logger } from '../../lib/logger'
+import { type Bookmark } from '@/types/bookmark'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useIconButtonStyles, useColor } from '@/hooks/useStyles'
+import { localStorageService } from '@/lib/localStorage'
+import { logger } from '@/lib/logger'
 
 interface BookmarkActionsProps {
   bookmark: Bookmark

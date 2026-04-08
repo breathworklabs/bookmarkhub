@@ -9,12 +9,12 @@ import {
 } from '@chakra-ui/react'
 import { LuPencil, LuTrash2, LuArchive } from 'react-icons/lu'
 import { memo, useCallback } from 'react'
-import { type Bookmark } from '../../types/bookmark'
-import { useBookmarkStore } from '../../store/bookmarkStore'
+import { type Bookmark } from '@/types/bookmark'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useModal } from '../modals/ModalProvider'
 import LazyImage from '../LazyImage'
-import { useMenuItemStyles } from '../../hooks/useStyles'
-import { logger } from '../../lib/logger'
+import { useMenuItemStyles } from '@/hooks/useStyles'
+import { logger } from '@/lib/logger'
 
 interface BookmarkHeaderProps {
   bookmark: Bookmark

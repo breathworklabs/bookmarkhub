@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react'
 import { memo, useMemo } from 'react'
-import { type Bookmark } from '../../types/bookmark'
-import { sanitizeBookmarkContent } from '../../utils/sanitization'
+import { type Bookmark } from '@/types/bookmark'
+import { sanitizeBookmarkContent } from '@/utils/sanitization'
 
 interface BookmarkContentProps {
   bookmark: Bookmark

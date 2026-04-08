@@ -10,10 +10,10 @@ import type {
   TaggingContext,
   TagSuggestion,
 } from './types'
-import type { Bookmark } from '../../types/bookmark'
+import type { Bookmark } from '@/types/bookmark'
 import { DEFAULT_TAGGING_OPTIONS } from './config'
 import { TagDeduplicator } from './core/TagDeduplicator'
-import { logger } from '../../lib/logger'
+import { logger } from '@/lib/logger'
 import { DomainTagStrategy } from './strategies/DomainTagStrategy'
 import { UrlPatternStrategy } from './strategies/UrlPatternStrategy'
 import { NlpKeywordStrategy } from './strategies/NlpKeywordStrategy'

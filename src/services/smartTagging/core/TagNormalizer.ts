@@ -5,8 +5,8 @@
 
 import type { NormalizationResult, NormalizationReason } from '../types'
 import { NORMALIZATION_CONFIG } from '../config'
-import { isStopWord } from '../../../data/smartTagging/stopWords'
-import { applyTagAlias } from '../../../data/smartTagging/tagAliases'
+import { isStopWord } from '@/data/smartTagging/stopWords'
+import { applyTagAlias } from '@/data/smartTagging/tagAliases'
 
 export class TagNormalizer {
   /**

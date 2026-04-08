@@ -23,9 +23,9 @@ import {
   SelectValueText,
   createListCollection,
 } from '@chakra-ui/react'
-import type { BookmarkInsert, Bookmark } from '../../types/bookmark'
-import type { CollectionInsert } from '../../lib/localStorage'
-import { DataProcessingService } from '../../services/dataProcessingService'
+import type { BookmarkInsert, Bookmark } from '@/types/bookmark'
+import type { CollectionInsert } from '@/lib/localStorage'
+import { DataProcessingService } from '@/services/dataProcessingService'
 import ImageModal from './ImageModal'
 import TagManagerModal from '../tags/TagManagerModal'
 import TagMergeModal from '../tags/TagMergeModal'
@@ -33,11 +33,11 @@ import DuplicateBookmarkDialog from './DuplicateBookmarkDialog'
 import { ShareCollectionModal } from './ShareCollectionModal'
 import TagInput from '../tags/TagInput'
 import TagChip from '../tags/TagChip'
-import { useCollectionsStore } from '../../store/collectionsStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
 import {
   getCollectionPathString,
   wouldCreateCircularReference,
-} from '../../utils/collectionHierarchy'
+} from '@/utils/collectionHierarchy'
 
 interface TagMergeOptions {
   initialSourceTags?: string[]

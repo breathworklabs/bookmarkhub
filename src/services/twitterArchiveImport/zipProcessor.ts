@@ -4,7 +4,7 @@
  */
 
 import JSZip from 'jszip'
-import { ImportExportError } from '../../utils/errorHandling'
+import { ImportExportError } from '@/utils/errorHandling'
 import type { ProgressCallback } from './types'
 
 /**

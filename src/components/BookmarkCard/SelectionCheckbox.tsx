@@ -1,6 +1,6 @@
 import { Box } from '@chakra-ui/react'
 import { memo } from 'react'
-import { useSelectionStyles } from '../../hooks/useStyles'
+import { useSelectionStyles } from '@/hooks/useStyles'
 
 interface SelectionCheckboxProps {
   isSelected: boolean

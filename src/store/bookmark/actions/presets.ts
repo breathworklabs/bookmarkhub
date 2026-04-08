@@ -5,7 +5,7 @@ import {
   deletePreset,
   updatePreset,
   findPresetById,
-} from '../../../utils/filterPresets'
+} from '@/utils/filterPresets'
 
 export const createPresetActions = (set: StoreSet, get: StoreGet) => ({
   saveFilterPreset: (name: string, description?: string) => {

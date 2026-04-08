@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
-import { type Bookmark } from '../../types/bookmark'
-import { filterBookmarksOptimized } from '../../utils/bookmarkFilteringOptimized'
-import { useBookmarkStore } from '../../store/bookmarkStore'
-import { useCollectionsStore } from '../../store/collectionsStore'
-import { useSettingsStore } from '../../store/settingsStore'
+import { type Bookmark } from '@/types/bookmark'
+import { filterBookmarksOptimized } from '@/utils/bookmarkFilteringOptimized'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useCollectionsStore } from '@/store/collectionsStore'
+import { useSettingsStore } from '@/store/settingsStore'
 
 /**
  * Optimized hook for filtered bookmarks using single-pass algorithm
