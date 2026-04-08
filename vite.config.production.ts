@@ -21,13 +21,17 @@ export default defineConfig({
         manualChunks: {
           // Vendor chunks - libraries that rarely change
           'react-vendor': ['react', 'react-dom', 'react/jsx-runtime'],
-          'chakra-ui': ['@chakra-ui/react', '@emotion/react', '@emotion/styled'],
-          'zustand': ['zustand'],
+          'chakra-ui': [
+            '@chakra-ui/react',
+            '@emotion/react',
+            '@emotion/styled',
+          ],
+          zustand: ['zustand'],
           'react-icons': ['react-icons/lu', 'react-icons/hi2'],
 
           // Feature chunks - can be lazy loaded
-          'validation': ['zod'],
-          'utils': ['dompurify', 'react-hot-toast'],
+          validation: ['zod'],
+          utils: ['dompurify', 'react-hot-toast'],
           'drag-drop': ['react-dnd', 'react-dnd-html5-backend'],
         },
         assetFileNames: 'assets/[hash][extname]',
@@ -47,11 +51,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@components': path.resolve(__dirname, './src/components'),
-      '@hooks': path.resolve(__dirname, './src/hooks'),
-      '@utils': path.resolve(__dirname, './src/utils'),
-      '@store': path.resolve(__dirname, './src/store'),
-      '@pages': path.resolve(__dirname, './src/pages'),
     },
   },
 

@@ -5,10 +5,17 @@ import fs from 'fs'
 import path from 'path'
 
 // Check if certificates exist (only for local development)
-const certsExist = fs.existsSync(path.resolve(__dirname, '.certs/bookmarkhub.app+3-key.pem'))
+const certsExist = fs.existsSync(
+  path.resolve(__dirname, '.certs/bookmarkhub.app+3-key.pem')
+)
 
 // https://vite.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   plugins: [
     react(),
     Sitemap({
@@ -32,11 +39,21 @@ export default defineConfig({
     port: 5173,
     ...(certsExist && {
       https: {
-        key: fs.readFileSync(path.resolve(__dirname, '.certs/bookmarkhub.app+3-key.pem')),
-        cert: fs.readFileSync(path.resolve(__dirname, '.certs/bookmarkhub.app+3.pem')),
+        key: fs.readFileSync(
+          path.resolve(__dirname, '.certs/bookmarkhub.app+3-key.pem')
+        ),
+        cert: fs.readFileSync(
+          path.resolve(__dirname, '.certs/bookmarkhub.app+3.pem')
+        ),
       },
     }),
-    allowedHosts: ['localhost', 'bookmarkhub.local', 'www.bookmarkhub.local', 'bookmarkhub.app', 'www.bookmarkhub.app'],
+    allowedHosts: [
+      'localhost',
+      'bookmarkhub.local',
+      'www.bookmarkhub.local',
+      'bookmarkhub.app',
+      'www.bookmarkhub.app',
+    ],
   },
   build: {
     rollupOptions: {
@@ -44,13 +61,17 @@ export default defineConfig({
         manualChunks: {
           // Vendor chunks - libraries that rarely change
           'react-vendor': ['react', 'react-dom', 'react/jsx-runtime'],
-          'chakra-ui': ['@chakra-ui/react', '@emotion/react', '@emotion/styled'],
-          'zustand': ['zustand'],
+          'chakra-ui': [
+            '@chakra-ui/react',
+            '@emotion/react',
+            '@emotion/styled',
+          ],
+          zustand: ['zustand'],
           'react-icons': ['react-icons/lu', 'react-icons/hi2'],
 
           // Feature chunks - can be lazy loaded
-          'validation': ['zod'],
-          'utils': ['dompurify', 'react-hot-toast'],
+          validation: ['zod'],
+          utils: ['dompurify', 'react-hot-toast'],
           'drag-drop': ['react-dnd', 'react-dnd-html5-backend'],
         },
       },
