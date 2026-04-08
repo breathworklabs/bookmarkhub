@@ -57,11 +57,49 @@ export const filterBookmarks = ({
   switch (activeSidebarItem) {
     case 'Collections':
       if (activeCollectionId) {
-        const bookmarkIdsInCollection =
-          collectionBookmarks[activeCollectionId] || []
-        filtered = filtered.filter((bookmark) =>
-          bookmarkIdsInCollection.includes(bookmark.id)
-        )
+        switch (activeCollectionId) {
+          case 'starred':
+            filtered = filtered.filter(
+              (bookmark) => bookmark.is_starred === true
+            )
+            break
+          case 'recent': {
+            const weekAgo = new Date()
+            weekAgo.setDate(weekAgo.getDate() - 7)
+            filtered = filtered.filter((bookmark) => {
+              const dateToUse =
+                bookmark.metadata &&
+                bookmark.metadata.platform === 'x.com' &&
+                bookmark.metadata.tweet_date
+                  ? bookmark.metadata.tweet_date
+                  : bookmark.created_at
+              return new Date(dateToUse) >= weekAgo
+            })
+            break
+          }
+          case 'archived':
+            filtered = filtered.filter(
+              (bookmark) => bookmark.is_archived === true
+            )
+            break
+          case 'uncategorized':
+            filtered = filtered.filter(
+              (bookmark) =>
+                !bookmark.collections ||
+                bookmark.collections.length === 0 ||
+                (bookmark.collections.length === 1 &&
+                  bookmark.collections[0] === 'uncategorized')
+            )
+            break
+          default: {
+            const bookmarkIdsInCollection =
+              collectionBookmarks[activeCollectionId] || []
+            filtered = filtered.filter((bookmark) =>
+              bookmarkIdsInCollection.includes(bookmark.id)
+            )
+            break
+          }
+        }
       }
       break
     case 'All Bookmarks':
@@ -85,7 +123,9 @@ export const filterBookmarks = ({
         today.setHours(0, 0, 0, 0)
         filtered = filtered.filter((bookmark) => {
           const dateToUse =
-            bookmark.metadata && bookmark.metadata.platform === 'x.com' && bookmark.metadata.tweet_date
+            bookmark.metadata &&
+            bookmark.metadata.platform === 'x.com' &&
+            bookmark.metadata.tweet_date
               ? bookmark.metadata.tweet_date
               : bookmark.created_at
           return new Date(dateToUse) >= today
@@ -98,7 +138,9 @@ export const filterBookmarks = ({
         weekAgo.setDate(weekAgo.getDate() - 7)
         filtered = filtered.filter((bookmark) => {
           const dateToUse =
-            bookmark.metadata && bookmark.metadata.platform === 'x.com' && bookmark.metadata.tweet_date
+            bookmark.metadata &&
+            bookmark.metadata.platform === 'x.com' &&
+            bookmark.metadata.tweet_date
               ? bookmark.metadata.tweet_date
               : bookmark.created_at
           return new Date(dateToUse) >= weekAgo
@@ -182,7 +224,9 @@ export const filterBookmarks = ({
   if (dateRangeFilter.type !== 'all') {
     filtered = filtered.filter((bookmark) => {
       const dateToUse =
-        bookmark.metadata && bookmark.metadata.platform === 'x.com' && bookmark.metadata.tweet_date
+        bookmark.metadata &&
+        bookmark.metadata.platform === 'x.com' &&
+        bookmark.metadata.tweet_date
           ? bookmark.metadata.tweet_date
           : bookmark.created_at
       const bookmarkDate = new Date(dateToUse)
@@ -242,7 +286,9 @@ export const filterBookmarks = ({
             const recent = new Date()
             recent.setDate(recent.getDate() - 1)
             const dateToUse =
-              bookmark.metadata && bookmark.metadata.platform === 'x.com' && bookmark.metadata.tweet_date
+              bookmark.metadata &&
+              bookmark.metadata.platform === 'x.com' &&
+              bookmark.metadata.tweet_date
                 ? bookmark.metadata.tweet_date
                 : bookmark.created_at
             return new Date(dateToUse) >= recent

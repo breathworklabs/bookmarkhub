@@ -25,7 +25,11 @@ export interface FilterParams {
  * Helper to get the effective date for a bookmark (prefers tweet_date if available)
  */
 const getBookmarkDate = (bookmark: Bookmark): Date => {
-  if (bookmark.metadata && bookmark.metadata.platform === 'x.com' && bookmark.metadata.tweet_date) {
+  if (
+    bookmark.metadata &&
+    bookmark.metadata.platform === 'x.com' &&
+    bookmark.metadata.tweet_date
+  ) {
     return new Date(bookmark.metadata.tweet_date)
   }
   return new Date(bookmark.created_at)
@@ -64,10 +68,24 @@ export const filterBookmarksOptimized = ({
   const hasQuickFilters = quickFilters.length > 0
 
   // Collection filter
-  const hasCollectionFilter = activeSidebarItem === 'Collections' && activeCollectionId
-  const bookmarkIdsInCollection = hasCollectionFilter
-    ? new Set(collectionBookmarks[activeCollectionId!] || [])
-    : null
+  const hasCollectionFilter =
+    activeSidebarItem === 'Collections' && activeCollectionId
+  const smartCollectionIds = new Set([
+    'starred',
+    'recent',
+    'archived',
+    'uncategorized',
+  ])
+  const isSmartCollection =
+    hasCollectionFilter && smartCollectionIds.has(activeCollectionId!)
+  const bookmarkIdsInCollection =
+    hasCollectionFilter && !isSmartCollection
+      ? new Set(collectionBookmarks[activeCollectionId!] || [])
+      : null
+
+  // Pre-compute date threshold for 'recent' smart collection
+  const recentSmartThreshold = new Date()
+  recentSmartThreshold.setDate(recentSmartThreshold.getDate() - 7)
 
   // Pre-compute date thresholds for activeTab
   // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=This Month, 4=Threads, 5=Media
@@ -132,12 +150,41 @@ export const filterBookmarksOptimized = ({
     if (bookmark.is_deleted) return false
 
     // 2. Collection filter
-    if (hasCollectionFilter && !bookmarkIdsInCollection!.has(bookmark.id)) {
-      return false
+    if (hasCollectionFilter) {
+      if (isSmartCollection) {
+        switch (activeCollectionId) {
+          case 'starred':
+            if (!bookmark.is_starred) return false
+            break
+          case 'recent':
+            if (getBookmarkDate(bookmark) < recentSmartThreshold) return false
+            break
+          case 'archived':
+            if (!bookmark.is_archived) return false
+            break
+          case 'uncategorized':
+            if (
+              bookmark.collections &&
+              bookmark.collections.length > 0 &&
+              !(
+                bookmark.collections.length === 1 &&
+                bookmark.collections[0] === 'uncategorized'
+              )
+            ) {
+              return false
+            }
+            break
+        }
+      } else if (!bookmarkIdsInCollection!.has(bookmark.id)) {
+        return false
+      }
     }
 
     // 3. Tag filter
-    if (hasTagFilter && !selectedTags.some(tag => bookmark.tags.includes(tag))) {
+    if (
+      hasTagFilter &&
+      !selectedTags.some((tag) => bookmark.tags.includes(tag))
+    ) {
       return false
     }
 
@@ -151,13 +198,15 @@ export const filterBookmarksOptimized = ({
         if (bookmarkDate < tabDateThreshold!) return false
       } else if (activeTab === 4) {
         // Threads
-        const isThread = (bookmark.content && bookmark.content.length > 200) ||
+        const isThread =
+          (bookmark.content && bookmark.content.length > 200) ||
           bookmark.domain === 'x.com' ||
           bookmark.domain === 'twitter.com'
         if (!isThread) return false
       } else if (activeTab === 5) {
         // Media
-        const hasMedia = bookmark.thumbnail_url ||
+        const hasMedia =
+          bookmark.thumbnail_url ||
           bookmark.url.includes('youtube.com') ||
           bookmark.url.includes('vimeo.com') ||
           /\.(jpg|jpeg|png|gif|webp|mp4|mp3)$/i.test(bookmark.url)
@@ -172,18 +221,24 @@ export const filterBookmarksOptimized = ({
         bookmark.content.toLowerCase().includes(lowerQuery) ||
         bookmark.author.toLowerCase().includes(lowerQuery) ||
         bookmark.domain.toLowerCase().includes(lowerQuery) ||
-        bookmark.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+        bookmark.tags.some((tag) => tag.toLowerCase().includes(lowerQuery))
 
       if (!matchesSearch) return false
     }
 
     // 6. Author filter
-    if (hasAuthorFilter && !bookmark.author.toLowerCase().includes(lowerAuthor)) {
+    if (
+      hasAuthorFilter &&
+      !bookmark.author.toLowerCase().includes(lowerAuthor)
+    ) {
       return false
     }
 
     // 7. Domain filter
-    if (hasDomainFilter && !bookmark.domain.toLowerCase().includes(lowerDomain)) {
+    if (
+      hasDomainFilter &&
+      !bookmark.domain.toLowerCase().includes(lowerDomain)
+    ) {
       return false
     }
 
@@ -195,10 +250,13 @@ export const filterBookmarksOptimized = ({
           matchesContentType = bookmark.content.length > 500
           break
         case 'tweet':
-          matchesContentType = bookmark.domain === 'x.com' || bookmark.domain === 'twitter.com'
+          matchesContentType =
+            bookmark.domain === 'x.com' || bookmark.domain === 'twitter.com'
           break
         case 'video':
-          matchesContentType = bookmark.url.includes('youtube.com') || bookmark.url.includes('vimeo.com')
+          matchesContentType =
+            bookmark.url.includes('youtube.com') ||
+            bookmark.url.includes('vimeo.com')
           break
       }
       if (!matchesContentType) return false
@@ -208,7 +266,8 @@ export const filterBookmarksOptimized = ({
     if (hasDateRangeFilter && rangeStartDate) {
       const bookmarkDate = getBookmarkDate(bookmark)
       if (rangeEndDate) {
-        if (bookmarkDate < rangeStartDate || bookmarkDate > rangeEndDate) return false
+        if (bookmarkDate < rangeStartDate || bookmarkDate > rangeEndDate)
+          return false
       } else {
         if (bookmarkDate < rangeStartDate) return false
       }
@@ -226,7 +285,10 @@ export const filterBookmarksOptimized = ({
             matches = bookmark.is_read === false
             break
           case 'comments':
-            matches = bookmark.content?.includes('comment') || bookmark.content?.includes('reply') || false
+            matches =
+              bookmark.content?.includes('comment') ||
+              bookmark.content?.includes('reply') ||
+              false
             break
           case 'engagement':
             matches = bookmark.engagement_score > 100
