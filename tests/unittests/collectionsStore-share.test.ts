@@ -1,13 +1,18 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { useCollectionsStore } from '../../src/store/collectionsStore'
-import { localStorageService, type StoredCollection } from '../../src/lib/localStorage'
+import {
+  localStorageService,
+  type StoredCollection,
+} from '../../src/lib/localStorage'
 
 vi.mock('../../src/lib/shareApi', () => ({
   createShare: vi.fn(),
   revokeShare: vi.fn(),
 }))
 
-const makeCollection = (overrides: Partial<StoredCollection> = {}): StoredCollection => ({
+const makeCollection = (
+  overrides: Partial<StoredCollection> = {}
+): StoredCollection => ({
   id: overrides.id ?? 'c1',
   name: overrides.name ?? 'My Collection',
   description: '',
@@ -46,7 +51,13 @@ describe('collectionsStore share actions', () => {
       const col = makeCollection({ id: 'c1', name: 'Dev Tools' })
       useCollectionsStore.setState({ collections: [col] })
 
-      vi.spyOn(localStorageService, 'getBookmarksByCollection').mockResolvedValueOnce([])
+      vi.spyOn(
+        localStorageService,
+        'getBookmarksByCollection'
+      ).mockResolvedValueOnce([])
+      vi.spyOn(localStorageService, 'updateCollection').mockResolvedValueOnce(
+        makeCollection()
+      )
 
       const { createShare } = await import('../../src/lib/shareApi')
       vi.mocked(createShare).mockResolvedValueOnce({
@@ -55,19 +66,25 @@ describe('collectionsStore share actions', () => {
         expiresAt: '2026-04-23T00:00:00.000Z',
       })
 
-      const result = await useCollectionsStore.getState().shareCollection('c1', {
-        expiryDays: 7,
-        maxAccess: 5,
-      })
+      const result = await useCollectionsStore
+        .getState()
+        .shareCollection('c1', {
+          expiryDays: 7,
+          maxAccess: 5,
+        })
 
       expect(result).toEqual({
         shareUrl: 'https://example.com/s/share-xyz',
         expiresAt: '2026-04-23T00:00:00.000Z',
       })
 
-      const updated = useCollectionsStore.getState().collections.find((c) => c.id === 'c1')
+      const updated = useCollectionsStore
+        .getState()
+        .collections.find((c) => c.id === 'c1')
       expect(updated?.shareSettings?.shareId).toBe('share-xyz')
-      expect(updated?.shareSettings?.shareUrl).toBe('https://example.com/s/share-xyz')
+      expect(updated?.shareSettings?.shareUrl).toBe(
+        'https://example.com/s/share-xyz'
+      )
       expect(updated?.shareSettings?.maxAccess).toBe(5)
       expect(updated?.shareSettings?.accessCount).toBe(0)
     })
@@ -75,7 +92,9 @@ describe('collectionsStore share actions', () => {
     it('sets error and returns null when collection not found', async () => {
       useCollectionsStore.setState({ collections: [] })
 
-      const result = await useCollectionsStore.getState().shareCollection('missing', {})
+      const result = await useCollectionsStore
+        .getState()
+        .shareCollection('missing', {})
 
       expect(result).toBeNull()
       expect(useCollectionsStore.getState().error).toBeTruthy()
@@ -85,12 +104,17 @@ describe('collectionsStore share actions', () => {
       const col = makeCollection({ id: 'c1' })
       useCollectionsStore.setState({ collections: [col] })
 
-      vi.spyOn(localStorageService, 'getBookmarksByCollection').mockResolvedValueOnce([])
+      vi.spyOn(
+        localStorageService,
+        'getBookmarksByCollection'
+      ).mockResolvedValueOnce([])
 
       const { createShare } = await import('../../src/lib/shareApi')
       vi.mocked(createShare).mockRejectedValueOnce(new Error('Network error'))
 
-      const result = await useCollectionsStore.getState().shareCollection('c1', {})
+      const result = await useCollectionsStore
+        .getState()
+        .shareCollection('c1', {})
 
       expect(result).toBeNull()
       expect(useCollectionsStore.getState().error).toBe('Network error')
@@ -100,7 +124,10 @@ describe('collectionsStore share actions', () => {
       const col = makeCollection({ id: 'c1' })
       useCollectionsStore.setState({ collections: [col] })
 
-      vi.spyOn(localStorageService, 'getBookmarksByCollection').mockResolvedValueOnce([])
+      vi.spyOn(
+        localStorageService,
+        'getBookmarksByCollection'
+      ).mockResolvedValueOnce([])
 
       const { createShare } = await import('../../src/lib/shareApi')
       vi.mocked(createShare).mockRejectedValueOnce(new Error('fail'))
@@ -129,9 +156,15 @@ describe('collectionsStore share actions', () => {
       const { revokeShare } = await import('../../src/lib/shareApi')
       vi.mocked(revokeShare).mockResolvedValueOnce(true)
 
+      vi.spyOn(localStorageService, 'updateCollection').mockResolvedValueOnce(
+        makeCollection()
+      )
+
       await useCollectionsStore.getState().revokeShare('c1')
 
-      const updated = useCollectionsStore.getState().collections.find((c) => c.id === 'c1')
+      const updated = useCollectionsStore
+        .getState()
+        .collections.find((c) => c.id === 'c1')
       expect(updated?.shareSettings).toBeUndefined()
     })
 
