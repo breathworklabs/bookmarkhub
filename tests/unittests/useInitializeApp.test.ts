@@ -144,12 +144,13 @@ describe('useInitializeApp', () => {
       expect(result.current.error).toBeNull()
     })
 
-    // SKIPPED: These tests require refactoring the hook to be more testable
-    // The async initialization in checkExistingBookmarks doesn't play well with test mocks
-    // See after_launch.md for details on fixing this
-    it.skip('should detect existing bookmarks in localStorage', async () => {
-      // Set up localStorage with bookmarks
+    it('should detect existing bookmarks in localStorage', async () => {
       localStorageData['x-bookmark-manager-data'] = JSON.stringify({
+        bookmarks: [
+          { id: 1, title: 'Test Bookmark', url: 'https://example.com' },
+        ],
+      })
+      useBookmarkStore.setState({
         bookmarks: [
           { id: 1, title: 'Test Bookmark', url: 'https://example.com' },
         ],
@@ -157,13 +158,9 @@ describe('useInitializeApp', () => {
 
       const { result } = renderHook(() => useInitializeApp())
 
-      // Wait a bit for the async checkExistingBookmarks to run
-      await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 100))
+      await waitFor(() => {
+        expect(result.current.hasExistingBookmarks).toBe(true)
       })
-
-      // The hook should detect bookmarks exist
-      expect(result.current.hasExistingBookmarks).toBe(true)
     })
 
     it('should handle empty bookmarks array', () => {
@@ -527,33 +524,25 @@ describe('useInitializeApp', () => {
   })
 
   describe('bookmark validation', () => {
-    it.skip('should validate bookmarks when existing bookmarks exist', async () => {
-      vi.useFakeTimers()
-
+    it('should validate bookmarks when existing bookmarks exist', async () => {
       localStorageData['x-bookmark-manager-data'] = JSON.stringify({
         bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }],
       })
+      useBookmarkStore.setState({
+        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }],
+      })
 
-      // Get the mocked validateAllBookmarks function
       const validateSpy = useBookmarkStore.getState().validateAllBookmarks
 
       renderHook(() => useInitializeApp())
 
-      // Wait for async initialization
-      await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 100))
-      })
-
-      // Fast-forward past the validation delay (2s)
-      act(() => {
-        vi.advanceTimersByTime(2100)
-      })
-
-      // Validation should have been called if bookmarks exist
-      expect(validateSpy).toHaveBeenCalled()
-
-      vi.useRealTimers()
-    })
+      await waitFor(
+        () => {
+          expect(validateSpy).toHaveBeenCalled()
+        },
+        { timeout: 5000 }
+      )
+    }, 10000)
 
     it('should not validate when no bookmarks exist', () => {
       vi.useFakeTimers()
@@ -571,14 +560,14 @@ describe('useInitializeApp', () => {
       vi.useRealTimers()
     })
 
-    it.skip('should handle validation errors', async () => {
-      vi.useFakeTimers()
-
+    it('should handle validation errors', async () => {
       localStorageData['x-bookmark-manager-data'] = JSON.stringify({
         bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }],
       })
+      useBookmarkStore.setState({
+        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }],
+      })
 
-      // Mock validateAllBookmarks to reject
       const validateSpy = vi.mocked(
         useBookmarkStore.getState().validateAllBookmarks
       )
@@ -586,21 +575,13 @@ describe('useInitializeApp', () => {
 
       renderHook(() => useInitializeApp())
 
-      // Wait for async initialization
-      await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 100))
-      })
-
-      // Fast-forward past the validation delay (2s)
-      act(() => {
-        vi.advanceTimersByTime(2100)
-      })
-
-      // Validation should have been attempted despite error
-      expect(validateSpy).toHaveBeenCalled()
-
-      vi.useRealTimers()
-    })
+      await waitFor(
+        () => {
+          expect(validateSpy).toHaveBeenCalled()
+        },
+        { timeout: 5000 }
+      )
+    }, 10000)
 
     it('should cleanup validation timer on unmount', () => {
       vi.useFakeTimers()
