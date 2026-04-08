@@ -3,6 +3,7 @@ import { LuStar, LuShare2, LuExternalLink } from 'react-icons/lu'
 import { memo, useCallback, useState } from 'react'
 import { type Bookmark } from '@/types/bookmark'
 import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useBookmarkActions } from '@/hooks/useBookmarkActions'
 import { useIconButtonStyles, useColor } from '@/hooks/useStyles'
 import { localStorageService } from '@/lib/localStorage'
 import { logger } from '@/lib/logger'
@@ -14,9 +15,7 @@ interface BookmarkActionsProps {
 
 const BookmarkActions = memo(
   ({ bookmark, isInBulkMode }: BookmarkActionsProps) => {
-    const toggleStarBookmark = useBookmarkStore(
-      (state) => state.toggleStarBookmark
-    )
+    const { toggleStar } = useBookmarkActions(bookmark.id)
     const bookmarks = useBookmarkStore((state) => state.bookmarks)
     const setBookmarks = useBookmarkStore((state) => state.setBookmarks)
     const addActivityLog = useBookmarkStore((state) => state.addActivityLog)
@@ -102,18 +101,20 @@ const BookmarkActions = memo(
               .catch((err) => logger.error('Failed to mark as shared', err))
           }
         } catch (fallbackErr) {
-          logger.error('Fallback copy also failed', fallbackErr, { notify: true })
+          logger.error('Fallback copy also failed', fallbackErr, {
+            notify: true,
+          })
         }
       }
     }, [bookmark, bookmarks, setBookmarks, addActivityLog])
 
     const handleToggleStar = useCallback(async () => {
       try {
-        await toggleStarBookmark(bookmark.id)
+        await toggleStar()
       } catch (error) {
         logger.error('Failed to toggle star', error, { notify: true })
       }
-    }, [toggleStarBookmark, bookmark.id])
+    }, [toggleStar])
 
     const handleOpenUrl = useCallback(() => {
       window.open(bookmark.url, '_blank')

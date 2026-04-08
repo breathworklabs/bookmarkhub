@@ -11,6 +11,7 @@ import { LuPencil, LuTrash2, LuArchive } from 'react-icons/lu'
 import { memo, useCallback } from 'react'
 import { type Bookmark } from '@/types/bookmark'
 import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useBookmarkActions } from '@/hooks/useBookmarkActions'
 import { useModal } from '@/components/modals/ModalProvider'
 import LazyImage from '@/components/LazyImage'
 import { useMenuItemStyles } from '@/hooks/useStyles'
@@ -24,10 +25,7 @@ interface BookmarkHeaderProps {
 
 const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
   const updateBookmark = useBookmarkStore((state) => state.updateBookmark)
-  const removeBookmark = useBookmarkStore((state) => state.removeBookmark)
-  const toggleArchiveBookmark = useBookmarkStore(
-    (state) => state.toggleArchiveBookmark
-  )
+  const { remove, archive } = useBookmarkActions(bookmark.id)
   const { showDeleteConfirmation, showEditBookmark } = useModal()
 
   const menuItemStyles = useMenuItemStyles()
@@ -124,21 +122,21 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
         ((bookmark as any).content?.length > 100 ? '...' : ''),
       onConfirm: async () => {
         try {
-          await removeBookmark(bookmark.id)
+          await remove()
         } catch (error) {
           logger.error('Failed to delete bookmark', error, { notify: true })
         }
       },
     })
-  }, [showDeleteConfirmation, removeBookmark, bookmark])
+  }, [showDeleteConfirmation, remove, bookmark])
 
   const handleToggleArchive = useCallback(async () => {
     try {
-      await toggleArchiveBookmark(bookmark.id)
+      await archive()
     } catch (error) {
       logger.error('Failed to toggle archive', error, { notify: true })
     }
-  }, [toggleArchiveBookmark, bookmark.id])
+  }, [archive])
 
   return (
     <HStack gap={3} mb={3}>

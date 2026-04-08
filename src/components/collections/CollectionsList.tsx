@@ -1,10 +1,9 @@
 import { Box, Text, Button } from '@chakra-ui/react'
-import { useMemo, useCallback, memo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useMemo, memo } from 'react'
 import { useCollectionsStore } from '@/store/collectionsStore'
-import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useModal } from '@/components/modals/ModalProvider'
 import { CollectionTree } from './tree/CollectionTree'
+import { useCollectionNavigation } from '@/hooks/useCollectionNavigation'
 import { logger } from '@/lib/logger'
 
 const CollectionsList = memo(() => {
@@ -15,48 +14,12 @@ const CollectionsList = memo(() => {
     expandedCollections,
     isLoading,
     error,
-    setActiveCollection,
     toggleCollectionExpansion,
     createCollection,
   } = useCollectionsStore()
 
-  const navigate = useNavigate()
-  const setActiveSidebarItem = useBookmarkStore(
-    (state) => state.setActiveSidebarItem
-  )
-  const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
+  const handleCollectionClick = useCollectionNavigation()
   const { showCreateCollection } = useModal()
-
-  // Handler for collection clicks
-  const handleCollectionClick = useCallback(
-    (collectionId: string) => {
-      const isCurrentlyActive =
-        activeSidebarItem === 'Collections' &&
-        activeCollectionId === collectionId
-      const newActiveId = isCurrentlyActive ? null : collectionId
-      setActiveCollection(newActiveId)
-
-      // Clear selected bookmarks when switching collections
-      useBookmarkStore.getState().clearBookmarkSelection()
-
-      // Navigate to home page when clicking collections
-      navigate('/')
-
-      // Also update the main sidebar state to show we're in collections mode
-      if (newActiveId) {
-        setActiveSidebarItem('Collections')
-      } else {
-        setActiveSidebarItem('All Bookmarks')
-      }
-    },
-    [
-      activeSidebarItem,
-      activeCollectionId,
-      setActiveCollection,
-      setActiveSidebarItem,
-      navigate,
-    ]
-  )
 
   // Memoized collection categories
   const userCollections = useMemo(
@@ -96,7 +59,9 @@ const CollectionsList = memo(() => {
         onToggleExpand={toggleCollectionExpansion}
         onExpandFullView={(collectionId) => {
           // TODO: Open CollectionTreePanel
-          logger.debug('Expand full view for collection', { context: { collectionId } })
+          logger.debug('Expand full view for collection', {
+            context: { collectionId },
+          })
         }}
         onCollectionClick={handleCollectionClick}
       />
