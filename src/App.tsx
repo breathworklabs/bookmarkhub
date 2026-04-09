@@ -62,7 +62,10 @@ function App() {
                 <Route path="/trash" element={<TrashView />} />
                 <Route path="/shared" element={<SharedView />} />
                 <Route path="/help" element={<HelpPage />} />
-                <Route path="/upcoming-features" element={<UpcomingFeaturesPage />} />
+                <Route
+                  path="/upcoming-features"
+                  element={<UpcomingFeaturesPage />}
+                />
                 <Route path="/changelog" element={<ChangelogPage />} />
                 <Route path="/s/:shareId" element={<SharedCollectionPage />} />
                 <Route path="/terms" element={<TermsOfService />} />
@@ -85,10 +88,14 @@ function AppContent() {
 
   // One-time migration: move hasSeenSplash from old localStorage to consolidated storage
   useEffect(() => {
-    const oldHasSeenSplash = localStorage.getItem('hasSeenSplash')
-    if (oldHasSeenSplash === 'true' && !hasSeenSplash) {
-      setHasSeenSplash(true)
-      localStorage.removeItem('hasSeenSplash')
+    try {
+      const oldHasSeenSplash = localStorage.getItem('hasSeenSplash')
+      if (oldHasSeenSplash === 'true' && !hasSeenSplash) {
+        setHasSeenSplash(true)
+        localStorage.removeItem('hasSeenSplash')
+      }
+    } catch {
+      // Migration is optional - skip if storage is unavailable
     }
   }, [hasSeenSplash, setHasSeenSplash])
 

@@ -26,8 +26,8 @@ const OnboardingScreen = () => {
         context: {
           isArray: Array.isArray(data),
           hasBookmarks: !!data?.bookmarks,
-          firstItem: Array.isArray(data) ? data[0] : null
-        }
+          firstItem: Array.isArray(data) ? data[0] : null,
+        },
       })
 
       let importedCount = 0
@@ -49,7 +49,9 @@ const OnboardingScreen = () => {
         importedCount = data.bookmarks.length
         logger.debug(`Import completed: ${importedCount} bookmarks`)
       } else {
-        throw new Error('Invalid file format. Please select a valid bookmark export file.')
+        throw new Error(
+          'Invalid file format. Please select a valid bookmark export file.'
+        )
       }
 
       // Validate that bookmarks were actually imported
@@ -57,14 +59,24 @@ const OnboardingScreen = () => {
         throw new Error('No bookmarks found in the selected file.')
       }
 
-      // Verify data is in localStorage before reloading
-      const storedData = localStorage.getItem('x-bookmark-manager-data')
-      const parsed = storedData ? JSON.parse(storedData) : null
-      const actualCount = parsed?.bookmarks?.length || 0
-      logger.debug(`Verified localStorage: ${actualCount} bookmarks stored`)
+      try {
+        const storedData = localStorage.getItem('x-bookmark-manager-data')
+        const parsed = storedData ? JSON.parse(storedData) : null
+        const actualCount = parsed?.bookmarks?.length || 0
+        logger.debug(`Verified localStorage: ${actualCount} bookmarks stored`)
 
-      if (actualCount === 0) {
-        throw new Error('Import succeeded but bookmarks were not saved to storage. Please try again.')
+        if (actualCount === 0) {
+          throw new Error(
+            'Import succeeded but bookmarks were not saved to storage. Please try again.'
+          )
+        }
+      } catch (verifyError) {
+        if (
+          verifyError instanceof Error &&
+          verifyError.message.includes('Import succeeded')
+        ) {
+          throw verifyError
+        }
       }
 
       // Mark that user has seen the splash page BEFORE reloading
@@ -72,7 +84,7 @@ const OnboardingScreen = () => {
       setHasSeenSplash(true)
 
       // Ensure settings are persisted to localStorage immediately
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise((resolve) => setTimeout(resolve, 100))
 
       // Show success toast
       const message =
