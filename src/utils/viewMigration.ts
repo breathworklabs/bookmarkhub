@@ -413,9 +413,10 @@ function loadOldFilterPresets(): OldFilterPreset[] {
 
 export function runMigration(): MigrationResult {
   if (isMigrated()) {
-    const existing = localStorage.getItem(VIEWS_STORAGE_KEY)
-    if (existing) {
-      return JSON.parse(existing) as MigrationResult
+    return {
+      views: readViewsFromMigrationStorage(),
+      migrationVersion: CURRENT_MIGRATION_VERSION,
+      migratedAt: new Date().toISOString(),
     }
   }
 
@@ -425,8 +426,7 @@ export function runMigration(): MigrationResult {
 
   const result = migrateToViews(collections, collectionBookmarks, filterPresets)
 
-  // Persist new view data (keep old keys intact for rollback)
-  localStorage.setItem(VIEWS_STORAGE_KEY, JSON.stringify(result))
+  localStorage.setItem(VIEWS_STORAGE_KEY, JSON.stringify(result.views))
   localStorage.setItem(
     MIGRATION_FLAG_KEY,
     JSON.stringify({ version: CURRENT_MIGRATION_VERSION })
@@ -437,4 +437,15 @@ export function runMigration(): MigrationResult {
   )
 
   return result
+}
+
+function readViewsFromMigrationStorage(): View[] {
+  try {
+    const raw = localStorage.getItem(VIEWS_STORAGE_KEY)
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      return Array.isArray(parsed) ? parsed : parsed.views || []
+    }
+  } catch {}
+  return []
 }
