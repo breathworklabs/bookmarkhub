@@ -13,7 +13,6 @@ import { LATEST_CHANGELOG_VERSION } from '@/data/changelog'
 import {
   LuMenu,
   LuExternalLink,
-  LuFolderPlus,
   LuSettings,
   LuTrash2,
   LuLayoutGrid,
@@ -23,11 +22,6 @@ import {
   LuMessageSquare,
   LuSparkles,
   LuScrollText,
-  LuBookmark,
-  LuStar,
-  LuClock,
-  LuArchive,
-  LuInbox,
 } from 'react-icons/lu'
 import { useMemo, useCallback, memo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
@@ -36,15 +30,13 @@ import { useCollectionsStore } from '@/store/collectionsStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useViewStore } from '@/store/viewStore'
 import { SYSTEM_VIEWS } from '@/types/views'
-import { useModal } from './modals/ModalProvider'
 import { useIsMobile } from '@/hooks/useMobile'
-import CollectionsList from './collections/CollectionsList'
+import ViewsTree from './views/ViewsTree'
 import { FeedbackMenu } from './FeedbackMenu'
 import { useNavigationStyles } from '@/hooks/useStyles'
 import { useNavigateWithCleanup } from '@/hooks/useNavigateWithCleanup'
 import { componentStyles } from '@/styles/components'
 import logoImage from '@/assets/logo_v2 1.png'
-import { logger } from '@/lib/logger'
 
 // Optimized selector for bookmark data
 const useBookmarkCounts = () => {
@@ -101,20 +93,13 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
   const toggleSidebarCollapsed = () =>
     useSettingsStore.getState().toggleSidebarCollapsed()
   const bookmarkCounts = useBookmarkCounts()
-  const { showCreateCollection } = useModal()
-  const createCollection = useCollectionsStore(
-    (state) => state.createCollection
-  )
   const setActiveCollection = useCollectionsStore(
     (state) => state.setActiveCollection
   )
   const isMobile = useIsMobile()
 
-  const views = useViewStore((state) => state.views)
   const activeViewId = useViewStore((state) => state.activeViewId)
-  const setActiveView = useViewStore((state) => state.setActiveView)
 
-  // Feedback menu state
   const [isFeedbackMenuOpen, setIsFeedbackMenuOpen] = useState(false)
 
   // Memoized event handlers
@@ -256,16 +241,6 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
     return content
   }
 
-  const VIEW_ICONS: Record<string, React.ReactNode> = {
-    bookmark: <LuBookmark size={18} />,
-    star: <LuStar size={18} />,
-    clock: <LuClock size={18} />,
-    archive: <LuArchive size={18} />,
-    'trash-2': <LuTrash2 size={18} />,
-    inbox: <LuInbox size={18} />,
-    folder: <LuFolderPlus size={18} />,
-  }
-
   return (
     <Box
       {...componentStyles.container.sidebar}
@@ -324,52 +299,6 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
           />
         </VStack>
 
-        {/* Views Section */}
-        {views.filter(
-          (v) => v.pinned && v.id !== SYSTEM_VIEWS.ALL && !isSidebarCollapsed
-        ).length > 0 && (
-          <VStack alignItems="stretch" gap={2}>
-            {!isSidebarCollapsed && (
-              <Box
-                borderTopWidth="1px"
-                style={{ borderColor: 'var(--color-border)' }}
-              >
-                <Box px={3} py={3}>
-                  <Text
-                    fontWeight="600"
-                    fontSize="11px"
-                    letterSpacing="0.8px"
-                    textTransform="uppercase"
-                    style={{ color: 'var(--color-text-tertiary)' }}
-                  >
-                    Views
-                  </Text>
-                </Box>
-              </Box>
-            )}
-            {views
-              .filter((v) => v.pinned && v.id !== SYSTEM_VIEWS.ALL)
-              .sort((a, b) => a.sortOrder - b.sortOrder)
-              .map((view) => (
-                <NavItem
-                  key={view.id}
-                  icon={VIEW_ICONS[view.icon] || <LuBookmark size={18} />}
-                  label={view.name}
-                  onClick={() => {
-                    setActiveView(view.id)
-                    useBookmarkStore
-                      .getState()
-                      .setActiveSidebarItem('All Bookmarks')
-                    useBookmarkStore.getState().clearAdvancedFilters()
-                    navigateWithCleanup('/', onItemClick)
-                  }}
-                  active={activeViewId === view.id}
-                />
-              ))}
-          </VStack>
-        )}
-
-        {/* Collections Section - or Spacer when collapsed */}
         {!isSidebarCollapsed ? (
           <VStack alignItems="stretch" gap={0} flex={1} minH={0}>
             <Box
@@ -386,52 +315,16 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
                   textTransform="uppercase"
                   style={{ color: 'var(--color-text-tertiary)' }}
                 >
-                  Collections
+                  Views
                 </Text>
               </Box>
             </Box>
 
             <Box flex={1} overflowY="auto">
-              <CollectionsList />
+              <ViewsTree />
             </Box>
-
-            {/* Create Collection Button - Mobile Only */}
-            {isMobile && (
-              <Box px={3} pb={2}>
-                <Button
-                  size="sm"
-                  width="100%"
-                  fontSize="13px"
-                  fontWeight="500"
-                  style={{
-                    background: 'var(--color-blue)',
-                    color: 'white',
-                  }}
-                  _hover={{
-                    bg: 'var(--color-blue-hover)',
-                  }}
-                  onClick={() => {
-                    showCreateCollection({
-                      onCreate: async (collectionData) => {
-                        try {
-                          await createCollection(collectionData)
-                        } catch (error) {
-                          logger.error('Failed to create collection', { error })
-                        }
-                      },
-                    })
-                    onItemClick?.()
-                  }}
-                  gap={2}
-                >
-                  <LuFolderPlus size={16} />
-                  Create Collection
-                </Button>
-              </Box>
-            )}
           </VStack>
         ) : (
-          // Spacer when collapsed to push bottom section down
           <Box flex={1} />
         )}
 
