@@ -21,6 +21,8 @@ import SaveFilterPresetButton from './filters/SaveFilterPresetButton'
 import TagChip from './tags/TagChip'
 import TagInput from './tags/TagInput'
 import { useModal } from './modals/ModalProvider'
+import { useViewStore } from '@/store/viewStore'
+import { useBookmarkStore } from '@/store/bookmark'
 
 const MotionBox = motion.create(Box)
 
@@ -40,6 +42,7 @@ const AdvancedFilters = () => {
 
   const resetFilters = useFilterReset()
   const { showTagManager } = useModal()
+  const createView = useViewStore((state) => state.createView)
 
   return (
     <AnimatePresence>
@@ -392,6 +395,68 @@ const AdvancedFilters = () => {
               {/* Actions */}
               <HStack justify="center" pt={1} gap={2}>
                 <SaveFilterPresetButton />
+                <Button
+                  size="xs"
+                  variant="ghost"
+                  style={{
+                    background: 'transparent',
+                    color: 'var(--color-text-tertiary)',
+                    border: '1px solid var(--color-border)',
+                    fontSize: '11px',
+                  }}
+                  _hover={{
+                    bg: 'var(--color-bg-tertiary)',
+                    color: 'var(--color-text-primary)',
+                    borderColor: 'var(--color-border-hover)',
+                  }}
+                  onClick={() => {
+                    const {
+                      quickFilters,
+                      selectedTags,
+                      authorFilter,
+                      domainFilter,
+                      searchQuery,
+                      contentTypeFilter,
+                    } = useBookmarkStore.getState()
+
+                    createView({
+                      name: searchQuery || 'Custom View',
+                      mode: 'dynamic',
+                      criteria: {
+                        ...(quickFilters.includes('starred')
+                          ? { starred: true }
+                          : {}),
+                        ...(quickFilters.includes('unread')
+                          ? { unread: true }
+                          : {}),
+                        ...(quickFilters.includes('broken')
+                          ? { broken: true }
+                          : {}),
+                        ...(quickFilters.includes('recent')
+                          ? { recentDays: 1 }
+                          : {}),
+                        ...(quickFilters.includes('comments')
+                          ? { withComments: true }
+                          : {}),
+                        ...(quickFilters.includes('engagement')
+                          ? { minEngagement: 100 }
+                          : {}),
+                        ...(selectedTags.length > 0
+                          ? { tags: selectedTags }
+                          : {}),
+                        ...(authorFilter ? { authors: [authorFilter] } : {}),
+                        ...(domainFilter ? { domains: [domainFilter] } : {}),
+                        ...(searchQuery ? { query: searchQuery } : {}),
+                        ...(contentTypeFilter
+                          ? { contentTypes: [contentTypeFilter] }
+                          : {}),
+                      },
+                      pinned: false,
+                    })
+                  }}
+                >
+                  Save as View
+                </Button>
                 <SavedFilterPresets />
                 <Button
                   size="sm"
