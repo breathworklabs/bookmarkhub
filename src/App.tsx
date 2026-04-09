@@ -22,6 +22,17 @@ import * as Sentry from '@sentry/react'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { useSettingsStore } from './store/settingsStore'
 import { chakraTheme } from './styles/chakraTheme'
+import { useBookmarkStore } from './store/bookmarkStore'
+
+declare global {
+  interface Window {
+    __store: typeof useBookmarkStore
+  }
+}
+
+if (import.meta.env.DEV) {
+  window.__store = useBookmarkStore
+}
 
 // Wrap Router with Sentry for better error tracking
 const SentryRoutes = Sentry.withSentryRouting(Routes)
