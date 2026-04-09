@@ -148,7 +148,8 @@ export const CollectionTreeItem = memo<CollectionTreeItemProps>(
             return bookmarks.filter((b) => b.is_starred && !b.is_deleted).length
 
           case 'archived':
-            return bookmarks.filter((b) => b.is_archived && !b.is_deleted).length
+            return bookmarks.filter((b) => b.is_archived && !b.is_deleted)
+              .length
 
           case 'recent': {
             const weekAgo = new Date()
@@ -243,7 +244,7 @@ export const CollectionTreeItem = memo<CollectionTreeItemProps>(
         [collection.id, collection.isSmartCollection]
       )
 
-    // Drop functionality for collections (to nest collection under this one)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- react-dnd type inference with discriminated accept types
     const [{ isOverCollection, canDropCollection }, dropCollection] = useDrop(
       () => ({
         accept: 'COLLECTION',
@@ -254,9 +255,13 @@ export const CollectionTreeItem = memo<CollectionTreeItemProps>(
             toast.success(
               `Moved "${item.collection.name}" under "${collection.name}"`
             )
-          } catch (error: any) {
+          } catch (error: unknown) {
             logger.error('Failed to move collection', { error })
-            toast.error(error.message || 'Failed to move collection')
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : 'Failed to move collection'
+            )
           }
         },
         canDrop: (item: any) => {
@@ -326,7 +331,7 @@ export const CollectionTreeItem = memo<CollectionTreeItemProps>(
     ])
 
     // Combine drop refs
-    const combinedRef = (node: any) => {
+    const combinedRef = (node: HTMLElement | null) => {
       dropBookmark(node)
       dropCollection(node)
       if (!collection.isSmartCollection && !collection.isDefault) {

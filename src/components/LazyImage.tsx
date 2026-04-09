@@ -10,6 +10,7 @@ interface LazyImageProps {
   borderRadius?: string
   cursor?: string
   onClick?: (e: React.MouseEvent) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Chakra UI _hover style prop
   _hover?: any
   fallback?: React.ReactNode
   position?: string

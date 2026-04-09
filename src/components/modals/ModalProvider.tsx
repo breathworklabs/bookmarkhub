@@ -25,7 +25,6 @@ import {
 } from '@chakra-ui/react'
 import type { BookmarkInsert, Bookmark } from '@/types/bookmark'
 import type { CollectionInsert } from '@/lib/localStorage'
-import { DataProcessingService } from '@/services/dataProcessingService'
 import ImageModal from './ImageModal'
 import TagManagerModal from '@/components/tags/TagManagerModal'
 import TagMergeModal from '@/components/tags/TagMergeModal'
@@ -33,7 +32,7 @@ import DuplicateBookmarkDialog from './DuplicateBookmarkDialog'
 import { ShareCollectionModal } from './ShareCollectionModal'
 import TagInput from '@/components/tags/TagInput'
 import TagChip from '@/components/tags/TagChip'
-import { useCollectionsStore } from '@/store/collectionsStore'
+import { useCollectionsStore, type Collection } from '@/store/collectionsStore'
 import {
   getCollectionPathString,
   wouldCreateCircularReference,
@@ -94,8 +93,8 @@ interface CreateCollectionOptions {
 }
 
 interface EditCollectionOptions {
-  collection: any // Will use the full Collection type later
-  onEdit: (id: string, updates: Partial<any>) => void
+  collection: Collection
+  onEdit: (id: string, updates: Partial<Collection>) => void
   onCancel?: () => void
 }
 
@@ -125,6 +124,7 @@ interface ModalState {
     | 'editCollection'
     | 'imageModal'
     | null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- discriminated union typed via `type` field, needs broader refactor
   options: any
 }
 
@@ -351,9 +351,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       return
     }
 
-    // Prepare bookmark data using DataProcessingService
-    const bookmarkData: BookmarkInsert =
-      DataProcessingService.prepareBookmarkForForm(bookmarkFormData)
+    const bookmarkData = bookmarkFormData
 
     if (modalState.type === 'editBookmark') {
       modalState.options?.onEdit?.(modalState.options.bookmark.id, bookmarkData)
@@ -364,21 +362,24 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const handleBookmarkFormChange = useCallback(
-    (field: keyof BookmarkInsert, value: any) => {
+    (field: keyof BookmarkInsert, value: unknown) => {
       setBookmarkFormData((prev) => ({ ...prev, [field]: value }))
     },
     []
   )
 
-  const addBookmarkTag = useCallback((tag: string) => {
-    const trimmedTag = tag.trim()
-    if (trimmedTag && !bookmarkFormData.tags.includes(trimmedTag)) {
-      setBookmarkFormData((prev) => ({
-        ...prev,
-        tags: [...prev.tags, trimmedTag],
-      }))
-    }
-  }, [bookmarkFormData.tags])
+  const addBookmarkTag = useCallback(
+    (tag: string) => {
+      const trimmedTag = tag.trim()
+      if (trimmedTag && !bookmarkFormData.tags.includes(trimmedTag)) {
+        setBookmarkFormData((prev) => ({
+          ...prev,
+          tags: [...prev.tags, trimmedTag],
+        }))
+      }
+    },
+    [bookmarkFormData.tags]
+  )
 
   const removeBookmarkTag = useCallback((tagToRemove: string) => {
     setBookmarkFormData((prev) => ({
@@ -437,7 +438,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   )
 
   const handleCollectionFormChange = useCallback(
-    (field: keyof CollectionInsert, value: any) => {
+    (field: keyof CollectionInsert, value: unknown) => {
       // Handle special "__none__" value for parentId
       if (field === 'parentId' && value === '__none__') {
         setCollectionFormData((prev) => ({ ...prev, [field]: null }))
@@ -493,7 +494,10 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const showShareCollection = (options: ShareCollectionOptions) => {
-    setShareCollectionState({ isOpen: true, collectionId: options.collectionId })
+    setShareCollectionState({
+      isOpen: true,
+      collectionId: options.collectionId,
+    })
   }
 
   const closeShareCollection = () => {
