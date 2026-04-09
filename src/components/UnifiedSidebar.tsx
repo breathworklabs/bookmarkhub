@@ -29,7 +29,7 @@ import {
   LuArchive,
   LuInbox,
 } from 'react-icons/lu'
-import { useMemo, useCallback, memo, useState, useEffect } from 'react'
+import { useMemo, useCallback, memo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useCollectionsStore } from '@/store/collectionsStore'
@@ -113,10 +113,6 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
   const views = useViewStore((state) => state.views)
   const activeViewId = useViewStore((state) => state.activeViewId)
   const setActiveView = useViewStore((state) => state.setActiveView)
-
-  useEffect(() => {
-    useViewStore.getState().loadViews()
-  }, [])
 
   // Feedback menu state
   const [isFeedbackMenuOpen, setIsFeedbackMenuOpen] = useState(false)
@@ -318,8 +314,13 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
             icon={<LuMenu size={18} />}
             label="All Bookmarks"
             badge={bookmarkCounts.total}
-            onClick={() => handleNavItemClick('All Bookmarks')}
-            active={isActive('All Bookmarks')}
+            onClick={() => {
+              useViewStore.getState().setActiveView(SYSTEM_VIEWS.ALL)
+              handleNavItemClick('All Bookmarks')
+            }}
+            active={
+              isActive('All Bookmarks') && activeViewId === SYSTEM_VIEWS.ALL
+            }
           />
         </VStack>
 
@@ -356,12 +357,13 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
                   label={view.name}
                   onClick={() => {
                     setActiveView(view.id)
+                    useBookmarkStore
+                      .getState()
+                      .setActiveSidebarItem('All Bookmarks')
+                    useBookmarkStore.getState().clearAdvancedFilters()
                     navigateWithCleanup('/', onItemClick)
                   }}
-                  active={
-                    activeViewId === view.id &&
-                    activeSidebarItem === 'All Bookmarks'
-                  }
+                  active={activeViewId === view.id}
                 />
               ))}
           </VStack>

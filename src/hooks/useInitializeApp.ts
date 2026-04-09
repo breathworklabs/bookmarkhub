@@ -3,6 +3,8 @@ import toast from 'react-hot-toast'
 import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useCollectionsStore } from '@/store/collectionsStore'
 import { useSettingsStore } from '@/store/settingsStore'
+import { useViewStore } from '@/store/viewStore'
+import { runMigration, isMigrated } from '@/utils/viewMigration'
 import { initAllPerformanceMonitoring } from '@/lib/performance'
 import { localStorageService } from '@/lib/localStorage'
 import { logger } from '@/lib/logger'
@@ -44,9 +46,14 @@ export const useInitializeApp = () => {
         // If we have bookmarks, initialize stores immediately and wait
         if (hasBookmarks) {
           setIsInitializing(true)
+          if (!isMigrated()) {
+            runMigration()
+          }
+
           await Promise.all([
             useBookmarkStore.getState().initialize(),
             useCollectionsStore.getState().initialize(),
+            useViewStore.getState().loadViews(),
           ])
           setIsInitializing(false)
         }
@@ -154,6 +161,7 @@ export const useInitializeApp = () => {
         Promise.all([
           useBookmarkStore.getState().initialize(),
           useCollectionsStore.getState().initialize(),
+          useViewStore.getState().loadViews(),
         ])
           .then(() => {
             // Show success toast notification (if enabled in settings)
