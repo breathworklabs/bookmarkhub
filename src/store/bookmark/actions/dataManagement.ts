@@ -4,6 +4,7 @@ import { sanitizeBookmark, validateImportData } from '@/lib/dataValidation'
 import {
   transformXBookmarks,
   validateXBookmarkData,
+  type XBookmarkData,
 } from '@/lib/xBookmarkTransform'
 import { downloadFile } from '@/lib/exportFormats'
 import { trackOperationPerformance } from '@/lib/performance'
@@ -62,7 +63,7 @@ export const createDataManagementActions = (set: StoreSet, get: StoreGet) => ({
     }
   },
 
-  importXBookmarks: async (data: any[], limit?: number) => {
+  importXBookmarks: async (data: XBookmarkData[], limit?: number) => {
     try {
       set({ isLoading: true, error: null }, false, 'importXBookmarks:start')
 

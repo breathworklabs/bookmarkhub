@@ -3,7 +3,7 @@ import { DataProcessingService } from '@/services/dataProcessingService'
 import { logger } from './logger'
 
 // X/Twitter bookmark data structure from the JSON file
-interface XBookmarkData {
+export interface XBookmarkData {
   id: number
   display_name: string
   username: string
@@ -33,7 +33,10 @@ function normalizeDateToISO(dateInput: string | number): string {
 
   try {
     // If it's already a valid ISO string, return as-is
-    if (typeof dateInput === 'string' && dateInput.match(/^\d{4}-\d{2}-\d{2}T/)) {
+    if (
+      typeof dateInput === 'string' &&
+      dateInput.match(/^\d{4}-\d{2}-\d{2}T/)
+    ) {
       return dateInput
     }
 
@@ -178,11 +181,9 @@ export function transformXBookmarks(
     try {
       return transformXBookmark(xBookmark)
     } catch (error) {
-      logger.error(
-        `Error transforming bookmark at index ${index}`,
-        error,
-        { context: { bookmarkData: xBookmark } }
-      )
+      logger.error(`Error transforming bookmark at index ${index}`, error, {
+        context: { bookmarkData: xBookmark },
+      })
       throw new Error(
         `Failed to transform bookmark at index ${index}: ${error instanceof Error ? error.message : 'Unknown error'}`
       )
@@ -193,7 +194,7 @@ export function transformXBookmarks(
 /**
  * Validate X bookmark data structure
  */
-export function validateXBookmarkData(data: any): {
+export function validateXBookmarkData(data: unknown): {
   valid: boolean
   errors: string[]
 } {
