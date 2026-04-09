@@ -87,52 +87,45 @@ export class DataProcessingService {
   /**
    * Sanitize bookmark data with consistent validation
    */
-  static sanitizeBookmark(bookmark: any): BookmarkInsert | null {
+  static sanitizeBookmark(bookmark: unknown): BookmarkInsert | null {
     try {
-      // Apply defaults and sanitization
+      if (!bookmark || typeof bookmark !== 'object') return null
+      const b = bookmark as Record<string, unknown>
+
       const sanitized: BookmarkInsert = {
-        user_id: String(
-          bookmark.user_id || 'ae879c80-f3fc-4e05-a837-384e4b9bfb28'
-        ),
-        title: String(bookmark.title || '').trim(),
-        url: String(bookmark.url || '').trim(),
-        description: String(
-          bookmark.description || bookmark.content || ''
-        ).trim(),
-        content: String(bookmark.content || bookmark.description || '').trim(),
-        author: String(bookmark.author || 'Unknown Author').trim(),
+        user_id: String(b.user_id || 'ae879c80-f3fc-4e05-a837-384e4b9bfb28'),
+        title: String(b.title || '').trim(),
+        url: String(b.url || '').trim(),
+        description: String(b.description || b.content || '').trim(),
+        content: String(b.content || b.description || '').trim(),
+        author: String(b.author || 'Unknown Author').trim(),
         domain: String(
-          bookmark.domain || this.extractDomain(bookmark.url)
+          b.domain || this.extractDomain(String(b.url || ''))
         ).trim(),
-        source_platform: String(bookmark.source_platform || 'manual').trim(),
-        engagement_score: Number(bookmark.engagement_score || 0),
-        is_starred: Boolean(bookmark.is_starred || bookmark.isStarred),
-        is_read: Boolean(bookmark.is_read || false),
-        is_archived: Boolean(bookmark.is_archived || false),
-        is_shared: Boolean(bookmark.is_shared || false),
-        tags: Array.isArray(bookmark.tags)
-          ? bookmark.tags
-              .filter((tag: any) => typeof tag === 'string')
+        source_platform: String(b.source_platform || 'manual').trim(),
+        engagement_score: Number(b.engagement_score || 0),
+        is_starred: Boolean(b.is_starred || b.isStarred),
+        is_read: Boolean(b.is_read || false),
+        is_archived: Boolean(b.is_archived || false),
+        is_shared: Boolean(b.is_shared || false),
+        tags: Array.isArray(b.tags)
+          ? b.tags
+              .filter((tag: unknown) => typeof tag === 'string')
               .map((tag: string) => tag.trim())
           : [],
-        collections: Array.isArray(bookmark.collections)
-          ? bookmark.collections
-              .filter((id: any) => typeof id === 'string')
+        collections: Array.isArray(b.collections)
+          ? b.collections
+              .filter((id: unknown) => typeof id === 'string')
               .map((id: string) => id.trim())
           : ['uncategorized'],
-        thumbnail_url: bookmark.thumbnail_url
-          ? String(bookmark.thumbnail_url).trim()
+        thumbnail_url: b.thumbnail_url
+          ? String(b.thumbnail_url).trim()
           : undefined,
-        favicon_url: bookmark.favicon_url
-          ? String(bookmark.favicon_url).trim()
-          : undefined,
-        source_id: bookmark.source_id
-          ? String(bookmark.source_id).trim()
-          : undefined,
-        metadata: bookmark.metadata,
+        favicon_url: b.favicon_url ? String(b.favicon_url).trim() : undefined,
+        source_id: b.source_id ? String(b.source_id).trim() : undefined,
+        metadata: b.metadata as BookmarkInsert['metadata'],
       }
 
-      // Validate required fields
       if (
         !sanitized.title ||
         !sanitized.url ||
@@ -175,15 +168,35 @@ export class DataProcessingService {
   /**
    * Prepare bookmark data for form submission
    */
-  static prepareBookmarkForForm(formData: any): BookmarkInsert {
-    const domain = formData.domain || this.extractDomainForForm(formData.url)
+  static prepareBookmarkForForm(
+    formData: Record<string, unknown>
+  ): BookmarkInsert {
+    const domain =
+      String(formData.domain || '') ||
+      this.extractDomainForForm(String(formData.url || ''))
 
     return {
-      ...formData,
+      user_id: 'ae879c80-f3fc-4e05-a837-384e4b9bfb28',
+      title: String(formData.title || ''),
+      url: String(formData.url || ''),
+      description:
+        String(formData.description || '') ||
+        `Bookmark for ${String(formData.title || '')}`,
+      content:
+        String(formData.content || '') ||
+        `Bookmark for ${String(formData.title || '')}`,
+      author: String(formData.author || 'Unknown'),
       domain: domain || 'unknown',
-      description: formData.description || `Bookmark for ${formData.title}`,
-      content: formData.content || `Bookmark for ${formData.title}`,
-      author: formData.author || 'Unknown',
+      source_platform: 'manual',
+      engagement_score: 0,
+      is_starred: false,
+      is_read: false,
+      is_archived: false,
+      is_shared: false,
+      tags: Array.isArray(formData.tags)
+        ? formData.tags.filter((t): t is string => typeof t === 'string')
+        : [],
+      collections: ['uncategorized'],
     }
   }
 }

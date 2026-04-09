@@ -151,7 +151,10 @@ export interface BookmarkState {
   // Data management
   exportBookmarks: () => Promise<void>
   importBookmarks: (file: File) => Promise<void>
-  importXBookmarks: (data: any[], limit?: number) => Promise<void>
+  importXBookmarks: (
+    data: Record<string, unknown>[],
+    limit?: number
+  ) => Promise<void>
   clearAllData: () => Promise<void>
   loadDemoData: () => Promise<void>
   exitDemoMode: () => void

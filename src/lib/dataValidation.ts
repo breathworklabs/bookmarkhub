@@ -27,9 +27,11 @@ export const xTwitterMetadataSchema = z.object({
   profile_image_bigger: z.string().optional(),
 })
 
-export const genericWebMetadataSchema = z.object({
-  platform: z.union([z.literal('web'), z.literal('other')]),
-}).catchall(z.unknown())
+export const genericWebMetadataSchema = z
+  .object({
+    platform: z.union([z.literal('web'), z.literal('other')]),
+  })
+  .catchall(z.unknown())
 
 export const bookmarkMetadataSchema = z.union([
   xTwitterMetadataSchema,
@@ -106,22 +108,22 @@ export const isValidUrl = (url: string): boolean => {
   return urlSchema.safeParse(url).success
 }
 
-export const isValidBookmark = (bookmark: any): bookmark is Bookmark => {
+export const isValidBookmark = (bookmark: unknown): bookmark is Bookmark => {
   return bookmarkSchema.safeParse(bookmark).success
 }
 
 export const isValidBookmarkInsert = (
-  bookmark: any
+  bookmark: unknown
 ): bookmark is BookmarkInsert => {
   return bookmarkInsertSchema.safeParse(bookmark).success
 }
 
-export const isValidMetadata = (metadata: any): metadata is AppMetadata => {
+export const isValidMetadata = (metadata: unknown): metadata is AppMetadata => {
   return appMetadataSchema.safeParse(metadata).success
 }
 
 // Sanitization functions
-export const sanitizeBookmark = (bookmark: any): BookmarkInsert | null => {
+export const sanitizeBookmark = (bookmark: unknown): BookmarkInsert | null => {
   const sanitized = DataProcessingService.sanitizeBookmark(bookmark)
   if (!sanitized) return null
 
@@ -135,22 +137,29 @@ export const extractDomain = (url: string): string => {
 }
 
 // Migration functions for backward compatibility
-export const migrateBookmarkData = (data: any[]): Bookmark[] => {
+export const migrateBookmarkData = (data: unknown[]): Bookmark[] => {
   const migrated: Bookmark[] = []
 
-  for (const item of data) {
+  for (const rawItem of data) {
+    if (!rawItem || typeof rawItem !== 'object') continue
+    const item = rawItem as Record<string, unknown>
     // Handle old format (mock data) vs new format (localStorage)
+    const authorRaw = item.author
+    const authorStr =
+      typeof authorRaw === 'string'
+        ? authorRaw
+        : authorRaw && typeof authorRaw === 'object' && 'name' in authorRaw
+          ? String((authorRaw as Record<string, unknown>).name)
+          : 'Unknown Author'
+
     const sanitized = sanitizeBookmark({
       user_id: item.user_id || 'ae879c80-f3fc-4e05-a837-384e4b9bfb28',
       title: item.title,
       url: item.url,
       description: item.description || item.content || '',
       content: item.content || item.description || '',
-      author:
-        typeof item.author === 'string'
-          ? item.author
-          : item.author?.name || 'Unknown Author',
-      domain: item.domain || extractDomain(item.url),
+      author: authorStr,
+      domain: item.domain || extractDomain(String(item.url || '')),
       source_platform: item.source_platform || 'manual',
       engagement_score: item.engagement_score || 0,
       is_starred: item.is_starred || item.isStarred || false,
@@ -170,11 +179,12 @@ export const migrateBookmarkData = (data: any[]): Bookmark[] => {
     if (sanitized) {
       migrated.push({
         ...sanitized,
-        id: item.id || migrated.length + 1,
-        created_at:
-          item.created_at || item.timestamp || new Date().toISOString(),
-        updated_at: item.updated_at || new Date().toISOString(),
-        is_deleted: item.is_deleted || false,
+        id: Number(item.id) || migrated.length + 1,
+        created_at: String(
+          item.created_at || item.timestamp || new Date().toISOString()
+        ),
+        updated_at: String(item.updated_at || new Date().toISOString()),
+        is_deleted: Boolean(item.is_deleted || false),
       })
     }
   }
@@ -196,7 +206,7 @@ export const createBackupData = (
 }
 
 export const validateImportData = (
-  data: any
+  data: unknown
 ): { valid: boolean; errors: string[] } => {
   const errors: string[] = []
 
@@ -205,33 +215,39 @@ export const validateImportData = (
     return { valid: false, errors }
   }
 
-  if (data.bookmarks && !Array.isArray(data.bookmarks)) {
-    errors.push('Bookmarks must be an array')
-  }
+  if (data && typeof data === 'object' && !Array.isArray(data)) {
+    const obj = data as Record<string, unknown>
 
-  if (data.bookmarks) {
-    const invalidBookmarks = data.bookmarks.filter(
-      (bookmark: any, index: number) => {
+    if (obj.bookmarks && !Array.isArray(obj.bookmarks)) {
+      errors.push('Bookmarks must be an array')
+    }
+
+    if (Array.isArray(obj.bookmarks)) {
+      obj.bookmarks.filter((bookmark: unknown, index: number) => {
         const sanitized = sanitizeBookmark(bookmark)
         if (!sanitized) {
           errors.push(`Invalid bookmark at index ${index}`)
           return true
         }
         return false
+      })
+
+      const invalidBookmarks = obj.bookmarks.filter(
+        (bookmark: unknown) => !sanitizeBookmark(bookmark)
+      )
+
+      if (invalidBookmarks.length > 0) {
+        errors.push(`Found ${invalidBookmarks.length} invalid bookmarks`)
       }
-    )
-
-    if (invalidBookmarks.length > 0) {
-      errors.push(`Found ${invalidBookmarks.length} invalid bookmarks`)
     }
-  }
 
-  // Settings validation removed - managed by settingsStore
-
-  if (data.metadata && !isValidMetadata(data.metadata)) {
-    const result = appMetadataSchema.safeParse(data.metadata)
-    if (!result.success) {
-      errors.push(`Invalid metadata format: ${result.error.issues.map(e => `${String(e.path.join('.'))}:  ${e.message}`).join(', ')}`)
+    if (obj.metadata && !isValidMetadata(obj.metadata)) {
+      const result = appMetadataSchema.safeParse(obj.metadata)
+      if (!result.success) {
+        errors.push(
+          `Invalid metadata format: ${result.error.issues.map((e) => `${String(e.path.join('.'))}:  ${e.message}`).join(', ')}`
+        )
+      }
     }
   }
 
@@ -239,7 +255,7 @@ export const validateImportData = (
 }
 
 // Storage quota utilities
-export const estimateStorageSize = (data: any): number => {
+export const estimateStorageSize = (data: unknown): number => {
   try {
     return JSON.stringify(data).length
   } catch {

@@ -190,9 +190,9 @@ export const loadCachedValidationResults = (): ValidationResult[] => {
 
     const parsed = JSON.parse(cached)
     // Convert date strings back to Date objects
-    return parsed.map((r: any) => ({
+    return parsed.map((r: Record<string, unknown>) => ({
       ...r,
-      checkedAt: new Date(r.checkedAt),
+      checkedAt: new Date(String(r.checkedAt)),
     }))
   } catch (error) {
     logger.error('Failed to load cached validation results', error)

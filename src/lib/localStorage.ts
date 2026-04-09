@@ -43,7 +43,7 @@ interface ConsolidatedStorage {
     }
   }
   consent?: 'accepted' | 'rejected' | null
-  extensionSettings?: any // Extension/display/privacy settings from settingsStore
+  extensionSettings?: Record<string, unknown> // Extension/display/privacy settings from settingsStore
   appState?: {
     hasBeenCleared?: boolean
     lastImportSource?: 'file' | 'extension' | null
@@ -216,10 +216,22 @@ class LocalStorageService {
 
   // Helper methods to get/set individual sections (maintains compatibility with existing code)
   // Type-safe overloads for different storage keys
-  private safeGet(key: typeof LEGACY_STORAGE_KEYS.BOOKMARKS, defaultValue: StoredBookmark[]): StoredBookmark[]
-  private safeGet(key: typeof LEGACY_STORAGE_KEYS.COLLECTIONS, defaultValue: StoredCollection[]): StoredCollection[]
-  private safeGet(key: typeof LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS, defaultValue: StoredBookmarkCollection[]): StoredBookmarkCollection[]
-  private safeGet(key: typeof LEGACY_STORAGE_KEYS.METADATA, defaultValue: AppMetadata): AppMetadata
+  private safeGet(
+    key: typeof LEGACY_STORAGE_KEYS.BOOKMARKS,
+    defaultValue: StoredBookmark[]
+  ): StoredBookmark[]
+  private safeGet(
+    key: typeof LEGACY_STORAGE_KEYS.COLLECTIONS,
+    defaultValue: StoredCollection[]
+  ): StoredCollection[]
+  private safeGet(
+    key: typeof LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS,
+    defaultValue: StoredBookmarkCollection[]
+  ): StoredBookmarkCollection[]
+  private safeGet(
+    key: typeof LEGACY_STORAGE_KEYS.METADATA,
+    defaultValue: AppMetadata
+  ): AppMetadata
   private safeGet<T>(key: string, defaultValue: T): T {
     const storage = this.getStorage()
 
@@ -238,10 +250,22 @@ class LocalStorageService {
     }
   }
 
-  private safeSet(key: typeof LEGACY_STORAGE_KEYS.BOOKMARKS, value: StoredBookmark[]): boolean
-  private safeSet(key: typeof LEGACY_STORAGE_KEYS.COLLECTIONS, value: StoredCollection[]): boolean
-  private safeSet(key: typeof LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS, value: StoredBookmarkCollection[]): boolean
-  private safeSet(key: typeof LEGACY_STORAGE_KEYS.METADATA, value: AppMetadata): boolean
+  private safeSet(
+    key: typeof LEGACY_STORAGE_KEYS.BOOKMARKS,
+    value: StoredBookmark[]
+  ): boolean
+  private safeSet(
+    key: typeof LEGACY_STORAGE_KEYS.COLLECTIONS,
+    value: StoredCollection[]
+  ): boolean
+  private safeSet(
+    key: typeof LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS,
+    value: StoredBookmarkCollection[]
+  ): boolean
+  private safeSet(
+    key: typeof LEGACY_STORAGE_KEYS.METADATA,
+    value: AppMetadata
+  ): boolean
   private safeSet<T>(key: string, value: T): boolean {
     const storage = this.getStorage()
 
@@ -268,10 +292,7 @@ class LocalStorageService {
 
   // Bookmark operations
   async getBookmarks(): Promise<StoredBookmark[]> {
-    const bookmarks = this.safeGet(
-      LEGACY_STORAGE_KEYS.BOOKMARKS,
-      []
-    )
+    const bookmarks = this.safeGet(LEGACY_STORAGE_KEYS.BOOKMARKS, [])
 
     // Migration: Ensure all bookmarks have collections array and normalize boolean values
     let needsUpdate = false
@@ -523,10 +544,7 @@ class LocalStorageService {
 
   // Collection operations
   async getCollections(): Promise<StoredCollection[]> {
-    let collections = this.safeGet(
-      LEGACY_STORAGE_KEYS.COLLECTIONS,
-      []
-    )
+    let collections = this.safeGet(LEGACY_STORAGE_KEYS.COLLECTIONS, [])
 
     // Initialize default collections if empty
     if (collections.length === 0) {
@@ -630,9 +648,8 @@ class LocalStorageService {
 
     // Validate parent assignment if parentId is provided
     if (collection.parentId) {
-      const { validateParentAssignment } = await import(
-        '../utils/collectionHierarchy'
-      )
+      const { validateParentAssignment } =
+        await import('../utils/collectionHierarchy')
       const validation = validateParentAssignment(
         id,
         collection.parentId,
@@ -686,9 +703,8 @@ class LocalStorageService {
 
     // Validate parent change if parentId is being updated
     if ('parentId' in updates) {
-      const { validateParentAssignment } = await import(
-        '../utils/collectionHierarchy'
-      )
+      const { validateParentAssignment } =
+        await import('../utils/collectionHierarchy')
       const validation = validateParentAssignment(
         id,
         updates.parentId ?? null,
@@ -731,9 +747,8 @@ class LocalStorageService {
       throw new Error('Cannot delete default collections')
     }
 
-    const { getChildCollections, getAllDescendants } = await import(
-      '../utils/collectionHierarchy'
-    )
+    const { getChildCollections, getAllDescendants } =
+      await import('../utils/collectionHierarchy')
 
     let filteredCollections: StoredCollection[]
 
@@ -777,9 +792,10 @@ class LocalStorageService {
 
       return {
         ...bookmark,
-        collections: wasInDeletedCollection && newCollections.length === 0
-          ? ['uncategorized']  // Add to uncategorized if now empty
-          : newCollections,
+        collections:
+          wasInDeletedCollection && newCollections.length === 0
+            ? ['uncategorized'] // Add to uncategorized if now empty
+            : newCollections,
         primaryCollection:
           bookmark.primaryCollection === id
             ? 'uncategorized'
@@ -803,10 +819,7 @@ class LocalStorageService {
 
   // Bookmark-Collection relationship operations
   async getBookmarkCollections(): Promise<StoredBookmarkCollection[]> {
-    return this.safeGet(
-      LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS,
-      []
-    )
+    return this.safeGet(LEGACY_STORAGE_KEYS.BOOKMARK_COLLECTIONS, [])
   }
 
   async addBookmarkToCollection(
@@ -969,15 +982,12 @@ class LocalStorageService {
   // Metadata operations
   private async updateMetadata(): Promise<void> {
     const bookmarks = await this.getBookmarks()
-    const currentMetadata = this.safeGet(
-      LEGACY_STORAGE_KEYS.METADATA,
-      {
-        version: '1.0.0',
-        totalBookmarks: 0,
-        createdAt: new Date().toISOString(),
-        lastUpdate: new Date().toISOString(),
-      }
-    )
+    const currentMetadata = this.safeGet(LEGACY_STORAGE_KEYS.METADATA, {
+      version: '1.0.0',
+      totalBookmarks: 0,
+      createdAt: new Date().toISOString(),
+      lastUpdate: new Date().toISOString(),
+    })
 
     const updatedMetadata: AppMetadata = {
       version: currentMetadata.version || '1.0.0',

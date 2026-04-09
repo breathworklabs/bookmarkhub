@@ -6,6 +6,7 @@ import { useEffect, useRef, useCallback, useState } from 'react'
  * @param delay Delay in milliseconds
  * @returns Debounced callback function
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- generic constraint for callback arguments
 export function useDebounce<T extends (...args: any[]) => void>(
   callback: T,
   delay: number

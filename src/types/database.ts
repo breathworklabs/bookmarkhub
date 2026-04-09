@@ -45,7 +45,7 @@ export interface Database {
           is_read: boolean
           is_archived: boolean
           tags: string[]
-          metadata: Record<string, any> | null
+          metadata: Record<string, unknown> | null
           created_at: string
           updated_at: string
         }
@@ -67,7 +67,7 @@ export interface Database {
           is_read?: boolean
           is_archived?: boolean
           tags?: string[]
-          metadata?: Record<string, any> | null
+          metadata?: Record<string, unknown> | null
           created_at?: string
           updated_at?: string
         }
@@ -89,7 +89,7 @@ export interface Database {
           is_read?: boolean
           is_archived?: boolean
           tags?: string[]
-          metadata?: Record<string, any> | null
+          metadata?: Record<string, unknown> | null
           updated_at?: string
         }
       }

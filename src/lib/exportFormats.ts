@@ -27,7 +27,7 @@ export const exportAsCSV = (bookmarks: Bookmark[]): string => {
   ]
 
   // Escape CSV field
-  const escapeCSV = (field: any): string => {
+  const escapeCSV = (field: unknown): string => {
     if (field === null || field === undefined) return ''
     const str = String(field)
     // Escape quotes and wrap in quotes if contains comma, quote, or newline

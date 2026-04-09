@@ -80,20 +80,21 @@ export const useThemeColors = () => {
 /**
  * Hook for getting specific color values
  */
-export const useColor = (colorPath: string) => {
+export const useColor = (colorPath: string): string => {
   return useMemo(() => {
     const keys = colorPath.split('.')
-    let value: any = colors
+    let value: unknown = colors
 
     for (const key of keys) {
-      value = value[key]
-      if (value === undefined) {
+      if (value && typeof value === 'object' && key in value) {
+        value = (value as Record<string, unknown>)[key]
+      } else {
         logger.warn(`Color path "${colorPath}" not found`)
         return '#000000'
       }
     }
 
-    return value
+    return typeof value === 'string' ? value : '#000000'
   }, [colorPath])
 }
 

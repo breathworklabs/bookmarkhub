@@ -62,17 +62,17 @@ export interface BookmarkMetrics {
 }
 
 // For creating new bookmarks
-export interface BookmarkInsert
-  extends Omit<
-    Bookmark,
-    'id' | 'created_at' | 'updated_at' | 'is_deleted' | 'deleted_at'
-  > {
+export interface BookmarkInsert extends Omit<
+  Bookmark,
+  'id' | 'created_at' | 'updated_at' | 'is_deleted' | 'deleted_at'
+> {
   id?: number
 }
 
 // For updating existing bookmarks
-export interface BookmarkUpdate
-  extends Partial<Omit<Bookmark, 'id' | 'created_at'>> {
+export interface BookmarkUpdate extends Partial<
+  Omit<Bookmark, 'id' | 'created_at'>
+> {
   updated_at?: string
 }
 
@@ -111,7 +111,7 @@ export interface AppMetadata {
 // Export/Import data structure
 export interface ExportData {
   bookmarks: Bookmark[]
-  collections?: any[] // Will be properly typed when collections are implemented
+  collections?: unknown[] // Will be properly typed when collections are implemented
   metadata: AppMetadata
   exportedAt: string
   version: string
@@ -155,12 +155,12 @@ export class BookmarkError extends Error {
     | 'STORAGE_FULL'
     | 'INVALID_DATA'
     | 'STORAGE_UNAVAILABLE'
-  public details?: any
+  public details?: unknown
 
   constructor(
     message: string,
     code: 'NOT_FOUND' | 'STORAGE_FULL' | 'INVALID_DATA' | 'STORAGE_UNAVAILABLE',
-    details?: any
+    details?: unknown
   ) {
     super(message)
     this.name = 'BookmarkError'

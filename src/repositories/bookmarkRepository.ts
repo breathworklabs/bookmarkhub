@@ -43,9 +43,7 @@ export const getBookmarksByTag = (
 export const getStarredBookmarks = (
   bookmarks: StoredBookmark[]
 ): StoredBookmark[] => {
-  return bookmarks.filter(
-    (b) => (b as any).is_starred || (b as any).isStarred
-  )
+  return bookmarks.filter((b) => (b as any).is_starred || (b as any).isStarred)
 }
 
 /**
@@ -202,7 +200,7 @@ export const getOldTrashedBookmarks = (
   const cutoffDate = new Date()
   cutoffDate.setDate(cutoffDate.getDate() - daysOld)
 
-  return bookmarks.filter((b: any) => {
+  return bookmarks.filter((b: StoredBookmark) => {
     if (!b.is_deleted || !b.deleted_at) return false
     const deletedDate = new Date(b.deleted_at)
     return deletedDate < cutoffDate

@@ -89,7 +89,10 @@ export const getResponsiveValue = <T>(
   breakpoint: keyof typeof breakpoints = 'base'
 ): T => {
   if (typeof values === 'object' && values !== null && 'base' in values) {
-    return (values as any)[breakpoint] || (values as any).base
+    return (
+      (values as Record<string, T>)[breakpoint] ||
+      (values as Record<string, T>).base
+    )
   }
   return values as T
 }

@@ -7,7 +7,7 @@ export interface ErrorContext {
   action?: string
   userId?: string
   timestamp?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 export interface StandardError {
@@ -127,7 +127,7 @@ export class BookmarkError extends AppError {
     })
   }
 
-  static invalidData(data: any): BookmarkError {
+  static invalidData(data: unknown): BookmarkError {
     return new BookmarkError('Invalid bookmark data provided', 'INVALID_DATA', {
       action: 'validate_bookmark',
       metadata: { data },
@@ -174,7 +174,7 @@ export class CollectionError extends AppError {
     )
   }
 
-  static invalidData(data: any): CollectionError {
+  static invalidData(data: unknown): CollectionError {
     return new CollectionError(
       'Invalid collection data provided',
       'INVALID_DATA',
@@ -285,12 +285,12 @@ export class NetworkError extends AppError {
  */
 export class ValidationError extends AppError {
   public readonly field?: string
-  public readonly value?: any
+  public readonly value?: unknown
 
   constructor(
     message: string,
     field?: string,
-    value?: any,
+    value?: unknown,
     context: Partial<ErrorContext> = {},
     originalError?: unknown
   ) {
@@ -309,7 +309,7 @@ export class ValidationError extends AppError {
 
   static invalidFormat(
     field: string,
-    value: any,
+    value: unknown,
     expectedFormat: string
   ): ValidationError {
     return new ValidationError(
@@ -322,7 +322,7 @@ export class ValidationError extends AppError {
 
   static tooLong(
     field: string,
-    value: any,
+    value: unknown,
     maxLength: number
   ): ValidationError {
     return new ValidationError(
@@ -335,7 +335,7 @@ export class ValidationError extends AppError {
 
   static tooShort(
     field: string,
-    value: any,
+    value: unknown,
     minLength: number
   ): ValidationError {
     return new ValidationError(
@@ -529,11 +529,11 @@ export const withRetry = async <T>(
  */
 export const validateErrorResponse = (response: unknown): AppError => {
   if (response && typeof response === 'object') {
-    const error = response as any
+    const error = response as Record<string, unknown>
 
     return new AppError(
-      error.message || error.error || 'Unknown error occurred',
-      error.code || error.status || 'UNKNOWN_ERROR',
+      String(error.message || error.error || 'Unknown error occurred'),
+      String(error.code || error.status || 'UNKNOWN_ERROR'),
       { action: 'validate_response' },
       response
     )
@@ -559,7 +559,7 @@ export const isAppError = (error: unknown): error is AppError => {
  */
 export const isErrorClass = <T extends AppError>(
   error: unknown,
-  errorClass: new (...args: any[]) => T
+  errorClass: new (...args: unknown[]) => T
 ): error is T => {
   return error instanceof errorClass
 }
