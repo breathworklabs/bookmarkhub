@@ -21,6 +21,7 @@ import {
   LuChevronDown,
   LuMessageSquare,
   LuImage,
+  LuSparkles,
 } from 'react-icons/lu'
 import { useMemo, useCallback, memo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -64,33 +65,41 @@ const useFilterData = () => {
   const isFiltersPanelOpen = useBookmarkStore(
     (state) => state.isFiltersPanelOpen
   )
+  const isAIPanelOpen = useBookmarkStore((state) => state.isAIPanelOpen)
   const authorFilter = useBookmarkStore((state) => state.authorFilter)
   const domainFilter = useBookmarkStore((state) => state.domainFilter)
   const contentTypeFilter = useBookmarkStore((state) => state.contentTypeFilter)
   const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)
   const quickFilters = useBookmarkStore((state) => state.quickFilters)
   const selectedTags = useBookmarkStore((state) => state.selectedTags)
+  const invalidCount = useBookmarkStore(
+    (state) => state.validationSummary?.invalid || 0
+  )
 
   return useMemo(
     () => ({
       searchQuery,
       isFiltersPanelOpen,
+      isAIPanelOpen,
       authorFilter,
       domainFilter,
       contentTypeFilter,
       dateRangeFilter,
       quickFilters,
       selectedTags,
+      invalidCount,
     }),
     [
       searchQuery,
       isFiltersPanelOpen,
+      isAIPanelOpen,
       authorFilter,
       domainFilter,
       contentTypeFilter,
       dateRangeFilter,
       quickFilters,
       selectedTags,
+      invalidCount,
     ]
   )
 }
@@ -102,6 +111,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
   const toggleFiltersPanel = useBookmarkStore(
     (state) => state.toggleFiltersPanel
   )
+  const toggleAIPanel = useBookmarkStore((state) => state.toggleAIPanel)
   const viewMode = useSettingsStore((state) => state.display.viewMode)
   const setViewMode = useSettingsStore((state) => state.setViewMode)
   const { showAddBookmark } = useModal()
@@ -140,7 +150,9 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
   const importXBookmarks = useBookmarkStore((state) => state.importXBookmarks)
 
   // Local state for immediate visual feedback
-  const [localSearchValue, setLocalSearchValue] = useState(filterData.searchQuery)
+  const [localSearchValue, setLocalSearchValue] = useState(
+    filterData.searchQuery
+  )
 
   // Sync local state with external changes (e.g., filter reset)
   useEffect(() => {
@@ -178,9 +190,8 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
 
           if (isZip) {
             // Handle Twitter Archive ZIP import
-            const { importTwitterArchive } = await import(
-              '../services/twitterArchiveImport'
-            )
+            const { importTwitterArchive } =
+              await import('../services/twitterArchiveImport')
             const { sanitizeBookmark } = await import('@/lib/dataValidation')
             const { localStorageService } = await import('@/lib/localStorage')
 
@@ -248,9 +259,10 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
             }
 
             // Show success message
-            const message = importedCount === 1
-              ? '✓ Imported 1 bookmark successfully. Refreshing...'
-              : `✓ Imported ${importedCount} bookmarks successfully. Refreshing...`
+            const message =
+              importedCount === 1
+                ? '✓ Imported 1 bookmark successfully. Refreshing...'
+                : `✓ Imported ${importedCount} bookmarks successfully. Refreshing...`
 
             toast.success(message, { duration: 2500 })
 
@@ -343,7 +355,12 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
         )}
 
         {/* Search Area */}
-        <Box position="relative" maxW={{ base: '100%', md: '400px' }} flex={1} data-tour="search-bar">
+        <Box
+          position="relative"
+          maxW={{ base: '100%', md: '400px' }}
+          flex={1}
+          data-tour="search-bar"
+        >
           <HStack {...componentStyles.input.search} gap={2}>
             <Box
               w="16px"
@@ -609,6 +626,104 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
                 </Menu.Positioner>
               </Portal>
             </Menu.Root>
+          )}
+
+          {/* AI Insights Button */}
+          {isMobile ? (
+            <IconButton
+              aria-label="AI Insights"
+              variant="ghost"
+              size="sm"
+              onClick={toggleAIPanel}
+              position="relative"
+              style={{
+                background: filterData.isAIPanelOpen
+                  ? 'var(--color-blue)'
+                  : 'transparent',
+                color: filterData.isAIPanelOpen
+                  ? 'white'
+                  : 'var(--color-text-tertiary)',
+                border: '1px solid',
+                borderColor: filterData.isAIPanelOpen
+                  ? 'var(--color-blue)'
+                  : 'var(--color-border)',
+              }}
+              _hover={{
+                bg: filterData.isAIPanelOpen
+                  ? 'var(--color-blue-hover)'
+                  : 'var(--color-bg-tertiary)',
+                color: 'var(--color-text-primary)',
+              }}
+            >
+              <LuSparkles size={16} />
+              {filterData.invalidCount > 0 && (
+                <Badge
+                  size="sm"
+                  style={{ background: 'var(--color-error)' }}
+                  color="white"
+                  borderRadius="full"
+                  fontSize="9px"
+                  fontWeight="600"
+                  px={1.5}
+                  py={0.5}
+                  position="absolute"
+                  top="-6px"
+                  right="-6px"
+                  zIndex={1}
+                >
+                  {filterData.invalidCount}
+                </Badge>
+              )}
+            </IconButton>
+          ) : (
+            <Button
+              {...secondaryButtonStyles}
+              onClick={toggleAIPanel}
+              position="relative"
+              style={{
+                background: filterData.isAIPanelOpen
+                  ? 'var(--color-blue)'
+                  : 'transparent',
+                color: filterData.isAIPanelOpen
+                  ? 'white'
+                  : 'var(--color-text-tertiary)',
+                borderColor: filterData.isAIPanelOpen
+                  ? 'var(--color-blue)'
+                  : 'var(--color-border)',
+              }}
+              _hover={{
+                bg: filterData.isAIPanelOpen
+                  ? 'var(--color-blue-hover)'
+                  : 'var(--color-bg-tertiary)',
+                color: filterData.isAIPanelOpen
+                  ? 'white'
+                  : 'var(--color-text-primary)',
+                borderColor: filterData.isAIPanelOpen
+                  ? 'var(--color-blue-hover)'
+                  : 'var(--color-border-hover)',
+              }}
+            >
+              <LuSparkles size={14} />
+              {filterData.invalidCount > 0 ? 'Insights' : 'Insights'}
+              {filterData.invalidCount > 0 && (
+                <Badge
+                  size="sm"
+                  style={{ background: 'var(--color-error)' }}
+                  color="white"
+                  borderRadius="full"
+                  fontSize="11px"
+                  fontWeight="600"
+                  px={2}
+                  py={1}
+                  position="absolute"
+                  top="-8px"
+                  right="-8px"
+                  zIndex={1}
+                >
+                  {filterData.invalidCount}
+                </Badge>
+              )}
+            </Button>
           )}
 
           {/* Filters Button - Icon only on mobile */}

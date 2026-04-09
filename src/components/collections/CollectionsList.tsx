@@ -57,12 +57,6 @@ const CollectionsList = memo(() => {
         collectionBookmarks={collectionBookmarks}
         maxDepth={2}
         onToggleExpand={toggleCollectionExpansion}
-        onExpandFullView={(collectionId) => {
-          // TODO: Open CollectionTreePanel
-          logger.debug('Expand full view for collection', {
-            context: { collectionId },
-          })
-        }}
         onCollectionClick={handleCollectionClick}
       />
 

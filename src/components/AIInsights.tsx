@@ -1,8 +1,7 @@
-import { Box, VStack, Text, Button, For, HStack } from '@chakra-ui/react'
+import { Box, VStack, Text, Button, For } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useMemo } from 'react'
-import { logger } from '@/lib/logger'
 
 const MotionBox = motion.create(Box)
 
@@ -89,187 +88,93 @@ const AIInsights = () => {
                 AI Insights
               </Text>
 
-              <VStack alignItems="stretch" gap={4}>
-                <Text
-                  fontWeight="600"
-                  style={{ color: 'var(--color-text-primary)' }}
-                  fontSize="14px"
-                >
-                  Trending Topics
-                </Text>
-                <VStack alignItems="stretch" gap={2} w="full">
-                  <For
-                    each={[
-                      'AI & Machine Learning',
-                      'Web Development',
-                      'Tesla & EVs',
-                      'Crypto & Blockchain',
-                    ]}
-                  >
-                    {(topic, index) => (
-                      <HStack
-                        key={index}
-                        justify="space-between"
-                        p={3}
-                        w="full"
-                        style={{ background: 'var(--color-bg-tertiary)' }}
-                        border="1px solid var(--color-border)"
-                        borderRadius="12px"
-                        cursor="pointer"
-                        _hover={{
-                          bg: 'var(--color-bg-hover)',
-                          borderColor: 'var(--color-border-hover)',
-                        }}
-                        transition="all 0.2s"
-                      >
-                        <Text
-                          fontSize="13px"
-                          style={{ color: 'var(--color-text-primary)' }}
-                          fontWeight="500"
-                          flex={1}
-                        >
-                          {topic}
-                        </Text>
-                        <Text
-                          fontSize="11px"
-                          style={{ color: 'var(--color-text-tertiary)' }}
-                        >
-                          {Math.floor(Math.random() * 50 + 10)}
-                        </Text>
-                      </HStack>
-                    )}
-                  </For>
-                </VStack>
-              </VStack>
-
-              <VStack alignItems="stretch" gap={4}>
-                <Text
-                  fontWeight="600"
-                  style={{ color: 'var(--color-text-primary)' }}
-                  fontSize="14px"
-                >
-                  Smart Suggestions
-                </Text>
-                <VStack alignItems="stretch" gap={3} w="full">
+              <VStack alignItems="stretch" gap={3} w="full">
+                {isValidating ? (
                   <Box
                     w="full"
                     p={4}
                     style={{ background: 'var(--color-bg-tertiary)' }}
-                    border="1px solid var(--color-blue)"
+                    border="1px solid var(--color-border)"
                     borderRadius="12px"
                     borderLeftWidth="4px"
                     borderLeftColor="var(--color-blue)"
                   >
                     <Text
                       fontSize="13px"
-                      color="var(--color-blue)"
+                      color="var(--color-text-secondary)"
+                      lineHeight="1.4"
+                      mb={2}
+                    >
+                      Validating bookmarks...
+                    </Text>
+                    {validationProgress && (
+                      <Text fontSize="12px" color="var(--color-text-tertiary)">
+                        {validationProgress.current} /{' '}
+                        {validationProgress.total}
+                      </Text>
+                    )}
+                  </Box>
+                ) : invalidCount > 0 ? (
+                  <Box
+                    w="full"
+                    p={4}
+                    style={{ background: 'var(--color-bg-tertiary)' }}
+                    border="1px solid var(--color-error)"
+                    borderRadius="12px"
+                    borderLeftWidth="4px"
+                    borderLeftColor="var(--color-error)"
+                  >
+                    <Text
+                      fontSize="13px"
+                      color="var(--color-error)"
                       lineHeight="1.4"
                       mb={3}
                     >
-                      You have 12 bookmarks about AI that could be organized
-                      into a collection.
+                      {invalidCount} of your bookmarked link
+                      {invalidCount > 1 ? 's are' : ' is'} no longer available.
                     </Text>
                     <Button
                       size="xs"
-                      style={{ background: 'var(--color-blue)' }}
+                      bg="var(--color-error)"
                       color="white"
                       fontSize="11px"
                       px={3}
                       py={1}
                       borderRadius="8px"
-                      _hover={{ bg: 'var(--color-blue-hover)' }}
+                      _hover={{ opacity: 0.8 }}
+                      onClick={() => {
+                        useBookmarkStore
+                          .getState()
+                          .setActiveSidebarItem('All Bookmarks')
+                        useBookmarkStore.getState().clearAdvancedFilters()
+                        useBookmarkStore.getState().toggleQuickFilter('broken')
+                        setAIPanelOpen(false)
+                      }}
                     >
-                      Create Collection
+                      Review Links
                     </Button>
                   </Box>
-
-                  {isValidating ? (
-                    <Box
-                      w="full"
-                      p={4}
-                      style={{ background: 'var(--color-bg-tertiary)' }}
-                      border="1px solid var(--color-border)"
-                      borderRadius="12px"
-                      borderLeftWidth="4px"
-                      borderLeftColor="var(--color-blue)"
+                ) : validationSummary ? (
+                  <Box
+                    w="full"
+                    p={4}
+                    style={{ background: 'var(--color-bg-tertiary)' }}
+                    border="1px solid var(--color-success)"
+                    borderRadius="12px"
+                    borderLeftWidth="4px"
+                    borderLeftColor="var(--color-success)"
+                  >
+                    <Text
+                      fontSize="13px"
+                      color="var(--color-success)"
+                      lineHeight="1.4"
                     >
-                      <Text
-                        fontSize="13px"
-                        color="var(--color-text-secondary)"
-                        lineHeight="1.4"
-                        mb={2}
-                      >
-                        Validating bookmarks...
-                      </Text>
-                      {validationProgress && (
-                        <Text
-                          fontSize="12px"
-                          color="var(--color-text-tertiary)"
-                        >
-                          {validationProgress.current} /{' '}
-                          {validationProgress.total}
-                        </Text>
-                      )}
-                    </Box>
-                  ) : invalidCount > 0 ? (
-                    <Box
-                      w="full"
-                      p={4}
-                      style={{ background: 'var(--color-bg-tertiary)' }}
-                      border="1px solid var(--color-error)"
-                      borderRadius="12px"
-                      borderLeftWidth="4px"
-                      borderLeftColor="var(--color-error)"
-                    >
-                      <Text
-                        fontSize="13px"
-                        color="var(--color-error)"
-                        lineHeight="1.4"
-                        mb={3}
-                      >
-                        {invalidCount} of your bookmarked link
-                        {invalidCount > 1 ? 's are' : ' is'} no longer
-                        available.
-                      </Text>
-                      <Button
-                        size="xs"
-                        bg="var(--color-error)"
-                        color="white"
-                        fontSize="11px"
-                        px={3}
-                        py={1}
-                        borderRadius="8px"
-                        _hover={{ opacity: 0.8 }}
-                        onClick={() => {
-                          // TODO: Navigate to broken links view
-                          logger.debug('Review broken links clicked')
-                        }}
-                      >
-                        Review Links
-                      </Button>
-                    </Box>
-                  ) : validationSummary ? (
-                    <Box
-                      w="full"
-                      p={4}
-                      style={{ background: 'var(--color-bg-tertiary)' }}
-                      border="1px solid var(--color-success)"
-                      borderRadius="12px"
-                      borderLeftWidth="4px"
-                      borderLeftColor="var(--color-success)"
-                    >
-                      <Text
-                        fontSize="13px"
-                        color="var(--color-success)"
-                        lineHeight="1.4"
-                      >
-                        All {validationSummary.total} bookmark
-                        {validationSummary.total > 1 ? 's are' : ' is'} working
-                        correctly!
-                      </Text>
-                    </Box>
-                  ) : null}
-                </VStack>
+                      All {validationSummary.total} bookmark
+                      {validationSummary.total > 1 ? 's are' : ' is'} working
+                      correctly!
+                    </Text>
+                  </Box>
+                ) : null}
               </VStack>
 
               <VStack alignItems="stretch" gap={3}>
