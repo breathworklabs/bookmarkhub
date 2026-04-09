@@ -519,7 +519,7 @@ describe('errorHandling', () => {
       const error = validateErrorResponse(response)
 
       expect(error.message).toBe('Something went wrong')
-      expect(error.code).toBe(500) // Code is returned as-is, not stringified
+      expect(error.code).toBe('500') // Code is stringified by AppError constructor
     })
 
     it('should handle non-object responses', () => {

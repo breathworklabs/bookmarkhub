@@ -180,21 +180,21 @@ describe('dataValidation', () => {
 
     it('should allow any numeric engagement_score', () => {
       // Schema doesn't enforce boundaries, just checks it's a number
-      expect(
-        isValidBookmark({ ...validBookmark, engagement_score: -1 })
-      ).toBe(true)
-      expect(
-        isValidBookmark({ ...validBookmark, engagement_score: 101 })
-      ).toBe(true)
+      expect(isValidBookmark({ ...validBookmark, engagement_score: -1 })).toBe(
+        true
+      )
+      expect(isValidBookmark({ ...validBookmark, engagement_score: 101 })).toBe(
+        true
+      )
     })
 
     it('should validate bookmark with engagement_score boundary values', () => {
       expect(isValidBookmark({ ...validBookmark, engagement_score: 0 })).toBe(
         true
       )
-      expect(
-        isValidBookmark({ ...validBookmark, engagement_score: 100 })
-      ).toBe(true)
+      expect(isValidBookmark({ ...validBookmark, engagement_score: 100 })).toBe(
+        true
+      )
     })
 
     it('should invalidate bookmark with invalid boolean fields', () => {
@@ -779,10 +779,9 @@ describe('dataValidation', () => {
         bookmarks: 'not-an-array' as any,
       }
 
-      // The function adds "Bookmarks must be an array" error,
-      // then tries to filter which crashes. This is a bug in the implementation,
-      // but for now test that it detects the error properly.
-      expect(() => validateImportData(dataWithNonArrayBookmarks)).toThrow()
+      const result = validateImportData(dataWithNonArrayBookmarks)
+      expect(result.valid).toBe(false)
+      expect(result.errors).toContain('Bookmarks must be an array')
     })
 
     it('should invalidate data with invalid bookmark', () => {
