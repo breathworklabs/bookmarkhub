@@ -1,5 +1,6 @@
 import { type Bookmark } from '@/types/bookmark'
 import { type DateRangeFilter } from '@/store/bookmarkStore'
+import type { ValidationResult } from '@/services/bookmarkValidationService'
 
 /**
  * Filter parameters interface
@@ -17,6 +18,7 @@ export interface FilterParams {
   quickFilters: string[]
   activeCollectionId: string | null
   collectionBookmarks: Record<string, number[]>
+  validationResults?: ValidationResult[]
   sortBy?: 'date' | 'title' | 'author' | 'domain'
   sortOrder?: 'asc' | 'desc'
 }
@@ -52,6 +54,7 @@ export const filterBookmarksOptimized = ({
   quickFilters,
   activeCollectionId,
   collectionBookmarks,
+  validationResults,
   sortBy = 'date',
   sortOrder = 'desc',
 }: FilterParams): Bookmark[] => {
@@ -66,6 +69,12 @@ export const filterBookmarksOptimized = ({
   const hasContentTypeFilter = !!contentTypeFilter
   const hasDateRangeFilter = dateRangeFilter.type !== 'all'
   const hasQuickFilters = quickFilters.length > 0
+
+  const hasBrokenFilter = hasQuickFilters && quickFilters.includes('broken')
+  const invalidBookmarkIds =
+    hasBrokenFilter && validationResults
+      ? new Set(validationResults.filter((r) => !r.isValid).map((r) => r.id))
+      : null
 
   // Collection filter
   const hasCollectionFilter =
@@ -298,6 +307,11 @@ export const filterBookmarksOptimized = ({
             break
           case 'archived':
             matches = bookmark.is_archived === true
+            break
+          case 'broken':
+            matches = invalidBookmarkIds
+              ? invalidBookmarkIds.has(bookmark.id)
+              : false
             break
         }
         if (!matches) return false

@@ -29,9 +29,14 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
   const contentTypeFilter = useBookmarkStore((state) => state.contentTypeFilter)
   const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)
   const quickFilters = useBookmarkStore((state) => state.quickFilters)
+  const validationResults = useBookmarkStore((state) => state.validationResults)
 
-  const activeCollectionId = useCollectionsStore((state) => state.activeCollectionId)
-  const collectionBookmarks = useCollectionsStore((state) => state.collectionBookmarks)
+  const activeCollectionId = useCollectionsStore(
+    (state) => state.activeCollectionId
+  )
+  const collectionBookmarks = useCollectionsStore(
+    (state) => state.collectionBookmarks
+  )
 
   // Get pagination state and actions
   const pagination = useBookmarkStore((state) => state.pagination)
@@ -50,6 +55,7 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
       contentTypeFilter,
       dateRangeFilter,
       quickFilters,
+      validationResults,
       activeCollectionId,
       collectionBookmarks,
     })
@@ -64,6 +70,7 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
     contentTypeFilter,
     dateRangeFilter,
     quickFilters,
+    validationResults,
     activeCollectionId,
     collectionBookmarks,
   ])

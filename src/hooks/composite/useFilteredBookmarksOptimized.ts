@@ -21,9 +21,14 @@ export const useFilteredBookmarksOptimized = (): Bookmark[] => {
   const contentTypeFilter = useBookmarkStore((state) => state.contentTypeFilter)
   const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)
   const quickFilters = useBookmarkStore((state) => state.quickFilters)
+  const validationResults = useBookmarkStore((state) => state.validationResults)
 
-  const activeCollectionId = useCollectionsStore((state) => state.activeCollectionId)
-  const collectionBookmarks = useCollectionsStore((state) => state.collectionBookmarks)
+  const activeCollectionId = useCollectionsStore(
+    (state) => state.activeCollectionId
+  )
+  const collectionBookmarks = useCollectionsStore(
+    (state) => state.collectionBookmarks
+  )
 
   // Get sorting preferences from settings store
   const sortBy = useSettingsStore((state) => state.display.sortBy)
@@ -41,6 +46,7 @@ export const useFilteredBookmarksOptimized = (): Bookmark[] => {
       contentTypeFilter,
       dateRangeFilter,
       quickFilters,
+      validationResults,
       activeCollectionId,
       collectionBookmarks,
       sortBy,
@@ -57,6 +63,7 @@ export const useFilteredBookmarksOptimized = (): Bookmark[] => {
     contentTypeFilter,
     dateRangeFilter,
     quickFilters,
+    validationResults,
     activeCollectionId,
     collectionBookmarks,
     sortBy,
