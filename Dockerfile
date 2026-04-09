@@ -10,8 +10,8 @@ RUN npm install -g npm@11.6.0
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies (npm install is more forgiving than npm ci across platforms)
-RUN npm install --no-audit --no-fund
+# Install dependencies (npm ci ensures reproducible builds from lockfile)
+RUN npm ci --no-audit --no-fund
 
 # Copy application files
 COPY . .
@@ -31,7 +31,7 @@ RUN npm install -g npm@11.6.0
 COPY package*.json ./
 
 # Install production dependencies only
-RUN npm install --no-audit --no-fund --omit=dev && \
+RUN npm ci --no-audit --no-fund --omit=dev && \
     npm cache clean --force
 
 # Copy built application from builder
