@@ -12,7 +12,17 @@ const VIEWS_STORAGE_KEY = 'bookmarkhub_views'
 function readViewsFromStorage(): View[] {
   try {
     const raw = localStorage.getItem(VIEWS_STORAGE_KEY)
-    if (raw) return JSON.parse(raw)
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      // Defensive: migration may have written MigrationResult object instead of View[]
+      if (Array.isArray(parsed)) return parsed
+      if (parsed && typeof parsed === 'object' && Array.isArray(parsed.views)) {
+        // Repair: rewrite as plain array so future reads don't hit this path
+        writeViewsToStorage(parsed.views)
+        return parsed.views
+      }
+      logger.warn('Unexpected views data in localStorage, resetting')
+    }
   } catch (error) {
     logger.warn('Failed to read views from localStorage', error)
   }
