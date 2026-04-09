@@ -84,38 +84,43 @@ describe('bookmarkValidationService', () => {
 
     describe('Successful Validation', () => {
       it('should validate accessible URLs', async () => {
-        vi.mocked(fetch).mockResolvedValueOnce(new Response())
+        vi.mocked(fetch).mockResolvedValueOnce(
+          new Response(null, { status: 200 })
+        )
 
         const result = await validateUrl('https://example.com')
 
         expect(result.isValid).toBe(true)
         expect(result.status).toBe(200)
-        expect(fetch).toHaveBeenCalledWith('https://example.com', {
-          method: 'HEAD',
-          signal: expect.any(AbortSignal),
-          mode: 'no-cors',
-        })
-      })
-
-      it('should use HEAD request by default', async () => {
-        vi.mocked(fetch).mockResolvedValueOnce(new Response())
-
-        await validateUrl('https://example.com')
-
         expect(fetch).toHaveBeenCalledWith(
-          'https://example.com',
+          expect.stringContaining('corsproxy.io'),
           expect.objectContaining({ method: 'HEAD' })
         )
       })
 
-      it('should use no-cors mode', async () => {
-        vi.mocked(fetch).mockResolvedValueOnce(new Response())
+      it('should use HEAD request by default', async () => {
+        vi.mocked(fetch).mockResolvedValueOnce(
+          new Response(null, { status: 200 })
+        )
 
         await validateUrl('https://example.com')
 
         expect(fetch).toHaveBeenCalledWith(
-          'https://example.com',
-          expect.objectContaining({ mode: 'no-cors' })
+          expect.stringContaining('corsproxy.io'),
+          expect.objectContaining({ method: 'HEAD' })
+        )
+      })
+
+      it('should route requests through CORS proxy', async () => {
+        vi.mocked(fetch).mockResolvedValueOnce(
+          new Response(null, { status: 200 })
+        )
+
+        await validateUrl('https://example.com')
+
+        expect(fetch).toHaveBeenCalledWith(
+          expect.stringContaining(encodeURIComponent('https://example.com')),
+          expect.anything()
         )
       })
     })
@@ -124,22 +129,22 @@ describe('bookmarkValidationService', () => {
       it('should fallback to GET if HEAD fails', async () => {
         vi.mocked(fetch)
           .mockRejectedValueOnce(new Error('HEAD not supported'))
-          .mockResolvedValueOnce(new Response())
+          .mockResolvedValueOnce(new Response(null, { status: 200 }))
 
         const result = await validateUrl('https://example.com')
 
         expect(result.isValid).toBe(true)
         expect(fetch).toHaveBeenCalledTimes(2)
-        expect(fetch).toHaveBeenNthCalledWith(1, 'https://example.com', {
-          method: 'HEAD',
-          signal: expect.any(AbortSignal),
-          mode: 'no-cors',
-        })
-        expect(fetch).toHaveBeenNthCalledWith(2, 'https://example.com', {
-          method: 'GET',
-          signal: expect.any(AbortSignal),
-          mode: 'no-cors',
-        })
+        expect(fetch).toHaveBeenNthCalledWith(
+          1,
+          expect.stringContaining('corsproxy.io'),
+          expect.objectContaining({ method: 'HEAD' })
+        )
+        expect(fetch).toHaveBeenNthCalledWith(
+          2,
+          expect.stringContaining('corsproxy.io'),
+          expect.objectContaining({ method: 'GET' })
+        )
       })
 
       it('should return error if both HEAD and GET fail', async () => {
@@ -152,6 +157,29 @@ describe('bookmarkValidationService', () => {
         expect(result.isValid).toBe(false)
         expect(result.error).toBe('GET failed')
         expect(fetch).toHaveBeenCalledTimes(2)
+      })
+
+      it('should detect HTTP error responses', async () => {
+        vi.mocked(fetch).mockResolvedValueOnce(
+          new Response(null, { status: 404 })
+        )
+
+        const result = await validateUrl('https://example.com/gone')
+
+        expect(result.isValid).toBe(false)
+        expect(result.status).toBe(404)
+        expect(result.error).toBe('HTTP 404')
+      })
+
+      it('should treat 500 as invalid', async () => {
+        vi.mocked(fetch).mockResolvedValueOnce(
+          new Response(null, { status: 500 })
+        )
+
+        const result = await validateUrl('https://example.com/error')
+
+        expect(result.isValid).toBe(false)
+        expect(result.status).toBe(500)
       })
     })
 
@@ -168,7 +196,9 @@ describe('bookmarkValidationService', () => {
             new Promise((_, reject) => {
               // Simulate the abort signal timing out
               if (options?.signal) {
-                options.signal.addEventListener('abort', () => reject(abortError))
+                options.signal.addEventListener('abort', () =>
+                  reject(abortError)
+                )
               }
               // Never resolve - let the timeout trigger
             })
@@ -185,7 +215,9 @@ describe('bookmarkValidationService', () => {
 
       it('should clear timeout on successful request', async () => {
         const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout')
-        vi.mocked(fetch).mockResolvedValueOnce(new Response())
+        vi.mocked(fetch).mockResolvedValueOnce(
+          new Response(null, { status: 200 })
+        )
 
         await validateUrl('https://example.com')
 
@@ -249,7 +281,9 @@ describe('bookmarkValidationService', () => {
     })
 
     it('should validate a bookmark successfully', async () => {
-      vi.mocked(fetch).mockResolvedValueOnce(new Response())
+      vi.mocked(fetch).mockResolvedValueOnce(
+        new Response(null, { status: 200 })
+      )
       const bookmark = createMockBookmark(1, 'https://example.com')
 
       const result = await validateBookmark(bookmark)
@@ -274,7 +308,9 @@ describe('bookmarkValidationService', () => {
     })
 
     it('should include timestamp in validation result', async () => {
-      vi.mocked(fetch).mockResolvedValueOnce(new Response())
+      vi.mocked(fetch).mockResolvedValueOnce(
+        new Response(null, { status: 200 })
+      )
       const bookmark = createMockBookmark(3, 'https://example.com')
       const now = new Date('2024-01-15T10:00:00Z')
       vi.setSystemTime(now)
@@ -321,7 +357,7 @@ describe('bookmarkValidationService', () => {
     }
 
     it('should validate multiple bookmarks', async () => {
-      vi.mocked(fetch).mockResolvedValue(new Response())
+      vi.mocked(fetch).mockResolvedValue(new Response(null, { status: 200 }))
       const bookmarks = createMockBookmarks(3)
 
       const results = await validateBookmarks(bookmarks)
@@ -333,7 +369,7 @@ describe('bookmarkValidationService', () => {
     })
 
     it('should process bookmarks in batches with default concurrency', async () => {
-      vi.mocked(fetch).mockResolvedValue(new Response())
+      vi.mocked(fetch).mockResolvedValue(new Response(null, { status: 200 }))
       const bookmarks = createMockBookmarks(12)
 
       await validateBookmarks(bookmarks)
@@ -344,7 +380,7 @@ describe('bookmarkValidationService', () => {
     })
 
     it('should respect custom concurrency limit', async () => {
-      vi.mocked(fetch).mockResolvedValue(new Response())
+      vi.mocked(fetch).mockResolvedValue(new Response(null, { status: 200 }))
       const bookmarks = createMockBookmarks(10)
 
       await validateBookmarks(bookmarks, undefined, 2)
@@ -354,7 +390,7 @@ describe('bookmarkValidationService', () => {
     })
 
     it('should call onProgress callback', async () => {
-      vi.mocked(fetch).mockResolvedValue(new Response())
+      vi.mocked(fetch).mockResolvedValue(new Response(null, { status: 200 }))
       const bookmarks = createMockBookmarks(7)
       const onProgress = vi.fn()
 
@@ -368,14 +404,11 @@ describe('bookmarkValidationService', () => {
     })
 
     it('should handle mix of valid and invalid bookmarks', async () => {
-      // Mock fetch to return different results based on URL
       vi.mocked(fetch).mockImplementation((url: any) => {
-        if (url.includes('example2.com')) {
-          // Second bookmark fails both HEAD and GET
-          return Promise.reject(new Error('Failed'))
+        if (typeof url === 'string' && url.includes('example2.com')) {
+          return Promise.resolve(new Response(null, { status: 404 }))
         }
-        // Other bookmarks succeed
-        return Promise.resolve(new Response())
+        return Promise.resolve(new Response(null, { status: 200 }))
       })
 
       const bookmarks = createMockBookmarks(3)
@@ -396,7 +429,7 @@ describe('bookmarkValidationService', () => {
     })
 
     it('should handle single bookmark', async () => {
-      vi.mocked(fetch).mockResolvedValue(new Response())
+      vi.mocked(fetch).mockResolvedValue(new Response(null, { status: 200 }))
       const bookmarks = createMockBookmarks(1)
 
       const results = await validateBookmarks(bookmarks)
@@ -736,10 +769,7 @@ describe('bookmarkValidationService', () => {
       const consoleErrorSpy = vi
         .spyOn(console, 'error')
         .mockImplementation(() => {})
-      localStorageMock.setItem(
-        'x-bookmark-validation-results',
-        'invalid json'
-      )
+      localStorageMock.setItem('x-bookmark-validation-results', 'invalid json')
 
       const loaded = loadCachedValidationResults()
 
@@ -772,9 +802,11 @@ describe('bookmarkValidationService', () => {
       const consoleErrorSpy = vi
         .spyOn(console, 'error')
         .mockImplementation(() => {})
-      const setItemSpy = vi.spyOn(localStorageMock, 'setItem').mockImplementation(() => {
-        throw new Error('Storage full')
-      })
+      const setItemSpy = vi
+        .spyOn(localStorageMock, 'setItem')
+        .mockImplementation(() => {
+          throw new Error('Storage full')
+        })
 
       const results: ValidationResult[] = [
         {

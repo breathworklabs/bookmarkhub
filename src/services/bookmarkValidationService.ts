@@ -4,6 +4,7 @@
  */
 
 import type { Bookmark } from '@/types/bookmark'
+import { CORS_PROXY_URL } from '@/constants/app'
 import { logger } from '@/lib/logger'
 
 export interface ValidationResult {
@@ -25,16 +26,13 @@ export interface ValidationSummary {
 
 /**
  * Check if a URL is still accessible
- * Uses HEAD request for efficiency
- *
- * Note: X/Twitter URLs cannot be validated from client-side due to CORS and anti-bot protection.
- * These URLs will be marked as valid by default to avoid 403 errors.
+ * Routes through CORS proxy to read actual HTTP status codes.
+ * X/Twitter URLs are skipped (CORS + anti-bot makes client-side validation unreliable).
  */
 export const validateUrl = async (
   url: string
 ): Promise<{ isValid: boolean; status?: number; error?: string }> => {
   try {
-    // Skip validation for X/Twitter URLs (they block client-side requests)
     if (url.includes('x.com') || url.includes('twitter.com')) {
       return {
         isValid: true,
@@ -43,51 +41,53 @@ export const validateUrl = async (
       }
     }
 
-    // Use a CORS proxy for validation to avoid CORS issues
-    // In production, this should be replaced with a server-side validation
+    const proxiedUrl = `${CORS_PROXY_URL}${encodeURIComponent(url)}`
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+    const timeoutId = setTimeout(() => controller.abort(), 10000)
 
     try {
-      await fetch(url, {
+      const response = await fetch(proxiedUrl, {
         method: 'HEAD',
         signal: controller.signal,
-        mode: 'no-cors', // This won't give us status, but will detect if URL is blocked
       })
 
       clearTimeout(timeoutId)
 
-      // With no-cors mode, we can't read the status, but if it doesn't throw, it likely works
-      // For better validation, implement a server-side proxy
+      if (response.ok) {
+        return { isValid: true, status: response.status }
+      }
+
       return {
-        isValid: true,
-        status: 200, // Assume success if no error
+        isValid: false,
+        status: response.status,
+        error: `HTTP ${response.status}`,
       }
     } catch (fetchError) {
       clearTimeout(timeoutId)
 
       if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-        return {
-          isValid: false,
-          error: 'Request timeout',
-        }
+        return { isValid: false, error: 'Request timeout' }
       }
 
-      // Try a GET request as fallback (some servers don't support HEAD)
       try {
         const getController = new AbortController()
         const getTimeoutId = setTimeout(() => getController.abort(), 10000)
 
-        await fetch(url, {
+        const response = await fetch(proxiedUrl, {
           method: 'GET',
           signal: getController.signal,
-          mode: 'no-cors',
         })
 
         clearTimeout(getTimeoutId)
+
+        if (response.ok) {
+          return { isValid: true, status: response.status }
+        }
+
         return {
-          isValid: true,
-          status: 200,
+          isValid: false,
+          status: response.status,
+          error: `HTTP ${response.status}`,
         }
       } catch (getError) {
         return {
