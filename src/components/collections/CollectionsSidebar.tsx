@@ -20,7 +20,7 @@ import {
   LuFolderOpen,
 } from 'react-icons/lu'
 import { useDrop } from 'react-dnd'
-import { useCollectionsStore } from '@/store/collectionsStore'
+import { useCollectionsStore, type Collection } from '@/store/collectionsStore'
 import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useEffect } from 'react'
 import { ItemTypes, type DragItem, type DropResult } from '@/types/dnd'
@@ -36,7 +36,16 @@ const DroppableCollectionItem = ({
   getBookmarkCount,
   handleCollectionClick,
   isUserCollection = false,
-}: any) => {
+}: {
+  collection: Collection
+  isActive: (collectionId: string) => boolean
+  getCollectionIcon: (collection: Collection) => React.ReactNode
+  getCollectionColor: (collection: Collection) => string
+  getBookmarkCount: (collectionId: string) => number
+  handleCollectionClick: (collectionId: string) => void
+  isUserCollection?: boolean
+}) => {
+  const iconButtonStyles = useIconButtonStyles()
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: ItemTypes.BOOKMARK,
@@ -140,8 +149,7 @@ const DroppableCollectionItem = ({
           </Badge>
           {isUserCollection && (
             <IconButton
-              // eslint-disable-next-line react-hooks/rules-of-hooks -- TODO: refactor conditional hook
-              {...useIconButtonStyles()}
+              {...iconButtonStyles}
               size="xs"
               variant="ghost"
               aria-label="Collection options"
@@ -171,24 +179,25 @@ const DroppableCollectionItem = ({
 }
 
 const CollectionsSidebar = () => {
-  const {
-    collections,
-    activeCollectionId,
-    collectionBookmarks,
-    isLoading,
-    error,
-    loadCollections,
-    setActiveCollection,
-    setCreatingCollection,
-  } = useCollectionsStore()
+  const collections = useCollectionsStore((s) => s.collections)
+  const activeCollectionId = useCollectionsStore((s) => s.activeCollectionId)
+  const collectionBookmarks = useCollectionsStore((s) => s.collectionBookmarks)
+  const isLoading = useCollectionsStore((s) => s.isLoading)
+  const error = useCollectionsStore((s) => s.error)
+  const loadCollections = useCollectionsStore((s) => s.loadCollections)
+  const setActiveCollection = useCollectionsStore((s) => s.setActiveCollection)
+  const setCreatingCollection = useCollectionsStore(
+    (s) => s.setCreatingCollection
+  )
 
-  const { bookmarks } = useBookmarkStore()
+  const bookmarks = useBookmarkStore((s) => s.bookmarks)
+  const headerButtonStyles = useIconButtonStyles()
 
   useEffect(() => {
     loadCollections()
   }, [loadCollections])
 
-  const getCollectionIcon = (collection: any) => {
+  const getCollectionIcon = (collection: Collection) => {
     if (collection.isSmartCollection) {
       switch (collection.id) {
         case 'starred':
@@ -204,7 +213,7 @@ const CollectionsSidebar = () => {
     return <LuFolder size={16} />
   }
 
-  const getCollectionColor = (collection: any) => {
+  const getCollectionColor = (collection: Collection) => {
     if (collection.isSmartCollection) {
       switch (collection.id) {
         case 'starred':
@@ -284,8 +293,7 @@ const CollectionsSidebar = () => {
               Collections
             </Text>
             <IconButton
-              // eslint-disable-next-line react-hooks/rules-of-hooks -- TODO: move hook call before early returns
-              {...useIconButtonStyles()}
+              {...headerButtonStyles}
               size="sm"
               variant="ghost"
               aria-label="Create collection"

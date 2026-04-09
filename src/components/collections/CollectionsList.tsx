@@ -7,16 +7,16 @@ import { useCollectionNavigation } from '@/hooks/useCollectionNavigation'
 import { logger } from '@/lib/logger'
 
 const CollectionsList = memo(() => {
-  const {
-    collections,
-    activeCollectionId,
-    collectionBookmarks,
-    expandedCollections,
-    isLoading,
-    error,
-    toggleCollectionExpansion,
-    createCollection,
-  } = useCollectionsStore()
+  const collections = useCollectionsStore((s) => s.collections)
+  const activeCollectionId = useCollectionsStore((s) => s.activeCollectionId)
+  const collectionBookmarks = useCollectionsStore((s) => s.collectionBookmarks)
+  const expandedCollections = useCollectionsStore((s) => s.expandedCollections)
+  const isLoading = useCollectionsStore((s) => s.isLoading)
+  const error = useCollectionsStore((s) => s.error)
+  const toggleCollectionExpansion = useCollectionsStore(
+    (s) => s.toggleCollectionExpansion
+  )
+  const createCollection = useCollectionsStore((s) => s.createCollection)
 
   const handleCollectionClick = useCollectionNavigation()
   const { showCreateCollection } = useModal()

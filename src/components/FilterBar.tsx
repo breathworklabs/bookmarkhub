@@ -6,7 +6,44 @@ import { useFilterTabStyles } from '@/hooks/useStyles'
 import { componentStyles } from '@/styles/components'
 
 // Memoized filter tabs array
-const FILTER_TABS = ['All', 'Today', 'This Week', 'This Month', 'Threads', 'Media']
+const FILTER_TABS = [
+  'All',
+  'Today',
+  'This Week',
+  'This Month',
+  'Threads',
+  'Media',
+]
+
+interface FilterTabButtonProps {
+  label: string
+  index: number
+  isActive: boolean
+  onClick: (index: number) => void
+}
+
+const FilterTabButton = memo(
+  ({ label, index, isActive, onClick }: FilterTabButtonProps) => {
+    const filterTabStyles = useFilterTabStyles(isActive)
+
+    return (
+      <Button
+        {...filterTabStyles}
+        size="sm"
+        px={4}
+        py={2}
+        borderRadius="20px"
+        fontSize="14px"
+        onClick={() => onClick(index)}
+        flexShrink={0}
+      >
+        {label}
+      </Button>
+    )
+  }
+)
+
+FilterTabButton.displayName = 'FilterTabButton'
 
 const FilterBar = memo(() => {
   const { activeTab, setActiveTab, setDateRangeFilter } = useBookmarkSelectors()
@@ -56,26 +93,15 @@ const FilterBar = memo(() => {
         {/* Filter Tabs */}
         <HStack gap={3} flexShrink={0}>
           <For each={FILTER_TABS}>
-            {(label, index) => {
-              const isActive = activeTab === index
-              // eslint-disable-next-line react-hooks/rules-of-hooks -- TODO: refactor to separate component
-              const filterTabStyles = useFilterTabStyles(isActive)
-              return (
-                <Button
-                  key={label}
-                  {...filterTabStyles}
-                  size="sm"
-                  px={4}
-                  py={2}
-                  borderRadius="20px"
-                  fontSize="14px"
-                  onClick={() => handleTabClick(index)}
-                  flexShrink={0}
-                >
-                  {label}
-                </Button>
-              )
-            }}
+            {(label, index) => (
+              <FilterTabButton
+                key={label}
+                label={label}
+                index={index}
+                isActive={activeTab === index}
+                onClick={handleTabClick}
+              />
+            )}
           </For>
         </HStack>
       </HStack>

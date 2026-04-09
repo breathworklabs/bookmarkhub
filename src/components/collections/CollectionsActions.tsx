@@ -21,14 +21,12 @@ import { logger } from '@/lib/logger'
 import { SharedCollectionCard } from './SharedCollectionCard'
 
 const CollectionsActions = memo(() => {
-  const {
-    activeCollectionId,
-    collections,
-    createCollection,
-    deleteCollection,
-    updateCollection,
-    setActiveCollection,
-  } = useCollectionsStore()
+  const activeCollectionId = useCollectionsStore((s) => s.activeCollectionId)
+  const collections = useCollectionsStore((s) => s.collections)
+  const createCollection = useCollectionsStore((s) => s.createCollection)
+  const deleteCollection = useCollectionsStore((s) => s.deleteCollection)
+  const updateCollection = useCollectionsStore((s) => s.updateCollection)
+  const setActiveCollection = useCollectionsStore((s) => s.setActiveCollection)
 
   // Bookmark selection state for bulk actions
   const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
@@ -46,8 +44,12 @@ const CollectionsActions = memo(() => {
   const [showTagInput, setShowTagInput] = useState(false)
   const [selectedBookmarkTags, setSelectedBookmarkTags] = useState<string[]>([])
 
-  const { showCreateCollection, showDeleteConfirmation, showEditCollection, showShareCollection } =
-    useModal()
+  const {
+    showCreateCollection,
+    showDeleteConfirmation,
+    showEditCollection,
+    showShareCollection,
+  } = useModal()
   const isMobile = useIsMobile()
 
   // Get the currently active collection
