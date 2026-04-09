@@ -22,10 +22,11 @@ import * as shareApi from '@/lib/shareApi'
 import type { SharedCollection } from '@/types/share'
 import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useCollectionsStore } from '@/store/collectionsStore'
+import { sanitizeBookmarkContent } from '@/utils/sanitization'
 
 function decodeHtml(html: string): string {
   const txt = document.createElement('textarea')
-  txt.innerHTML = html
+  txt.innerHTML = sanitizeBookmarkContent(html)
   return txt.value
 }
 
@@ -38,7 +39,9 @@ const SharedCollectionPage = () => {
   const [isImporting, setIsImporting] = useState(false)
 
   const addBookmark = useBookmarkStore((state) => state.addBookmark)
-  const createCollection = useCollectionsStore((state) => state.createCollection)
+  const createCollection = useCollectionsStore(
+    (state) => state.createCollection
+  )
 
   useEffect(() => {
     if (!shareId) {
@@ -53,7 +56,10 @@ const SharedCollectionPage = () => {
         setCollection(data)
       } catch (err) {
         if (err instanceof Error) {
-          if (err.message.includes('not found') || err.message.includes('expired')) {
+          if (
+            err.message.includes('not found') ||
+            err.message.includes('expired')
+          ) {
             setError('This shared collection has expired or been removed.')
           } else if (err.message.includes('Access limit')) {
             setError('This shared collection has reached its access limit.')
@@ -177,7 +183,11 @@ const SharedCollectionPage = () => {
             <LuFolder size={24} color="var(--color-text-tertiary)" />
           </Box>
           <VStack gap={1}>
-            <Text color="var(--color-text-primary)" fontSize="md" fontWeight="600">
+            <Text
+              color="var(--color-text-primary)"
+              fontSize="md"
+              fontWeight="600"
+            >
               Collection not found
             </Text>
             <Text color="var(--color-text-tertiary)" fontSize="sm">
@@ -201,7 +211,6 @@ const SharedCollectionPage = () => {
 
   return (
     <Box minH="100vh" w="100vw" bg="var(--color-bg-primary)">
-
       {/* Top nav with collection info */}
       <Flex
         bg="var(--color-bg-secondary)"
@@ -220,8 +229,16 @@ const SharedCollectionPage = () => {
           onClick={() => navigate('/')}
           _hover={{ opacity: 0.8 }}
         >
-          <img src="/logo.png" alt="BookmarkHub" style={{ width: 28, height: 28 }} />
-          <Text fontWeight="700" fontSize="md" color="var(--color-text-primary)">
+          <img
+            src="/logo.png"
+            alt="BookmarkHub"
+            style={{ width: 28, height: 28 }}
+          />
+          <Text
+            fontWeight="700"
+            fontSize="md"
+            color="var(--color-text-primary)"
+          >
             BookmarkHub
           </Text>
         </HStack>
@@ -245,12 +262,17 @@ const SharedCollectionPage = () => {
             fontSize="sm"
             fontWeight="600"
             color="var(--color-text-primary)"
-            css={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+            css={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
           >
             {collection.name}
           </Text>
           <Text fontSize="xs" color="var(--color-text-tertiary)" flexShrink={0}>
-            {collection.bookmarks.length} bookmark{collection.bookmarks.length !== 1 ? 's' : ''}
+            {collection.bookmarks.length} bookmark
+            {collection.bookmarks.length !== 1 ? 's' : ''}
           </Text>
         </HStack>
 
@@ -281,289 +303,349 @@ const SharedCollectionPage = () => {
             alignItems: 'stretch',
           }}
         >
-            {collection.bookmarks.map((bookmark, index) => {
-              const domain = (() => {
-                try { return new URL(bookmark.url).hostname.replace('www.', '') }
-                catch { return bookmark.url }
-              })()
-              const initial = (bookmark.author || domain).charAt(0).toUpperCase()
+          {collection.bookmarks.map((bookmark, index) => {
+            const domain = (() => {
+              try {
+                return new URL(bookmark.url).hostname.replace('www.', '')
+              } catch {
+                return bookmark.url
+              }
+            })()
+            const initial = (bookmark.author || domain).charAt(0).toUpperCase()
 
-              return (
-                <Box
-                  key={`${bookmark.url}-${index}`}
-                  p={4}
-                  borderRadius="16px"
-                  bg="var(--color-bg-tertiary)"
-                  borderWidth="1px"
-                  borderColor="var(--color-border)"
-                  transition="all 0.2s ease"
-                  _hover={{
-                    borderColor: 'var(--color-blue)',
-                    transform: 'translateY(-1px)',
-                    boxShadow: '0 8px 20px var(--color-card-shadow)',
-                    bg: 'var(--color-bg-secondary)',
-                  }}
-                  display="flex"
-                  flexDirection="column"
-                  gap={3}
-                  overflow="hidden"
-                  css={{ '&:hover [data-actions]': { opacity: 1 } }}
-                >
-                  {/* Card header */}
-                  <Flex justifyContent="space-between" alignItems="flex-start">
-                    <HStack gap={3} flex={1} minW={0}>
-                      {/* Avatar */}
+            return (
+              <Box
+                key={`${bookmark.url}-${index}`}
+                p={4}
+                borderRadius="16px"
+                bg="var(--color-bg-tertiary)"
+                borderWidth="1px"
+                borderColor="var(--color-border)"
+                transition="all 0.2s ease"
+                _hover={{
+                  borderColor: 'var(--color-blue)',
+                  transform: 'translateY(-1px)',
+                  boxShadow: '0 8px 20px var(--color-card-shadow)',
+                  bg: 'var(--color-bg-secondary)',
+                }}
+                display="flex"
+                flexDirection="column"
+                gap={3}
+                overflow="hidden"
+                css={{ '&:hover [data-actions]': { opacity: 1 } }}
+              >
+                {/* Card header */}
+                <Flex justifyContent="space-between" alignItems="flex-start">
+                  <HStack gap={3} flex={1} minW={0}>
+                    {/* Avatar */}
+                    <Box
+                      w="40px"
+                      h="40px"
+                      borderRadius="full"
+                      overflow="hidden"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      fontSize="sm"
+                      fontWeight="bold"
+                      color="white"
+                      flexShrink={0}
+                      position="relative"
+                      style={{ background: 'var(--gradient-avatar)' }}
+                    >
+                      <img
+                        src={
+                          bookmark.profileImage ||
+                          `https://ui-avatars.com/api/?name=${encodeURIComponent(bookmark.author || domain)}&background=random&color=fff&size=80`
+                        }
+                        alt=""
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                        onError={(e) => {
+                          ;(e.currentTarget as HTMLImageElement).style.display =
+                            'none'
+                        }}
+                      />
+                      <Box position="relative" zIndex={-1}>
+                        {initial}
+                      </Box>
+                    </Box>
+
+                    {/* Author + domain */}
+                    <VStack alignItems="flex-start" gap={0} flex={1} minW={0}>
+                      <Text
+                        fontWeight="600"
+                        fontSize="sm"
+                        color="var(--color-text-primary)"
+                      >
+                        {bookmark.author || domain}
+                      </Text>
+                      <Text fontSize="xs" color="var(--color-text-tertiary)">
+                        {domain}
+                      </Text>
+                    </VStack>
+                  </HStack>
+
+                  {/* Icon actions */}
+                  <HStack
+                    gap={1}
+                    flexShrink={0}
+                    data-actions
+                    css={{ opacity: 0, transition: 'opacity 0.15s' }}
+                  >
+                    <IconButton
+                      aria-label="Copy link"
+                      title="Copy link"
+                      size="sm"
+                      variant="ghost"
+                      style={{ color: 'var(--color-text-tertiary)' }}
+                      borderRadius="full"
+                      w="32px"
+                      h="32px"
+                      minW="32px"
+                      border="1px solid var(--color-border)"
+                      _hover={{
+                        bg: 'var(--color-border)',
+                        color: 'var(--color-text-primary)',
+                        borderColor: 'var(--color-border-hover)',
+                      }}
+                      onClick={() => handleCopyLink(bookmark.url)}
+                    >
+                      <LuCopy size={14} />
+                    </IconButton>
+                    <IconButton
+                      aria-label="Open link"
+                      title="Open link"
+                      size="sm"
+                      variant="ghost"
+                      style={{ color: 'var(--color-text-tertiary)' }}
+                      borderRadius="full"
+                      w="32px"
+                      h="32px"
+                      minW="32px"
+                      border="1px solid var(--color-border)"
+                      _hover={{
+                        bg: 'var(--color-border)',
+                        color: 'var(--color-text-primary)',
+                        borderColor: 'var(--color-border-hover)',
+                      }}
+                      onClick={() =>
+                        window.open(
+                          bookmark.url,
+                          '_blank',
+                          'noopener,noreferrer'
+                        )
+                      }
+                    >
+                      <LuExternalLink size={14} />
+                    </IconButton>
+                  </HStack>
+                </Flex>
+
+                {/* Content */}
+                <Box flex={1}>
+                  <Box
+                    fontSize="sm"
+                    lineHeight="1.4"
+                    style={{ color: 'var(--color-text-primary)' }}
+                    whiteSpace="pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizeBookmarkContent(
+                        decodeHtml(
+                          bookmark.content ||
+                            bookmark.description ||
+                            bookmark.title
+                        )
+                      ),
+                    }}
+                    css={{
+                      overflowWrap: 'break-word',
+                      wordBreak: 'break-word',
+                      '& a': {
+                        color: 'var(--color-blue)',
+                        textDecoration: 'none',
+                      },
+                      '& a:hover': { textDecoration: 'underline' },
+                    }}
+                  />
+                </Box>
+
+                {/* Media */}
+                {bookmark.images && bookmark.images.length > 0 && (
+                  <Box
+                    borderRadius="12px"
+                    overflow="hidden"
+                    border="1px solid var(--color-border)"
+                    position="relative"
+                    cursor="pointer"
+                    onClick={() =>
+                      window.open(bookmark.url, '_blank', 'noopener,noreferrer')
+                    }
+                    _hover={{ filter: 'brightness(1.05)' }}
+                    transition="filter 0.2s"
+                  >
+                    {bookmark.images.length === 1 ? (
+                      <img
+                        src={bookmark.images[0]}
+                        alt=""
+                        style={{
+                          width: '100%',
+                          height: '150px',
+                          objectFit: 'cover',
+                          display: 'block',
+                        }}
+                      />
+                    ) : (
                       <Box
-                        w="40px"
-                        h="40px"
+                        display="grid"
+                        css={{
+                          gridTemplateColumns: 'repeat(2, 1fr)',
+                          gap: '2px',
+                        }}
+                      >
+                        {bookmark.images.slice(0, 4).map((img, i) => (
+                          <Box key={i} position="relative">
+                            <img
+                              src={img}
+                              alt=""
+                              style={{
+                                width: '100%',
+                                height:
+                                  bookmark.images!.length === 2
+                                    ? '150px'
+                                    : '100px',
+                                objectFit: 'cover',
+                                display: 'block',
+                              }}
+                            />
+                            {i === 3 && bookmark.images!.length > 4 && (
+                              <Box
+                                position="absolute"
+                                inset="0"
+                                bg="rgba(0,0,0,0.7)"
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                color="white"
+                                fontWeight="bold"
+                                fontSize="lg"
+                              >
+                                +{bookmark.images!.length - 4}
+                              </Box>
+                            )}
+                          </Box>
+                        ))}
+                      </Box>
+                    )}
+                    {bookmark.hasVideo && (
+                      <Box
+                        position="absolute"
+                        top="50%"
+                        left="50%"
+                        transform="translate(-50%, -50%)"
+                        bg="rgba(0,0,0,0.75)"
                         borderRadius="full"
-                        overflow="hidden"
+                        w="52px"
+                        h="52px"
                         display="flex"
                         alignItems="center"
                         justifyContent="center"
-                        fontSize="sm"
-                        fontWeight="bold"
                         color="white"
-                        flexShrink={0}
-                        position="relative"
-                        style={{ background: 'var(--gradient-avatar)' }}
+                        border="2px solid rgba(255,255,255,0.8)"
                       >
-                        <img
-                          src={bookmark.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(bookmark.author || domain)}&background=random&color=fff&size=80`}
-                          alt=""
-                          style={{
-                            position: 'absolute',
-                            inset: 0,
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                          }}
-                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
-                        />
-                        <Box position="relative" zIndex={-1}>{initial}</Box>
+                        <LuExternalLink size={20} />
                       </Box>
-
-                      {/* Author + domain */}
-                      <VStack alignItems="flex-start" gap={0} flex={1} minW={0}>
-                        <Text
-                          fontWeight="600"
-                          fontSize="sm"
-                          color="var(--color-text-primary)"
-                        >
-                          {bookmark.author || domain}
-                        </Text>
-                        <Text fontSize="xs" color="var(--color-text-tertiary)">
-                          {domain}
-                        </Text>
-                      </VStack>
-                    </HStack>
-
-                    {/* Icon actions */}
-                    <HStack gap={1} flexShrink={0} data-actions css={{ opacity: 0, transition: 'opacity 0.15s' }}>
-                      <IconButton
-                        aria-label="Copy link"
-                        title="Copy link"
-                        size="sm"
-                        variant="ghost"
-                        style={{ color: 'var(--color-text-tertiary)' }}
-                        borderRadius="full"
-                        w="32px"
-                        h="32px"
-                        minW="32px"
-                        border="1px solid var(--color-border)"
-                        _hover={{
-                          bg: 'var(--color-border)',
-                          color: 'var(--color-text-primary)',
-                          borderColor: 'var(--color-border-hover)',
-                        }}
-                        onClick={() => handleCopyLink(bookmark.url)}
-                      >
-                        <LuCopy size={14} />
-                      </IconButton>
-                      <IconButton
-                        aria-label="Open link"
-                        title="Open link"
-                        size="sm"
-                        variant="ghost"
-                        style={{ color: 'var(--color-text-tertiary)' }}
-                        borderRadius="full"
-                        w="32px"
-                        h="32px"
-                        minW="32px"
-                        border="1px solid var(--color-border)"
-                        _hover={{
-                          bg: 'var(--color-border)',
-                          color: 'var(--color-text-primary)',
-                          borderColor: 'var(--color-border-hover)',
-                        }}
-                        onClick={() => window.open(bookmark.url, '_blank', 'noopener,noreferrer')}
-                      >
-                        <LuExternalLink size={14} />
-                      </IconButton>
-                    </HStack>
-                  </Flex>
-
-                  {/* Content */}
-                  <Box flex={1}>
-                    <Box
-                      fontSize="sm"
-                      lineHeight="1.4"
-                      style={{ color: 'var(--color-text-primary)' }}
-                      whiteSpace="pre-line"
-                      dangerouslySetInnerHTML={{
-                        __html: decodeHtml(bookmark.content || bookmark.description || bookmark.title),
-                      }}
-                      css={{
-                        overflowWrap: 'break-word',
-                        wordBreak: 'break-word',
-                        '& a': { color: 'var(--color-blue)', textDecoration: 'none' },
-                        '& a:hover': { textDecoration: 'underline' },
-                      }}
-                    />
+                    )}
                   </Box>
+                )}
 
-                  {/* Media */}
-                  {(bookmark.images && bookmark.images.length > 0) && (
-                    <Box
-                      borderRadius="12px"
-                      overflow="hidden"
-                      border="1px solid var(--color-border)"
-                      position="relative"
-                      cursor="pointer"
-                      onClick={() => window.open(bookmark.url, '_blank', 'noopener,noreferrer')}
-                      _hover={{ filter: 'brightness(1.05)' }}
-                      transition="filter 0.2s"
-                    >
-                      {bookmark.images.length === 1 ? (
-                        <img
-                          src={bookmark.images[0]}
-                          alt=""
-                          style={{ width: '100%', height: '150px', objectFit: 'cover', display: 'block' }}
-                        />
-                      ) : (
-                        <Box
-                          display="grid"
-                          css={{
-                            gridTemplateColumns: 'repeat(2, 1fr)',
-                            gap: '2px',
-                          }}
+                {/* Tags */}
+                {bookmark.tags && bookmark.tags.length > 0 && (
+                  <HStack gap={1} flexWrap="wrap">
+                    <LuTag size={11} color="var(--color-text-tertiary)" />
+                    {bookmark.tags.slice(0, 4).map((tag) => (
+                      <Box
+                        key={tag}
+                        px={1.5}
+                        py={0.5}
+                        borderRadius="4px"
+                        bg="var(--color-bg-secondary)"
+                        border="1px solid var(--color-border)"
+                      >
+                        <Text
+                          fontSize="10px"
+                          color="var(--color-text-tertiary)"
                         >
-                          {bookmark.images.slice(0, 4).map((img, i) => (
-                            <Box key={i} position="relative">
-                              <img
-                                src={img}
-                                alt=""
-                                style={{
-                                  width: '100%',
-                                  height: bookmark.images!.length === 2 ? '150px' : '100px',
-                                  objectFit: 'cover',
-                                  display: 'block',
-                                }}
-                              />
-                              {i === 3 && bookmark.images!.length > 4 && (
-                                <Box
-                                  position="absolute"
-                                  inset="0"
-                                  bg="rgba(0,0,0,0.7)"
-                                  display="flex"
-                                  alignItems="center"
-                                  justifyContent="center"
-                                  color="white"
-                                  fontWeight="bold"
-                                  fontSize="lg"
-                                >
-                                  +{bookmark.images!.length - 4}
-                                </Box>
-                              )}
-                            </Box>
-                          ))}
-                        </Box>
-                      )}
-                      {bookmark.hasVideo && (
-                        <Box
-                          position="absolute"
-                          top="50%"
-                          left="50%"
-                          transform="translate(-50%, -50%)"
-                          bg="rgba(0,0,0,0.75)"
-                          borderRadius="full"
-                          w="52px"
-                          h="52px"
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
-                          color="white"
-                          border="2px solid rgba(255,255,255,0.8)"
-                        >
-                          <LuExternalLink size={20} />
-                        </Box>
-                      )}
-                    </Box>
-                  )}
-
-                  {/* Tags */}
-                  {bookmark.tags && bookmark.tags.length > 0 && (
-                    <HStack gap={1} flexWrap="wrap">
-                      <LuTag size={11} color="var(--color-text-tertiary)" />
-                      {bookmark.tags.slice(0, 4).map((tag) => (
-                        <Box
-                          key={tag}
-                          px={1.5}
-                          py={0.5}
-                          borderRadius="4px"
-                          bg="var(--color-bg-secondary)"
-                          border="1px solid var(--color-border)"
-                        >
-                          <Text fontSize="10px" color="var(--color-text-tertiary)">
-                            {tag}
-                          </Text>
-                        </Box>
-                      ))}
-                      {bookmark.tags.length > 4 && (
-                        <Text fontSize="10px" color="var(--color-text-tertiary)">
-                          +{bookmark.tags.length - 4}
+                          {tag}
                         </Text>
-                      )}
-                    </HStack>
-                  )}
-                </Box>
-              )
-            })}
-          </Box>
+                      </Box>
+                    ))}
+                    {bookmark.tags.length > 4 && (
+                      <Text fontSize="10px" color="var(--color-text-tertiary)">
+                        +{bookmark.tags.length - 4}
+                      </Text>
+                    )}
+                  </HStack>
+                )}
+              </Box>
+            )
+          })}
+        </Box>
 
-          {/* Footer */}
-          <Box mt={12} mb={6}>
-            <Flex
-              direction="column"
-              alignItems="center"
-              gap={3}
-              py={6}
-              borderRadius="12px"
-              bg="var(--color-bg-secondary)"
-              border="1px solid var(--color-border)"
-            >
-              <HStack gap={2}>
-                <img src="/logo.png" alt="BookmarkHub" style={{ width: 20, height: 20 }} />
-                <Text fontSize="sm" fontWeight="600" color="var(--color-text-primary)">
-                  BookmarkHub
-                </Text>
-              </HStack>
-              <Text fontSize="xs" color="var(--color-text-tertiary)" textAlign="center" px={4}>
-                The privacy-first bookmark manager for X/Twitter
-              </Text>
-              <Button
-                onClick={() => navigate('/')}
-                size="sm"
-                variant="outline"
-                borderColor="var(--color-border)"
-                color="var(--color-text-secondary)"
-                _hover={{ bg: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-hover)' }}
-                borderRadius="8px"
+        {/* Footer */}
+        <Box mt={12} mb={6}>
+          <Flex
+            direction="column"
+            alignItems="center"
+            gap={3}
+            py={6}
+            borderRadius="12px"
+            bg="var(--color-bg-secondary)"
+            border="1px solid var(--color-border)"
+          >
+            <HStack gap={2}>
+              <img
+                src="/logo.png"
+                alt="BookmarkHub"
+                style={{ width: 20, height: 20 }}
+              />
+              <Text
+                fontSize="sm"
+                fontWeight="600"
+                color="var(--color-text-primary)"
               >
-                Get Started
-              </Button>
-            </Flex>
-          </Box>
+                BookmarkHub
+              </Text>
+            </HStack>
+            <Text
+              fontSize="xs"
+              color="var(--color-text-tertiary)"
+              textAlign="center"
+              px={4}
+            >
+              The privacy-first bookmark manager for X/Twitter
+            </Text>
+            <Button
+              onClick={() => navigate('/')}
+              size="sm"
+              variant="outline"
+              borderColor="var(--color-border)"
+              color="var(--color-text-secondary)"
+              _hover={{
+                bg: 'var(--color-bg-tertiary)',
+                borderColor: 'var(--color-border-hover)',
+              }}
+              borderRadius="8px"
+            >
+              Get Started
+            </Button>
+          </Flex>
+        </Box>
       </Box>
     </Box>
   )
