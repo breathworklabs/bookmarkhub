@@ -23,12 +23,19 @@ import {
   LuMessageSquare,
   LuSparkles,
   LuScrollText,
+  LuBookmark,
+  LuStar,
+  LuClock,
+  LuArchive,
+  LuInbox,
 } from 'react-icons/lu'
-import { useMemo, useCallback, memo, useState } from 'react'
+import { useMemo, useCallback, memo, useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useCollectionsStore } from '@/store/collectionsStore'
 import { useSettingsStore } from '@/store/settingsStore'
+import { useViewStore } from '@/store/viewStore'
+import { SYSTEM_VIEWS } from '@/types/views'
 import { useModal } from './modals/ModalProvider'
 import { useIsMobile } from '@/hooks/useMobile'
 import CollectionsList from './collections/CollectionsList'
@@ -47,13 +54,17 @@ const useBookmarkCounts = () => {
   return useMemo(() => {
     const weekAgo = new Date()
     weekAgo.setDate(weekAgo.getDate() - 7)
-    const sharedCollectionsCount = collections.filter((c) => c.shareSettings).length
+    const sharedCollectionsCount = collections.filter(
+      (c) => c.shareSettings
+    ).length
 
     return {
       total: bookmarks.filter((b) => !b.is_deleted).length,
       starred: bookmarks.filter((b) => b.is_starred && !b.is_deleted).length,
       archived: bookmarks.filter((b) => b.is_archived && !b.is_deleted).length,
-      shared: bookmarks.filter((b) => b.is_shared && !b.is_deleted).length + sharedCollectionsCount,
+      shared:
+        bookmarks.filter((b) => b.is_shared && !b.is_deleted).length +
+        sharedCollectionsCount,
       deleted: bookmarks.filter((b) => b.is_deleted).length,
       recent: bookmarks.filter((b) => {
         const date = new Date(b.created_at)
@@ -98,6 +109,14 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
     (state) => state.setActiveCollection
   )
   const isMobile = useIsMobile()
+
+  const views = useViewStore((state) => state.views)
+  const activeViewId = useViewStore((state) => state.activeViewId)
+  const setActiveView = useViewStore((state) => state.setActiveView)
+
+  useEffect(() => {
+    useViewStore.getState().loadViews()
+  }, [])
 
   // Feedback menu state
   const [isFeedbackMenuOpen, setIsFeedbackMenuOpen] = useState(false)
@@ -241,6 +260,16 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
     return content
   }
 
+  const VIEW_ICONS: Record<string, React.ReactNode> = {
+    bookmark: <LuBookmark size={18} />,
+    star: <LuStar size={18} />,
+    clock: <LuClock size={18} />,
+    archive: <LuArchive size={18} />,
+    'trash-2': <LuTrash2 size={18} />,
+    inbox: <LuInbox size={18} />,
+    folder: <LuFolderPlus size={18} />,
+  }
+
   return (
     <Box
       {...componentStyles.container.sidebar}
@@ -293,6 +322,50 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
             active={isActive('All Bookmarks')}
           />
         </VStack>
+
+        {/* Views Section */}
+        {views.filter(
+          (v) => v.pinned && v.id !== SYSTEM_VIEWS.ALL && !isSidebarCollapsed
+        ).length > 0 && (
+          <VStack alignItems="stretch" gap={2}>
+            {!isSidebarCollapsed && (
+              <Box
+                borderTopWidth="1px"
+                style={{ borderColor: 'var(--color-border)' }}
+              >
+                <Box px={3} py={3}>
+                  <Text
+                    fontWeight="600"
+                    fontSize="11px"
+                    letterSpacing="0.8px"
+                    textTransform="uppercase"
+                    style={{ color: 'var(--color-text-tertiary)' }}
+                  >
+                    Views
+                  </Text>
+                </Box>
+              </Box>
+            )}
+            {views
+              .filter((v) => v.pinned && v.id !== SYSTEM_VIEWS.ALL)
+              .sort((a, b) => a.sortOrder - b.sortOrder)
+              .map((view) => (
+                <NavItem
+                  key={view.id}
+                  icon={VIEW_ICONS[view.icon] || <LuBookmark size={18} />}
+                  label={view.name}
+                  onClick={() => {
+                    setActiveView(view.id)
+                    navigateWithCleanup('/', onItemClick)
+                  }}
+                  active={
+                    activeViewId === view.id &&
+                    activeSidebarItem === 'All Bookmarks'
+                  }
+                />
+              ))}
+          </VStack>
+        )}
 
         {/* Collections Section - or Spacer when collapsed */}
         {!isSidebarCollapsed ? (
@@ -511,7 +584,9 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
             <NavItem
               icon={<LuSparkles size={18} />}
               label="Upcoming Features"
-              onClick={() => navigateWithCleanup('/upcoming-features', onItemClick)}
+              onClick={() =>
+                navigateWithCleanup('/upcoming-features', onItemClick)
+              }
               active={isActive('Upcoming Features')}
             />
 
