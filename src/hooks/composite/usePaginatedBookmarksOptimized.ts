@@ -3,6 +3,7 @@ import { type Bookmark } from '@/types/bookmark'
 import { filterBookmarksOptimized } from '@/utils/bookmarkFilteringOptimized'
 import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useCollectionsStore } from '@/store/collectionsStore'
+import { useViewStore } from '@/store/viewStore'
 
 export interface PaginatedBookmarksResult {
   bookmarks: Bookmark[]
@@ -13,12 +14,7 @@ export interface PaginatedBookmarksResult {
   currentPage: number
 }
 
-/**
- * Optimized hook for paginated bookmarks using single-pass algorithm
- * Subscribes to individual store values to avoid object recreation issues
- */
 export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
-  // Subscribe to individual values to avoid object recreation
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const selectedTags = useBookmarkStore((state) => state.selectedTags)
   const searchQuery = useBookmarkStore((state) => state.searchQuery)
@@ -38,11 +34,12 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
     (state) => state.collectionBookmarks
   )
 
-  // Get pagination state and actions
+  const activeViewId = useViewStore((state) => state.activeViewId)
+  const views = useViewStore((state) => state.views)
+
   const pagination = useBookmarkStore((state) => state.pagination)
   const resetPagination = useBookmarkStore((state) => state.resetPagination)
 
-  // Apply all filters to get the complete filtered result using shared logic
   const filteredBookmarks = useMemo(() => {
     return filterBookmarksOptimized({
       bookmarks,
@@ -58,6 +55,8 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
       validationResults,
       activeCollectionId,
       collectionBookmarks,
+      activeViewId,
+      views,
     })
   }, [
     bookmarks,
@@ -73,23 +72,22 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
     validationResults,
     activeCollectionId,
     collectionBookmarks,
+    activeViewId,
+    views,
   ])
 
-  // Get paginated bookmarks based on current page
   const paginatedBookmarks = useMemo(() => {
     const { currentPage, itemsPerPage } = pagination
     const endIndex = currentPage * itemsPerPage
     return filteredBookmarks.slice(0, endIndex)
   }, [filteredBookmarks, pagination])
 
-  // Calculate if there are more bookmarks to load
   const hasMore = useMemo(() => {
     const { currentPage, itemsPerPage } = pagination
     const endIndex = currentPage * itemsPerPage
     return endIndex < filteredBookmarks.length
   }, [pagination, filteredBookmarks.length])
 
-  // Track previous filter values to detect changes
   const prevFilterValuesRef = useRef({
     selectedTags,
     searchQuery,
@@ -101,9 +99,9 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
     dateRangeFilter,
     quickFilters,
     activeCollectionId,
+    activeViewId,
   })
 
-  // Reset pagination when filters change
   useEffect(() => {
     const prev = prevFilterValuesRef.current
     if (
@@ -116,7 +114,8 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
       prev.contentTypeFilter !== contentTypeFilter ||
       prev.dateRangeFilter !== dateRangeFilter ||
       prev.quickFilters !== quickFilters ||
-      prev.activeCollectionId !== activeCollectionId
+      prev.activeCollectionId !== activeCollectionId ||
+      prev.activeViewId !== activeViewId
     ) {
       resetPagination()
       prevFilterValuesRef.current = {
@@ -130,6 +129,7 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
         dateRangeFilter,
         quickFilters,
         activeCollectionId,
+        activeViewId,
       }
     }
   }, [
@@ -143,19 +143,18 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
     dateRangeFilter,
     quickFilters,
     activeCollectionId,
+    activeViewId,
     resetPagination,
   ])
 
-  // Load more function that increases the page
   const loadMore = () => {
     if (!hasMore || pagination.isLoading) return
 
-    // Use the store's setState method directly
     useBookmarkStore.setState({
       pagination: {
         ...pagination,
         currentPage: pagination.currentPage + 1,
-        isLoading: false, // Don't keep loading state, let the UI handle it
+        isLoading: false,
       },
     })
   }

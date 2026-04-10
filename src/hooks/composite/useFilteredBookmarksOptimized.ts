@@ -4,13 +4,9 @@ import { filterBookmarksOptimized } from '@/utils/bookmarkFilteringOptimized'
 import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useCollectionsStore } from '@/store/collectionsStore'
 import { useSettingsStore } from '@/store/settingsStore'
+import { useViewStore } from '@/store/viewStore'
 
-/**
- * Optimized hook for filtered bookmarks using single-pass algorithm
- * Subscribes to individual store values to avoid object recreation issues
- */
 export const useFilteredBookmarksOptimized = (): Bookmark[] => {
-  // Subscribe to individual values to avoid object recreation
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const selectedTags = useBookmarkStore((state) => state.selectedTags)
   const searchQuery = useBookmarkStore((state) => state.searchQuery)
@@ -30,7 +26,9 @@ export const useFilteredBookmarksOptimized = (): Bookmark[] => {
     (state) => state.collectionBookmarks
   )
 
-  // Get sorting preferences from settings store
+  const activeViewId = useViewStore((state) => state.activeViewId)
+  const views = useViewStore((state) => state.views)
+
   const sortBy = useSettingsStore((state) => state.display.sortBy)
   const sortOrder = useSettingsStore((state) => state.display.sortOrder)
 
@@ -51,6 +49,8 @@ export const useFilteredBookmarksOptimized = (): Bookmark[] => {
       collectionBookmarks,
       sortBy,
       sortOrder,
+      activeViewId,
+      views,
     })
   }, [
     bookmarks,
@@ -68,6 +68,8 @@ export const useFilteredBookmarksOptimized = (): Bookmark[] => {
     collectionBookmarks,
     sortBy,
     sortOrder,
+    activeViewId,
+    views,
   ])
 }
 

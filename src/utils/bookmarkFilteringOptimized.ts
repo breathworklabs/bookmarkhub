@@ -1,10 +1,10 @@
 import { type Bookmark } from '@/types/bookmark'
 import { type DateRangeFilter } from '@/store/bookmarkStore'
 import type { ValidationResult } from '@/services/bookmarkValidationService'
+import type { View } from '@/types/views'
+import { SYSTEM_VIEWS } from '@/types/views'
+import { matchesCriteria as matchesViewCriteria } from '@/utils/viewFiltering'
 
-/**
- * Filter parameters interface
- */
 export interface FilterParams {
   bookmarks: Bookmark[]
   selectedTags: string[]
@@ -21,6 +21,8 @@ export interface FilterParams {
   validationResults?: ValidationResult[]
   sortBy?: 'date' | 'title' | 'author' | 'domain'
   sortOrder?: 'asc' | 'desc'
+  activeViewId?: string
+  views?: View[]
 }
 
 /**
@@ -57,6 +59,8 @@ export const filterBookmarksOptimized = ({
   validationResults,
   sortBy = 'date',
   sortOrder = 'desc',
+  activeViewId,
+  views,
 }: FilterParams): Bookmark[] => {
   // Pre-compute values outside the filter loop
   const hasTagFilter = selectedTags.length > 0
@@ -91,6 +95,21 @@ export const filterBookmarksOptimized = ({
     hasCollectionFilter && !isSmartCollection
       ? new Set(collectionBookmarks[activeCollectionId!] || [])
       : null
+
+  // View filter (takes priority over collection filter)
+  const activeView =
+    activeViewId && activeViewId !== SYSTEM_VIEWS.ALL && views
+      ? views.find((v) => v.id === activeViewId)
+      : undefined
+  const hasViewFilter = activeView !== undefined
+  const viewBookmarkIdSet =
+    hasViewFilter && activeView.mode === 'manual'
+      ? new Set(activeView.bookmarkIds.map(String))
+      : null
+  const invalidBookmarkIdsForView =
+    hasViewFilter && activeView.criteria?.broken && validationResults
+      ? new Set(validationResults.filter((r) => !r.isValid).map((r) => r.id))
+      : undefined
 
   // Pre-compute date threshold for 'recent' smart collection
   const recentSmartThreshold = new Date()
@@ -158,8 +177,21 @@ export const filterBookmarksOptimized = ({
     // 1. Skip deleted bookmarks (unless in trash view)
     if (bookmark.is_deleted) return false
 
-    // 2. Collection filter
-    if (hasCollectionFilter) {
+    // 2. View filter (priority over collection filter)
+    if (hasViewFilter) {
+      if (viewBookmarkIdSet) {
+        if (!viewBookmarkIdSet.has(String(bookmark.id))) return false
+      } else if (activeView!.criteria) {
+        if (
+          !matchesViewCriteria(
+            bookmark,
+            activeView!.criteria,
+            invalidBookmarkIdsForView
+          )
+        )
+          return false
+      }
+    } else if (hasCollectionFilter) {
       if (isSmartCollection) {
         switch (activeCollectionId) {
           case 'starred':
