@@ -102,7 +102,7 @@ function buildDefaultSystemViews(): View[] {
       sortOrder: 3,
       mode: 'dynamic',
       bookmarkIds: [],
-      criteria: {},
+      criteria: { isArchived: true, isDeleted: false },
       pinned: false,
       system: true,
       createdAt: now,

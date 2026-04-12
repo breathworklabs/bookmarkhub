@@ -42,6 +42,13 @@ export function matchesCriteria(
     return false
   }
 
+  // Archived bookmarks are hidden from all views except Archived and Trash
+  if (criteria.isArchived !== undefined) {
+    if (bookmark.is_archived !== criteria.isArchived) return false
+  } else if (bookmark.is_archived && !bookmark.is_deleted) {
+    return false
+  }
+
   if (criteria.starred && !bookmark.is_starred) return false
   if (criteria.unread && bookmark.is_read) return false
   if (criteria.broken) {

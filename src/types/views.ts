@@ -63,6 +63,7 @@ export interface ViewCriteria {
 
   /** Special */
   isDeleted?: boolean
+  isArchived?: boolean
   isUncategorized?: boolean
   excludeTags?: string[]
 }

@@ -176,7 +176,7 @@ function buildSystemViews(now: string): View[] {
     {
       id: SYSTEM_VIEWS.ALL,
       name: 'All Bookmarks',
-      icon: 'Bookmark',
+      icon: 'bookmark',
       color: '#4A90D9',
       parentId: null,
       sortOrder: 0,
@@ -193,7 +193,7 @@ function buildSystemViews(now: string): View[] {
     {
       id: SYSTEM_VIEWS.STARRED,
       name: 'Starred',
-      icon: 'Star',
+      icon: 'star',
       color: '#F5A623',
       parentId: null,
       sortOrder: 1,
@@ -210,7 +210,7 @@ function buildSystemViews(now: string): View[] {
     {
       id: SYSTEM_VIEWS.RECENT,
       name: 'Recent',
-      icon: 'Clock',
+      icon: 'clock',
       color: '#7B61FF',
       parentId: null,
       sortOrder: 2,
@@ -227,14 +227,14 @@ function buildSystemViews(now: string): View[] {
     {
       id: SYSTEM_VIEWS.ARCHIVED,
       name: 'Archived',
-      icon: 'Archive',
+      icon: 'archive',
       color: '#8E8E93',
       parentId: null,
       sortOrder: 3,
       mode: 'dynamic',
       bookmarkIds: [],
       // Mirrors bookmarkFilteringOptimized: is_archived && !is_deleted
-      criteria: { isDeleted: false },
+      criteria: { isArchived: true, isDeleted: false },
       pinned: true,
       system: true,
       description: 'Archived bookmarks',
@@ -245,7 +245,7 @@ function buildSystemViews(now: string): View[] {
     {
       id: SYSTEM_VIEWS.UNCATEGORIZED,
       name: 'Uncategorized',
-      icon: 'Inbox',
+      icon: 'inbox',
       color: '#FF9500',
       parentId: null,
       sortOrder: 4,
@@ -262,7 +262,7 @@ function buildSystemViews(now: string): View[] {
     {
       id: SYSTEM_VIEWS.TRASH,
       name: 'Trash',
-      icon: 'Trash2',
+      icon: 'trash-2',
       color: '#FF3B30',
       parentId: null,
       sortOrder: 5,
@@ -300,7 +300,7 @@ export function migrateToViews(
     views.push({
       id: `view-${coll.id}`,
       name: coll.name,
-      icon: coll.icon ?? 'Folder',
+      icon: coll.icon ? coll.icon.toLowerCase() : 'folder',
       color: coll.color ?? '#4A90D9',
       parentId: coll.parentId ? `view-${coll.parentId}` : null,
       sortOrder: sortOrder++,
@@ -321,7 +321,7 @@ export function migrateToViews(
     views.push({
       id: `view-preset-${preset.id}`,
       name: preset.name,
-      icon: 'Filter',
+      icon: 'filter',
       color: '#4A90D9',
       parentId: null,
       sortOrder: sortOrder++,
