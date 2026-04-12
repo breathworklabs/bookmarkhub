@@ -14,7 +14,6 @@ import { LuCalendar } from 'react-icons/lu'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useBookmarkStore, type DateRangeFilter } from '@/store/bookmarkStore'
-import { useCollectionsStore } from '@/store/collectionsStore'
 
 const DateRangeFilterComponent = () => {
   const dateRangeFilter = useBookmarkStore((state) => state.dateRangeFilter)
@@ -25,9 +24,6 @@ const DateRangeFilterComponent = () => {
     (state) => state.setActiveSidebarItem
   )
   const setActiveTab = useBookmarkStore((state) => state.setActiveTab)
-  const setActiveCollection = useCollectionsStore(
-    (state) => state.setActiveCollection
-  )
 
   const [tempStartDate, setTempStartDate] = useState<Date | null>(
     dateRangeFilter.customStart || null
@@ -56,7 +52,6 @@ const DateRangeFilterComponent = () => {
       const newFilter: DateRangeFilter = { type }
       setDateRangeFilter(newFilter)
       setActiveSidebarItem('All Bookmarks')
-      setActiveCollection(null)
 
       // Sync with FilterBar tabs
       // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=This Month, 4=Threads, 5=Media
@@ -100,7 +95,6 @@ const DateRangeFilterComponent = () => {
       }
       setDateRangeFilter(newFilter)
       setActiveSidebarItem('All Bookmarks')
-      setActiveCollection(null)
       setShowCustomPicker(false)
     }
   }

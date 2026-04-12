@@ -13,15 +13,14 @@ import { useEffect, useState, useMemo } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useBookmarkStore } from '@/store/bookmarkStore'
-import { useCollectionsStore } from '@/store/collectionsStore'
+import { useViewStore } from '@/store/viewStore'
 import type { Bookmark } from '@/types/bookmark'
 import toast from 'react-hot-toast'
 import UnifiedSidebar from './UnifiedSidebar'
-import { SharedCollectionCard } from './collections/SharedCollectionCard'
 
 const SharedView = () => {
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
-  const collections = useCollectionsStore((state) => state.collections)
+  const views = useViewStore((state) => state.views)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -34,10 +33,9 @@ const SharedView = () => {
     return bookmarks.filter((b) => b.is_shared && !b.is_deleted)
   }, [bookmarks])
 
-  // Filter shared collections
   const sharedCollections = useMemo(() => {
-    return collections.filter((c) => c.shareSettings)
-  }, [collections])
+    return views.filter((v) => !v.system && v.mode === 'manual')
+  }, [views])
 
   // Group bookmarks by week
   const groupedByWeek = useMemo(() => {
@@ -213,7 +211,7 @@ const SharedView = () => {
                     fontWeight="600"
                     style={{ color: 'var(--color-text-primary)' }}
                   >
-                    Shared Collections
+                    Shared Views
                   </Text>
                   <Badge
                     bg="var(--color-border)"
@@ -227,18 +225,59 @@ const SharedView = () => {
                   </Badge>
                 </HStack>
                 <VStack alignItems="stretch" gap={2}>
-                  {sharedCollections.map((collection) => (
+                  {sharedCollections.map((view) => (
                     <Box
-                      key={collection.id}
+                      key={view.id}
                       p={4}
                       borderRadius="8px"
                       style={{ background: 'var(--color-bg-tertiary)' }}
                       border="1px solid var(--color-border)"
                       _hover={{ borderColor: 'var(--color-border-hover)' }}
                       transition="all 0.2s"
-                      css={{ '&:hover [data-actions]': { opacity: 1 } }}
                     >
-                      <SharedCollectionCard collection={collection} />
+                      <Flex justifyContent="space-between" alignItems="center" gap={4}>
+                        <HStack gap={3} flex={1} minW={0}>
+                          <Flex
+                            alignItems="center"
+                            justifyContent="center"
+                            w="32px"
+                            h="32px"
+                            borderRadius="6px"
+                            style={{ background: view.color || 'var(--color-border)' }}
+                            flexShrink={0}
+                          >
+                            {view.icon ? (
+                              <Text fontSize="sm">{view.icon}</Text>
+                            ) : (
+                              <LuFolder size={16} style={{ color: 'var(--color-text-secondary)' }} />
+                            )}
+                          </Flex>
+                          <VStack alignItems="flex-start" gap={0} minW={0}>
+                            <Text
+                              fontSize="sm"
+                              fontWeight="500"
+                              style={{ color: 'var(--color-text-primary)' }}
+                              css={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                            >
+                              {view.name}
+                            </Text>
+                            <Text fontSize="xs" style={{ color: 'var(--color-text-tertiary)' }}>
+                              {view.bookmarkIds?.length || 0} bookmark{view.bookmarkIds?.length !== 1 ? 's' : ''}
+                            </Text>
+                          </VStack>
+                        </HStack>
+                        <Badge
+                          style={{ background: 'var(--color-blue)' }}
+                          color="white"
+                          fontSize="11px"
+                          px={2}
+                          py={1}
+                          borderRadius="4px"
+                          flexShrink={0}
+                        >
+                          VIEW
+                        </Badge>
+                      </Flex>
                     </Box>
                   ))}
                 </VStack>
@@ -274,7 +313,7 @@ const SharedView = () => {
                     fontSize="sm"
                     style={{ color: 'var(--color-text-tertiary)' }}
                   >
-                    Bookmarks and collections you share will appear here
+                    Bookmarks and views you share will appear here
                   </Text>
                 </VStack>
               </Flex>

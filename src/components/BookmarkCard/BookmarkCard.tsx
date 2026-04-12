@@ -4,9 +4,10 @@ import { useDrag } from 'react-dnd'
 import { getEmptyImage } from 'react-dnd-html5-backend'
 import toast from 'react-hot-toast'
 import { type Bookmark } from '@/types/bookmark'
+import { SYSTEM_VIEWS } from '@/types/views'
 import { ItemTypes, type DropResult } from '@/types/dnd'
 import { useBookmarkStore } from '@/store/bookmarkStore'
-import { useCollectionsStore } from '@/store/collectionsStore'
+import { useViewStore } from '@/store/viewStore'
 import { useCardStyles } from '@/hooks/useStyles'
 import { useIsMobile } from '@/hooks/useMobile'
 import { CollectionPickerModal } from '@/components/modals/CollectionPickerModal'
@@ -28,8 +29,8 @@ interface BookmarkCardProps {
 }
 
 const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
-  const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
+  const views = useViewStore((state) => state.views)
   const toggleBookmarkSelection = useBookmarkStore(
     (state) => state.toggleBookmarkSelection
   )
@@ -40,11 +41,11 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
     (state) => state.toggleStarBookmark
   )
   const removeBookmark = useBookmarkStore((state) => state.removeBookmark)
-  const addBookmarkToCollection = useCollectionsStore(
-    (state) => state.addBookmarkToCollection
+  const addBookmarkToView = useViewStore(
+    (state) => state.addBookmarkToView
   )
-  const removeBookmarkFromCollection = useCollectionsStore(
-    (state) => state.removeBookmarkFromCollection
+  const removeBookmarkFromView = useViewStore(
+    (state) => state.removeBookmarkFromView
   )
   const isMobile = useIsMobile()
 
@@ -88,30 +89,23 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
 
             // Process all selected bookmarks
             for (const bookmarkId of bookmarkIds) {
-              // Get current bookmark state to avoid stale data
-              const currentBookmark = bookmarks.find((b) => b.id === bookmarkId)
-              const currentCollections = currentBookmark?.collections || ['uncategorized']
+              const viewBookmarkId = String(bookmarkId)
+              const currentViewIds = views
+                .filter(
+                  (view) =>
+                    view.mode === 'manual' &&
+                    view.bookmarkIds.includes(viewBookmarkId)
+                )
+                .map((view) => view.id)
 
               // If moving TO uncategorized, remove from all other collections first
-              if (dropResult.collectionId === 'uncategorized') {
-                // Remove from all non-uncategorized collections
-                for (const collectionId of currentCollections) {
-                  if (collectionId !== 'uncategorized') {
-                    await removeBookmarkFromCollection(bookmarkId, collectionId)
-                  }
+              if (dropResult.collectionId === SYSTEM_VIEWS.UNCATEGORIZED) {
+                for (const viewId of currentViewIds) {
+                  removeBookmarkFromView(viewId, viewBookmarkId)
                 }
               } else {
-                // If moving FROM uncategorized TO another collection, remove from uncategorized
-                if (currentCollections.includes('uncategorized')) {
-                  await removeBookmarkFromCollection(
-                    bookmarkId,
-                    'uncategorized'
-                  )
-                }
+                addBookmarkToView(dropResult.collectionId, viewBookmarkId)
               }
-
-              // Add to the new collection
-              await addBookmarkToCollection(bookmarkId, dropResult.collectionId)
             }
 
             // Clear selection after successful bulk move
@@ -142,9 +136,9 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
     [
       bookmark.id,
       bookmark,
-      addBookmarkToCollection,
-      removeBookmarkFromCollection,
-      bookmarks,
+      addBookmarkToView,
+      removeBookmarkFromView,
+      views,
       selectedBookmarks,
       isSelected,
       clearBookmarkSelection,
@@ -256,22 +250,24 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
 
   // Context menu actions
   const handleMoveToCollection = useCallback(
-    async (collectionId: string | null) => {
+    async (viewId: string | null) => {
       try {
-        const currentCollections = bookmark.collections || ['uncategorized']
+        const currentViewIds = views
+          .filter(
+            (view) =>
+              view.mode === 'manual' &&
+              view.bookmarkIds.includes(String(bookmark.id))
+          )
+          .map((view) => view.id)
 
         // Remove from all collections first
-        for (const colId of currentCollections) {
-          if (colId !== 'uncategorized') {
-            await removeBookmarkFromCollection(bookmark.id, colId)
-          }
+        for (const currentViewId of currentViewIds) {
+          removeBookmarkFromView(currentViewId, String(bookmark.id))
         }
 
         // Add to new collection (or uncategorized if null)
-        if (collectionId === null) {
-          await addBookmarkToCollection(bookmark.id, 'uncategorized')
-        } else {
-          await addBookmarkToCollection(bookmark.id, collectionId)
+        if (viewId !== null && viewId !== SYSTEM_VIEWS.UNCATEGORIZED) {
+          addBookmarkToView(viewId, String(bookmark.id))
         }
 
         toast.success('Bookmark moved successfully')
@@ -280,7 +276,7 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
         toast.error('Failed to move bookmark')
       }
     },
-    [bookmark, addBookmarkToCollection, removeBookmarkFromCollection]
+    [bookmark.id, views, addBookmarkToView, removeBookmarkFromView]
   )
 
   const handleShare = useCallback(async () => {
@@ -309,11 +305,13 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
 
   // Get current collection ID for picker
   const currentCollectionId = useMemo(() => {
-    const collections = bookmark.collections || []
-    return collections.length > 0 && collections[0] !== 'uncategorized'
-      ? collections[0]
-      : null
-  }, [bookmark.collections])
+    return (
+      views.find(
+        (view) =>
+          view.mode === 'manual' && view.bookmarkIds.includes(String(bookmark.id))
+      )?.id ?? null
+    )
+  }, [bookmark.id, views])
 
   return (
     <>
@@ -412,8 +410,8 @@ const BookmarkCard = memo(({ bookmark }: BookmarkCardProps) => {
           isOpen={showCollectionPicker}
           onClose={() => setShowCollectionPicker(false)}
           onSelect={handleMoveToCollection}
-          currentCollectionId={currentCollectionId}
-          title="Move to Collection"
+          currentViewId={currentCollectionId}
+          title="Move to View"
         />
       )}
     </>

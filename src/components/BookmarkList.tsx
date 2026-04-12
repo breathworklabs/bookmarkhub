@@ -5,8 +5,9 @@ import { useDrag } from 'react-dnd'
 import { getEmptyImage } from 'react-dnd-html5-backend'
 import toast from 'react-hot-toast'
 import type { Bookmark } from '@/types/bookmark'
+import { SYSTEM_VIEWS } from '@/types/views'
 import { useBookmarkStore } from '@/store/bookmarkStore'
-import { useCollectionsStore } from '@/store/collectionsStore'
+import { useViewStore } from '@/store/viewStore'
 import { ItemTypes, type DropResult } from '@/types/dnd'
 import TagChip from './tags/TagChip'
 import LazyImage from './LazyImage'
@@ -32,7 +33,7 @@ interface ColumnWidths {
 const BookmarkListItem = memo(
   ({ bookmark, columnWidths }: BookmarkListItemProps) => {
     const [isHovered, setIsHovered] = useState(false)
-    const bookmarks = useBookmarkStore((state) => state.bookmarks)
+    const views = useViewStore((state) => state.views)
     const selectedBookmarks = useBookmarkStore(
       (state) => state.selectedBookmarks
     )
@@ -46,11 +47,11 @@ const BookmarkListItem = memo(
       (state) => state.toggleStarBookmark
     )
     const setSelectedTags = useBookmarkStore((state) => state.setSelectedTags)
-    const addBookmarkToCollection = useCollectionsStore(
-      (state) => state.addBookmarkToCollection
+    const addBookmarkToView = useViewStore(
+      (state) => state.addBookmarkToView
     )
-    const removeBookmarkFromCollection = useCollectionsStore(
-      (state) => state.removeBookmarkFromCollection
+    const removeBookmarkFromView = useViewStore(
+      (state) => state.removeBookmarkFromView
     )
 
     const isSelected = selectedBookmarks.includes(bookmark.id)
@@ -109,39 +110,23 @@ const BookmarkListItem = memo(
 
               // Process all selected bookmarks
               for (const bookmarkId of bookmarkIds) {
-                // Get current bookmark state to avoid stale data
-                const currentBookmark = bookmarks.find(
-                  (b) => b.id === bookmarkId
-                )
-                const currentCollections = (currentBookmark as any)
-                  ?.collections || ['uncategorized']
+                const viewBookmarkId = String(bookmarkId)
+                const currentViewIds = views
+                  .filter(
+                    (view) =>
+                      view.mode === 'manual' &&
+                      view.bookmarkIds.includes(viewBookmarkId)
+                  )
+                  .map((view) => view.id)
 
                 // If moving TO uncategorized, remove from all other collections first
-                if (dropResult.collectionId === 'uncategorized') {
-                  // Remove from all non-uncategorized collections
-                  for (const collectionId of currentCollections) {
-                    if (collectionId !== 'uncategorized') {
-                      await removeBookmarkFromCollection(
-                        bookmarkId,
-                        collectionId
-                      )
-                    }
+                if (dropResult.collectionId === SYSTEM_VIEWS.UNCATEGORIZED) {
+                  for (const viewId of currentViewIds) {
+                    removeBookmarkFromView(viewId, viewBookmarkId)
                   }
                 } else {
-                  // If moving FROM uncategorized TO another collection, remove from uncategorized
-                  if (currentCollections.includes('uncategorized')) {
-                    await removeBookmarkFromCollection(
-                      bookmarkId,
-                      'uncategorized'
-                    )
-                  }
+                  addBookmarkToView(dropResult.collectionId, viewBookmarkId)
                 }
-
-                // Add to the new collection
-                await addBookmarkToCollection(
-                  bookmarkId,
-                  dropResult.collectionId
-                )
               }
 
               // Clear selection after successful bulk move
@@ -169,9 +154,9 @@ const BookmarkListItem = memo(
         bookmark.id,
         selectedBookmarks,
         isSelected,
-        bookmarks,
-        addBookmarkToCollection,
-        removeBookmarkFromCollection,
+        views,
+        addBookmarkToView,
+        removeBookmarkFromView,
         clearBookmarkSelection,
       ]
     )

@@ -37,7 +37,7 @@ import { APP_NAME, APP_VERSION } from '@/constants/app'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useSettingsStore } from '@/store/settingsStore'
-import { useCollectionsStore } from '@/store/collectionsStore'
+import { useViewStore } from '@/store/viewStore'
 import UnifiedSidebar from './UnifiedSidebar'
 import { logger } from '@/lib/logger'
 
@@ -82,7 +82,7 @@ const SettingsPage = () => {
   const setSortBy = useSettingsStore((state) => state.setSortBy)
 
   // Collections
-  const collections = useCollectionsStore((state) => state.collections)
+  const views = useViewStore((state) => state.views)
 
   // Tour state
   const startTour = useSettingsStore((state) => state.startTour)
@@ -163,9 +163,9 @@ const SettingsPage = () => {
   const collectionOptions = createListCollection({
     items: [
       { label: 'None (no default collection)', value: 'none' },
-      ...collections.map((collection) => ({
-        label: collection.name,
-        value: collection.id,
+      ...views.filter((v) => !v.system).map((view) => ({
+        label: view.name,
+        value: view.id,
       })),
     ],
   })

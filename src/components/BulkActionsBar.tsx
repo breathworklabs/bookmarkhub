@@ -2,7 +2,7 @@ import { Box, HStack, Text, Button, IconButton } from '@chakra-ui/react'
 import { LuFolder, LuTrash2, LuX } from 'react-icons/lu'
 import { memo, useState } from 'react'
 import { useBookmarkStore } from '@/store/bookmarkStore'
-import { useCollectionsStore } from '@/store/collectionsStore'
+import { useViewStore } from '@/store/viewStore'
 import { CollectionPickerModal } from './modals/CollectionPickerModal'
 import toast from 'react-hot-toast'
 import { logger } from '@/lib/logger'
@@ -13,39 +13,29 @@ export const BulkActionsBar = memo(() => {
     (state) => state.clearBookmarkSelection
   )
   const removeBookmark = useBookmarkStore((state) => state.removeBookmark)
-  const bookmarks = useBookmarkStore((state) => state.bookmarks)
-  const addBookmarkToCollection = useCollectionsStore(
-    (state) => state.addBookmarkToCollection
-  )
-  const removeBookmarkFromCollection = useCollectionsStore(
-    (state) => state.removeBookmarkFromCollection
+  const addBookmarkToView = useViewStore((state) => state.addBookmarkToView)
+  const removeBookmarkFromView = useViewStore(
+    (state) => state.removeBookmarkFromView
   )
 
   const [showCollectionPicker, setShowCollectionPicker] = useState(false)
 
   if (selectedBookmarks.length === 0) return null
 
-  const handleMoveToCollection = async (collectionId: string | null) => {
+  const handleMoveToView = async (viewId: string | null) => {
     try {
-      // Process all selected bookmarks
-      for (const bookmarkId of selectedBookmarks) {
-        const currentBookmark = bookmarks.find((b) => b.id === bookmarkId)
-        const currentCollections = (currentBookmark as any)?.collections || [
-          'uncategorized',
-        ]
+      const views = useViewStore.getState().views
+      const manualViews = views.filter((v) => v.mode === 'manual' && !v.system)
 
-        // Remove from all collections first
-        for (const colId of currentCollections) {
-          if (colId !== 'uncategorized') {
-            await removeBookmarkFromCollection(bookmarkId, colId)
+      for (const bookmarkId of selectedBookmarks) {
+        for (const view of manualViews) {
+          if (view.bookmarkIds.includes(String(bookmarkId))) {
+            removeBookmarkFromView(view.id, String(bookmarkId))
           }
         }
 
-        // Add to new collection (or uncategorized if null)
-        if (collectionId === null) {
-          await addBookmarkToCollection(bookmarkId, 'uncategorized')
-        } else {
-          await addBookmarkToCollection(bookmarkId, collectionId)
+        if (viewId !== null) {
+          addBookmarkToView(viewId, String(bookmarkId))
         }
       }
 
@@ -192,12 +182,11 @@ export const BulkActionsBar = memo(() => {
         </HStack>
       </Box>
 
-      {/* Collection Picker Modal */}
       {showCollectionPicker && (
         <CollectionPickerModal
           isOpen={showCollectionPicker}
           onClose={() => setShowCollectionPicker(false)}
-          onSelect={handleMoveToCollection}
+          onSelect={handleMoveToView}
           title={`Move ${selectedBookmarks.length} Bookmark${selectedBookmarks.length > 1 ? 's' : ''}`}
         />
       )}

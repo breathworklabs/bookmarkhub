@@ -10,7 +10,7 @@ import {
   LuShare2,
 } from 'react-icons/lu'
 import { useCallback, memo, useState, useMemo } from 'react'
-import { useCollectionsStore } from '@/store/collectionsStore'
+import { useViewStore } from '@/store/viewStore'
 import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useModal } from '@/components/modals/ModalProvider'
 import { useIsMobile } from '@/hooks/useMobile'
@@ -18,15 +18,14 @@ import TagInput from '@/components/tags/TagInput'
 import SmartTagSuggestions from '@/components/tags/SmartTagSuggestions'
 import { getCollectionPath } from '@/utils/collectionHierarchy'
 import { logger } from '@/lib/logger'
-import { SharedCollectionCard } from './SharedCollectionCard'
 
 const CollectionsActions = memo(() => {
-  const activeCollectionId = useCollectionsStore((s) => s.activeCollectionId)
-  const collections = useCollectionsStore((s) => s.collections)
-  const createCollection = useCollectionsStore((s) => s.createCollection)
-  const deleteCollection = useCollectionsStore((s) => s.deleteCollection)
-  const updateCollection = useCollectionsStore((s) => s.updateCollection)
-  const setActiveCollection = useCollectionsStore((s) => s.setActiveCollection)
+  const activeViewId = useViewStore((s) => s.activeViewId)
+  const views = useViewStore((s) => s.views)
+  const createView = useViewStore((s) => s.createView)
+  const deleteView = useViewStore((s) => s.deleteView)
+  const updateView = useViewStore((s) => s.updateView)
+  const setActiveView = useViewStore((s) => s.setActiveView)
 
   // Bookmark selection state for bulk actions
   const selectedBookmarks = useBookmarkStore((state) => state.selectedBookmarks)
@@ -52,78 +51,74 @@ const CollectionsActions = memo(() => {
   } = useModal()
   const isMobile = useIsMobile()
 
-  // Get the currently active collection
-  const activeCollection = collections.find((c) => c.id === activeCollectionId)
-  const isUserCollection =
-    activeCollection &&
-    !activeCollection.isDefault &&
-    !activeCollection.isSmartCollection
-  const isSmartCollection =
-    activeCollection && activeCollection.isSmartCollection
+  // Get the currently active view
+  const activeView = views.find((v) => v.id === activeViewId)
+  const isUserView = activeView && !activeView.system
 
-  // Get full breadcrumb path for active collection
+  // Get full breadcrumb path for active view
   const breadcrumbPath = useMemo(() => {
-    if (!activeCollectionId) return []
-    return getCollectionPath(activeCollectionId, collections)
-  }, [activeCollectionId, collections])
+    if (!activeViewId) return []
+    return getCollectionPath(activeViewId, views as any)
+  }, [activeViewId, views])
 
   // Determine if we should show bulk actions
   const selectedCount = selectedBookmarks.length
   const showBulkActions = selectedCount > 0
 
-  const handleCreateCollection = useCallback(() => {
+  const handleCreateView = useCallback(() => {
     showCreateCollection({
-      onCreate: async (collectionData) => {
+      onCreate: async (viewData) => {
         try {
-          await createCollection(collectionData)
+          await createView(viewData)
         } catch (error) {
-          logger.error('Failed to create collection', { error })
+          logger.error('Failed to create view', { error })
         }
       },
     })
-  }, [showCreateCollection, createCollection])
+  }, [showCreateCollection, createView])
 
-  const handleShareCollection = useCallback(() => {
-    if (!activeCollection || !isUserCollection) return
-    showShareCollection({ collectionId: activeCollection.id })
-  }, [showShareCollection, activeCollection, isUserCollection])
+  const handleShareView = useCallback(() => {
+    if (!activeView || !isUserView) return
+    // TODO: showShareCollection prop is still `collectionId` — update after ModalProvider migration
+    showShareCollection({ collectionId: activeView.id })
+  }, [showShareCollection, activeView, isUserView])
 
-  const handleEditCollection = useCallback(() => {
-    if (!activeCollection || !isUserCollection) return
+  const handleEditView = useCallback(() => {
+    if (!activeView || !isUserView) return
 
     showEditCollection({
-      collection: activeCollection,
+      view: activeView,
       onEdit: async (id, updatedData) => {
         try {
-          await updateCollection(id, updatedData)
+          await updateView(id, updatedData)
         } catch (error) {
-          logger.error('Failed to update collection', { error })
+          logger.error('Failed to update view', { error })
         }
       },
     })
-  }, [showEditCollection, activeCollection, isUserCollection, updateCollection])
+  }, [showEditCollection, activeView, isUserView, updateView])
 
-  const handleDeleteCollection = useCallback(() => {
-    if (!activeCollection || !isUserCollection) return
+  const handleDeleteView = useCallback(() => {
+    if (!activeView || !isUserView) return
 
     showDeleteConfirmation({
-      title: 'Delete Collection',
-      message: `Are you sure you want to delete "${activeCollection.name}"? This action cannot be undone.`,
+      title: 'Delete View',
+      message: `Are you sure you want to delete "${activeView.name}"? This action cannot be undone.`,
       preview:
-        'All bookmarks in this collection will be moved to "Uncategorized".',
+        'All bookmarks in this view will be moved to "Uncategorized".',
       onConfirm: async () => {
         try {
-          await deleteCollection(activeCollection.id)
+          await deleteView(activeView.id)
         } catch (error) {
-          logger.error('Failed to delete collection', { error })
+          logger.error('Failed to delete view', { error })
         }
       },
     })
   }, [
     showDeleteConfirmation,
-    activeCollection,
-    isUserCollection,
-    deleteCollection,
+    activeView,
+    isUserView,
+    deleteView,
   ])
 
   // Bulk action handlers
@@ -392,7 +387,7 @@ const CollectionsActions = memo(() => {
                 </HStack>
               </>
             ) : (
-              // Normal Collection Actions Mode
+              // Normal View Actions Mode
               <>
                 {/* Custom Breadcrumb - Full Path */}
                 <HStack gap={2} alignItems="center" flexWrap="wrap">
@@ -403,10 +398,10 @@ const CollectionsActions = memo(() => {
                     Collections
                   </Text>
                   {breadcrumbPath.length > 0 &&
-                    breadcrumbPath.map((collection, index) => {
+                    breadcrumbPath.map((view, index) => {
                       const isLast = index === breadcrumbPath.length - 1
                       return (
-                        <HStack key={collection.id} gap={2} alignItems="center">
+                        <HStack key={view.id} gap={2} alignItems="center">
                           <LuChevronRight
                             size={12}
                             color="var(--color-text-tertiary)"
@@ -430,11 +425,11 @@ const CollectionsActions = memo(() => {
                             }
                             onClick={() => {
                               if (!isLast) {
-                                setActiveCollection(collection.id)
+                                setActiveView(view.id)
                               }
                             }}
                           >
-                            {collection.name}
+                            {view.name}
                           </Text>
                         </HStack>
                       )
@@ -443,7 +438,7 @@ const CollectionsActions = memo(() => {
 
                 {/* Action Buttons */}
                 <HStack gap={2} h="40px" alignItems="center">
-                  {!isSmartCollection && !isMobile && (
+                  {!activeView?.system && !isMobile && (
                     <Button
                       size="sm"
                       variant="ghost"
@@ -452,17 +447,17 @@ const CollectionsActions = memo(() => {
                         color: 'var(--color-text-primary)',
                         bg: 'var(--color-border)',
                       }}
-                      onClick={handleCreateCollection}
+                      onClick={handleCreateView}
                       fontSize="sm"
                     >
                       <HStack gap={1}>
                         <LuFolderPlus size={14} />
-                        <Text>Create Collection</Text>
+                        <Text>Create View</Text>
                       </HStack>
                     </Button>
                   )}
 
-                  {isUserCollection && (
+                  {isUserView && (
                     <>
                       {!isMobile && (
                         <Button
@@ -473,7 +468,7 @@ const CollectionsActions = memo(() => {
                             color: 'var(--color-text-primary)',
                             bg: 'var(--color-border)',
                           }}
-                          onClick={handleShareCollection}
+                          onClick={handleShareView}
                           fontSize="sm"
                           data-testid="share-collection"
                         >
@@ -492,7 +487,7 @@ const CollectionsActions = memo(() => {
                           color: 'var(--color-text-primary)',
                           bg: 'var(--color-border)',
                         }}
-                        onClick={handleEditCollection}
+                        onClick={handleEditView}
                         fontSize="sm"
                       >
                         <HStack gap={1}>
@@ -509,7 +504,7 @@ const CollectionsActions = memo(() => {
                           color: 'var(--color-error-hover)',
                           bg: 'var(--color-border)',
                         }}
-                        onClick={handleDeleteCollection}
+                        onClick={handleDeleteView}
                         fontSize="sm"
                       >
                         <HStack gap={1}>
@@ -527,14 +522,12 @@ const CollectionsActions = memo(() => {
       )}
 
       {/* Active share info strip */}
-      {isUserCollection && activeCollection?.shareSettings && (
-        <Box
-          borderTopWidth="1px"
-          style={{ borderColor: 'var(--color-border)' }}
-          px={6}
-          py={3}
-        >
-          <SharedCollectionCard collection={activeCollection} />
+      {isUserView && activeView?.shareSettings && (
+        <Box borderTopWidth="1px" borderColor="var(--color-border)" px={6} py={3}>
+          <HStack gap={2}>
+            <LuShare2 size={14} />
+            <Text fontSize="sm">Shared via link</Text>
+          </HStack>
         </Box>
       )}
     </Box>
