@@ -180,12 +180,22 @@ Performance unchanged: manual views use Set.has() (O(1)), dynamic views single-p
 4. Build migration utility
 5. Wire sidebar to new store minimally
 
-### Phase 2 — UI Unification
+### Phase 2 — UI Unification ✅ COMPLETE
 
 6. Unified view tree sidebar
 7. Quick-filter toggles → transient overlay
 8. "Save as View" button in filter bar
-9. Remove old collection/tag/sidebar stores
+9. Remove old collection/tag/sidebar stores from active UI
+
+**Completed work (branch `feat/unified-views`):**
+- WU-1–2: Removed collection filter path from `bookmarkFilteringOptimized.ts` and filter hooks
+- WU-3–5: Removed `useCollectionsStore` from utilities, initialization, and UnifiedSidebar
+- WU-6–7: Migrated BookmarkCard, BookmarkList, BulkActionsBar to `useViewStore`
+- WU-8: Migrated CollectionPickerModal (→ lists manual views), ShareCollectionModal (→ shares views), ModalProvider
+- WU-9: Fixed SharedView.tsx, migrated CollectionsActions.tsx, DateRangeFilter, SettingsPage, SharedCollectionPage
+- WU-10: Updated store cross-references (bookmark crud/dataManagement)
+- WU-11: Deleted dead collection components (CollectionsList, CollectionsSidebar, SharedCollectionCard, CollectionTree, CollectionTreeItem, CollectionSection, useCollectionsSelectors)
+- `collectionsStore.ts` preserved only for migration read-back compatibility
 
 ### Phase 3 — Smart Integration
 
