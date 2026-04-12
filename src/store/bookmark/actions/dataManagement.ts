@@ -11,7 +11,7 @@ import { trackOperationPerformance } from '@/lib/performance'
 import { logger } from '@/lib/logger'
 import { mockBookmarks } from '@/data/mockBookmarks'
 import { useSettingsStore } from '@/store/settingsStore'
-import { useCollectionsStore } from '@/store/collectionsStore'
+import { useViewStore } from '@/store/viewStore'
 import { fetchPopularTechTweets } from '@/lib/fetchLiveTweets'
 import { handleStoreError } from '@/store/utils/handleStoreError'
 
@@ -173,11 +173,7 @@ export const createDataManagementActions = (set: StoreSet, get: StoreGet) => ({
 
       get().calculateFilterOptions()
 
-      const collectionsStore = useCollectionsStore.getState()
-      logger.info(
-        'Initializing collections store with default smart collections...'
-      )
-      await collectionsStore.initialize()
+      useViewStore.getState().loadViews()
 
       localStorageService.setHasBeenCleared(false)
 

@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { useBookmarkStore } from '@/store/bookmarkStore'
-import { useCollectionsStore } from '@/store/collectionsStore'
+import { useViewStore } from '@/store/viewStore'
+import { SYSTEM_VIEWS } from '@/types/views'
 
 /**
  * Utility hook for resetting filters to default state
@@ -12,14 +13,11 @@ export const useFilterReset = () => {
   const setActiveSidebarItem = useBookmarkStore(
     (state) => state.setActiveSidebarItem
   )
-  const setActiveCollection = useCollectionsStore(
-    (state) => state.setActiveCollection
-  )
 
   return useCallback(() => {
     setActiveSidebarItem('All Bookmarks')
-    setActiveCollection(null)
-  }, [setActiveSidebarItem, setActiveCollection])
+    useViewStore.getState().setActiveView(SYSTEM_VIEWS.ALL)
+  }, [setActiveSidebarItem])
 }
 
 /**
@@ -30,9 +28,6 @@ export const useFullFilterReset = () => {
   const setActiveSidebarItem = useBookmarkStore(
     (state) => state.setActiveSidebarItem
   )
-  const setActiveCollection = useCollectionsStore(
-    (state) => state.setActiveCollection
-  )
   const clearAdvancedFilters = useBookmarkStore(
     (state) => state.clearAdvancedFilters
   )
@@ -42,14 +37,13 @@ export const useFullFilterReset = () => {
 
   return useCallback(() => {
     setActiveSidebarItem('All Bookmarks')
-    setActiveCollection(null)
+    useViewStore.getState().setActiveView(SYSTEM_VIEWS.ALL)
     clearAdvancedFilters()
     clearTags()
     setSearchQuery('')
     setActiveTab(0) // Reset to "All" tab
   }, [
     setActiveSidebarItem,
-    setActiveCollection,
     clearAdvancedFilters,
     clearTags,
     setSearchQuery,

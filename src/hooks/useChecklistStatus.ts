@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useBookmarkStore } from '@/store/bookmarkStore'
-import { useCollectionsStore } from '@/store/collectionsStore'
 import { useSettingsStore } from '@/store/settingsStore'
+import { useViewStore } from '@/store/viewStore'
 
 export interface ChecklistItemStatus {
   id: keyof ReturnType<typeof useChecklistStatus>['items']
@@ -12,12 +12,12 @@ export interface ChecklistItemStatus {
 
 export const useChecklistStatus = () => {
   const bookmarks = useBookmarkStore((s) => s.bookmarks)
-  const collections = useCollectionsStore((s) => s.collections)
+  const views = useViewStore((s) => s.views)
   const checklistProgress = useSettingsStore((s) => s.onboarding.checklistProgress)
 
   // Auto-detect completion status
   const hasBookmarks = bookmarks.length > 0
-  const hasCollections = collections.length > 0
+  const hasViews = views.some((v) => !v.system)
   const hasTags = useMemo(
     () => bookmarks.some((b) => b.tags && b.tags.length > 0),
     [bookmarks]
@@ -34,8 +34,8 @@ export const useChecklistStatus = () => {
       hasCreatedCollection: {
         id: 'hasCreatedCollection' as const,
         label: 'Create your first collection',
-        isCompleted: hasCollections || checklistProgress.hasCreatedCollection,
-        isAutoDetected: hasCollections,
+        isCompleted: hasViews || checklistProgress.hasCreatedCollection,
+        isAutoDetected: hasViews,
       },
       hasAddedTags: {
         id: 'hasAddedTags' as const,
@@ -64,7 +64,7 @@ export const useChecklistStatus = () => {
     }
   }, [
     hasBookmarks,
-    hasCollections,
+    hasViews,
     hasTags,
     checklistProgress,
   ])

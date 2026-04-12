@@ -21,7 +21,7 @@ import toast from 'react-hot-toast'
 import * as shareApi from '@/lib/shareApi'
 import type { SharedCollection } from '@/types/share'
 import { useBookmarkStore } from '@/store/bookmarkStore'
-import { useCollectionsStore } from '@/store/collectionsStore'
+import { useViewStore } from '@/store/viewStore'
 import { sanitizeBookmarkContent } from '@/utils/sanitization'
 
 function decodeHtml(html: string): string {
@@ -39,9 +39,7 @@ const SharedCollectionPage = () => {
   const [isImporting, setIsImporting] = useState(false)
 
   const addBookmark = useBookmarkStore((state) => state.addBookmark)
-  const createCollection = useCollectionsStore(
-    (state) => state.createCollection
-  )
+  const createView = useViewStore((state) => state.createView)
 
   useEffect(() => {
     if (!shareId) {
@@ -88,16 +86,14 @@ const SharedCollectionPage = () => {
     try {
       const newCollectionId = `collection-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
       const newCollectionName = `${collection.name} (Imported)`
-      await createCollection({
-        id: newCollectionId,
+      createView({
         name: newCollectionName,
         description: collection.description || '',
         parentId: null,
         color: 'var(--color-blue)',
         icon: 'folder',
-        isPrivate: false,
-        isDefault: false,
-        isSmartCollection: false,
+        mode: 'manual',
+        pinned: true,
         userId: 'local-user',
       })
 
@@ -137,7 +133,7 @@ const SharedCollectionPage = () => {
     } finally {
       setIsImporting(false)
     }
-  }, [collection, createCollection, addBookmark, navigate])
+  }, [collection, createView, addBookmark, navigate])
 
   if (isLoading) {
     return (

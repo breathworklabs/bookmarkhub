@@ -273,9 +273,6 @@ export const createCrudActions = (set: StoreSet, get: StoreGet) => ({
         'toggleArchiveBookmark:success'
       )
 
-      const { useCollectionsStore } = await import('@/store/collectionsStore')
-      await useCollectionsStore.getState().loadCollections()
-
       if (updatedBookmark.is_archived) {
         get().addActivityLog('Archived bookmark', updatedBookmark.title)
       } else {

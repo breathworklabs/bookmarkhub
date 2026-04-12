@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useBookmarkStore } from '@/store/bookmarkStore'
-import { useCollectionsStore } from '@/store/collectionsStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useViewStore } from '@/store/viewStore'
 import { runMigration, isMigrated } from '@/utils/viewMigration'
@@ -16,8 +15,6 @@ export const useInitializeApp = () => {
   const [isInitializing, setIsInitializing] = useState(false)
   const isLoading = useBookmarkStore((state) => state.isLoading)
   const error = useBookmarkStore((state) => state.error)
-  const collectionsLoading = useCollectionsStore((state) => state.isLoading)
-  const collectionsError = useCollectionsStore((state) => state.error)
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
 
   const hasInitialized = useRef(false)
@@ -52,7 +49,6 @@ export const useInitializeApp = () => {
 
           await Promise.all([
             useBookmarkStore.getState().initialize(),
-            useCollectionsStore.getState().initialize(),
             useViewStore.getState().loadViews(),
           ])
           setIsInitializing(false)
@@ -160,7 +156,6 @@ export const useInitializeApp = () => {
         // Reload bookmarks from localStorage without page reload
         Promise.all([
           useBookmarkStore.getState().initialize(),
-          useCollectionsStore.getState().initialize(),
           useViewStore.getState().loadViews(),
         ])
           .then(() => {
@@ -257,15 +252,15 @@ export const useInitializeApp = () => {
   // Show loading when:
   // 1. Still checking localStorage (hasExistingBookmarks === null)
   // 2. Initializing stores (isInitializing === true)
-  // 3. Loading bookmarks/collections (isLoading || collectionsLoading)
+  // 3. Loading bookmarks (isLoading)
   const showLoading =
     hasExistingBookmarks === null ||
     isInitializing ||
-    (hasExistingBookmarks === true && (isLoading || collectionsLoading))
+    (hasExistingBookmarks === true && isLoading)
 
   return {
     isLoading: showLoading,
-    error: error || collectionsError,
+    error,
     hasExistingBookmarks,
   }
 }
