@@ -10,14 +10,11 @@ export interface FilterParams {
   selectedTags: string[]
   searchQuery: string
   activeTab: number
-  activeSidebarItem: string
   authorFilter: string
   domainFilter: string
   contentTypeFilter: string
   dateRangeFilter: DateRangeFilter
   quickFilters: string[]
-  activeCollectionId: string | null
-  collectionBookmarks: Record<string, number[]>
   validationResults?: ValidationResult[]
   sortBy?: 'date' | 'title' | 'author' | 'domain'
   sortOrder?: 'asc' | 'desc'
@@ -48,14 +45,11 @@ export const filterBookmarksOptimized = ({
   selectedTags,
   searchQuery,
   activeTab,
-  activeSidebarItem,
   authorFilter,
   domainFilter,
   contentTypeFilter,
   dateRangeFilter,
   quickFilters,
-  activeCollectionId,
-  collectionBookmarks,
   validationResults,
   sortBy = 'date',
   sortOrder = 'desc',
@@ -80,23 +74,7 @@ export const filterBookmarksOptimized = ({
       ? new Set(validationResults.filter((r) => !r.isValid).map((r) => r.id))
       : null
 
-  // Collection filter
-  const hasCollectionFilter =
-    activeSidebarItem === 'Collections' && activeCollectionId
-  const smartCollectionIds = new Set([
-    'starred',
-    'recent',
-    'archived',
-    'uncategorized',
-  ])
-  const isSmartCollection =
-    hasCollectionFilter && smartCollectionIds.has(activeCollectionId!)
-  const bookmarkIdsInCollection =
-    hasCollectionFilter && !isSmartCollection
-      ? new Set(collectionBookmarks[activeCollectionId!] || [])
-      : null
-
-  // View filter (takes priority over collection filter)
+  // View filter
   const activeView =
     activeViewId && activeViewId !== SYSTEM_VIEWS.ALL && views
       ? views.find((v) => v.id === activeViewId)
@@ -110,10 +88,6 @@ export const filterBookmarksOptimized = ({
     hasViewFilter && activeView.criteria?.broken && validationResults
       ? new Set(validationResults.filter((r) => !r.isValid).map((r) => r.id))
       : undefined
-
-  // Pre-compute date threshold for 'recent' smart collection
-  const recentSmartThreshold = new Date()
-  recentSmartThreshold.setDate(recentSmartThreshold.getDate() - 7)
 
   // Pre-compute date thresholds for activeTab
   // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=This Month, 4=Threads, 5=Media
@@ -177,7 +151,7 @@ export const filterBookmarksOptimized = ({
     // 1. Skip deleted bookmarks (unless in trash view)
     if (bookmark.is_deleted) return false
 
-    // 2. View filter (priority over collection filter)
+    // 2. View filter
     if (hasViewFilter) {
       if (viewBookmarkIdSet) {
         if (!viewBookmarkIdSet.has(String(bookmark.id))) return false
@@ -190,34 +164,6 @@ export const filterBookmarksOptimized = ({
           )
         )
           return false
-      }
-    } else if (hasCollectionFilter) {
-      if (isSmartCollection) {
-        switch (activeCollectionId) {
-          case 'starred':
-            if (!bookmark.is_starred) return false
-            break
-          case 'recent':
-            if (getBookmarkDate(bookmark) < recentSmartThreshold) return false
-            break
-          case 'archived':
-            if (!bookmark.is_archived) return false
-            break
-          case 'uncategorized':
-            if (
-              bookmark.collections &&
-              bookmark.collections.length > 0 &&
-              !(
-                bookmark.collections.length === 1 &&
-                bookmark.collections[0] === 'uncategorized'
-              )
-            ) {
-              return false
-            }
-            break
-        }
-      } else if (!bookmarkIdsInCollection!.has(bookmark.id)) {
-        return false
       }
     }
 

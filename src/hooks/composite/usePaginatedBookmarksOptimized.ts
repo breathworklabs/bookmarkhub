@@ -2,7 +2,6 @@ import { useMemo, useEffect, useRef } from 'react'
 import { type Bookmark } from '@/types/bookmark'
 import { filterBookmarksOptimized } from '@/utils/bookmarkFilteringOptimized'
 import { useBookmarkStore } from '@/store/bookmarkStore'
-import { useCollectionsStore } from '@/store/collectionsStore'
 import { useViewStore } from '@/store/viewStore'
 
 export interface PaginatedBookmarksResult {
@@ -27,13 +26,6 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
   const quickFilters = useBookmarkStore((state) => state.quickFilters)
   const validationResults = useBookmarkStore((state) => state.validationResults)
 
-  const activeCollectionId = useCollectionsStore(
-    (state) => state.activeCollectionId
-  )
-  const collectionBookmarks = useCollectionsStore(
-    (state) => state.collectionBookmarks
-  )
-
   const activeViewId = useViewStore((state) => state.activeViewId)
   const views = useViewStore((state) => state.views)
 
@@ -46,15 +38,12 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
       selectedTags,
       searchQuery,
       activeTab,
-      activeSidebarItem,
       authorFilter,
       domainFilter,
       contentTypeFilter,
       dateRangeFilter,
       quickFilters,
       validationResults,
-      activeCollectionId,
-      collectionBookmarks,
       activeViewId,
       views,
     })
@@ -63,15 +52,12 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
     selectedTags,
     searchQuery,
     activeTab,
-    activeSidebarItem,
     authorFilter,
     domainFilter,
     contentTypeFilter,
     dateRangeFilter,
     quickFilters,
     validationResults,
-    activeCollectionId,
-    collectionBookmarks,
     activeViewId,
     views,
   ])
@@ -98,7 +84,6 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
     contentTypeFilter,
     dateRangeFilter,
     quickFilters,
-    activeCollectionId,
     activeViewId,
   })
 
@@ -114,7 +99,6 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
       prev.contentTypeFilter !== contentTypeFilter ||
       prev.dateRangeFilter !== dateRangeFilter ||
       prev.quickFilters !== quickFilters ||
-      prev.activeCollectionId !== activeCollectionId ||
       prev.activeViewId !== activeViewId
     ) {
       resetPagination()
@@ -128,7 +112,6 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
         contentTypeFilter,
         dateRangeFilter,
         quickFilters,
-        activeCollectionId,
         activeViewId,
       }
     }
@@ -142,7 +125,6 @@ export const usePaginatedBookmarksOptimized = (): PaginatedBookmarksResult => {
     contentTypeFilter,
     dateRangeFilter,
     quickFilters,
-    activeCollectionId,
     activeViewId,
     resetPagination,
   ])
