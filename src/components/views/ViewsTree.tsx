@@ -3,7 +3,7 @@ import { useMemo, memo, useCallback } from 'react'
 import { useViewStore } from '@/store/viewStore'
 import { useBookmarkStore } from '@/store/bookmarkStore'
 import { SYSTEM_VIEWS } from '@/types/views'
-import { useNavigateWithCleanup } from '@/hooks/useNavigateWithCleanup'
+import { useModal } from '@/components/modals/ModalProvider'
 import { ViewsTreeItem } from './ViewsTreeItem'
 
 const NAV_ITEM_VIEW_IDS: ReadonlySet<string> = new Set([
@@ -19,35 +19,24 @@ const ViewsTree = memo(() => {
   const setActiveView = useViewStore((s) => s.setActiveView)
   const toggleViewExpansion = useViewStore((s) => s.toggleViewExpansion)
   const bookmarks = useBookmarkStore((s) => s.bookmarks)
-  const clearBookmarkSelection = useBookmarkStore(
-    (s) => s.clearBookmarkSelection
-  )
-  const setActiveSidebarItem = useBookmarkStore((s) => s.setActiveSidebarItem)
-  const clearAdvancedFilters = useBookmarkStore((s) => s.clearAdvancedFilters)
-  const navigateWithCleanup = useNavigateWithCleanup()
+  const createView = useViewStore((s) => s.createView)
+  const { showCreateCollection } = useModal()
 
   const handleViewClick = useCallback(
     (view: { id: string }) => {
       setActiveView(view.id)
-      clearBookmarkSelection()
-      setActiveSidebarItem('All Bookmarks')
-      clearAdvancedFilters()
-      navigateWithCleanup('/')
     },
-    [
-      setActiveView,
-      clearBookmarkSelection,
-      setActiveSidebarItem,
-      clearAdvancedFilters,
-      navigateWithCleanup,
-    ]
+    [setActiveView]
   )
 
   const rootViews = useMemo(
     () =>
       views
         .filter((v) => !v.parentId && !NAV_ITEM_VIEW_IDS.has(v.id))
-        .sort((a, b) => a.sortOrder - b.sortOrder),
+        .sort((a, b) => {
+          if (a.pinned !== b.pinned) return a.pinned ? -1 : 1
+          return a.sortOrder - b.sortOrder
+        }),
     [views]
   )
 
@@ -55,6 +44,14 @@ const ViewsTree = memo(() => {
     () => views.some((v) => !v.system && !NAV_ITEM_VIEW_IDS.has(v.id)),
     [views]
   )
+
+  const handleCreateView = useCallback(() => {
+    showCreateCollection({
+      onCreate: (viewData) => {
+        createView(viewData)
+      },
+    })
+  }, [showCreateCollection, createView])
 
   if (rootViews.length === 0 && !hasUserViews) {
     return (
@@ -77,12 +74,9 @@ const ViewsTree = memo(() => {
           color="var(--color-blue)"
           _hover={{ bg: 'var(--color-bg-hover)' }}
           fontSize="xs"
-          onClick={() => {
-            setActiveView(SYSTEM_VIEWS.ALL)
-            navigateWithCleanup('/')
-          }}
+          onClick={handleCreateView}
         >
-          Create your first
+          Create your first view
         </Button>
       </Box>
     )

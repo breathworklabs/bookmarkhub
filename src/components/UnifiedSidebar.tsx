@@ -22,11 +22,13 @@ import {
   LuMessageSquare,
   LuSparkles,
   LuScrollText,
+  LuStar,
+  LuClock,
+  LuFolderPlus,
 } from 'react-icons/lu'
 import { useMemo, useCallback, memo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useBookmarkStore } from '@/store/bookmarkStore'
-import { useCollectionsStore } from '@/store/collectionsStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useViewStore } from '@/store/viewStore'
 import { SYSTEM_VIEWS } from '@/types/views'
@@ -36,34 +38,29 @@ import { FeedbackMenu } from './FeedbackMenu'
 import { useNavigationStyles } from '@/hooks/useStyles'
 import { useNavigateWithCleanup } from '@/hooks/useNavigateWithCleanup'
 import { componentStyles } from '@/styles/components'
+import { useModal } from './modals/ModalProvider'
 import logoImage from '@/assets/logo_v2 1.png'
 
 // Optimized selector for bookmark data
 const useBookmarkCounts = () => {
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
-  const collections = useCollectionsStore((state) => state.collections)
 
   return useMemo(() => {
     const weekAgo = new Date()
     weekAgo.setDate(weekAgo.getDate() - 7)
-    const sharedCollectionsCount = collections.filter(
-      (c) => c.shareSettings
-    ).length
 
     return {
       total: bookmarks.filter((b) => !b.is_deleted).length,
       starred: bookmarks.filter((b) => b.is_starred && !b.is_deleted).length,
       archived: bookmarks.filter((b) => b.is_archived && !b.is_deleted).length,
-      shared:
-        bookmarks.filter((b) => b.is_shared && !b.is_deleted).length +
-        sharedCollectionsCount,
+      shared: bookmarks.filter((b) => b.is_shared && !b.is_deleted).length,
       deleted: bookmarks.filter((b) => b.is_deleted).length,
       recent: bookmarks.filter((b) => {
         const date = new Date(b.created_at)
         return date >= weekAgo && !b.is_deleted
       }).length,
     }
-  }, [bookmarks, collections])
+  }, [bookmarks])
 }
 
 interface UnifiedSidebarProps {
@@ -74,10 +71,6 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
   const navigateWithCleanup = useNavigateWithCleanup()
   const location = useLocation()
   const activeSidebarItem = useBookmarkStore((state) => state.activeSidebarItem)
-  const setActiveSidebarItem = useBookmarkStore(
-    (state) => state.setActiveSidebarItem
-  )
-  const toggleAIPanel = useBookmarkStore((state) => state.toggleAIPanel)
   const viewMode = useSettingsStore((state) => state.display.viewMode)
   const setViewMode = useSettingsStore((state) => state.setViewMode)
   const isSidebarCollapsed = useSettingsStore(
@@ -93,43 +86,21 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
   const toggleSidebarCollapsed = () =>
     useSettingsStore.getState().toggleSidebarCollapsed()
   const bookmarkCounts = useBookmarkCounts()
-  const setActiveCollection = useCollectionsStore(
-    (state) => state.setActiveCollection
-  )
   const isMobile = useIsMobile()
 
   const activeViewId = useViewStore((state) => state.activeViewId)
+  const createView = useViewStore((state) => state.createView)
+  const { showCreateCollection } = useModal()
 
   const [isFeedbackMenuOpen, setIsFeedbackMenuOpen] = useState(false)
 
-  // Memoized event handlers
-  const handleNavItemClick = useCallback(
-    (label: string) => {
-      setActiveSidebarItem(label)
-      // Clear active collection when clicking sidebar navigation items
-      setActiveCollection(null)
-      // Clear selected bookmarks when switching categories
-      useBookmarkStore.getState().clearBookmarkSelection()
-
-      // Hidden for now - will add later
-      // if (label === 'AI Insights') {
-      //   toggleAIPanel()
-      // } else
-      if (label === 'All Bookmarks') {
-        navigateWithCleanup('/', onItemClick)
-      } else {
-        // Close mobile drawer if callback provided
-        onItemClick?.()
-      }
-    },
-    [
-      setActiveSidebarItem,
-      setActiveCollection,
-      toggleAIPanel,
-      navigateWithCleanup,
-      onItemClick,
-    ]
-  )
+  const handleCreateView = useCallback(() => {
+    showCreateCollection({
+      onCreate: (viewData) => {
+        createView(viewData)
+      },
+    })
+  }, [showCreateCollection, createView])
 
   // create handler inline where used; remove unused local
 
@@ -291,11 +262,28 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
             badge={bookmarkCounts.total}
             onClick={() => {
               useViewStore.getState().setActiveView(SYSTEM_VIEWS.ALL)
-              handleNavItemClick('All Bookmarks')
             }}
             active={
               isActive('All Bookmarks') && activeViewId === SYSTEM_VIEWS.ALL
             }
+          />
+          <NavItem
+            icon={<LuStar size={18} />}
+            label="Starred"
+            badge={bookmarkCounts.starred}
+            onClick={() => {
+              useViewStore.getState().setActiveView(SYSTEM_VIEWS.STARRED)
+            }}
+            active={activeViewId === SYSTEM_VIEWS.STARRED}
+          />
+          <NavItem
+            icon={<LuClock size={18} />}
+            label="Recent"
+            badge={bookmarkCounts.recent}
+            onClick={() => {
+              useViewStore.getState().setActiveView(SYSTEM_VIEWS.RECENT)
+            }}
+            active={activeViewId === SYSTEM_VIEWS.RECENT}
           />
         </VStack>
 
@@ -307,7 +295,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
               style={{ borderColor: 'var(--color-border)' }}
               mb={2}
             >
-              <Box px={3} py={3}>
+              <HStack px={3} py={2} justify="space-between" align="center">
                 <Text
                   fontWeight="600"
                   fontSize="11px"
@@ -317,7 +305,22 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
                 >
                   Views
                 </Text>
-              </Box>
+                <Box
+                  as="button"
+                  color="var(--color-text-tertiary)"
+                  _hover={{
+                    color: 'var(--color-text-primary)',
+                    bg: 'var(--color-bg-hover)',
+                  }}
+                  onClick={handleCreateView}
+                  p={1}
+                  borderRadius="md"
+                  cursor="pointer"
+                  title="Create view"
+                >
+                  <LuFolderPlus size={14} />
+                </Box>
+              </HStack>
             </Box>
 
             <Box flex={1} overflowY="auto">

@@ -22,9 +22,12 @@ import {
   LuChevronDown,
 } from 'react-icons/lu'
 import { memo, useMemo, useRef, useEffect, useState, useCallback } from 'react'
+import { useDrop } from 'react-dnd'
 import type { View } from '@/store/viewStore'
 import type { Bookmark } from '@/types/bookmark'
 import { SYSTEM_VIEWS } from '@/types/views'
+import { ItemTypes, type DragItem, type DropResult } from '@/types/dnd'
+import { matchesCriteria } from '@/utils/viewFiltering'
 import { ViewContextMenu } from './ViewContextMenu'
 
 const VIEW_ICONS: Record<string, React.ReactNode> = {
@@ -37,86 +40,6 @@ const VIEW_ICONS: Record<string, React.ReactNode> = {
   folder: <LuFolder size={16} />,
   filter: <LuFilter size={16} />,
   folders: <LuFolders size={16} />,
-}
-
-function matchesCriteria(
-  bookmark: Bookmark,
-  criteria: NonNullable<View['criteria']>
-): boolean {
-  if (criteria.starred && !bookmark.is_starred) return false
-  if (criteria.unread && bookmark.is_read) return false
-  if (criteria.broken) return false
-  if (criteria.isDeleted && !bookmark.is_deleted) return false
-  if (criteria.isDeleted === false && bookmark.is_deleted) return false
-  if (criteria.isUncategorized) {
-    if (bookmark.is_deleted) return false
-    const cols = bookmark.collections || []
-    if (cols.length > 0 && !(cols.length === 1 && cols[0] === 'uncategorized'))
-      return false
-  }
-  if (criteria.tags && criteria.tags.length > 0) {
-    const bmTags = bookmark.tags || []
-    if (criteria.tagMatch === 'all') {
-      if (!criteria.tags.every((t) => bmTags.includes(t))) return false
-    } else {
-      if (!criteria.tags.some((t) => bmTags.includes(t))) return false
-    }
-  }
-  if (criteria.authors && criteria.authors.length > 0) {
-    if (!criteria.authors.includes(bookmark.author)) return false
-  }
-  if (criteria.domains && criteria.domains.length > 0) {
-    if (!criteria.domains.includes(bookmark.domain)) return false
-  }
-  if (criteria.query) {
-    const q = criteria.query.toLowerCase()
-    const haystack =
-      `${bookmark.title} ${bookmark.description} ${bookmark.content}`.toLowerCase()
-    if (!haystack.includes(q)) return false
-  }
-  if (criteria.minEngagement !== undefined) {
-    if (bookmark.engagement_score < criteria.minEngagement) return false
-  }
-  if (criteria.recentDays !== undefined) {
-    const cutoff = new Date()
-    cutoff.setDate(cutoff.getDate() - criteria.recentDays)
-    if (new Date(bookmark.created_at) < cutoff) return false
-    if (bookmark.is_deleted) return false
-  }
-  if (criteria.dateRange) {
-    if (bookmark.is_deleted) return false
-    const bmDate = new Date(bookmark.created_at)
-    if (criteria.dateRange.start && bmDate < new Date(criteria.dateRange.start))
-      return false
-    if (criteria.dateRange.end && bmDate > new Date(criteria.dateRange.end))
-      return false
-    if (criteria.dateRange.preset) {
-      const now = new Date()
-      let start: Date
-      switch (criteria.dateRange.preset) {
-        case 'today':
-          start = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-          break
-        case 'week':
-          start = new Date(now)
-          start.setDate(start.getDate() - 7)
-          break
-        case 'month':
-          start = new Date(now)
-          start.setMonth(start.getMonth() - 1)
-          break
-        case 'year':
-          start = new Date(now)
-          start.setFullYear(start.getFullYear() - 1)
-          break
-      }
-      if (start && bmDate < start) return false
-    }
-  }
-  if (criteria.starred === false && bookmark.is_starred) return false
-  if (bookmark.is_archived && !criteria.isDeleted && !bookmark.is_deleted)
-    return false
-  return true
 }
 
 interface ViewsTreeItemProps {
@@ -233,19 +156,84 @@ export const ViewsTreeItem = memo<ViewsTreeItemProps>(
       [onToggleExpand, view.id]
     )
 
+    const canAcceptDrop = useCallback(
+      (item: DragItem) => {
+        if (view.mode === 'dynamic' && view.id !== SYSTEM_VIEWS.UNCATEGORIZED) {
+          return false
+        }
+        const bookmarkIds = item.selectedIds || [item.id]
+        return bookmarkIds.some(
+          (id) => !view.bookmarkIds.includes(String(id))
+        )
+      },
+      [view.mode, view.id, view.bookmarkIds]
+    )
+
+    const [{ isOver, canDrop }, dropRef] = useDrop<
+      DragItem,
+      DropResult,
+      { isOver: boolean; canDrop: boolean }
+    >(
+      () => ({
+        accept: ItemTypes.BOOKMARK,
+        canDrop: canAcceptDrop,
+        drop: (): DropResult => ({
+          collectionId: view.id,
+          collectionName: view.name,
+        }),
+        collect: (monitor) => ({
+          isOver: monitor.isOver(),
+          canDrop: monitor.canDrop(),
+        }),
+      }),
+      [view.id, view.name, canAcceptDrop]
+    )
+
+    const showDropIndicator = isOver && canDrop
+    const showInvalidDrop = isOver && !canDrop
+
     return (
-      <Box onContextMenu={handleContextMenu}>
+      <Box onContextMenu={handleContextMenu} position="relative">
+        {view.pinned && !view.system && (
+          <Box
+            position="absolute"
+            left={0}
+            top="6px"
+            bottom="6px"
+            w="3px"
+            borderRadius="0 2px 2px 0"
+            bg={isActive ? 'rgba(255,255,255,0.7)' : view.color || 'var(--color-blue)'}
+            zIndex={1}
+          />
+        )}
         <Box
+          ref={dropRef}
           px={3}
           py={2}
-          pl={`${12 + depth * 16}px`}
+          pl={`${12 + depth * 24}px`}
           borderRadius="md"
           cursor="pointer"
-          bg={isActive ? 'var(--color-blue)' : 'transparent'}
+          bg={
+            showDropIndicator
+              ? 'rgba(59, 130, 246, 0.15) !important'
+              : isActive
+                ? 'var(--color-blue)'
+                : 'transparent'
+          }
           color={isActive ? 'white' : 'var(--color-text-primary)'}
-          border="2px solid transparent"
+          border={
+            showDropIndicator
+              ? '2px dashed #3b82f6 !important'
+              : showInvalidDrop
+                ? '2px dashed #ef4444 !important'
+                : '2px solid transparent'
+          }
           _hover={{
-            bg: isActive ? 'var(--color-blue-hover)' : 'var(--color-border)',
+            bg: showDropIndicator
+              ? 'rgba(59, 130, 246, 0.15) !important'
+              : isActive
+                ? 'var(--color-blue-hover)'
+                : 'var(--color-border)',
           }}
           onClick={handleClick}
           transition="all 0.2s ease"
@@ -264,12 +252,14 @@ export const ViewsTreeItem = memo<ViewsTreeItemProps>(
                     <LuChevronRight size={14} />
                   )}
                 </Box>
-              ) : (
-                <Box w="14px" />
-              )}
+              ) : null}
 
               <Box color={getIconColor()} flexShrink={0}>
-                {VIEW_ICONS[view.icon] || <LuFolder size={16} />}
+                {hasChildren ? (
+                  <LuFolders size={16} />
+                ) : (
+                  VIEW_ICONS[view.icon?.toLowerCase()] || <LuFolder size={16} />
+                )}
               </Box>
 
               <Box

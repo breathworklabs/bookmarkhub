@@ -10,10 +10,11 @@
  */
 
 import { Box, VStack, HStack, Text, Input } from '@chakra-ui/react'
-import { LuPencil, LuTrash2, LuPin, LuPinOff, LuPalette } from 'react-icons/lu'
+import { LuPencil, LuTrash2, LuPin, LuPinOff, LuPalette, LuFolderPlus } from 'react-icons/lu'
 import { memo, useState, useRef, useEffect, useCallback } from 'react'
 import type { View } from '@/store/viewStore'
 import { useViewStore } from '@/store/viewStore'
+import { useModal } from '@/components/modals/ModalProvider'
 
 const PRESET_COLORS = [
   '#6366f1',
@@ -111,6 +112,8 @@ export const ViewContextMenu = memo<ViewContextMenuProps>(
     const deleteView = useViewStore((s) => s.deleteView)
     const pinView = useViewStore((s) => s.pinView)
     const unpinView = useViewStore((s) => s.unpinView)
+    const createView = useViewStore((s) => s.createView)
+    const { showCreateCollection } = useModal()
 
     const [isRenaming, setIsRenaming] = useState(false)
     const [renameValue, setRenameValue] = useState(view.name)
@@ -273,6 +276,21 @@ export const ViewContextMenu = memo<ViewContextMenuProps>(
                 }
               />
             )}
+
+            {/* Create sub-view */}
+            <MenuItem
+              icon={<LuFolderPlus size={18} />}
+              label="Create sub-view"
+              onClick={() => {
+                onClose()
+                showCreateCollection({
+                  initialParentId: view.id,
+                  onCreate: (viewData) => {
+                    createView(viewData)
+                  },
+                })
+              }}
+            />
 
             {/* Divider */}
             <Box h="1px" bg="var(--color-border)" my={1} />
