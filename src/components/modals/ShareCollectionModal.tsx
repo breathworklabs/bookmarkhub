@@ -18,14 +18,15 @@ import {
 import { FaXTwitter } from 'react-icons/fa6'
 import { memo, useState, useCallback } from 'react'
 import toast from 'react-hot-toast'
-import { useCollectionsStore } from '@/store/collectionsStore'
+import { useViewStore } from '@/store/viewStore'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 import * as shareApi from '@/lib/shareApi'
 import type { ExpiryOption, AccessLimitOption } from '@/types/share'
 
 interface ShareCollectionModalProps {
   isOpen: boolean
   onClose: () => void
-  collectionId: string
+  viewId: string
 }
 
 const EXPIRY_OPTIONS: { value: ExpiryOption; label: string }[] = [
@@ -43,16 +44,11 @@ const ACCESS_OPTIONS: { value: AccessLimitOption; label: string }[] = [
 ]
 
 export const ShareCollectionModal = memo<ShareCollectionModalProps>(
-  ({ isOpen, onClose, collectionId }) => {
-    const collections = useCollectionsStore((state) => state.collections)
-    const shareCollection = useCollectionsStore(
-      (state) => state.shareCollection
-    )
+  ({ isOpen, onClose, viewId }) => {
+    const views = useViewStore((state) => state.views)
+    const view = views.find((v) => v.id === viewId)
 
-    const collection = collections.find((c) => c.id === collectionId)
-    const bookmarkCount =
-      useCollectionsStore((state) => state.collectionBookmarks?.[collectionId])
-        ?.length || 0
+    const bookmarkCount = view?.bookmarkIds?.length || 0
 
     const [expiryDays, setExpiryDays] = useState<ExpiryOption>(30)
     const [maxAccess, setMaxAccess] = useState<AccessLimitOption>(null)
@@ -61,29 +57,74 @@ export const ShareCollectionModal = memo<ShareCollectionModalProps>(
       shareUrl: string
       expiresAt: string
     } | null>(
-      collection?.shareSettings?.shareUrl
+      view?.shareSettings?.shareUrl
         ? {
-            shareUrl: collection.shareSettings.shareUrl,
-            expiresAt: collection.shareSettings.expiresAt || '',
+            shareUrl: view.shareSettings.shareUrl,
+            expiresAt: view.shareSettings.expiresAt || '',
           }
         : null
     )
     const [copied, setCopied] = useState(false)
 
     const handleCreateShare = useCallback(async () => {
-      if (!collectionId) return
+      if (!viewId || !view) return
 
       setIsLoading(true)
       try {
-        const result = await shareCollection(collectionId, {
+        const allBookmarks = useBookmarkStore.getState().bookmarks
+        const bookmarkIdSet = new Set(view.bookmarkIds)
+        const bookmarks = allBookmarks.filter((b) =>
+          bookmarkIdSet.has(String(b.id))
+        )
+
+        const result = await shareApi.createShare({
+          name: view.name,
+          description: view.description,
+          bookmarks: bookmarks.map((b) => {
+            const meta = b.metadata as Record<string, unknown> | undefined
+            const profileImage =
+              (meta?.profile_image_normal as string | undefined) ||
+              (b.favicon_url && !b.favicon_url.includes('favicon.ico')
+                ? b.favicon_url
+                : undefined)
+            const images = Array.isArray(meta?.images) && meta.images.length > 0
+              ? meta.images
+              : b.thumbnail_url
+                ? [b.thumbnail_url]
+                : undefined
+            return {
+              title: b.title,
+              url: b.url,
+              author: b.author || undefined,
+              description: b.description || undefined,
+              content: b.content || undefined,
+              tags: b.tags || undefined,
+              profileImage: profileImage || undefined,
+              images: images || undefined,
+              hasVideo: (meta?.has_video as boolean | undefined) || undefined,
+            }
+          }),
           expiryDays: expiryDays ?? undefined,
           maxAccess: maxAccess ?? undefined,
         })
 
-        if (result) {
-          setShareResult(result)
-          toast.success('Share link created!')
+        const sharedAt = new Date().toISOString()
+        const shareSettings = {
+          shareId: result.id,
+          shareUrl: result.shareUrl,
+          expiresAt: result.expiresAt || null,
+          maxAccess: maxAccess ?? null,
+          accessCount: 0,
+          sharedAt,
         }
+
+        useViewStore.getState().updateView(viewId, { shareSettings })
+
+        setShareResult({
+          shareUrl: result.shareUrl,
+          expiresAt: result.expiresAt || '',
+        })
+        toast.success('Share link created!')
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : 'Failed to create share link'
@@ -91,7 +132,7 @@ export const ShareCollectionModal = memo<ShareCollectionModalProps>(
       } finally {
         setIsLoading(false)
       }
-    }, [collectionId, expiryDays, maxAccess, shareCollection])
+    }, [viewId, view, expiryDays, maxAccess])
 
     const handleCopyLink = useCallback(async () => {
       if (!shareResult?.shareUrl) return
@@ -105,14 +146,14 @@ export const ShareCollectionModal = memo<ShareCollectionModalProps>(
     }, [shareResult?.shareUrl])
 
     const handleShareTwitter = useCallback(() => {
-      if (!shareResult?.shareUrl || !collection) return
+      if (!shareResult?.shareUrl || !view) return
 
       shareApi.shareOnTwitter(
-        collection.name,
+        view.name,
         bookmarkCount,
         shareResult.shareUrl
       )
-    }, [shareResult?.shareUrl, collection, bookmarkCount])
+    }, [shareResult?.shareUrl, view, bookmarkCount])
 
     const formatExpiryDate = (dateStr: string) => {
       const date = new Date(dateStr)
@@ -127,7 +168,7 @@ export const ShareCollectionModal = memo<ShareCollectionModalProps>(
       return `${diffDays} days`
     }
 
-    if (!collection) return null
+    if (!view) return null
 
     return (
       <Dialog.Root
@@ -170,7 +211,7 @@ export const ShareCollectionModal = memo<ShareCollectionModalProps>(
                       <LuShare2 size={18} color="var(--color-blue)" />
                     </Box>
                     <Text fontWeight="600" fontSize="lg">
-                      Share Collection
+                      Share View
                     </Text>
                   </HStack>
                 </Dialog.Title>
@@ -178,7 +219,7 @@ export const ShareCollectionModal = memo<ShareCollectionModalProps>(
 
               <Dialog.Body px={6} pt={5} pb={4}>
                 <VStack gap={5} align="stretch">
-                  {/* Collection Info */}
+                  {/* View Info */}
                   <HStack
                     p={3}
                     bg="rgba(255, 255, 255, 0.03)"
@@ -190,7 +231,7 @@ export const ShareCollectionModal = memo<ShareCollectionModalProps>(
                       <LuFolder size={20} color="var(--color-text-secondary)" />
                     </Box>
                     <VStack align="start" gap={0} flex={1}>
-                      <Text fontWeight="500">{collection.name}</Text>
+                      <Text fontWeight="500">{view.name}</Text>
                       <Text fontSize="sm" color="var(--color-text-secondary)">
                         {bookmarkCount} bookmark{bookmarkCount !== 1 ? 's' : ''}
                       </Text>
@@ -275,7 +316,7 @@ export const ShareCollectionModal = memo<ShareCollectionModalProps>(
                           color="var(--color-warning)"
                           textAlign="center"
                         >
-                          This collection has no bookmarks to share
+                          This view has no bookmarks to share
                         </Text>
                       )}
                     </>
@@ -363,9 +404,9 @@ export const ShareCollectionModal = memo<ShareCollectionModalProps>(
                             <VStack align="start" gap={1}>
                               <HStack gap={2}>
                                 <LuFolder size={16} />
-                                <Text fontWeight="500">{collection.name}</Text>
+                                <Text fontWeight="500">{view.name}</Text>
                                 <Badge size="sm" colorPalette="blue" variant="subtle">
-                                  COLLECTION
+                                  VIEW
                                 </Badge>
                               </HStack>
                               <Text fontSize="sm" color="var(--color-text-secondary)">

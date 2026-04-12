@@ -16,14 +16,14 @@ import {
   LuX,
 } from 'react-icons/lu'
 import { memo, useState, useMemo } from 'react'
-import { useCollectionsStore } from '@/store/collectionsStore'
-import type { Collection } from '@/types/collections'
+import { useViewStore } from '@/store/viewStore'
+import type { View } from '@/types/views'
 
 interface CollectionPickerModalProps {
   isOpen: boolean
   onClose: () => void
-  onSelect: (collectionId: string | null) => void
-  currentCollectionId?: string | null
+  onSelect: (viewId: string | null) => void
+  currentViewId?: string | null
   title?: string
 }
 
@@ -32,64 +32,66 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(
     isOpen,
     onClose,
     onSelect,
-    currentCollectionId = null,
-    title = 'Move to Collection',
+    currentViewId = null,
+    title = 'Move to View',
   }) => {
-    const collections = useCollectionsStore((state) => state.collections)
+    const views = useViewStore((state) => state.views)
     const [searchQuery, setSearchQuery] = useState('')
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 
-    // Build collection hierarchy
-    const collectionMap = useMemo(() => {
-      const map = new Map<string, Collection & { children: Collection[] }>()
-      collections.forEach((col) => {
-        map.set(col.id, { ...col, children: [] })
+    // Filter to manual non-system views
+    const manualViews = useMemo(
+      () => views.filter((v) => !v.system && v.mode === 'manual'),
+      [views]
+    )
+
+    // Build view hierarchy
+    const viewMap = useMemo(() => {
+      const map = new Map<string, View & { children: View[] }>()
+      manualViews.forEach((v) => {
+        map.set(v.id, { ...v, children: [] })
       })
-      collections.forEach((col) => {
-        if (col.parentId) {
-          const parent = map.get(col.parentId)
+      manualViews.forEach((v) => {
+        if (v.parentId) {
+          const parent = map.get(v.parentId)
           if (parent) {
-            parent.children.push(map.get(col.id)!)
+            parent.children.push(map.get(v.id)!)
           }
         }
       })
       return map
-    }, [collections])
+    }, [manualViews])
 
-    // Get root collections
-    const rootCollections = useMemo(() => {
-      return Array.from(collectionMap.values()).filter((col) => !col.parentId)
-    }, [collectionMap])
+    // Get root views
+    const rootViews = useMemo(() => {
+      return Array.from(viewMap.values()).filter((v) => !v.parentId)
+    }, [viewMap])
 
-    // Filter collections based on search
-    const filteredCollections = useMemo(() => {
-      if (!searchQuery.trim()) return rootCollections
+    // Filter views based on search
+    const filteredViews = useMemo(() => {
+      if (!searchQuery.trim()) return rootViews
 
       const query = searchQuery.toLowerCase()
       const matches = new Set<string>()
 
-      const checkMatch = (col: Collection & { children: Collection[] }) => {
-        if (col.name.toLowerCase().includes(query)) {
-          matches.add(col.id)
+      const checkMatch = (v: View & { children: View[] }) => {
+        if (v.name.toLowerCase().includes(query)) {
+          matches.add(v.id)
           // Add all parents
-          let parentId = col.parentId
+          let parentId = v.parentId
           while (parentId) {
             matches.add(parentId)
-            const parent = collectionMap.get(parentId)
+            const parent = viewMap.get(parentId)
             parentId = parent?.parentId || null
           }
         }
-        ;(col.children as (Collection & { children: Collection[] })[]).forEach(
-          checkMatch
-        )
+        ;(v.children as (View & { children: View[] })[]).forEach(checkMatch)
       }
 
-      rootCollections.forEach((col: Collection & { children: Collection[] }) =>
-        checkMatch(col)
-      )
+      rootViews.forEach((v: View & { children: View[] }) => checkMatch(v))
 
-      return rootCollections.filter((col) => matches.has(col.id))
-    }, [rootCollections, searchQuery, collectionMap])
+      return rootViews.filter((v) => matches.has(v.id))
+    }, [rootViews, searchQuery, viewMap])
 
     const toggleExpand = (id: string) => {
       setExpandedIds((prev) => {
@@ -103,22 +105,22 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(
       })
     }
 
-    const handleSelect = (collectionId: string | null) => {
-      onSelect(collectionId)
+    const handleSelect = (viewId: string | null) => {
+      onSelect(viewId)
       onClose()
       setSearchQuery('')
     }
 
-    const renderCollection = (
-      col: Collection & { children: Collection[] },
+    const renderView = (
+      v: View & { children: View[] },
       depth = 0
     ) => {
-      const isExpanded = expandedIds.has(col.id)
-      const hasChildren = col.children.length > 0
-      const isCurrent = col.id === currentCollectionId
+      const isExpanded = expandedIds.has(v.id)
+      const hasChildren = v.children.length > 0
+      const isCurrent = v.id === currentViewId
 
       return (
-        <Box key={col.id}>
+        <Box key={v.id}>
           <HStack
             px={3}
             py={2}
@@ -131,14 +133,14 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(
                 : 'var(--color-bg-tertiary)',
             }}
             borderRadius="md"
-            onClick={() => handleSelect(col.id)}
+            onClick={() => handleSelect(v.id)}
             transition="background-color 0.2s ease"
           >
             {hasChildren && (
               <Box
                 onClick={(e) => {
                   e.stopPropagation()
-                  toggleExpand(col.id)
+                  toggleExpand(v.id)
                 }}
                 cursor="pointer"
                 display="flex"
@@ -171,12 +173,12 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(
               }
               flex={1}
             >
-              {col.name}
+              {v.name}
             </Text>
 
-            {col.bookmarkCount > 0 && (
+            {v.bookmarkIds.length > 0 && (
               <Text fontSize="xs" color="var(--color-text-tertiary)">
-                {col.bookmarkCount}
+                {v.bookmarkIds.length}
               </Text>
             )}
           </HStack>
@@ -184,8 +186,8 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(
           {isExpanded && hasChildren && (
             <Box>
               {(
-                col.children as (Collection & { children: Collection[] })[]
-              ).map((child) => renderCollection(child, depth + 1))}
+                v.children as (View & { children: View[] })[]
+              ).map((child) => renderView(child, depth + 1))}
             </Box>
           )}
         </Box>
@@ -260,7 +262,7 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(
                       <LuSearch size={16} color="var(--color-text-tertiary)" />
                       <Input
                         variant="subtle"
-                        placeholder="Search collections..."
+                        placeholder="Search views..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         fontSize="sm"
@@ -281,13 +283,13 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(
                       py={2}
                       cursor="pointer"
                       bg={
-                        currentCollectionId === null
+                        currentViewId === null
                           ? 'var(--color-blue-alpha)'
                           : 'transparent'
                       }
                       _hover={{
                         bg:
-                          currentCollectionId === null
+                          currentViewId === null
                             ? 'var(--color-blue-alpha)'
                             : 'var(--color-bg-tertiary)',
                       }}
@@ -296,8 +298,8 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(
                     >
                       <LuFolder
                         size={16}
-                        color={
-                          currentCollectionId === null
+                          color={
+                          currentViewId === null
                             ? 'var(--color-blue)'
                             : 'var(--color-text-tertiary)'
                         }
@@ -305,16 +307,16 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(
                       <Text
                         fontSize="sm"
                         fontWeight={
-                          currentCollectionId === null ? '600' : '500'
+                          currentViewId === null ? '600' : '500'
                         }
                         color={
-                          currentCollectionId === null
+                          currentViewId === null
                             ? 'var(--color-blue)'
                             : 'var(--color-text-primary)'
                         }
                         flex={1}
                       >
-                        No Collection (Root)
+                        No View (Root)
                       </Text>
                     </HStack>
                   </Box>
@@ -341,8 +343,8 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(
                     }}
                   >
                     <VStack align="stretch" gap={1}>
-                      {filteredCollections.length > 0 ? (
-                        filteredCollections.map((col) => renderCollection(col))
+                      {filteredViews.length > 0 ? (
+                        filteredViews.map((v) => renderView(v))
                       ) : (
                         <Text
                           fontSize="sm"
@@ -351,8 +353,8 @@ export const CollectionPickerModal = memo<CollectionPickerModalProps>(
                           py={8}
                         >
                           {searchQuery
-                            ? 'No collections found'
-                            : 'No collections available'}
+                            ? 'No views found'
+                            : 'No views available'}
                         </Text>
                       )}
                     </VStack>

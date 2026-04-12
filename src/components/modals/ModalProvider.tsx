@@ -32,9 +32,10 @@ import DuplicateBookmarkDialog from './DuplicateBookmarkDialog'
 import { ShareCollectionModal } from './ShareCollectionModal'
 import TagInput from '@/components/tags/TagInput'
 import TagChip from '@/components/tags/TagChip'
-import { useCollectionsStore, type Collection } from '@/store/collectionsStore'
+import { useViewStore } from '@/store/viewStore'
+import type { View } from '@/store/viewStore'
 import {
-  getCollectionPathString,
+  getCollectionPathString as getViewPathString,
   wouldCreateCircularReference,
 } from '@/utils/collectionHierarchy'
 
@@ -90,12 +91,12 @@ interface EditBookmarkOptions {
 interface CreateCollectionOptions {
   onCreate: (collection: CollectionInsert) => void
   onCancel?: () => void
+  initialParentId?: string
 }
 
 interface EditCollectionOptions {
-  collection: Collection
-  onEdit: (id: string, updates: Partial<Collection>) => void
-  onCancel?: () => void
+  view: View
+  onEdit: (id: string, updates: Partial<View>) => void
 }
 
 interface ImageModalOptions {
@@ -198,43 +199,39 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     })
 
   // Get collections for parent selector
-  const collections = useCollectionsStore((state) => state.collections)
+  const views = useViewStore((state) => state.views)
 
-  // Get valid parent collections (exclude current collection and its descendants when editing)
   const validParentCollections = useMemo(() => {
     const currentCollectionId =
       modalState.type === 'editCollection'
-        ? modalState.options?.collection?.id
+        ? modalState.options?.view?.id
         : undefined
 
-    return collections.filter((c) => {
-      // Exclude smart collections (they can't be parents)
-      if (c.isSmartCollection) return false
+    return views.filter((v) => {
+      if (v.system) return false
 
-      // When editing, exclude self and descendants
-      if (currentCollectionId && c.id === currentCollectionId) return false
+      if (currentCollectionId && v.id === currentCollectionId) return false
       if (
         currentCollectionId &&
-        wouldCreateCircularReference(currentCollectionId, c.id, collections)
+        wouldCreateCircularReference(currentCollectionId, v.id, views as any)
       ) {
         return false
       }
 
       return true
     })
-  }, [collections, modalState.type, modalState.options])
+  }, [views, modalState.type, modalState.options])
 
-  // Create parent collection options for select
   const parentCollectionOptions = useMemo(() => {
     const items = [
       { label: 'None (Root Level)', value: '__none__' },
-      ...validParentCollections.map((c) => ({
-        label: getCollectionPathString(c.id, collections, ' → '),
-        value: c.id,
+      ...validParentCollections.map((v) => ({
+        label: getViewPathString(v.id, views as any, ' → '),
+        value: v.id,
       })),
     ]
     return createListCollection({ items })
-  }, [validParentCollections, collections])
+  }, [validParentCollections, views])
 
   const showDeleteConfirmation = (options: DeleteConfirmationOptions) => {
     setModalState({ type: 'delete', options })
@@ -394,6 +391,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setCollectionFormData({
       name: '',
       description: '',
+      parentId: options.initialParentId ?? null,
       color: 'var(--color-blue)',
       icon: 'folder',
       isPrivate: false,
@@ -406,14 +404,14 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const showEditCollection = (options: EditCollectionOptions) => {
     setModalState({ type: 'editCollection', options })
     setCollectionFormData({
-      name: options.collection.name || '',
-      description: options.collection.description || '',
-      color: options.collection.color || 'var(--color-blue)',
-      icon: options.collection.icon || 'folder',
-      isPrivate: options.collection.isPrivate || false,
-      isDefault: options.collection.isDefault || false,
-      isSmartCollection: options.collection.isSmartCollection || false,
-      userId: options.collection.userId || 'local-user',
+      name: options.view.name || '',
+      description: options.view.description || '',
+      color: options.view.color || 'var(--color-blue)',
+      icon: options.view.icon || 'folder',
+      isPrivate: false,
+      isDefault: false,
+      isSmartCollection: false,
+      userId: options.view.userId || 'local-user',
     })
   }
 
@@ -426,7 +424,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
 
       if (modalState.type === 'editCollection') {
         modalState.options?.onEdit?.(
-          modalState.options.collection.id,
+          modalState.options.view.id,
           collectionFormData
         )
       } else {
@@ -989,8 +987,8 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                       style={{ color: 'var(--color-text-primary)' }}
                     >
                       {modalState.type === 'editCollection'
-                        ? 'Edit Collection'
-                        : 'Create Collection'}
+                        ? 'Edit View'
+                        : 'Create View'}
                     </Text>
                   </Dialog.Title>
                 </Dialog.Header>
@@ -1006,7 +1004,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                         onChange={(e) =>
                           handleCollectionFormChange('name', e.target.value)
                         }
-                        placeholder="Collection name"
+                        placeholder="View name"
                         required
                         style={{
                           background: 'var(--color-bg-tertiary)',
@@ -1035,7 +1033,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                             e.target.value
                           )
                         }
-                        placeholder="Collection description (optional)"
+                        placeholder="View description (optional)"
                         rows={2}
                         style={{
                           background: 'var(--color-bg-tertiary)',
@@ -1054,7 +1052,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
 
                     <VStack gap={2} align="stretch">
                       <Text fontSize="sm" color="var(--color-text-secondary)">
-                        Parent Collection
+                        Parent View
                       </Text>
                       <SelectRoot
                         collection={parentCollectionOptions}
@@ -1095,7 +1093,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                         </SelectContent>
                       </SelectRoot>
                       <Text fontSize="xs" color="var(--color-text-tertiary)">
-                        Create a sub-collection by selecting a parent, or leave
+                        Create a sub-view by selecting a parent, or leave
                         as root level
                       </Text>
                     </VStack>
@@ -1135,8 +1133,8 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                       disabled={!collectionFormData.name.trim()}
                     >
                       {modalState.type === 'editCollection'
-                        ? 'Update Collection'
-                        : 'Create Collection'}
+                        ? 'Update View'
+                        : 'Create View'}
                     </Button>
                   </HStack>
                 </Dialog.Footer>
@@ -1175,7 +1173,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       <ShareCollectionModal
         isOpen={shareCollectionState.isOpen}
         onClose={closeShareCollection}
-        collectionId={shareCollectionState.collectionId}
+        viewId={shareCollectionState.collectionId}
       />
     </ModalContext.Provider>
   )
