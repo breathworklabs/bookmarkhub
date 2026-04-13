@@ -20,9 +20,11 @@ import {
   LuTags,
   LuFolderOpen,
   LuMerge,
+  LuEye,
 } from 'react-icons/lu'
 import { useState, useCallback, useMemo, memo } from 'react'
 import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useViewStore } from '@/store/viewStore'
 import { useModal } from '@/components/modals/ModalProvider'
 import TagChip from './TagChip'
 import TagCategoriesManager from './TagCategoriesManager'
@@ -42,6 +44,9 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
   const bookmarks = useBookmarkStore((state) => state.bookmarks)
   const updateBookmark = useBookmarkStore((state) => state.updateBookmark)
   const { showTagMerge } = useModal()
+
+  const createView = useViewStore((state) => state.createView)
+  const views = useViewStore((state) => state.views)
 
   // Calculate tag statistics
   const tagStats = useMemo(() => {
@@ -139,6 +144,27 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
     [tagStats, bookmarks, updateBookmark]
   )
 
+  const handleCreateViewFromTag = useCallback((tagName: string) => {
+    const existing = views.find(
+      (v) => v.mode === 'dynamic' && v.criteria?.tags?.includes(tagName)
+    )
+    if (existing) {
+      useViewStore.getState().setActiveView(existing.id)
+      onClose()
+      return
+    }
+
+    createView({
+      name: tagName,
+      icon: 'tag',
+      mode: 'dynamic',
+      criteria: { tags: [tagName] },
+      pinned: true,
+      description: `All bookmarks tagged with "${tagName}"`,
+    })
+    onClose()
+  }, [views, createView, onClose])
+
   // Handle bulk operations
   const handleBulkDelete = useCallback(async () => {
     if (selectedTags.length === 0) return
@@ -148,6 +174,28 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
     }
     setSelectedTags([])
   }, [selectedTags, handleDeleteTag])
+
+  const handleBulkCreateView = useCallback(() => {
+    createView({
+      name:
+        selectedTags.length === 1
+          ? selectedTags[0]
+          : `${selectedTags.length} Tags`,
+      icon: 'tags',
+      mode: 'dynamic',
+      criteria: {
+        tags: selectedTags,
+        tagMatch: selectedTags.length === 1 ? 'all' : 'any',
+      },
+      pinned: true,
+      description:
+        selectedTags.length === 1
+          ? `Bookmarks tagged "${selectedTags[0]}"`
+          : `Bookmarks with any of: ${selectedTags.join(', ')}`,
+    })
+    setSelectedTags([])
+    onClose()
+  }, [selectedTags, createView, onClose])
 
   const handleToggleSelection = useCallback((tagName: string) => {
     setSelectedTags((prev) =>
@@ -323,6 +371,22 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                             >
                               {selectedTags.length} selected
                             </Text>
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                color="var(--color-blue)"
+                                borderRadius="10px"
+                                _hover={{
+                                  bg: 'rgba(29, 78, 216, 0.15)',
+                                  color: 'var(--color-blue)',
+                                }}
+                                onClick={handleBulkCreateView}
+                              >
+                                <HStack gap={1}>
+                                  <LuEye size={14} />
+                                  <Text>Create View</Text>
+                                </HStack>
+                              </Button>
                             {selectedTags.length > 1 && (
                               <Button
                                 size="sm"
@@ -564,6 +628,22 @@ const TagManagerModal = memo(({ isOpen, onClose }: TagManagerModalProps) => {
                                     </HStack>
 
                                     <HStack gap={1}>
+                                      <IconButton
+                                        size="sm"
+                                        variant="ghost"
+                                        color="var(--color-text-tertiary)"
+                                        borderRadius="8px"
+                                        _hover={{
+                                          color: 'var(--color-blue)',
+                                          bg: 'rgba(29, 78, 216, 0.15)',
+                                        }}
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          handleCreateViewFromTag(tag.name)
+                                        }}
+                                      >
+                                        <LuEye size={14} />
+                                      </IconButton>
                                       <IconButton
                                         size="sm"
                                         variant="ghost"
