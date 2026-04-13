@@ -34,6 +34,7 @@ import { useViewStore } from '@/store/viewStore'
 import { SYSTEM_VIEWS } from '@/types/views'
 import { useIsMobile } from '@/hooks/useMobile'
 import ViewsTree from './views/ViewsTree'
+import SuggestedViews from './views/SuggestedViews'
 import { FeedbackMenu } from './FeedbackMenu'
 import { useNavigationStyles } from '@/hooks/useStyles'
 import { useNavigateWithCleanup } from '@/hooks/useNavigateWithCleanup'
@@ -325,6 +326,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
 
             <Box flex={1} overflowY="auto">
               <ViewsTree />
+              <SuggestedViews />
             </Box>
           </VStack>
         ) : (
