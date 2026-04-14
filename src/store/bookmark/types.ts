@@ -6,10 +6,8 @@ import type {
   ValidationSummary,
 } from '@/services/bookmarkValidationService'
 import type { ActivityLog } from '@/utils/activityLogger'
-import type { SavedFilterPreset } from '@/utils/filterPresets'
 
 export type { ActivityLog } from '@/utils/activityLogger'
-export type { SavedFilterPreset } from '@/utils/filterPresets'
 
 export interface DateRangeFilter {
   type: 'all' | 'today' | 'week' | 'month' | 'custom'
@@ -69,9 +67,6 @@ export interface BookmarkState {
   // Activity tracking
   recentActivity: ActivityLog[]
 
-  // Saved filter presets
-  savedFilterPresets: SavedFilterPreset[]
-
   // Bookmark validation state
   validationResults: ValidationResult[]
   validationSummary: ValidationSummary | null
@@ -86,15 +81,6 @@ export interface BookmarkState {
   validateAllBookmarks: () => Promise<void>
   getInvalidBookmarksCount: () => number
 
-  // Saved filter preset actions
-  saveFilterPreset: (name: string, description?: string) => void
-  loadFilterPreset: (presetId: string) => void
-  deleteFilterPreset: (presetId: string) => void
-  updateFilterPreset: (
-    presetId: string,
-    name: string,
-    description?: string
-  ) => void
   setBookmarks: (bookmarks: Bookmark[]) => void
   loadBookmarks: () => Promise<void>
   addBookmark: (bookmark: BookmarkInsert) => Promise<void>

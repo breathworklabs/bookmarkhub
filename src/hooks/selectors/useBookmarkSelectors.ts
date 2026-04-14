@@ -32,9 +32,6 @@ export const useBookmarkSelectors = () => {
     // Filter options (cached)
     filterOptions: useBookmarkStore((state) => state.filterOptions),
 
-    // Saved filter presets
-    savedFilterPresets: useBookmarkStore((state) => state.savedFilterPresets),
-
     // Pagination
     pagination: useBookmarkStore((state) => state.pagination),
 
@@ -84,12 +81,6 @@ export const useBookmarkSelectors = () => {
     importBookmarks: useBookmarkStore((state) => state.importBookmarks),
     importXBookmarks: useBookmarkStore((state) => state.importXBookmarks),
     clearAllData: useBookmarkStore((state) => state.clearAllData),
-
-    // Actions - Saved Filter Presets
-    saveFilterPreset: useBookmarkStore((state) => state.saveFilterPreset),
-    loadFilterPreset: useBookmarkStore((state) => state.loadFilterPreset),
-    deleteFilterPreset: useBookmarkStore((state) => state.deleteFilterPreset),
-    updateFilterPreset: useBookmarkStore((state) => state.updateFilterPreset),
 
     // Actions - Initialize
     initialize: useBookmarkStore((state) => state.initialize),

@@ -5,4 +5,3 @@ export type {
   BookmarkState,
 } from './bookmark/types'
 export type { ActivityLog } from '@/utils/activityLogger'
-export type { SavedFilterPreset } from '@/utils/filterPresets'

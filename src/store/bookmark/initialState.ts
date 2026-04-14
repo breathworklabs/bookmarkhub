@@ -1,5 +1,4 @@
 import type { BookmarkState } from './types'
-import { loadFilterPresets } from '@/utils/filterPresets'
 
 export const createInitialState = (): Partial<BookmarkState> => ({
   bookmarks: [],
@@ -43,8 +42,6 @@ export const createInitialState = (): Partial<BookmarkState> => ({
   filterOptionsHash: '',
 
   recentActivity: [],
-
-  savedFilterPresets: loadFilterPresets(),
 
   validationResults: [],
   validationSummary: null,
