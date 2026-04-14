@@ -8,8 +8,8 @@ import {
   Badge,
   Link,
 } from '@chakra-ui/react'
-import { LuExternalLink, LuShare2, LuInfo, LuCopy, LuFolder } from 'react-icons/lu'
-import { useEffect, useState, useMemo } from 'react'
+import { LuExternalLink, LuShare2, LuInfo, LuCopy, LuFolder, LuBookmark, LuStar, LuClock, LuArchive, LuTrash2, LuInbox, LuFilter, LuFolders } from 'react-icons/lu'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useBookmarkStore } from '@/store/bookmarkStore'
@@ -26,6 +26,24 @@ const SharedView = () => {
   useEffect(() => {
     // Simulate loading
     setIsLoading(false)
+  }, [])
+
+  const getIconColor = useCallback(() => 'white', [])
+
+  const viewIcon = useCallback((icon: string) => {
+    const icons: Record<string, React.ReactNode> = {
+      bookmark: <LuBookmark size={16} />,
+      star: <LuStar size={16} />,
+      clock: <LuClock size={16} />,
+      archive: <LuArchive size={16} />,
+      'trash-2': <LuTrash2 size={16} />,
+      inbox: <LuInbox size={16} />,
+      folder: <LuFolder size={16} />,
+      filter: <LuFilter size={16} />,
+      folders: <LuFolders size={16} />,
+      tag: <LuBookmark size={16} />,
+    }
+    return icons[icon?.toLowerCase()] || <LuFolder size={16} />
   }, [])
 
   // Filter shared bookmarks
@@ -246,11 +264,9 @@ const SharedView = () => {
                             style={{ background: view.color || 'var(--color-border)' }}
                             flexShrink={0}
                           >
-                            {view.icon ? (
-                              <Text fontSize="sm">{view.icon}</Text>
-                            ) : (
-                              <LuFolder size={16} style={{ color: 'var(--color-text-secondary)' }} />
-                            )}
+                            <Box color={getIconColor()}>
+                              {viewIcon(view.icon)}
+                            </Box>
                           </Flex>
                           <VStack alignItems="flex-start" gap={0} minW={0}>
                             <Text
