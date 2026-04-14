@@ -256,13 +256,14 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
         </HStack>
 
         {/* Main Navigation */}
-        <VStack alignItems="stretch" gap={2}>
+        <VStack alignItems="stretch" gap={0.5}>
           <NavItem
             icon={<LuMenu size={18} />}
             label="All Bookmarks"
             badge={bookmarkCounts.total}
             onClick={() => {
               useViewStore.getState().setActiveView(SYSTEM_VIEWS.ALL)
+              if (location.pathname !== '/') navigateWithCleanup('/')
             }}
             active={
               isActive('All Bookmarks') && activeViewId === SYSTEM_VIEWS.ALL
@@ -274,6 +275,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
             badge={bookmarkCounts.starred}
             onClick={() => {
               useViewStore.getState().setActiveView(SYSTEM_VIEWS.STARRED)
+              if (location.pathname !== '/') navigateWithCleanup('/')
             }}
             active={activeViewId === SYSTEM_VIEWS.STARRED}
           />
@@ -283,6 +285,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
             badge={bookmarkCounts.recent}
             onClick={() => {
               useViewStore.getState().setActiveView(SYSTEM_VIEWS.RECENT)
+              if (location.pathname !== '/') navigateWithCleanup('/')
             }}
             active={activeViewId === SYSTEM_VIEWS.RECENT}
           />
@@ -334,7 +337,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
         )}
 
         {/* Bottom Navigation */}
-        <VStack alignItems="stretch" gap={2}>
+        <VStack alignItems="stretch" gap={0.5}>
           <Separator style={{ borderColor: 'var(--color-border)' }} />
 
           {/* Hidden for now - will add later
@@ -469,7 +472,7 @@ const UnifiedSidebar = memo<UnifiedSidebarProps>(({ onItemClick }) => {
             borderTopWidth="1px"
             style={{ borderColor: 'var(--color-border)' }}
             pt={4}
-            gap={2}
+            gap={0.5}
           >
             <NavItem
               icon={<LuMessageSquare size={18} />}

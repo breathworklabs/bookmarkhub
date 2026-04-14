@@ -1,9 +1,11 @@
 import { Box, Text, Button, VStack } from '@chakra-ui/react'
 import { useMemo, memo, useCallback } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useViewStore } from '@/store/viewStore'
 import { useBookmarkStore } from '@/store/bookmarkStore'
 import { SYSTEM_VIEWS } from '@/types/views'
 import { useModal } from '@/components/modals/ModalProvider'
+import { useNavigateWithCleanup } from '@/hooks/useNavigateWithCleanup'
 import { ViewsTreeItem } from './ViewsTreeItem'
 
 const NAV_ITEM_VIEW_IDS: ReadonlySet<string> = new Set([
@@ -22,11 +24,15 @@ const ViewsTree = memo(() => {
   const createView = useViewStore((s) => s.createView)
   const { showCreateCollection } = useModal()
 
+  const location = useLocation()
+  const navigateWithCleanup = useNavigateWithCleanup()
+
   const handleViewClick = useCallback(
     (view: { id: string }) => {
       setActiveView(view.id)
+      if (location.pathname !== '/') navigateWithCleanup('/')
     },
-    [setActiveView]
+    [setActiveView, location.pathname, navigateWithCleanup]
   )
 
   const rootViews = useMemo(
