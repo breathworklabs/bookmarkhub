@@ -16,8 +16,6 @@ import { useFilterReset } from '@/utils/filterUtils'
 import DateRangeFilter from './DateRangeFilter'
 import AuthorFilter from './AuthorFilter'
 import DomainFilter from './DomainFilter'
-import SavedFilterPresets from './filters/SavedFilterPresets'
-import SaveFilterPresetButton from './filters/SaveFilterPresetButton'
 import TagChip from './tags/TagChip'
 import TagInput from './tags/TagInput'
 import { useModal } from './modals/ModalProvider'
@@ -394,7 +392,6 @@ const AdvancedFilters = () => {
 
               {/* Actions */}
               <HStack justify="center" pt={1} gap={2}>
-                <SaveFilterPresetButton />
                 <Button
                   size="xs"
                   variant="ghost"
@@ -419,45 +416,49 @@ const AdvancedFilters = () => {
                       contentTypeFilter,
                     } = useBookmarkStore.getState()
 
+                    const criteria = {
+                      ...(quickFilters.includes('starred')
+                        ? { starred: true }
+                        : {}),
+                      ...(quickFilters.includes('unread')
+                        ? { unread: true }
+                        : {}),
+                      ...(quickFilters.includes('broken')
+                        ? { broken: true }
+                        : {}),
+                      ...(quickFilters.includes('recent')
+                        ? { recentDays: 1 }
+                        : {}),
+                      ...(quickFilters.includes('comments')
+                        ? { withComments: true }
+                        : {}),
+                      ...(quickFilters.includes('engagement')
+                        ? { minEngagement: 100 }
+                        : {}),
+                      ...(selectedTags.length > 0
+                        ? { tags: selectedTags }
+                        : {}),
+                      ...(authorFilter ? { authors: [authorFilter] } : {}),
+                      ...(domainFilter ? { domains: [domainFilter] } : {}),
+                      ...(searchQuery ? { query: searchQuery } : {}),
+                      ...(contentTypeFilter
+                        ? { contentTypes: [contentTypeFilter] }
+                        : {}),
+                    }
+
                     createView({
                       name: searchQuery || 'Custom View',
                       mode: 'dynamic',
-                      criteria: {
-                        ...(quickFilters.includes('starred')
-                          ? { starred: true }
-                          : {}),
-                        ...(quickFilters.includes('unread')
-                          ? { unread: true }
-                          : {}),
-                        ...(quickFilters.includes('broken')
-                          ? { broken: true }
-                          : {}),
-                        ...(quickFilters.includes('recent')
-                          ? { recentDays: 1 }
-                          : {}),
-                        ...(quickFilters.includes('comments')
-                          ? { withComments: true }
-                          : {}),
-                        ...(quickFilters.includes('engagement')
-                          ? { minEngagement: 100 }
-                          : {}),
-                        ...(selectedTags.length > 0
-                          ? { tags: selectedTags }
-                          : {}),
-                        ...(authorFilter ? { authors: [authorFilter] } : {}),
-                        ...(domainFilter ? { domains: [domainFilter] } : {}),
-                        ...(searchQuery ? { query: searchQuery } : {}),
-                        ...(contentTypeFilter
-                          ? { contentTypes: [contentTypeFilter] }
-                          : {}),
-                      },
+                      criteria,
                       pinned: false,
                     })
+
+                    clearAdvancedFilters()
+                    resetFilters()
                   }}
                 >
                   Save as View
                 </Button>
-                <SavedFilterPresets />
                 <Button
                   size="sm"
                   variant="outline"

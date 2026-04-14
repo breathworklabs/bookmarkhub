@@ -2,8 +2,9 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { handleStoreError } from '@/store/utils/handleStoreError'
 import { logger } from '@/lib/logger'
-import type { View, ViewInsert, ViewsState } from '@/types/views'
+import type { View, ViewInsert, ViewCriteria, ViewsState } from '@/types/views'
 import { SYSTEM_VIEWS } from '@/types/views'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 
 export type { View }
 
@@ -291,8 +292,54 @@ export const useViewStore = create<ViewStore>()(
         }
       },
 
-      setActiveView: (id) =>
-        set({ activeViewId: id }, false, 'views:setActive'),
+      setActiveView: (id) => {
+        set({ activeViewId: id }, false, 'views:setActive')
+
+        const bmStore = useBookmarkStore.getState()
+
+        bmStore.clearAdvancedFilters()
+        bmStore.clearTags()
+        bmStore.setSearchQuery('')
+        bmStore.setAuthorFilter('')
+        bmStore.setDomainFilter('')
+        bmStore.setContentTypeFilter('')
+        bmStore.setDateRangeFilter({ type: 'all' })
+
+        const view = get().views.find((v) => v.id === id)
+        if (view?.mode === 'dynamic' && view.criteria) {
+          const c: ViewCriteria = view.criteria
+          if (c.tags && c.tags.length > 0) bmStore.setSelectedTags(c.tags)
+          if (c.query) bmStore.setSearchQuery(c.query)
+          if (c.authors && c.authors.length > 0) bmStore.setAuthorFilter(c.authors[0])
+          if (c.domains && c.domains.length > 0) bmStore.setDomainFilter(c.domains[0])
+          if (c.contentTypes && c.contentTypes.length > 0) bmStore.setContentTypeFilter(c.contentTypes[0])
+
+          const quickFilters: string[] = []
+          if (c.starred) quickFilters.push('starred')
+          if (c.unread) quickFilters.push('unread')
+          if (c.broken) quickFilters.push('broken')
+          if (c.withComments) quickFilters.push('comments')
+          if (c.recentDays) quickFilters.push('recent')
+          if (c.minEngagement) quickFilters.push('engagement')
+          if (c.isArchived) quickFilters.push('archived')
+          if (quickFilters.length > 0) {
+            useBookmarkStore.setState({ quickFilters }, false, 'views:syncQuickFilters')
+          }
+
+          if (c.dateRange) {
+            const preset = c.dateRange.preset
+            if (preset && preset !== 'year') {
+              bmStore.setDateRangeFilter({ type: preset })
+            } else if (c.dateRange.start) {
+              bmStore.setDateRangeFilter({
+                type: 'custom',
+                customStart: new Date(c.dateRange.start),
+                customEnd: c.dateRange.end ? new Date(c.dateRange.end) : undefined,
+              })
+            }
+          }
+        }
+      },
 
       toggleViewExpansion: (id) =>
         set(
