@@ -42,7 +42,7 @@ function generateId(): string {
   return `view-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
 }
 
-function buildDefaultSystemViews(): View[] {
+export function buildDefaultSystemViews(): View[] {
   const now = new Date().toISOString()
   const userId = 'local-user'
   return [
@@ -55,7 +55,7 @@ function buildDefaultSystemViews(): View[] {
       sortOrder: 0,
       mode: 'dynamic',
       bookmarkIds: [],
-      criteria: {},
+      criteria: { isArchived: false, isDeleted: false },
       pinned: true,
       system: true,
       createdAt: now,
@@ -71,7 +71,7 @@ function buildDefaultSystemViews(): View[] {
       sortOrder: 1,
       mode: 'dynamic',
       bookmarkIds: [],
-      criteria: { starred: true },
+      criteria: { starred: true, isArchived: false, isDeleted: false },
       pinned: true,
       system: true,
       createdAt: now,
@@ -87,7 +87,7 @@ function buildDefaultSystemViews(): View[] {
       sortOrder: 2,
       mode: 'dynamic',
       bookmarkIds: [],
-      criteria: { recentDays: 7 },
+      criteria: { recentDays: 7, isArchived: false, isDeleted: false },
       pinned: true,
       system: true,
       createdAt: now,
@@ -135,7 +135,7 @@ function buildDefaultSystemViews(): View[] {
       sortOrder: 5,
       mode: 'dynamic',
       bookmarkIds: [],
-      criteria: { isUncategorized: true },
+      criteria: { isUncategorized: true, isArchived: false, isDeleted: false },
       pinned: false,
       system: true,
       createdAt: now,
@@ -145,9 +145,41 @@ function buildDefaultSystemViews(): View[] {
   ]
 }
 
+function reconcileSystemViews(views: View[]): View[] {
+  const defaults = buildDefaultSystemViews()
+  const defaultMap = new Map(defaults.map((v) => [v.id, v]))
+
+  let changed = false
+  const reconciled = views.map((v) => {
+    if (!v.system) return v
+    const def = defaultMap.get(v.id)
+    if (!def) return v
+
+    if (
+      JSON.stringify(v.criteria) !== JSON.stringify(def.criteria) ||
+      v.color !== def.color ||
+      v.pinned !== def.pinned ||
+      v.icon !== def.icon
+    ) {
+      changed = true
+      return {
+        ...v,
+        criteria: def.criteria,
+        color: def.color,
+        pinned: def.pinned,
+        icon: def.icon,
+      }
+    }
+    return v
+  })
+
+  if (changed) writeViewsToStorage(reconciled)
+  return reconciled
+}
+
 interface ViewActions {
   loadViews: () => void
-  createView: (insert: ViewInsert) => void
+  createView: (insert: ViewInsert) => string
   updateView: (id: string, updates: Partial<View>) => void
   deleteView: (id: string) => void
   reorderView: (id: string, newSortOrder: number) => void
@@ -186,6 +218,8 @@ export const useViewStore = create<ViewStore>()(
           if (views.length === 0) {
             views = buildDefaultSystemViews()
             writeViewsToStorage(views)
+          } else {
+            views = reconcileSystemViews(views)
           }
 
           set(
@@ -225,8 +259,10 @@ export const useViewStore = create<ViewStore>()(
           writeViewsToStorage(views)
 
           set({ views }, false, 'views:create:success')
+          return id
         } catch (error) {
           handleStoreError(set, error, 'views:create', { notify: true })
+          return ''
         }
       },
 
@@ -297,6 +333,7 @@ export const useViewStore = create<ViewStore>()(
 
         const bmStore = useBookmarkStore.getState()
 
+        bmStore.setFiltersPanelOpen(false)
         bmStore.clearAdvancedFilters()
         bmStore.clearTags()
         bmStore.setSearchQuery('')
@@ -304,6 +341,8 @@ export const useViewStore = create<ViewStore>()(
         bmStore.setDomainFilter('')
         bmStore.setContentTypeFilter('')
         bmStore.setDateRangeFilter({ type: 'all' })
+        bmStore.setActiveTab(0)
+        useBookmarkStore.setState({ quickFilters: [] }, false, 'views:clearQuickFilters')
 
         const view = get().views.find((v) => v.id === id)
         if (view?.mode === 'dynamic' && view.criteria) {
@@ -319,8 +358,6 @@ export const useViewStore = create<ViewStore>()(
           if (c.unread) quickFilters.push('unread')
           if (c.broken) quickFilters.push('broken')
           if (c.withComments) quickFilters.push('comments')
-          if (c.recentDays) quickFilters.push('recent')
-          if (c.minEngagement) quickFilters.push('engagement')
           if (c.isArchived) quickFilters.push('archived')
           if (quickFilters.length > 0) {
             useBookmarkStore.setState({ quickFilters }, false, 'views:syncQuickFilters')

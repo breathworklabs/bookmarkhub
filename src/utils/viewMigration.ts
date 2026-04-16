@@ -3,8 +3,8 @@
  * into the unified View format.
  */
 
-import type { View, ViewCriteria, ViewDateRange } from '@/types/views'
-import { SYSTEM_VIEWS } from '@/types/views'
+import type { View, ViewCriteria, ViewDateRange, ViewShareSettings } from '@/types/views'
+import { buildDefaultSystemViews } from '@/store/viewStore'
 import { logger } from '@/lib/logger'
 
 // ── Old-format interfaces ─────────────────────────────────────
@@ -22,6 +22,7 @@ export interface OldCollectionData {
   bookmarkCount: number
   createdAt: string
   updatedAt: string
+  shareSettings?: ViewShareSettings
 }
 
 export interface OldFilterPreset {
@@ -72,8 +73,7 @@ export function convertSmartCriteria(criteria: {
     case 'recent':
       return { recentDays: criteria.days ?? 7 }
     case 'archived':
-      // Mirrors bookmarkFilteringOptimized: is_archived && !is_deleted
-      return { isDeleted: false, isUncategorized: false }
+      return { isArchived: true, isDeleted: false }
     case 'uncategorized':
       return { isUncategorized: true, isDeleted: false }
     case 'tag':
@@ -169,116 +169,6 @@ export function convertPresetFilters(
   return criteria
 }
 
-// ── Build system views ────────────────────────────────────────
-
-function buildSystemViews(now: string): View[] {
-  return [
-    {
-      id: SYSTEM_VIEWS.ALL,
-      name: 'All Bookmarks',
-      icon: 'bookmark',
-      color: '#4A90D9',
-      parentId: null,
-      sortOrder: 0,
-      mode: 'dynamic',
-      bookmarkIds: [],
-      criteria: { isDeleted: false },
-      pinned: true,
-      system: true,
-      description: 'All active bookmarks',
-      createdAt: now,
-      updatedAt: now,
-      userId: 'local-user',
-    },
-    {
-      id: SYSTEM_VIEWS.STARRED,
-      name: 'Starred',
-      icon: 'star',
-      color: '#F5A623',
-      parentId: null,
-      sortOrder: 1,
-      mode: 'dynamic',
-      bookmarkIds: [],
-      criteria: { starred: true, isDeleted: false },
-      pinned: true,
-      system: true,
-      description: 'Your starred bookmarks',
-      createdAt: now,
-      updatedAt: now,
-      userId: 'local-user',
-    },
-    {
-      id: SYSTEM_VIEWS.RECENT,
-      name: 'Recent',
-      icon: 'clock',
-      color: '#7B61FF',
-      parentId: null,
-      sortOrder: 2,
-      mode: 'dynamic',
-      bookmarkIds: [],
-      criteria: { recentDays: 7, isDeleted: false },
-      pinned: true,
-      system: true,
-      description: 'Bookmarks from the last 7 days',
-      createdAt: now,
-      updatedAt: now,
-      userId: 'local-user',
-    },
-    {
-      id: SYSTEM_VIEWS.ARCHIVED,
-      name: 'Archived',
-      icon: 'archive',
-      color: '#8E8E93',
-      parentId: null,
-      sortOrder: 3,
-      mode: 'dynamic',
-      bookmarkIds: [],
-      // Mirrors bookmarkFilteringOptimized: is_archived && !is_deleted
-      criteria: { isArchived: true, isDeleted: false },
-      pinned: true,
-      system: true,
-      description: 'Archived bookmarks',
-      createdAt: now,
-      updatedAt: now,
-      userId: 'local-user',
-    },
-    {
-      id: SYSTEM_VIEWS.UNCATEGORIZED,
-      name: 'Uncategorized',
-      icon: 'inbox',
-      color: '#FF9500',
-      parentId: null,
-      sortOrder: 4,
-      mode: 'dynamic',
-      bookmarkIds: [],
-      criteria: { isUncategorized: true, isDeleted: false },
-      pinned: true,
-      system: true,
-      description: "Bookmarks that haven't been organized",
-      createdAt: now,
-      updatedAt: now,
-      userId: 'local-user',
-    },
-    {
-      id: SYSTEM_VIEWS.TRASH,
-      name: 'Trash',
-      icon: 'trash-2',
-      color: '#FF3B30',
-      parentId: null,
-      sortOrder: 5,
-      mode: 'dynamic',
-      bookmarkIds: [],
-      criteria: { isDeleted: true },
-      pinned: true,
-      system: true,
-      description: 'Deleted bookmarks',
-      createdAt: now,
-      updatedAt: now,
-      userId: 'local-user',
-    },
-  ]
-}
-
 // ── Main migration ────────────────────────────────────────────
 
 export function migrateToViews(
@@ -287,7 +177,7 @@ export function migrateToViews(
   oldFilterPresets: OldFilterPreset[]
 ): MigrationResult {
   const now = new Date().toISOString()
-  const views: View[] = buildSystemViews(now)
+  const views: View[] = buildDefaultSystemViews()
 
   // Convert user collections → manual views
   let sortOrder = views.length
@@ -310,6 +200,7 @@ export function migrateToViews(
       pinned: true,
       system: false,
       description: coll.description,
+      shareSettings: coll.shareSettings,
       createdAt: coll.createdAt,
       updatedAt: now,
       userId: 'local-user',

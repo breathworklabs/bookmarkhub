@@ -11,7 +11,6 @@ import { trackOperationPerformance } from '@/lib/performance'
 import { logger } from '@/lib/logger'
 import { mockBookmarks } from '@/data/mockBookmarks'
 import { useSettingsStore } from '@/store/settingsStore'
-import { useViewStore } from '@/store/viewStore'
 import { fetchPopularTechTweets } from '@/lib/fetchLiveTweets'
 import { handleStoreError } from '@/store/utils/handleStoreError'
 
@@ -173,6 +172,7 @@ export const createDataManagementActions = (set: StoreSet, get: StoreGet) => ({
 
       get().calculateFilterOptions()
 
+      const { useViewStore } = await import('@/store/viewStore')
       useViewStore.getState().loadViews()
 
       localStorageService.setHasBeenCleared(false)
