@@ -22,7 +22,6 @@ interface GenericFilterProps {
   placeholder: string
   value: string
   onChange: (value: string) => void
-  onReset: () => void
   options: FilterOption[]
   emptyMessage?: string
 }
@@ -34,7 +33,6 @@ export const GenericFilter: React.FC<GenericFilterProps> = ({
   placeholder,
   value,
   onChange,
-  onReset,
   options,
   emptyMessage = `No ${type}s found`,
 }) => {
@@ -61,7 +59,6 @@ export const GenericFilter: React.FC<GenericFilterProps> = ({
   const handleValueChange = (details: { value: string[] }) => {
     const selectedValue = details.value[0] || ''
     onChange(selectedValue)
-    onReset()
   }
 
   return (

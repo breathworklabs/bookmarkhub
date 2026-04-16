@@ -12,7 +12,6 @@ import { Tooltip } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LuTag, LuX, LuSettings } from 'react-icons/lu'
 import { useBookmarkSelectors } from '@/hooks/selectors/useBookmarkSelectors'
-import { useFilterReset } from '@/utils/filterUtils'
 import DateRangeFilter from './DateRangeFilter'
 import AuthorFilter from './AuthorFilter'
 import DomainFilter from './DomainFilter'
@@ -20,7 +19,8 @@ import TagChip from './tags/TagChip'
 import TagInput from './tags/TagInput'
 import { useModal } from './modals/ModalProvider'
 import { useViewStore } from '@/store/viewStore'
-import { useBookmarkStore } from '@/store/bookmark'
+import { SYSTEM_VIEWS } from '@/types/views'
+import { useBookmarkStore } from '@/store/bookmarkStore'
 
 const MotionBox = motion.create(Box)
 
@@ -34,13 +34,12 @@ const AdvancedFilters = () => {
     toggleQuickFilter,
     addTag,
     removeTag,
-    clearAdvancedFilters,
     setFiltersPanelOpen,
   } = useBookmarkSelectors()
 
-  const resetFilters = useFilterReset()
   const { showTagManager } = useModal()
   const createView = useViewStore((state) => state.createView)
+  const setActiveView = useViewStore((state) => state.setActiveView)
 
   return (
     <AnimatePresence>
@@ -176,7 +175,6 @@ const AdvancedFilters = () => {
                     value={contentTypeFilter}
                     onChange={(e) => {
                       setContentTypeFilter(e.target.value)
-                      resetFilters()
                     }}
                     style={{
                       background: 'var(--color-bg-tertiary)',
@@ -283,7 +281,6 @@ const AdvancedFilters = () => {
                             }}
                             onClick={() => {
                               toggleQuickFilter(filter.value)
-                              resetFilters()
                             }}
                           >
                             {filter.label}
@@ -358,7 +355,6 @@ const AdvancedFilters = () => {
                       selectedTags={[]}
                       onTagAdd={(tag) => {
                         addTag(tag)
-                        resetFilters()
                       }}
                       onTagRemove={() => {}}
                       placeholder="Type to search and add tags..."
@@ -380,7 +376,6 @@ const AdvancedFilters = () => {
                             size="md"
                             onRemove={(removedTag) => {
                               removeTag(removedTag)
-                              resetFilters()
                             }}
                           />
                         )}
@@ -414,7 +409,18 @@ const AdvancedFilters = () => {
                       domainFilter,
                       searchQuery,
                       contentTypeFilter,
+                      dateRangeFilter,
                     } = useBookmarkStore.getState()
+
+                    const dateRange =
+                      dateRangeFilter.type !== 'all'
+                        ? dateRangeFilter.type === 'custom'
+                          ? {
+                              start: dateRangeFilter.customStart?.toISOString(),
+                              end: dateRangeFilter.customEnd?.toISOString(),
+                            }
+                          : { preset: dateRangeFilter.type }
+                        : undefined
 
                     const criteria = {
                       ...(quickFilters.includes('starred')
@@ -444,17 +450,20 @@ const AdvancedFilters = () => {
                       ...(contentTypeFilter
                         ? { contentTypes: [contentTypeFilter] }
                         : {}),
+                      ...(dateRange ? { dateRange } : {}),
                     }
 
-                    createView({
+                    const newViewId = createView({
                       name: searchQuery || 'Custom View',
                       mode: 'dynamic',
                       criteria,
                       pinned: false,
                     })
 
-                    clearAdvancedFilters()
-                    resetFilters()
+                    if (newViewId) {
+                      setActiveView(newViewId)
+                    }
+                    setFiltersPanelOpen(false)
                   }}
                 >
                   Save as View
@@ -476,8 +485,7 @@ const AdvancedFilters = () => {
                     bg: 'var(--color-bg-tertiary)',
                   }}
                   onClick={() => {
-                    clearAdvancedFilters()
-                    resetFilters()
+                    useViewStore.getState().setActiveView(SYSTEM_VIEWS.ALL)
                   }}
                 >
                   Clear All Filters
