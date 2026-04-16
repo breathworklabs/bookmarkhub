@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useBookmarkStore } from '../../src/store/bookmarkStore'
-import { useCollectionsStore } from '../../src/store/collectionsStore'
 import { useFilteredBookmarksOptimized } from '../../src/hooks/composite/useFilteredBookmarksOptimized'
 import { createMockBookmarks } from './test-utils'
 import type { Bookmark } from '../../src/types/bookmark'
@@ -18,15 +17,11 @@ describe('useFilteredBookmarksOptimized', () => {
   beforeEach(() => {
     // Reset store state before each test
     const { result } = renderHook(() => useBookmarkStore())
-    const { result: collectionsResult } = renderHook(() =>
-      useCollectionsStore()
-    )
     act(() => {
       result.current.setBookmarks([])
       result.current.setSelectedTags([])
       result.current.setActiveTab(0)
       result.current.setActiveSidebarItem('All Bookmarks')
-      collectionsResult.current.setActiveCollection(null)
     })
   })
 
@@ -77,27 +72,6 @@ describe('useFilteredBookmarksOptimized', () => {
 
     // Since all mock bookmarks are from 2024, and we're testing in a different time,
     // the date filter should result in no bookmarks when combined with archives filter
-    expect(hookResult.current).toHaveLength(0)
-  })
-
-  it('should filter to only bookmarks in active collection when Collections sidebar item is selected', () => {
-    // This test verifies that collection filtering logic is in place
-    // In real usage, collections would be loaded and activeCollectionId would filter bookmarks
-    const { result } = renderHook(() => useBookmarkStore())
-    const { result: collectionsResult } = renderHook(() =>
-      useCollectionsStore()
-    )
-    const { result: hookResult } = renderHook(() =>
-      useFilteredBookmarksOptimized()
-    )
-
-    act(() => {
-      result.current.setBookmarks(mockBookmarks)
-      result.current.setActiveSidebarItem('Collections')
-      collectionsResult.current.setActiveCollection('test-collection')
-    })
-
-    // When activeCollectionId is set but collectionBookmarks is empty, no bookmarks should be shown
     expect(hookResult.current).toHaveLength(0)
   })
 

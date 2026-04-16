@@ -190,28 +190,6 @@ describe('useInitializeApp', () => {
       consoleSpy.mockRestore()
     })
 
-    it('should initialize stores when bookmarks exist', async () => {
-      const initBookmarksSpy = vi.spyOn(
-        useBookmarkStore.getState(),
-        'initialize'
-      )
-      const initCollectionsSpy = vi.spyOn(
-        useCollectionsStore.getState(),
-        'initialize'
-      )
-
-      localStorageData['x-bookmark-manager-data'] = JSON.stringify({
-        bookmarks: [{ id: 1, title: 'Test', url: 'https://example.com' }],
-      })
-
-      renderHook(() => useInitializeApp())
-
-      await waitFor(() => {
-        expect(initBookmarksSpy).toHaveBeenCalled()
-        expect(initCollectionsSpy).toHaveBeenCalled()
-      })
-    })
-
     it('should only initialize once', () => {
       const initPerfSpy = vi.spyOn(performance, 'initAllPerformanceMonitoring')
 
@@ -245,35 +223,6 @@ describe('useInitializeApp', () => {
         'message',
         expect.any(Function)
       )
-    })
-
-    it('should handle X_BOOKMARKS_UPDATED message', async () => {
-      const initBookmarksSpy = vi
-        .spyOn(useBookmarkStore.getState(), 'initialize')
-        .mockResolvedValue()
-      const initCollectionsSpy = vi
-        .spyOn(useCollectionsStore.getState(), 'initialize')
-        .mockResolvedValue()
-
-      renderHook(() => useInitializeApp())
-
-      const message = new MessageEvent('message', {
-        data: {
-          type: 'X_BOOKMARKS_UPDATED',
-          source: 'x-bookmark-manager-extension',
-          count: 5,
-          showNotification: true,
-        },
-      })
-
-      act(() => {
-        messageListeners.forEach((listener) => listener(message))
-      })
-
-      await waitFor(() => {
-        expect(initBookmarksSpy).toHaveBeenCalled()
-        expect(initCollectionsSpy).toHaveBeenCalled()
-      })
     })
 
     it('should show success toast for single bookmark', async () => {
@@ -645,14 +594,6 @@ describe('useInitializeApp', () => {
       const { result } = renderHook(() => useInitializeApp())
 
       expect(result.current.error).toBe('Bookmark error')
-    })
-
-    it('should return collection error', () => {
-      useCollectionsStore.setState({ error: 'Collection error' })
-
-      const { result } = renderHook(() => useInitializeApp())
-
-      expect(result.current.error).toBe('Collection error')
     })
 
     it('should prioritize bookmark error over collection error', () => {

@@ -3,36 +3,54 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import { ShareCollectionModal } from '../../src/components/modals/ShareCollectionModal'
 
-const { mockShareCollection, mockCopyShareUrl } = vi.hoisted(() => ({
-  mockShareCollection: vi.fn(),
+const { mockCreateShare, mockCopyShareUrl, mockUpdateView } = vi.hoisted(() => ({
+  mockCreateShare: vi.fn(),
   mockCopyShareUrl: vi.fn(),
+  mockUpdateView: vi.fn(),
 }))
 
-vi.mock('../../src/store/collectionsStore', () => ({
-  useCollectionsStore: vi.fn((selector) => {
-    const state = {
-      collections: [
-        {
-          id: 'c1',
-          name: 'My Dev Bookmarks',
-          description: 'Useful dev links',
-          isPrivate: false,
-          isDefault: false,
-          isSmartCollection: false,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          bookmarkCount: 3,
-          userId: 'local-user',
-        },
-      ],
-      collectionBookmarks: { c1: [1, 2, 3] },
-      shareCollection: mockShareCollection,
-    }
-    return selector ? selector(state) : state
-  }),
-}))
+const viewState = {
+  views: [
+    {
+      id: 'v1',
+      name: 'My Dev Bookmarks',
+      description: 'Useful dev links',
+      bookmarkIds: ['1', '2', '3'],
+      isSystem: false,
+      criteria: {},
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ],
+  updateView: mockUpdateView,
+}
+
+const bookmarkState = {
+  bookmarks: [
+    { id: '1', title: 'B1', url: 'https://example.com/1' },
+    { id: '2', title: 'B2', url: 'https://example.com/2' },
+    { id: '3', title: 'B3', url: 'https://example.com/3' },
+  ],
+}
+
+vi.mock('../../src/store/viewStore', () => {
+  const fn = vi.fn((selector) =>
+    selector ? selector(viewState) : viewState
+  )
+  fn.getState = () => viewState
+  return { useViewStore: fn }
+})
+
+vi.mock('../../src/store/bookmarkStore', () => {
+  const fn = vi.fn((selector) =>
+    selector ? selector(bookmarkState) : bookmarkState
+  )
+  fn.getState = () => bookmarkState
+  return { useBookmarkStore: fn }
+})
 
 vi.mock('../../src/lib/shareApi', () => ({
+  createShare: mockCreateShare,
   copyShareUrl: mockCopyShareUrl,
   shareOnTwitter: vi.fn(),
 }))
@@ -42,7 +60,7 @@ vi.mock('react-hot-toast', () => ({
 }))
 
 const renderModal = (props = {}) => {
-  const defaults = { isOpen: true, onClose: vi.fn(), collectionId: 'c1' }
+  const defaults = { isOpen: true, onClose: vi.fn(), viewId: 'v1' }
   return render(
     <ChakraProvider value={defaultSystem}>
       <ShareCollectionModal {...defaults} {...props} />
@@ -55,9 +73,9 @@ describe('ShareCollectionModal', () => {
     vi.clearAllMocks()
   })
 
-  it('renders Share Collection header', () => {
+  it('renders Share View header', () => {
     renderModal()
-    expect(screen.getByText('Share Collection')).toBeInTheDocument()
+    expect(screen.getByText('Share View')).toBeInTheDocument()
   })
 
   it('renders expiry option buttons', () => {
@@ -77,9 +95,10 @@ describe('ShareCollectionModal', () => {
     expect(screen.getByText(/Create Shareable Link/i)).toBeInTheDocument()
   })
 
-  it('calls shareCollection with correct args when Create button is clicked', async () => {
-    mockShareCollection.mockResolvedValueOnce({
-      shareUrl: 'https://example.com/s/abc',
+  it('calls createShare with correct args when Create button is clicked', async () => {
+    mockCreateShare.mockResolvedValueOnce({
+      id: 'share-abc',
+      shareUrl: 'https://bookmarkhub.app/s/share-abc',
       expiresAt: '2026-04-23T00:00:00.000Z',
     })
 
@@ -87,16 +106,20 @@ describe('ShareCollectionModal', () => {
     fireEvent.click(screen.getByText(/Create Shareable Link/i))
 
     await waitFor(() => {
-      expect(mockShareCollection).toHaveBeenCalledWith(
-        'c1',
-        expect.objectContaining({ expiryDays: expect.anything() })
+      expect(mockCreateShare).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'My Dev Bookmarks',
+          description: 'Useful dev links',
+          bookmarks: expect.any(Array),
+        })
       )
     })
   })
 
   it('shows the share URL after successful creation', async () => {
-    mockShareCollection.mockResolvedValueOnce({
-      shareUrl: 'https://example.com/s/abc123',
+    mockCreateShare.mockResolvedValueOnce({
+      id: 'share-abc123',
+      shareUrl: 'https://bookmarkhub.app/s/share-abc123',
       expiresAt: '2026-04-23T00:00:00.000Z',
     })
 
@@ -104,13 +127,14 @@ describe('ShareCollectionModal', () => {
     fireEvent.click(screen.getByText(/Create Shareable Link/i))
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue('https://example.com/s/abc123')).toBeInTheDocument()
+      expect(screen.getByDisplayValue('https://bookmarkhub.app/s/share-abc123')).toBeInTheDocument()
     })
   })
 
   it('shows Copy Link button after share is created', async () => {
-    mockShareCollection.mockResolvedValueOnce({
-      shareUrl: 'https://example.com/s/abc123',
+    mockCreateShare.mockResolvedValueOnce({
+      id: 'share-abc123',
+      shareUrl: 'https://bookmarkhub.app/s/share-abc123',
       expiresAt: '2026-04-23T00:00:00.000Z',
     })
 
@@ -123,8 +147,9 @@ describe('ShareCollectionModal', () => {
   })
 
   it('calls copyShareUrl when Copy Link is clicked', async () => {
-    mockShareCollection.mockResolvedValueOnce({
-      shareUrl: 'https://example.com/s/abc123',
+    mockCreateShare.mockResolvedValueOnce({
+      id: 'share-abc123',
+      shareUrl: 'https://bookmarkhub.app/s/share-abc123',
       expiresAt: '2026-04-23T00:00:00.000Z',
     })
     mockCopyShareUrl.mockResolvedValueOnce(true)
@@ -136,12 +161,12 @@ describe('ShareCollectionModal', () => {
     fireEvent.click(screen.getByText(/Copy Link/i))
 
     await waitFor(() => {
-      expect(mockCopyShareUrl).toHaveBeenCalledWith('https://example.com/s/abc123')
+      expect(mockCopyShareUrl).toHaveBeenCalledWith('https://bookmarkhub.app/s/share-abc123')
     })
   })
 
-  it('renders nothing when collectionId does not match any collection', () => {
-    const { container } = renderModal({ collectionId: 'nonexistent' })
+  it('renders nothing when viewId does not match any view', () => {
+    const { container } = renderModal({ viewId: 'nonexistent' })
     expect(container).toBeEmptyDOMElement()
   })
 })
