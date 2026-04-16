@@ -49,7 +49,7 @@ export const PrivacyDataGuide = () => {
                     device. No cloud storage, no external servers, no database.
                   </Text>
                   <Text fontSize="sm" lineHeight="1.6">
-                    Your bookmarks, tags, collections, and settings stay
+                    Your bookmarks, tags, views, and settings stay
                     completely private. We literally cannot access your data
                     because it never reaches us.
                   </Text>
@@ -347,7 +347,7 @@ export const PrivacyDataGuide = () => {
               >
                 View your current storage usage in Settings. Most browsers
                 provide 5-10MB of localStorage space. Monitor usage if you have
-                large bookmark collections with extensive media.
+                large bookmark libraries with extensive media.
               </Text>
             </VStack>
           </Box>
@@ -374,7 +374,7 @@ export const PrivacyDataGuide = () => {
                 }}
               >
                 Available in Settings with confirmation required. Permanently
-                deletes all bookmarks, collections, tags, and settings. Export
+                deletes all bookmarks, views, tags, and settings. Export
                 before clearing! This action cannot be undone.
               </Text>
             </VStack>

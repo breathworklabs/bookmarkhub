@@ -295,7 +295,7 @@ export const ImportExportGuide = () => {
                   lineHeight: '1.6',
                 }}
               >
-                Full-fidelity export with all metadata, collections, tags, and
+                Full-fidelity export with all metadata, views, tags, and
                 settings. Perfect for backups or transferring to another device.
                 Import back anytime without data loss.
               </Text>
@@ -352,7 +352,7 @@ export const ImportExportGuide = () => {
                 }}
               >
                 Standard browser bookmark format. Import directly into Chrome,
-                Firefox, Safari, or Edge. Collections convert to folders. Note:
+                Firefox, Safari, or Edge. Views convert to folders. Note:
                 Tags and metadata are not preserved in this format.
               </Text>
             </VStack>

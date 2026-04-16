@@ -173,7 +173,7 @@ export const SettingsGuide = () => {
                   fontSize="sm"
                   style={{ color: 'var(--color-text-secondary)' }}
                 >
-                  • <strong>Default Collection:</strong> Where new bookmarks are
+                  • <strong>Default View:</strong> Where new bookmarks are
                   saved
                 </Text>
                 <Text

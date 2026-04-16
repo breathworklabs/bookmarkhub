@@ -94,7 +94,7 @@ export const SearchFiltersGuide = () => {
                   fontSize="sm"
                   style={{ color: 'var(--color-text-secondary)' }}
                 >
-                  • Collection names
+                  • View names
                 </Text>
               </VStack>
               <Box
@@ -389,7 +389,7 @@ export const SearchFiltersGuide = () => {
                   fontSize="sm"
                   style={{ color: 'var(--color-text-secondary)' }}
                 >
-                  • "Work Research" - Work collection + research tag + this week
+                  • "Work Research" - Work view + research tag + this week
                 </Text>
                 <Text
                   fontSize="sm"

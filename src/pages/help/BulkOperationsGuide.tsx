@@ -20,7 +20,7 @@ export const BulkOperationsGuide = () => {
           style={{ color: 'var(--color-text-secondary)', lineHeight: '1.6' }}
         >
           Manage multiple bookmarks at once with powerful bulk operations. Save
-          time organizing large bookmark collections.
+          time organizing large bookmark libraries.
         </Text>
       </Box>
 
@@ -111,7 +111,7 @@ export const BulkOperationsGuide = () => {
                 fontWeight="600"
                 style={{ color: 'var(--color-text-primary)' }}
               >
-                Bulk Move to Collection
+                Bulk Move to View
               </Text>
               <Text
                 fontSize="sm"
@@ -120,7 +120,7 @@ export const BulkOperationsGuide = () => {
                   lineHeight: '1.6',
                 }}
               >
-                Move or copy multiple bookmarks to a collection at once. Choose
+                Move or copy multiple bookmarks to a view at once. Choose
                 to move (remove from current) or copy (keep in current, add to
                 new). Great for reorganizing after imports!
               </Text>

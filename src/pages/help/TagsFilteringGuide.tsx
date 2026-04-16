@@ -20,8 +20,8 @@ export const TagsFilteringGuide = () => {
           style={{ color: 'var(--color-text-secondary)', lineHeight: '1.6' }}
         >
           Tags provide flexible, cross-cutting categorization for your
-          bookmarks. Unlike collections, a bookmark can have multiple tags, and
-          tags work across collection boundaries.
+          bookmarks. Unlike views, a bookmark can have multiple tags, and
+          tags work across view boundaries.
         </Text>
       </Box>
 
@@ -49,7 +49,7 @@ export const TagsFilteringGuide = () => {
                 fontWeight="600"
                 style={{ color: 'var(--color-text-primary)' }}
               >
-                Tags vs Collections
+                Tags vs Views
               </Text>
               <Box
                 p={3}
@@ -61,7 +61,7 @@ export const TagsFilteringGuide = () => {
                     fontSize="sm"
                     style={{ color: 'var(--color-text-secondary)' }}
                   >
-                    <strong>Collections:</strong> Hierarchical, folder-like
+                    <strong>Views:</strong> Hierarchical, folder-like
                     structure. Best for organizing by projects or broad
                     categories.
                   </Text>
@@ -507,7 +507,7 @@ export const TagsFilteringGuide = () => {
                   • Regularly review and merge duplicate or similar tags
                 </Text>
                 <Text fontSize="sm" lineHeight="1.6">
-                  • Combine tags with collections for powerful organization
+                  • Combine tags with views for powerful organization
                 </Text>
               </VStack>
             </Alert.Description>
