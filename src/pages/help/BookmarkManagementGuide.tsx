@@ -20,7 +20,7 @@ export const BookmarkManagementGuide = () => {
         >
           Learn how to add, approve, delete, and organize your bookmarks
           effectively. BookmarksX gives you complete control over your bookmark
-          collection.
+          library.
         </Text>
       </Box>
 
@@ -103,7 +103,7 @@ export const BookmarkManagementGuide = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    Add tags and select a collection
+                    Add tags and select a view
                   </Text>
                 </HStack>
                 <HStack gap={2} alignItems="flex-start">
@@ -230,7 +230,7 @@ export const BookmarkManagementGuide = () => {
               >
                 Click the three-dot menu on any bookmark card and select
                 "Approve" to open the edit dialog. You can update the title,
-                URL, description, tags, and collection assignment, then click
+                URL, description, tags, and view assignment, then click
                 "Approve" to save your changes.
               </Text>
               <Box
@@ -511,8 +511,8 @@ export const BookmarkManagementGuide = () => {
               fontSize="sm"
               style={{ color: 'var(--color-text-secondary)' }}
             >
-              • <strong>Collections</strong> - Can belong to multiple
-              collections
+              • <strong>Views</strong> - Can belong to multiple
+              views
             </Text>
             <Text
               fontSize="sm"

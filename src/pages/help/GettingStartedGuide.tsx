@@ -90,13 +90,13 @@ export const GettingStartedGuide = () => {
                   fontWeight="600"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
-                  Collections & Organization
+                  Views & Organization
                 </Text>
                 <Text
                   fontSize="sm"
                   style={{ color: 'var(--color-text-secondary)' }}
                 >
-                  Create nested collections to organize bookmarks into
+                  Create nested views to organize bookmarks into
                   hierarchical structures
                 </Text>
               </VStack>
@@ -274,7 +274,7 @@ export const GettingStartedGuide = () => {
             </HStack>
           </Box>
 
-          {/* Step 2: Collections */}
+          {/* Step 2: Views */}
           <Box
             p={4}
             style={{ background: 'var(--color-bg-secondary)' }}
@@ -302,7 +302,7 @@ export const GettingStartedGuide = () => {
                   fontWeight="600"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
-                  Organize with Collections
+                  Organize with Views
                 </Text>
                 <Text
                   fontSize="sm"
@@ -311,8 +311,8 @@ export const GettingStartedGuide = () => {
                     lineHeight: '1.6',
                   }}
                 >
-                  Create your first collection to organize bookmarks. In the
-                  sidebar, click "+ New Collection" and give it a name like "Web
+                  Create your first view to organize bookmarks. In the
+                  sidebar, click "+ New View" and give it a name like "Web
                   Development" or "Reading List".
                 </Text>
                 <Box
@@ -327,7 +327,7 @@ export const GettingStartedGuide = () => {
                     fontSize="xs"
                     style={{ color: 'var(--color-text-tertiary)' }}
                   >
-                    [Screenshot: Creating a collection in sidebar]
+                    [Screenshot: Creating a view in sidebar]
                   </Text>
                 </Box>
               </VStack>
@@ -574,7 +574,7 @@ export const GettingStartedGuide = () => {
             <Alert.Description>
               <VStack alignItems="stretch" gap={2}>
                 <Text fontSize="sm" lineHeight="1.6">
-                  • Use collections for broad categories (Work, Personal,
+                  • Use views for broad categories (Work, Personal,
                   Research)
                 </Text>
                 <Text fontSize="sm" lineHeight="1.6">
@@ -588,7 +588,7 @@ export const GettingStartedGuide = () => {
                   • Export your data regularly as a backup
                 </Text>
                 <Text fontSize="sm" lineHeight="1.6">
-                  • Combine collections, tags, and filters for powerful
+                  • Combine views, tags, and filters for powerful
                   organization
                 </Text>
               </VStack>

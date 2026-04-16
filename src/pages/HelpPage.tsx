@@ -2,7 +2,6 @@ import { Box, Flex, VStack, HStack, Text, Button } from '@chakra-ui/react'
 import {
   LuArrowLeft,
   LuBookOpen,
-  LuFolderTree,
   LuSparkles,
   LuTag,
   LuSearch,
@@ -18,7 +17,7 @@ import { useState, useCallback, useEffect } from 'react'
 import UnifiedSidebar from '@/components/UnifiedSidebar'
 import { useSettingsStore } from '@/store/settingsStore'
 import { GettingStartedGuide } from './help/GettingStartedGuide'
-import { CollectionsGuide } from './help/CollectionsGuide'
+import { ViewsGuide } from './help/ViewsGuide'
 import { BookmarkManagementGuide } from './help/BookmarkManagementGuide'
 import { TagsFilteringGuide } from './help/TagsFilteringGuide'
 import { SearchFiltersGuide } from './help/SearchFiltersGuide'
@@ -29,7 +28,7 @@ import { PrivacyDataGuide } from './help/PrivacyDataGuide'
 
 type HelpTopic =
   | 'getting-started'
-  | 'collections'
+  | 'views'
   | 'bookmark-management'
   | 'tags-filtering'
   | 'search-filters'
@@ -78,9 +77,9 @@ const HelpPage = () => {
       icon: LuSparkles,
     },
     {
-      id: 'collections' as HelpTopic,
-      label: 'Collections',
-      icon: LuFolderTree,
+      id: 'views' as HelpTopic,
+      label: 'Views',
+      icon: LuLayers,
     },
     {
       id: 'bookmark-management' as HelpTopic,
@@ -239,7 +238,7 @@ const HelpPage = () => {
                 {/* Content Sections */}
                 <VStack alignItems="stretch" p={6} gap={6}>
                   {activeTopic === 'getting-started' && <GettingStartedGuide />}
-                  {activeTopic === 'collections' && <CollectionsGuide />}
+                  {activeTopic === 'views' && <ViewsGuide />}
                   {activeTopic === 'bookmark-management' && (
                     <BookmarkManagementGuide />
                   )}
