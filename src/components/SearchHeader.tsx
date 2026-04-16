@@ -33,7 +33,6 @@ import { useButtonStyles, useInputStyles } from '@/hooks/useStyles'
 import { componentStyles } from '@/styles/components'
 import { useIsMobile } from '@/hooks/useMobile'
 import { colors } from '@/styles/colors'
-import { useFilterReset } from '@/utils/filterUtils'
 import { useBookmarkSelectors } from '@/hooks/selectors/useBookmarkSelectors'
 import { useDebounce } from '@/hooks/useDebounce'
 import toast from 'react-hot-toast'
@@ -120,7 +119,6 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
 
   // Time Range dropdown selectors
   const { activeTab, setActiveTab, setDateRangeFilter } = useBookmarkSelectors()
-  const resetFilters = useFilterReset()
 
   // Call hooks unconditionally to avoid "Rendered fewer hooks" error
   const secondaryButtonStyles = useButtonStyles('secondary')
@@ -308,10 +306,7 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
   const handleFilterSelect = useCallback(
     (index: number) => {
       setActiveTab(index)
-      resetFilters()
 
-      // Sync with DateRangeFilter
-      // FilterBar tabs: 0=All, 1=Today, 2=This Week, 3=This Month, 4=Threads, 5=Media
       if (index === 0) {
         setDateRangeFilter({ type: 'all' })
       } else if (index === 1) {
@@ -321,9 +316,8 @@ const SearchHeader = memo<SearchHeaderProps>(({ onMenuClick }) => {
       } else if (index === 3) {
         setDateRangeFilter({ type: 'month' })
       }
-      // Threads and Media don't have corresponding date filters
     },
-    [setActiveTab, setDateRangeFilter, resetFilters]
+    [setActiveTab, setDateRangeFilter]
   )
 
   return (

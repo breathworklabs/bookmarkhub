@@ -1,6 +1,6 @@
 import { memo, useState, useRef, useCallback, useEffect } from 'react'
 import { Box, HStack, VStack, Text } from '@chakra-ui/react'
-import { LuStar, LuExternalLink, LuGripVertical } from 'react-icons/lu'
+import { LuStar, LuExternalLink, LuGripVertical, LuArchive } from 'react-icons/lu'
 import { useDrag } from 'react-dnd'
 import { getEmptyImage } from 'react-dnd-html5-backend'
 import toast from 'react-hot-toast'
@@ -8,6 +8,7 @@ import type { Bookmark } from '@/types/bookmark'
 import { SYSTEM_VIEWS } from '@/types/views'
 import { useBookmarkStore } from '@/store/bookmarkStore'
 import { useViewStore } from '@/store/viewStore'
+import { useBookmarkActions } from '@/hooks/useBookmarkActions'
 import { ItemTypes, type DropResult } from '@/types/dnd'
 import TagChip from './tags/TagChip'
 import LazyImage from './LazyImage'
@@ -47,6 +48,7 @@ const BookmarkListItem = memo(
       (state) => state.toggleStarBookmark
     )
     const setSelectedTags = useBookmarkStore((state) => state.setSelectedTags)
+    const { archive } = useBookmarkActions(bookmark.id)
     const addBookmarkToView = useViewStore(
       (state) => state.addBookmarkToView
     )
@@ -275,9 +277,19 @@ const BookmarkListItem = memo(
                 {bookmark.title}
               </Text>
               {bookmark.is_archived && (
-                <Text fontSize="xs" color="var(--color-text-tertiary)">
-                  (Archived)
-                </Text>
+                <Box
+                  color="#8b5cf6"
+                  display="flex"
+                  alignItems="center"
+                  cursor="pointer"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    archive()
+                  }}
+                >
+                  <LuArchive size={16} />
+                </Box>
               )}
             </HStack>
             <HStack gap={2} fontSize="xs" color="var(--color-text-tertiary)">

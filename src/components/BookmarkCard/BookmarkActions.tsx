@@ -1,5 +1,5 @@
 import { HStack, IconButton } from '@chakra-ui/react'
-import { LuStar, LuShare2, LuExternalLink } from 'react-icons/lu'
+import { LuStar, LuShare2, LuExternalLink, LuArchive } from 'react-icons/lu'
 import { memo, useCallback, useState } from 'react'
 import { type Bookmark } from '@/types/bookmark'
 import { useBookmarkStore } from '@/store/bookmarkStore'
@@ -15,7 +15,7 @@ interface BookmarkActionsProps {
 
 const BookmarkActions = memo(
   ({ bookmark, isInBulkMode }: BookmarkActionsProps) => {
-    const { toggleStar } = useBookmarkActions(bookmark.id)
+    const { toggleStar, archive } = useBookmarkActions(bookmark.id)
     const bookmarks = useBookmarkStore((state) => state.bookmarks)
     const setBookmarks = useBookmarkStore((state) => state.setBookmarks)
     const addActivityLog = useBookmarkStore((state) => state.addActivityLog)
@@ -158,6 +158,54 @@ const BookmarkActions = memo(
             }}
           >
             <LuStar fill={isStarred() ? 'currentColor' : 'none'} />
+          </IconButton>
+          <IconButton
+            aria-label={bookmark.is_archived ? 'Unarchive bookmark' : 'Archive bookmark'}
+            title={bookmark.is_archived ? 'Unarchive bookmark' : 'Archive bookmark'}
+            disabled={isInBulkMode}
+            opacity={isInBulkMode ? 0.5 : 1}
+            cursor={isInBulkMode ? 'default' : 'pointer'}
+            color={bookmark.is_archived ? '#8b5cf6' : 'var(--color-text-tertiary)'}
+            border="1px solid var(--color-border)"
+            borderRadius="full"
+            w="32px"
+            h="32px"
+            minW="32px"
+            bg="transparent"
+            _hover={isInBulkMode ? {} : {
+              bg: bookmark.is_archived ? 'rgba(139, 92, 246, 0.1)' : 'var(--color-border)',
+              color: bookmark.is_archived ? '#8b5cf6' : 'var(--color-text-primary)',
+              borderColor: 'var(--color-border-hover)',
+              transform: 'scale(1.1)',
+              transition: 'all 0.2s',
+            }}
+            _active={{
+              bg: 'var(--color-border) !important',
+              borderColor: 'var(--color-border-hover) !important',
+              transform: 'scale(0.95)',
+              boxShadow: 'none !important',
+              outline: 'none !important',
+            }}
+            _focus={{
+              boxShadow: 'none !important',
+              borderColor: 'var(--color-border-hover) !important',
+              outline: 'none !important',
+            }}
+            _focusVisible={{
+              boxShadow: 'none !important',
+              borderColor: 'var(--color-border-hover) !important',
+              outline: 'none !important',
+            }}
+            onClick={(e) => {
+              if (isInBulkMode) {
+                e.preventDefault()
+                e.stopPropagation()
+                return
+              }
+              archive()
+            }}
+          >
+            <LuArchive />
           </IconButton>
           <IconButton
             aria-label="Share bookmark"

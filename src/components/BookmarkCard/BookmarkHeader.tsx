@@ -7,7 +7,7 @@ import {
   Menu,
   Portal,
 } from '@chakra-ui/react'
-import { LuPencil, LuTrash2, LuArchive } from 'react-icons/lu'
+import { LuPencil, LuTrash2 } from 'react-icons/lu'
 import { memo, useCallback } from 'react'
 import { type Bookmark } from '@/types/bookmark'
 import { useBookmarkStore } from '@/store/bookmarkStore'
@@ -25,7 +25,7 @@ interface BookmarkHeaderProps {
 
 const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
   const updateBookmark = useBookmarkStore((state) => state.updateBookmark)
-  const { remove, archive } = useBookmarkActions(bookmark.id)
+  const { remove } = useBookmarkActions(bookmark.id)
   const { showDeleteConfirmation, showEditBookmark } = useModal()
 
   const menuItemStyles = useMenuItemStyles()
@@ -129,14 +129,6 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
       },
     })
   }, [showDeleteConfirmation, remove, bookmark])
-
-  const handleToggleArchive = useCallback(async () => {
-    try {
-      await archive()
-    } catch (error) {
-      logger.error('Failed to toggle archive', error, { notify: true })
-    }
-  }, [archive])
 
   return (
     <HStack gap={3} mb={3}>
@@ -304,23 +296,6 @@ const BookmarkHeader = memo(({ bookmark }: BookmarkHeaderProps) => {
               py={1}
               minW="160px"
             >
-              <Menu.Item
-                value="archive"
-                {...menuItemStyles}
-                onClick={handleToggleArchive}
-              >
-                <HStack gap={2}>
-                  <LuArchive
-                    size={14}
-                    color={
-                      bookmark.is_archived
-                        ? 'var(--color-warning)'
-                        : 'var(--color-text-tertiary)'
-                    }
-                  />
-                  <Text>{bookmark.is_archived ? 'Unarchive' : 'Archive'}</Text>
-                </HStack>
-              </Menu.Item>
               <Menu.Item value="edit" {...menuItemStyles} onClick={handleEdit}>
                 <HStack gap={2}>
                   <LuPencil
