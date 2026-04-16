@@ -31,6 +31,7 @@ interface ViewContextMenuProps {
   view: View
   position: { x: number; y: number }
   onClose: () => void
+  onSwitchView?: (viewId: string, position: { x: number; y: number }) => void
 }
 
 interface MenuItemProps {
@@ -107,7 +108,7 @@ const ColorPicker = memo<{
 ColorPicker.displayName = 'ColorPicker'
 
 export const ViewContextMenu = memo<ViewContextMenuProps>(
-  ({ view, position, onClose }) => {
+  ({ view, position, onClose, onSwitchView }) => {
     const updateView = useViewStore((s) => s.updateView)
     const deleteView = useViewStore((s) => s.deleteView)
     const pinView = useViewStore((s) => s.pinView)
@@ -196,6 +197,16 @@ export const ViewContextMenu = memo<ViewContextMenuProps>(
           onClick={onClose}
           onContextMenu={(e) => {
             e.preventDefault()
+            e.stopPropagation()
+            if (onSwitchView) {
+              const target = document.elementFromPoint(e.clientX, e.clientY)
+              const viewEl = target?.closest('[data-view-id]')
+              const newViewId = viewEl?.getAttribute('data-view-id')
+              if (newViewId && newViewId !== view.id) {
+                onSwitchView(newViewId, { x: e.clientX, y: e.clientY })
+                return
+              }
+            }
             onClose()
           }}
         />
@@ -218,46 +229,51 @@ export const ViewContextMenu = memo<ViewContextMenuProps>(
           }}
         >
           <VStack align="stretch" gap={0} py={2}>
-            {/* Inline rename input */}
-            {isRenaming ? (
-              <Box px={4} py={2}>
-                <Input
-                  ref={renameInputRef}
-                  value={renameValue}
-                  onChange={(e) => setRenameValue(e.target.value)}
-                  onKeyDown={handleRenameKeyDown}
-                  onBlur={handleRenameSubmit}
-                  size="sm"
-                  bg="var(--color-bg-tertiary)"
-                  border="1px solid var(--color-border)"
-                  color="var(--color-text-primary)"
-                  _focus={{
-                    borderColor: 'var(--color-blue)',
-                    boxShadow: '0 0 0 1px var(--color-blue)',
-                  }}
-                />
-              </Box>
-            ) : (
-              <MenuItem
-                icon={<LuPencil size={18} />}
-                label="Rename"
-                onClick={() => setIsRenaming(true)}
-              />
+            {!view.system && (
+              <>
+                {isRenaming ? (
+                  <Box px={4} py={2}>
+                    <Input
+                      ref={renameInputRef}
+                      value={renameValue}
+                      onChange={(e) => setRenameValue(e.target.value)}
+                      onKeyDown={handleRenameKeyDown}
+                      onBlur={handleRenameSubmit}
+                      size="sm"
+                      bg="var(--color-bg-tertiary)"
+                      border="1px solid var(--color-border)"
+                      color="var(--color-text-primary)"
+                      _focus={{
+                        borderColor: 'var(--color-blue)',
+                        boxShadow: '0 0 0 1px var(--color-blue)',
+                      }}
+                    />
+                  </Box>
+                ) : (
+                  <MenuItem
+                    icon={<LuPencil size={18} />}
+                    label="Rename"
+                    onClick={() => setIsRenaming(true)}
+                  />
+                )}
+              </>
             )}
 
             {/* Pin/Unpin */}
-            {view.pinned ? (
-              <MenuItem
-                icon={<LuPinOff size={18} />}
-                label="Unpin from Sidebar"
-                onClick={() => handleAction(() => unpinView(view.id))}
-              />
-            ) : (
-              <MenuItem
-                icon={<LuPin size={18} />}
-                label="Pin to Sidebar"
-                onClick={() => handleAction(() => pinView(view.id))}
-              />
+            {!view.system && (
+              view.pinned ? (
+                <MenuItem
+                  icon={<LuPinOff size={18} />}
+                  label="Unpin from Sidebar"
+                  onClick={() => handleAction(() => unpinView(view.id))}
+                />
+              ) : (
+                <MenuItem
+                  icon={<LuPin size={18} />}
+                  label="Pin to Sidebar"
+                  onClick={() => handleAction(() => pinView(view.id))}
+                />
+              )
             )}
 
             {/* Color picker toggle */}
@@ -278,71 +294,75 @@ export const ViewContextMenu = memo<ViewContextMenuProps>(
             )}
 
             {/* Create sub-view */}
-            <MenuItem
-              icon={<LuFolderPlus size={18} />}
-              label="Create sub-view"
-              onClick={() => {
-                onClose()
-                showCreateCollection({
-                  initialParentId: view.id,
-                  onCreate: (viewData) => {
-                    createView(viewData)
-                  },
-                })
-              }}
-            />
+            {!view.system && (
+              <MenuItem
+                icon={<LuFolderPlus size={18} />}
+                label="Create sub-view"
+                onClick={() => {
+                  onClose()
+                  showCreateCollection({
+                    initialParentId: view.id,
+                    onCreate: (viewData) => {
+                      createView(viewData)
+                    },
+                  })
+                }}
+              />
+            )}
 
             {/* Divider */}
-            <Box h="1px" bg="var(--color-border)" my={1} />
+            {!view.system && <Box h="1px" bg="var(--color-border)" my={1} />}
 
             {/* Delete */}
-            {confirmDelete ? (
-              <Box px={4} py={2}>
-                <Text fontSize="xs" color="var(--color-text-tertiary)" mb={2}>
-                  Delete &ldquo;{view.name}&rdquo;?
-                </Text>
-                <HStack gap={2}>
-                  <Box
-                    as="button"
-                    flex={1}
-                    py={1.5}
-                    textAlign="center"
-                    fontSize="xs"
-                    fontWeight="600"
-                    bg="var(--color-error)"
-                    color="white"
-                    borderRadius="md"
-                    cursor="pointer"
-                    _hover={{ opacity: 0.9 }}
-                    onClick={() => handleAction(() => deleteView(view.id))}
-                  >
-                    Delete
-                  </Box>
-                  <Box
-                    as="button"
-                    flex={1}
-                    py={1.5}
-                    textAlign="center"
-                    fontSize="xs"
-                    fontWeight="500"
-                    bg="var(--color-border)"
-                    color="var(--color-text-secondary)"
-                    borderRadius="md"
-                    cursor="pointer"
-                    _hover={{ bg: 'var(--color-bg-tertiary)' }}
-                    onClick={() => setConfirmDelete(false)}
-                  >
-                    Cancel
-                  </Box>
-                </HStack>
-              </Box>
-            ) : (
-              <MenuItem
-                icon={<LuTrash2 size={18} />}
-                label="Delete"
-                onClick={() => setConfirmDelete(true)}
-                isDanger
-              />
+            {!view.system && (
+              confirmDelete ? (
+                <Box px={4} py={2}>
+                  <Text fontSize="xs" color="var(--color-text-tertiary)" mb={2}>
+                    Delete &ldquo;{view.name}&rdquo;?
+                  </Text>
+                  <HStack gap={2}>
+                    <Box
+                      as="button"
+                      flex={1}
+                      py={1.5}
+                      textAlign="center"
+                      fontSize="xs"
+                      fontWeight="600"
+                      bg="var(--color-error)"
+                      color="white"
+                      borderRadius="md"
+                      cursor="pointer"
+                      _hover={{ opacity: 0.9 }}
+                      onClick={() => handleAction(() => deleteView(view.id))}
+                    >
+                      Delete
+                    </Box>
+                    <Box
+                      as="button"
+                      flex={1}
+                      py={1.5}
+                      textAlign="center"
+                      fontSize="xs"
+                      fontWeight="500"
+                      bg="var(--color-border)"
+                      color="var(--color-text-secondary)"
+                      borderRadius="md"
+                      cursor="pointer"
+                      _hover={{ bg: 'var(--color-bg-tertiary)' }}
+                      onClick={() => setConfirmDelete(false)}
+                    >
+                      Cancel
+                    </Box>
+                  </HStack>
+                </Box>
+              ) : (
+                <MenuItem
+                  icon={<LuTrash2 size={18} />}
+                  label="Delete"
+                  onClick={() => setConfirmDelete(true)}
+                  isDanger
+                />
+              )
             )}
           </VStack>
         </Box>

@@ -51,6 +51,11 @@ interface ViewsTreeItemProps {
   expandedViews: string[]
   onToggleExpand: (id: string) => void
   onViewClick: (view: View) => void
+  contextMenuViewId: string | null
+  contextMenuPosition: { x: number; y: number } | null
+  onContextMenuOpen: (viewId: string, position: { x: number; y: number }) => void
+  onContextMenuClose: () => void
+  onContextMenuSwitch?: (viewId: string, position: { x: number; y: number }) => void
 }
 
 export const ViewsTreeItem = memo<ViewsTreeItemProps>(
@@ -63,16 +68,17 @@ export const ViewsTreeItem = memo<ViewsTreeItemProps>(
     expandedViews,
     onToggleExpand,
     onViewClick,
+    contextMenuViewId,
+    contextMenuPosition,
+    onContextMenuOpen,
+    onContextMenuClose,
+    onContextMenuSwitch,
   }) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const [isHovering, setIsHovering] = useState(false)
     const [containerWidth, setContainerWidth] = useState(0)
     const [contentWidth, setContentWidth] = useState(0)
-    const [contextMenu, setContextMenu] = useState<{
-      x: number
-      y: number
-    } | null>(null)
 
     const isActive = activeViewId === view.id
     const isExpanded = expandedViews.includes(view.id)
@@ -136,12 +142,11 @@ export const ViewsTreeItem = memo<ViewsTreeItemProps>(
 
     const handleContextMenu = useCallback(
       (e: React.MouseEvent) => {
-        if (view.system) return
         e.preventDefault()
         e.stopPropagation()
-        setContextMenu({ x: e.clientX, y: e.clientY })
+        onContextMenuOpen(view.id, { x: e.clientX, y: e.clientY })
       },
-      [view.system]
+      [onContextMenuOpen, view.id]
     )
 
     const handleClick = useCallback(() => {
@@ -193,7 +198,7 @@ export const ViewsTreeItem = memo<ViewsTreeItemProps>(
     const showInvalidDrop = isOver && !canDrop
 
     return (
-      <Box onContextMenu={handleContextMenu} position="relative">
+      <Box onContextMenu={handleContextMenu} position="relative" data-view-id={view.id}>
         {view.pinned && !view.system && (
           <Box
             position="absolute"
@@ -336,16 +341,22 @@ export const ViewsTreeItem = memo<ViewsTreeItemProps>(
                 expandedViews={expandedViews}
                 onToggleExpand={onToggleExpand}
                 onViewClick={onViewClick}
+                contextMenuViewId={contextMenuViewId}
+                contextMenuPosition={contextMenuPosition}
+                onContextMenuOpen={onContextMenuOpen}
+                onContextMenuClose={onContextMenuClose}
+                onContextMenuSwitch={onContextMenuSwitch}
               />
             ))}
           </Box>
         )}
 
-        {contextMenu && !view.system && (
+        {contextMenuViewId === view.id && contextMenuPosition && (
           <ViewContextMenu
             view={view}
-            position={contextMenu}
-            onClose={() => setContextMenu(null)}
+            position={contextMenuPosition}
+            onClose={onContextMenuClose}
+            onSwitchView={onContextMenuSwitch}
           />
         )}
       </Box>

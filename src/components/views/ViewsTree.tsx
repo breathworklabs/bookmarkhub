@@ -1,5 +1,5 @@
 import { Box, Text, Button, VStack } from '@chakra-ui/react'
-import { useMemo, memo, useCallback } from 'react'
+import { useMemo, memo, useCallback, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useViewStore } from '@/store/viewStore'
 import { useBookmarkStore } from '@/store/bookmarkStore'
@@ -23,6 +23,24 @@ const ViewsTree = memo(() => {
   const bookmarks = useBookmarkStore((s) => s.bookmarks)
   const createView = useViewStore((s) => s.createView)
   const { showCreateCollection } = useModal()
+
+  const [contextMenuViewId, setContextMenuViewId] = useState<string | null>(null)
+  const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number } | null>(null)
+
+  const handleContextMenuOpen = useCallback((viewId: string, position: { x: number; y: number }) => {
+    setContextMenuViewId(viewId)
+    setContextMenuPosition(position)
+  }, [])
+
+  const handleContextMenuClose = useCallback(() => {
+    setContextMenuViewId(null)
+    setContextMenuPosition(null)
+  }, [])
+
+  const handleContextMenuSwitch = useCallback((viewId: string, position: { x: number; y: number }) => {
+    setContextMenuViewId(viewId)
+    setContextMenuPosition(position)
+  }, [])
 
   const location = useLocation()
   const navigateWithCleanup = useNavigateWithCleanup()
@@ -101,6 +119,11 @@ const ViewsTree = memo(() => {
           expandedViews={expandedViews}
           onToggleExpand={toggleViewExpansion}
           onViewClick={handleViewClick}
+          contextMenuViewId={contextMenuViewId}
+          contextMenuPosition={contextMenuPosition}
+          onContextMenuOpen={handleContextMenuOpen}
+          onContextMenuClose={handleContextMenuClose}
+          onContextMenuSwitch={handleContextMenuSwitch}
         />
       ))}
     </VStack>
