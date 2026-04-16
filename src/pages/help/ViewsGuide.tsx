@@ -2,7 +2,7 @@ import { Box, VStack, HStack, Text, Code } from '@chakra-ui/react'
 import { Alert } from '@chakra-ui/react'
 import { LuFolderTree } from 'react-icons/lu'
 
-export const CollectionsGuide = () => {
+export const ViewsGuide = () => {
   return (
     <VStack alignItems="stretch" gap={6}>
       {/* Introduction */}
@@ -13,19 +13,20 @@ export const CollectionsGuide = () => {
           style={{ color: 'var(--color-text-primary)' }}
           mb={3}
         >
-          Collections
+          Views
         </Text>
         <Text
           fontSize="sm"
           style={{ color: 'var(--color-text-secondary)', lineHeight: '1.6' }}
         >
-          Collections help you organize your bookmarks into logical groups. You
-          can create collections for different topics, projects, or categories,
-          and even nest collections inside each other for advanced organization.
+          Views help you organize and filter your bookmarks. The sidebar includes
+          built-in system views — All Bookmarks, Starred, Recent, Archived, Trash,
+          and Uncategorized — plus the ability to create custom views with your own
+          criteria and nested sub-views for advanced organization.
         </Text>
       </Box>
 
-      {/* Creating a Collection */}
+      {/* Creating a View */}
       <Box>
         <HStack gap={2} mb={3}>
           <LuFolderTree size={20} color="var(--color-blue)" />
@@ -34,7 +35,7 @@ export const CollectionsGuide = () => {
             fontWeight="600"
             style={{ color: 'var(--color-text-primary)' }}
           >
-            Creating a Collection
+            Creating a View
           </Text>
         </HStack>
 
@@ -46,7 +47,7 @@ export const CollectionsGuide = () => {
               lineHeight: '1.6',
             }}
           >
-            Follow these steps to create your first collection:
+            Follow these steps to create your first custom view:
           </Text>
 
           {/* Step 1 */}
@@ -77,7 +78,7 @@ export const CollectionsGuide = () => {
                   fontWeight="600"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
-                  Open the Collections Panel
+                  Open the Views Panel
                 </Text>
                 <Text
                   fontSize="sm"
@@ -86,7 +87,7 @@ export const CollectionsGuide = () => {
                     lineHeight: '1.6',
                   }}
                 >
-                  In the left sidebar, locate the "Collections" section. If you
+                  In the left sidebar, locate the "Views" section. If you
                   don't see it, make sure your sidebar is expanded.
                 </Text>
                 <Box
@@ -101,7 +102,7 @@ export const CollectionsGuide = () => {
                     fontSize="xs"
                     style={{ color: 'var(--color-text-tertiary)' }}
                   >
-                    [GIF: Highlighting the Collections section in the sidebar]
+                    [GIF: Highlighting the Views section in the sidebar]
                   </Text>
                 </Box>
               </VStack>
@@ -136,7 +137,7 @@ export const CollectionsGuide = () => {
                   fontWeight="600"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
-                  Click the "New Collection" Button
+                  Click the "New View" Button
                 </Text>
                 <Text
                   fontSize="sm"
@@ -145,8 +146,8 @@ export const CollectionsGuide = () => {
                     lineHeight: '1.6',
                   }}
                 >
-                  Look for the "+ New Collection" button at the top of the
-                  Collections panel and click it.
+                  Look for the "+ New View" button at the top of the
+                  Views panel and click it.
                 </Text>
                 <Box
                   mt={2}
@@ -160,7 +161,7 @@ export const CollectionsGuide = () => {
                     fontSize="xs"
                     style={{ color: 'var(--color-text-tertiary)' }}
                   >
-                    [GIF: Clicking the "New Collection" button]
+                    [GIF: Clicking the "New View" button]
                   </Text>
                 </Box>
               </VStack>
@@ -195,7 +196,7 @@ export const CollectionsGuide = () => {
                   fontWeight="600"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
-                  Enter Collection Details
+                  Enter View Details
                 </Text>
                 <Text
                   fontSize="sm"
@@ -204,7 +205,7 @@ export const CollectionsGuide = () => {
                     lineHeight: '1.6',
                   }}
                 >
-                  A dialog will appear. Enter a name for your collection and
+                  A dialog will appear. Enter a name for your view and
                   optionally add a description. For example:
                 </Text>
                 <Box
@@ -268,7 +269,7 @@ export const CollectionsGuide = () => {
                     fontSize="xs"
                     style={{ color: 'var(--color-text-tertiary)' }}
                   >
-                    [GIF: Filling out the collection creation form]
+                    [GIF: Filling out the view creation form]
                   </Text>
                 </Box>
               </VStack>
@@ -303,7 +304,7 @@ export const CollectionsGuide = () => {
                   fontWeight="600"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
-                  Save Your Collection
+                  Save Your View
                 </Text>
                 <Text
                   fontSize="sm"
@@ -312,8 +313,8 @@ export const CollectionsGuide = () => {
                     lineHeight: '1.6',
                   }}
                 >
-                  Click the "Create Collection" button. Your new collection will
-                  appear in the Collections panel in the sidebar.
+                  Click the "Create View" button. Your new view will
+                  appear in the Views panel in the sidebar.
                 </Text>
                 <Box
                   mt={2}
@@ -327,7 +328,7 @@ export const CollectionsGuide = () => {
                     fontSize="xs"
                     style={{ color: 'var(--color-text-tertiary)' }}
                   >
-                    [GIF: Collection appearing in the sidebar after creation]
+                    [GIF: View appearing in the sidebar after creation]
                   </Text>
                 </Box>
               </VStack>
@@ -336,7 +337,7 @@ export const CollectionsGuide = () => {
         </VStack>
       </Box>
 
-      {/* Adding Bookmarks to Collections */}
+      {/* Adding Bookmarks to Views */}
       <Box
         p={1}
         style={{ background: 'var(--color-border)' }}
@@ -350,7 +351,7 @@ export const CollectionsGuide = () => {
           style={{ color: 'var(--color-text-primary)' }}
           mb={3}
         >
-          Adding Bookmarks to a Collection
+          Adding Bookmarks to a View
         </Text>
 
         <VStack alignItems="stretch" gap={4}>
@@ -361,7 +362,7 @@ export const CollectionsGuide = () => {
               lineHeight: '1.6',
             }}
           >
-            There are multiple ways to add bookmarks to a collection:
+            There are multiple ways to add bookmarks to a view:
           </Text>
 
           {/* Method 1: Drag and Drop */}
@@ -387,8 +388,8 @@ export const CollectionsGuide = () => {
                 }}
               >
                 Simply drag a bookmark card from the main area and drop it onto
-                a collection in the sidebar. The bookmark will be instantly
-                added to that collection.
+                a view in the sidebar. The bookmark will be instantly
+                added to that view.
               </Text>
               <Box
                 mt={2}
@@ -402,7 +403,7 @@ export const CollectionsGuide = () => {
                   fontSize="xs"
                   style={{ color: 'var(--color-text-tertiary)' }}
                 >
-                  [GIF: Dragging a bookmark to a collection]
+                  [GIF: Dragging a bookmark to a view]
                 </Text>
               </Box>
             </VStack>
@@ -431,7 +432,7 @@ export const CollectionsGuide = () => {
                 }}
               >
                 Click the three-dot menu on any bookmark card, select "Add to
-                Collection", and choose from your list of collections.
+                View", and choose from your list of views.
               </Text>
               <Box
                 mt={2}
@@ -445,7 +446,7 @@ export const CollectionsGuide = () => {
                   fontSize="xs"
                   style={{ color: 'var(--color-text-tertiary)' }}
                 >
-                  [GIF: Using the bookmark menu to add to collection]
+                  [GIF: Using the bookmark menu to add to view]
                 </Text>
               </Box>
             </VStack>
@@ -474,7 +475,7 @@ export const CollectionsGuide = () => {
                 }}
               >
                 Select multiple bookmarks using checkboxes, then click the "Add
-                to Collection" button in the bulk actions toolbar to add all
+                to View" button in the bulk actions toolbar to add all
                 selected bookmarks at once.
               </Text>
               <Box
@@ -489,7 +490,7 @@ export const CollectionsGuide = () => {
                   fontSize="xs"
                   style={{ color: 'var(--color-text-tertiary)' }}
                 >
-                  [GIF: Bulk adding bookmarks to a collection]
+                  [GIF: Bulk adding bookmarks to a view]
                 </Text>
               </Box>
             </VStack>
@@ -497,7 +498,7 @@ export const CollectionsGuide = () => {
         </VStack>
       </Box>
 
-      {/* Nested Collections */}
+      {/* Nested Views */}
       <Box
         p={1}
         style={{ background: 'var(--color-border)' }}
@@ -511,7 +512,7 @@ export const CollectionsGuide = () => {
           style={{ color: 'var(--color-text-primary)' }}
           mb={3}
         >
-          Creating Nested Collections
+          Creating Nested Views
         </Text>
 
         <VStack alignItems="stretch" gap={4}>
@@ -522,13 +523,13 @@ export const CollectionsGuide = () => {
               lineHeight: '1.6',
             }}
           >
-            You can create collections inside other collections to build a
+            You can create views inside other views to build a
             hierarchical organization structure. For example, you might have a
-            "Programming" collection with nested collections for "JavaScript",
+            "Programming" view with nested views for "JavaScript",
             "Python", and "DevOps".
           </Text>
 
-          {/* Creating Nested Collection */}
+          {/* Creating Nested View */}
           <Box
             p={4}
             style={{ background: 'var(--color-bg-secondary)' }}
@@ -541,7 +542,7 @@ export const CollectionsGuide = () => {
                 fontWeight="600"
                 style={{ color: 'var(--color-text-primary)' }}
               >
-                To Create a Nested Collection:
+                To Create a Nested View:
               </Text>
 
               <VStack alignItems="stretch" gap={2} pl={3}>
@@ -560,7 +561,7 @@ export const CollectionsGuide = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    Right-click on an existing collection (the parent)
+                    Right-click on an existing view (the parent)
                   </Text>
                 </HStack>
 
@@ -579,7 +580,7 @@ export const CollectionsGuide = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    Select "Create Subcollection" from the context menu
+                    Select "Create Subview" from the context menu
                   </Text>
                 </HStack>
 
@@ -598,7 +599,7 @@ export const CollectionsGuide = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    Enter the name and description for the subcollection
+                    Enter the name and description for the subview
                   </Text>
                 </HStack>
 
@@ -617,7 +618,7 @@ export const CollectionsGuide = () => {
                       lineHeight: '1.6',
                     }}
                   >
-                    Click "Create" - the new collection will appear nested under
+                    Click "Create" - the new view will appear nested under
                     the parent
                   </Text>
                 </HStack>
@@ -635,7 +636,7 @@ export const CollectionsGuide = () => {
                   fontSize="xs"
                   style={{ color: 'var(--color-text-tertiary)' }}
                 >
-                  [GIF: Creating a nested collection structure]
+                  [GIF: Creating a nested view structure]
                 </Text>
               </Box>
             </VStack>
@@ -654,7 +655,7 @@ export const CollectionsGuide = () => {
                 fontWeight="600"
                 style={{ color: 'var(--color-text-primary)' }}
               >
-                Example Collection Structure:
+                Example View Structure:
               </Text>
               <Box
                 p={3}
@@ -734,23 +735,23 @@ export const CollectionsGuide = () => {
             <Alert.Description>
               <VStack alignItems="stretch" gap={2}>
                 <Text fontSize="sm" lineHeight="1.6">
-                  • Keep collection names short and descriptive for easier
+                  • Keep view names short and descriptive for easier
                   scanning
                 </Text>
                 <Text fontSize="sm" lineHeight="1.6">
-                  • Use nested collections for broader categories (max 3 levels
+                  • Use nested views for broader categories (max 3 levels
                   deep recommended)
                 </Text>
                 <Text fontSize="sm" lineHeight="1.6">
-                  • A bookmark can belong to multiple collections - use this to
-                  create different views
+                  • Use system views for quick access to starred, recent, or
+                  archived bookmarks
                 </Text>
                 <Text fontSize="sm" lineHeight="1.6">
-                  • Combine collections with tags for powerful organization and
+                  • Combine views with tags for powerful organization and
                   filtering
                 </Text>
                 <Text fontSize="sm" lineHeight="1.6">
-                  • Regularly review and reorganize your collections as your
+                  • Regularly review and reorganize your views as your
                   needs evolve
                 </Text>
               </VStack>
@@ -764,13 +765,14 @@ export const CollectionsGuide = () => {
         <Alert.Root status="success" variant="subtle">
           <Alert.Indicator />
           <VStack alignItems="stretch" gap={1}>
-            <Alert.Title>Pro Tip: Smart Collections</Alert.Title>
+            <Alert.Title>Pro Tip: System Views</Alert.Title>
             <Alert.Description>
               <Text fontSize="sm" lineHeight="1.6">
-                Create collections based on your workflow or projects. For
-                example, have a "Reading List" for articles to read, "Reference"
-                for documentation, and "Projects" with subcollections for each
-                active project.
+                BookmarkHub includes built-in system views that automatically
+                filter your bookmarks: Starred, Recent (last 7 days), Archived,
+                Trash, and Uncategorized. You can also create custom views based
+                on your workflow — try a "Reading List" for articles or
+                "Projects" with sub-views for each active project.
               </Text>
             </Alert.Description>
           </VStack>
