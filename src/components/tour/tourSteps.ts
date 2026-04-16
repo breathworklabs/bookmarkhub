@@ -52,11 +52,11 @@ export const tourSteps: TourStep[] = [
     spotlightPadding: 12,
   },
   {
-    id: 'collections',
+    id: 'views',
     target: '[data-tour="collections-sidebar"]',
-    title: 'Organize with Collections',
+    title: 'Organize with Views',
     description:
-      'Collections help you organize bookmarks into categories. Click any collection to view its bookmarks, or create your own custom collections.',
+      'Views help you organize and filter bookmarks. System views like Starred, Recent, and Trash are built in. Create your own custom views to group bookmarks however you like.',
     placement: 'right',
     showArrow: true,
     spotlightPadding: 12,
@@ -81,7 +81,7 @@ export const tourSteps: TourStep[] = [
     target: '[data-tour="bookmark-card"]:first-of-type',
     title: 'Bookmark Cards',
     description:
-      'Each bookmark shows key information. Click to view details, star favorites, or use the menu for more actions like archive and delete.',
+      'Each bookmark shows key information. Click to view details, star favorites, archive, or delete — all directly from the action bar.',
     placement: 'right',
     showArrow: true,
     spotlightPadding: 16,
@@ -121,7 +121,7 @@ export const tourSteps: TourStep[] = [
     target: '[data-tour="app-container"]',
     title: 'You\'re All Set!',
     description:
-      'You now know the basics of BookmarksX. Start bookmarking and organizing your favorite content. You can restart this tour anytime from Settings.',
+      'You now know the basics of BookmarkHub. Start bookmarking and organizing your favorite content. You can restart this tour anytime from Settings.',
     placement: 'center',
     showArrow: false,
     spotlightPadding: 0,

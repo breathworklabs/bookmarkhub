@@ -176,10 +176,10 @@ describe('tourSteps', () => {
       expect(filtersStep?.target).toContain('filters-button')
     })
 
-    it('should have collections step', () => {
-      const collectionsStep = getTourStep('collections')
-      expect(collectionsStep).toBeDefined()
-      expect(collectionsStep?.target).toContain('collections-sidebar')
+    it('should have views step', () => {
+      const viewsStep = getTourStep('views')
+      expect(viewsStep).toBeDefined()
+      expect(viewsStep?.target).toContain('collections-sidebar')
     })
 
     it('should have bookmark-card step', () => {
@@ -197,10 +197,10 @@ describe('tourSteps', () => {
   })
 
   describe('tour step actions', () => {
-    it('should have beforeShow action for collections step', () => {
-      const collectionsStep = getTourStep('collections')
-      expect(collectionsStep?.actions?.beforeShow).toBeDefined()
-      expect(typeof collectionsStep?.actions?.beforeShow).toBe('function')
+    it('should have beforeShow action for views step', () => {
+      const viewsStep = getTourStep('views')
+      expect(viewsStep?.actions?.beforeShow).toBeDefined()
+      expect(typeof viewsStep?.actions?.beforeShow).toBe('function')
     })
 
     it('should not have actions for most steps', () => {
