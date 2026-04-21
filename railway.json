@@ -1,0 +1,19 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "rm -rf node_modules/.cache && npm clean-install --prefer-offline --no-audit && npm run build",
+    "watchPatterns": [
+      "src/**",
+      "package.json"
+    ]
+  },
+  "deploy": {
+    "numReplicas": 1,
+    "startCommand": "npm run start:prod",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10,
+    "healthcheckPath": "/health",
+    "healthcheckTimeout": 30
+  }
+}

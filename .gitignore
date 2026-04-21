@@ -1,0 +1,79 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+test-results/*
+playwright-report/*
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Build artifacts
+dist/
+build/
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Test data should not be in public/
+public/test*.js
+public/test*.json
+public/*test*.json
+
+*storybook.log
+storybook-static
+
+# SSL certificates
+.certs/
+*.pem
+*.key
+*.crt
+
+# Playwright auth state
+auth.json
+
+# AI tooling (local only)
+.claude/
+.sisyphus/
+.opencode/
+.opencode-skillful.json
+.playwright-mcp/
+
+# Debug tools (local only)
+tools/debug/
+
+# Generated script output
+scripts/output/
+
+# Local HTTPS proxy
+proxy-server.cjs
+
+# Wrangler
+workers/share-api/.wrangler/

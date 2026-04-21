@@ -1,0 +1,266 @@
+import { useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useBookmarkStore } from '@/store/bookmarkStore'
+import { useSettingsStore } from '@/store/settingsStore'
+import { useViewStore } from '@/store/viewStore'
+import { runMigration, isMigrated } from '@/utils/viewMigration'
+import { initAllPerformanceMonitoring } from '@/lib/performance'
+import { localStorageService } from '@/lib/localStorage'
+import { logger } from '@/lib/logger'
+
+export const useInitializeApp = () => {
+  const [hasExistingBookmarks, setHasExistingBookmarks] = useState<
+    boolean | null
+  >(null)
+  const [isInitializing, setIsInitializing] = useState(false)
+  const isLoading = useBookmarkStore((state) => state.isLoading)
+  const error = useBookmarkStore((state) => state.error)
+  const bookmarks = useBookmarkStore((state) => state.bookmarks)
+
+  const hasInitialized = useRef(false)
+
+  useEffect(() => {
+    // Prevent duplicate initialization
+    if (hasInitialized.current) {
+      return
+    }
+
+    hasInitialized.current = true
+
+    // Initialize performance monitoring (privacy-first, local logging only)
+    initAllPerformanceMonitoring()
+
+    // First, synchronously check if we have existing bookmarks
+    const checkExistingBookmarks = async () => {
+      try {
+        // Direct synchronous localStorage check from consolidated storage
+        const stored = localStorage.getItem('x-bookmark-manager-data')
+        const data = stored ? JSON.parse(stored) : null
+        const bookmarks = data?.bookmarks || []
+        const hasBookmarks = Array.isArray(bookmarks) && bookmarks.length > 0
+        setHasExistingBookmarks(hasBookmarks)
+
+        // If we have bookmarks, initialize stores immediately and wait
+        if (hasBookmarks) {
+          setIsInitializing(true)
+          if (!isMigrated()) {
+            runMigration()
+          }
+
+          await Promise.all([
+            useBookmarkStore.getState().initialize(),
+            useViewStore.getState().loadViews(),
+          ])
+          setIsInitializing(false)
+        }
+      } catch (error) {
+        logger.error('Error checking existing bookmarks', error)
+        setHasExistingBookmarks(false)
+        setIsInitializing(false)
+      }
+    }
+
+    checkExistingBookmarks()
+  }, [])
+
+  // Watch for bookmark changes (e.g., when demo data is loaded)
+  useEffect(() => {
+    if (hasExistingBookmarks !== null) {
+      const hasBookmarks = bookmarks.length > 0
+      if (hasBookmarks !== hasExistingBookmarks) {
+        setHasExistingBookmarks(hasBookmarks)
+      }
+    }
+  }, [bookmarks, hasExistingBookmarks])
+
+  // Extension Detection: Check if Chrome extension is installed
+  useEffect(() => {
+    const checkExtensionInstalled = () => {
+      const timeout = setTimeout(() => {
+        // Extension didn't respond within 1 second
+        useSettingsStore.getState().setExtensionInstalled(false)
+        logger.debug('Extension detection: Not installed or not responding')
+      }, 1000)
+
+      const handleExtensionPing = (event: MessageEvent) => {
+        if (
+          event.data?.type === 'X_EXTENSION_READY' &&
+          event.data?.source === 'x-bookmark-manager-extension'
+        ) {
+          clearTimeout(timeout)
+          useSettingsStore.getState().setExtensionInstalled(true)
+          logger.debug('Extension detection: Installed and ready')
+          window.removeEventListener('message', handleExtensionPing)
+        }
+      }
+
+      window.addEventListener('message', handleExtensionPing)
+
+      // Send ping to extension
+      window.postMessage(
+        {
+          type: 'X_CHECK_EXTENSION',
+          source: 'x-bookmark-manager-app',
+        },
+        '*'
+      )
+
+      return () => {
+        clearTimeout(timeout)
+        window.removeEventListener('message', handleExtensionPing)
+      }
+    }
+
+    const cleanup = checkExtensionInstalled()
+    return cleanup
+  }, [])
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.has('import')) {
+      localStorageService.setHasBeenCleared(false)
+
+      const timer = setTimeout(() => {
+        window.postMessage(
+          {
+            type: 'X_REQUEST_SYNC',
+            source: 'x-bookmark-manager-app',
+          },
+          '*'
+        )
+      }, 1500)
+
+      return () => clearTimeout(timer)
+    }
+  }, [])
+
+  // Phase 1: Listen for bookmark updates from Chrome extension
+  useEffect(() => {
+    const handleExtensionMessage = (event: MessageEvent) => {
+      // Validate message source and type
+      if (
+        event.data?.type === 'X_BOOKMARKS_UPDATED' &&
+        event.data?.source === 'x-bookmark-manager-extension'
+      ) {
+        const { count, showNotification = true } = event.data
+
+        // Check if user recently cleared data - don't auto-load in that case
+        if (localStorageService.getHasBeenCleared()) {
+          logger.debug('Extension sync ignored: User cleared data')
+          return
+        }
+
+        // Mark that this import came from the extension
+        localStorageService.setLastImportSource('extension')
+
+        // Reload bookmarks from localStorage without page reload
+        Promise.all([
+          useBookmarkStore.getState().initialize(),
+          useViewStore.getState().loadViews(),
+        ])
+          .then(() => {
+            // Show success toast notification (if enabled in settings)
+            if (showNotification) {
+              const message =
+                count === 1
+                  ? 'Imported 1 new bookmark from X/Twitter. Refreshing...'
+                  : `Imported ${count} new bookmarks from X/Twitter. Refreshing...`
+
+              toast.success(message, { duration: 2000 })
+            }
+
+            // Always refresh the page after sync (with or without notification)
+            setTimeout(
+              () => {
+                window.location.reload()
+              },
+              showNotification ? 2000 : 500
+            )
+          })
+          .catch((error) => {
+            logger.error('Error reloading stores after extension update', error)
+
+            // Always show error toast (regardless of notification setting)
+            toast.error(
+              'Failed to load imported bookmarks. Please refresh the page.'
+            )
+          })
+      }
+    }
+
+    window.addEventListener('message', handleExtensionMessage)
+    return () => window.removeEventListener('message', handleExtensionMessage)
+  }, [])
+
+  // Auto-sync: Request bookmarks from extension when app opens
+  useEffect(() => {
+    const autoSyncInterval =
+      useSettingsStore.getState().extension.autoSyncInterval
+
+    // Only auto-sync if not set to 'manual' or 'off'
+    if (autoSyncInterval === 'manual' || autoSyncInterval === 'off') {
+      logger.debug(`Auto-sync: Disabled (set to ${autoSyncInterval})`)
+      return
+    }
+
+    // Check if user recently cleared data - don't auto-sync in that case
+    if (localStorageService.getHasBeenCleared()) {
+      logger.debug('Auto-sync: Disabled (user cleared data)')
+      return
+    }
+
+    // Check if user recently imported from a file - don't auto-sync to prevent overwriting
+    const lastImportSource = localStorageService.getLastImportSource()
+    if (lastImportSource === 'file') {
+      logger.debug(
+        'Auto-sync: Disabled (user imported from file - preventing data overwrite)'
+      )
+      return
+    }
+
+    // Small delay to ensure extension is ready
+    const timer = setTimeout(() => {
+      window.postMessage(
+        {
+          type: 'X_REQUEST_SYNC',
+          source: 'x-bookmark-manager-app',
+        },
+        '*'
+      )
+      logger.debug('Auto-sync: Requested bookmarks from extension')
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Validate bookmarks on app open
+  useEffect(() => {
+    // Only validate if we have existing bookmarks
+    if (hasExistingBookmarks === true) {
+      const timer = setTimeout(() => {
+        const validateAllBookmarks =
+          useBookmarkStore.getState().validateAllBookmarks
+        validateAllBookmarks().catch((error) => {
+          logger.error('Failed to validate bookmarks on startup', error)
+        })
+      }, 2000) // Delay to allow other initialization to complete
+
+      return () => clearTimeout(timer)
+    }
+  }, [hasExistingBookmarks])
+
+  // Show loading when:
+  // 1. Still checking localStorage (hasExistingBookmarks === null)
+  // 2. Initializing stores (isInitializing === true)
+  // 3. Loading bookmarks (isLoading)
+  const showLoading =
+    hasExistingBookmarks === null ||
+    isInitializing ||
+    (hasExistingBookmarks === true && isLoading)
+
+  return {
+    isLoading: showLoading,
+    error,
+    hasExistingBookmarks,
+  }
+}

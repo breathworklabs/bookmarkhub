@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /trash
+Disallow: /shared
+Disallow: /settings
+
+Sitemap: https://bookmarkhub.app/sitemap.xml

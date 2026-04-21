@@ -1,0 +1,129 @@
+{
+  "hero": {
+    "title": "Your Bookmarks, Organized",
+    "subtitle": "A powerful bookmark manager for X/Twitter with smart collections, advanced filtering, and offline-first storage.",
+    "ctaText": "Get Started",
+    "ctaSecondary": "Learn More"
+  },
+  "stats": [
+    {
+      "number": "50K+",
+      "label": "Active Users"
+    },
+    {
+      "number": "2M+",
+      "label": "Bookmarks Organized"
+    },
+    {
+      "number": "4.9★",
+      "label": "User Rating"
+    }
+  ],
+  "featuresSection": {
+    "title": "Powerful Features",
+    "subtitle": "Everything you need to master your bookmarks"
+  },
+  "features": [
+    {
+      "badge": "Organization",
+      "title": "Custom Collections",
+      "description": "Organize your bookmarks your way. Create custom collections to group related content, assign bookmarks to multiple collections, and keep everything neatly categorized.",
+      "highlights": [
+        "Create unlimited custom collections",
+        "Assign bookmarks to multiple collections",
+        "Visual collection management",
+        "Quick collection switching and filtering"
+      ],
+      "image": "/src/assets/splash_images/collections.jpg",
+      "video": "/src/assets/splash_videos/collections.mp4"
+    },
+    {
+      "badge": "Search & Filter",
+      "title": "Advanced Filtering",
+      "description": "Find exactly what you need in seconds. Filter by time range, find threads, search for media content, or use tags to narrow down results. Powerful search makes finding bookmarks effortless.",
+      "highlights": [
+        "Filter by time range (today, this week, all time)",
+        "Find thread conversations easily",
+        "Search for bookmarks with media",
+        "Tag-based filtering and search"
+      ]
+    },
+    {
+      "badge": "Import",
+      "title": "X/Twitter Import",
+      "description": "Bring all your Twitter/X bookmarks with you. Use our Chrome extension to easily import your saved tweets, complete with metadata, images, and thread context preserved.",
+      "highlights": [
+        "Chrome extension for easy import",
+        "Preserves tweet metadata and media",
+        "Automatic sync via extension",
+        "Keep all your saved tweets organized"
+      ],
+      "image": "/src/assets/splash_images/extension.png",
+      "video": "/src/assets/splash_videos/extension.mp4"
+    },
+    {
+      "badge": "Tagging",
+      "title": "Tag Management",
+      "description": "Keep your bookmarks organized with flexible tagging. Add multiple tags to each bookmark, filter by tags, and manage your tag library to build your own organizational system.",
+      "highlights": [
+        "Add multiple tags per bookmark",
+        "Filter and search by tags",
+        "Visual tag management",
+        "Quick tag assignment and editing"
+      ],
+      "image": "/src/assets/splash_images/tags.png",
+      "video": "/src/assets/splash_videos/tags.mp4"
+    },
+    {
+      "badge": "Export & Backup",
+      "title": "Data Export",
+      "description": "Your data, your control. Export all your bookmarks, collections, and tags in standard JSON format. Perfect for backups, migrations, or sharing your curated content.",
+      "highlights": [
+        "Export all data in JSON format",
+        "Includes bookmarks, collections, and tags",
+        "Easy re-import from exported files",
+        "Keep full control of your data"
+      ]
+    },
+    {
+      "badge": "Themes",
+      "title": "Dark & Light Mode",
+      "description": "Easy on the eyes, day or night. Switch between light and dark themes, or let the app automatically adjust based on your system preferences. Designed for comfort and readability.",
+      "highlights": [
+        "Dark mode for comfortable viewing",
+        "Light mode for daytime use",
+        "Auto mode follows system preferences",
+        "Instant theme switching"
+      ]
+    }
+  ],
+  "howItWorksSection": {
+    "title": "Quick Start Guide",
+    "subtitle": "Get started in three simple steps"
+  },
+  "steps": [
+    {
+      "number": "01",
+      "title": "Install the Chrome Extension",
+      "description": "Install the BookmarkHub Chrome extension from the Chrome Web Store to import your X/Twitter bookmarks and automatically sync your saved tweets.",
+      "icon": "download"
+    },
+    {
+      "number": "02",
+      "title": "Import & Organize",
+      "description": "Once installed, the extension will import your X/Twitter bookmarks. Then create custom collections, add tags, and use advanced filters to organize everything your way.",
+      "icon": "organize"
+    },
+    {
+      "number": "03",
+      "title": "Access Anywhere, Anytime",
+      "description": "All your bookmarks are stored locally in your browser for instant access, even offline. Export anytime for backups or to migrate your data.",
+      "icon": "cloud"
+    }
+  ],
+  "cta": {
+    "title": "Ready to Organize Your Bookmarks?",
+    "subtitle": "Start managing your X/Twitter bookmarks better today",
+    "primaryButton": "Get Started"
+  }
+}

@@ -1,0 +1,56 @@
+# Dependencies
+node_modules
+.npm
+
+# Build outputs
+dist
+build
+*.log
+
+# Development files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+docs
+LICENCE
+
+# Testing
+coverage
+.nyc_output
+tests
+e2e
+playwright-report
+test-results
+
+# Certificates
+.certs
+*.pem
+*.key
+*.crt
+
+# Temporary files
+tmp
+temp
+.cache
+
+# Storybook
+storybook
+.storybook
+storybook-static

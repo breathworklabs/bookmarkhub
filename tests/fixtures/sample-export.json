@@ -1,0 +1,55 @@
+{
+  "bookmarks": [
+    {
+      "id": 1,
+      "user_id": "local-user",
+      "title": "Sample",
+      "url": "https://example.com",
+      "description": "",
+      "content": "",
+      "author": "",
+      "domain": "example.com",
+      "source_platform": "manual",
+      "engagement_score": 0,
+      "is_starred": false,
+      "is_read": false,
+      "is_archived": false,
+      "tags": [],
+      "collections": ["uncategorized"],
+      "primaryCollection": "uncategorized",
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "collections": [
+    {
+      "id": "uncategorized",
+      "name": "Uncategorized",
+      "isPrivate": false,
+      "isDefault": true,
+      "isSmartCollection": false,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "bookmarkCount": 1,
+      "userId": "local-user"
+    }
+  ],
+  "bookmarkCollections": [],
+  "settings": {
+    "theme": "dark",
+    "viewMode": "grid",
+    "defaultSort": "newest",
+    "showMetrics": true,
+    "compactMode": false,
+    "autoBackup": true,
+    "exportFormat": "json"
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "totalBookmarks": 1,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "lastUpdate": "2024-01-01T00:00:00.000Z"
+  },
+  "exportedAt": "2024-01-01T00:00:00.000Z",
+  "version": "2.0.0"
+}

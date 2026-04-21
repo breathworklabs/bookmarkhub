@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#1DA1F2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="BookmarkHub" />
+    <link rel="apple-touch-icon" href="/logo_v2 1.png" />
+
+    <!-- SEO Meta Tags -->
+    <title>BookmarkHub - Privacy-First Bookmark Manager for X/Twitter</title>
+    <meta name="description" content="Privacy-focused bookmark management for X/Twitter. Local-first, no tracking, works offline. Organize, search, and manage your saved tweets with powerful tagging and filtering." />
+    <meta name="keywords" content="bookmarks, twitter, x, privacy, local-first, bookmark manager, tweet saver" />
+    <link rel="canonical" href="https://bookmarkhub.app/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bookmarkhub.app/" />
+    <meta property="og:title" content="BookmarkHub - Privacy-First Bookmark Manager" />
+    <meta property="og:description" content="Privacy-focused bookmark management for X/Twitter. Local-first, no tracking, works offline." />
+    <meta property="og:image" content="/logo_v2 1.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://bookmarkhub.app/" />
+    <meta name="twitter:title" content="BookmarkHub - Privacy-First Bookmark Manager" />
+    <meta name="twitter:description" content="Privacy-focused bookmark management for X/Twitter. Local-first, no tracking, works offline." />
+    <meta name="twitter:image" content="/logo_v2 1.png" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "BookmarkHub",
+      "description": "Privacy-focused bookmark management for X/Twitter. Local-first, no tracking, works offline.",
+      "url": "https://bookmarkhub.app",
+      "applicationCategory": "ProductivityApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "BookmarkHub"
+      },
+      "featureList": [
+        "Privacy-first local storage",
+        "X/Twitter bookmark import",
+        "Smart tagging and filtering",
+        "Works offline",
+        "No account required"
+      ]
+    }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+# Cursor Rules
+
+These repository-specific rules guide the AI assistant and contributors in this workspace.
+
+## Development Guidelines
+
+### Testing
+- **Debug problems in tests**: When tests fail, always investigate the root cause and fix issues properly
+- **Use Vitest**: This project uses Vitest, not Jest. Use `vi.` instead of `jest.` methods
+- **Create comprehensive tests**: Write thorough tests that cover edge cases and real-world scenarios
+- **Fix test failures**: Never ignore failing tests - debug and resolve all test issues
+
+### UI Framework
+- **Follow Chakra UI v3**: This project uses Chakra UI v3. Always check v3 documentation for correct components and props
+- **Use correct imports**: Import components from '@chakra-ui/react' with proper v3 syntax
+- **Component structure**: Use v3 component patterns (e.g., `Menu.Root`, `Menu.Trigger`, `Menu.Content` instead of deprecated patterns)
+- **Icons**: Use Lucide React icons (`react-icons/lu`) when available
+
+### Code Quality
+- **TypeScript**: Maintain strict TypeScript compliance
+- **Error handling**: Always handle errors gracefully
+- **Performance**: Consider performance implications, especially for filtering and data operations
+- **Debugging**: Add proper debugging tools when needed, but remove console.logs in production code
+
+### Planning and Changes
+- **Ask permission before changing plan**: Always ask for user permission before modifying the original plan or approach
+- **Confirm major changes**: Get explicit approval before making significant architectural or design changes
+- **Stay focused**: Stick to the current task unless explicitly asked to change direction
+
+### Project Specific
+- **Filter functionality**: The useFilteredBookmarks hook handles all filtering logic
+- **Store management**: Use Zustand stores properly with correct TypeScript types
+- **X/Twitter integration**: Handle X bookmark data transformation correctly
+- **Media handling**: Use LazyImage component for all image loading
+
+## Commands to run
+- Tests: `npm test`
+- Type check: `npm run typecheck`
+- Lint: `npm run lint`
+- Dev server: `npm run dev`
+
+## Current Issues to Watch
+- Filter UI components need to properly call store setters
+- Chakra UI v3 compatibility across all components
+- Test coverage for all major functionality
+
+## Project Structure
+- **Directories**: Keep to `components/`, `hooks/`, `store/`, `utils/`, `lib/`, `types/`, `data/`, `styles/`, `test/`.
+- **File naming**: PascalCase for React components, camelCase for hooks/utils, `.ts` for non-React, `.tsx` for React.
+- **Barrels**: Avoid deep barrels; prefer explicit imports to reduce cycles.
+
+## UI & Components (Chakra UI v3)
+- **Imports**: Always import from `@chakra-ui/react` using v3 API.
+- **Patterns**: Use new primitives and compound components (e.g., `Menu.Root`, `Menu.Trigger`, `Menu.Content`).
+- **Styling**: Prefer Chakra props over custom CSS. Use `styles/` for theme tokens only.
+- **Icons**: Use `react-icons/lu` (Lucide) where possible.
+- **Images**: Always render images via `components/LazyImage`.
+
+### Modal Structure
+- **Template**: ALL modals MUST follow the exact structure in `src/components/modals/ModalProvider.tsx` (lines 418-494 for delete modal, lines 498-584 for add tag modal)
+- **When creating/editing modals**: Always read ModalProvider.tsx first to copy the exact styling patterns
+- **Key elements**:
+  - Backdrop with blur: `bg="rgba(0, 0, 0, 0.85)" backdropFilter="blur(4px)"`
+  - Content: `borderRadius="16px"`, `boxShadow="0 25px 50px rgba(0, 0, 0, 0.6)"`
+  - Header/Footer: `bg="var(--gradient-modal)"`, `p={6}`, with borders
+  - Buttons: `borderRadius="10px"`, consistent hover/disabled states
+  - Inputs: `borderRadius="12px"`, focus with `boxShadow: '0 0 0 2px rgba(29, 78, 216, 0.2)'`
+
+## State Management (Zustand)
+- **Stores**: Keep one responsibility per store (`store/bookmarkStore.ts`, `store/collectionsStore.ts`).
+- **Types**: Export store state/action types from the same file; no `any`.
+- **Selectors**: Use selector functions in components to minimize re-renders.
+- **Setters**: UI must call store setters directly; avoid duplicating state in component local state.
+
+## Hooks
+- **Filtering**: All filtering logic lives in `hooks/useFilteredBookmarks.ts` and `utils/bookmarkFiltering.ts`.
+- **Composition**: Hooks should be pure and parameterized; avoid implicit global state.
+- **Performance**: Memoize derived values and callbacks; avoid recomputation in render.
+
+## Data & Types
+- **Types first**: Define domain types in `types/` and import across app.
+- **X/Twitter**: Normalize X bookmark payloads in a single place; never leak raw export shapes into UI.
+- **Null-safety**: Handle optional fields explicitly; prefer narrow types over unions with `any`.
+
+## Error Handling & Logging
+- **User-facing**: Fail gracefully with Chakra `Alert`/toasts; never crash UI on parsing/IO errors.
+- **Non-production**: Allow structured `console.debug` behind guards; remove noisy logs in production code.
+- **Boundaries**: Validate inputs at store actions and data loaders.
+
+## Performance
+- **Rendering**: Avoid heavy work in render; memoize `BookmarkCard` props and lists.
+- **Lists**: Consider virtualization if list rendering becomes a bottleneck.
+- **Selectors**: Prefer derived selectors over filtering in components.
+
+## Accessibility
+- **Chakra defaults**: Leverage Chakra’s a11y primitives; ensure focus states are visible.
+- **Images**: Provide meaningful `alt` text; hide decorative imagery with empty `alt`.
+
+## Testing (Vitest)
+- **Framework**: Use Vitest (`vi`) and React Testing Library for components.
+- **Coverage**: Test stores, filtering logic, and critical components like `BookmarkCard`.
+- **Edge cases**: Include large datasets, empty states, malformed X export files.
+- **Naming**: Co-locate tests under `src/test/` mirroring file names where possible.
+
+## Conventions
+- **Imports order**: node/third-party, `@/` aliases if any, then relative.
+- **Exports**: Prefer named exports; avoid default exports for components/hooks.
+- **Env**: Keep feature flags and API keys out of code; document in `README.md`.
+- **PR checklist**: typecheck, lint, tests green, Chakra v3 patterns verified, no console noise.
