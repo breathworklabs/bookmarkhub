@@ -10,6 +10,7 @@ import { downloadFile } from '@/lib/exportFormats'
 import { trackOperationPerformance } from '@/lib/performance'
 import { logger } from '@/lib/logger'
 import { mockBookmarks } from '@/data/mockBookmarks'
+import { useSettingsStore } from '@/store/settingsStore'
 import { handleStoreError } from '@/store/utils/handleStoreError'
 
 export const createDataManagementActions = (set: StoreSet, get: StoreGet) => ({
