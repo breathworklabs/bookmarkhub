@@ -1,5 +1,7 @@
 # BookmarkHub
 
+[**Live at bookmarkhub.app**](https://bookmarkhub.app) · [Chrome Extension](https://github.com/breathworklabs/bookmarkhub-chrome-extension)
+
 A privacy-focused bookmark management application for X/Twitter content, built with React, TypeScript, and Vite.
 
 ## Features
