@@ -10,8 +10,6 @@ import { downloadFile } from '@/lib/exportFormats'
 import { trackOperationPerformance } from '@/lib/performance'
 import { logger } from '@/lib/logger'
 import { mockBookmarks } from '@/data/mockBookmarks'
-import { useSettingsStore } from '@/store/settingsStore'
-import { fetchPopularTechTweets } from '@/lib/fetchLiveTweets'
 import { handleStoreError } from '@/store/utils/handleStoreError'
 
 export const createDataManagementActions = (set: StoreSet, get: StoreGet) => ({
@@ -136,14 +134,7 @@ export const createDataManagementActions = (set: StoreSet, get: StoreGet) => ({
 
       logger.info('Loading demo data...')
 
-      let demoBookmarks = await fetchPopularTechTweets()
-
-      if (demoBookmarks.length === 0) {
-        logger.warn(
-          'Live tweet fetch failed or returned no data, using static mock bookmarks'
-        )
-        demoBookmarks = mockBookmarks
-      }
+      const demoBookmarks = mockBookmarks
 
       logger.info('Persisting demo bookmarks to localStorage...')
       for (const bookmark of demoBookmarks) {
