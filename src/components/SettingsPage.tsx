@@ -1313,6 +1313,25 @@ const SettingsPage = () => {
                         breathworklabs.com
                       </a>
                     </Text>
+                    <Text
+                      fontSize="xs"
+                      style={{ color: 'var(--color-text-tertiary)' }}
+                      lineHeight="1.6"
+                    >
+                      Source Code:{' '}
+                      <a
+                        href="https://github.com/breathworklabs/bookmarkhub"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: 'var(--color-blue)',
+                          textDecoration: 'none',
+                        }}
+                      >
+                        github.com/breathworklabs/bookmarkhub
+                      </a>{' '}
+                      <span style={{ opacity: 0.7 }}>&#8212; Open Source</span>
+                    </Text>
                   </VStack>
                 </Box>
 
