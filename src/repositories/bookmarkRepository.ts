@@ -160,7 +160,7 @@ export const restoreBookmarkEntity = (
 ): StoredBookmark[] => {
   return bookmarks.map((b) => {
     if (b.id === id) {
-      const { is_deleted, deleted_at, ...restored } = b
+      const { is_deleted: _is_deleted, deleted_at: _deleted_at, ...restored } = b
       return {
         ...restored,
         is_deleted: false,
