@@ -7,6 +7,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { ModalProvider } from '../../src/components/modals/ModalProvider'
 
 // Combined decorator to wrap stories with all necessary providers
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const withProviders = (Story: any) => (
   <DndProvider backend={HTML5Backend}>
     <MemoryRouter>

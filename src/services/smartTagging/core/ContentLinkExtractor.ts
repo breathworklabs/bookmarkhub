@@ -10,7 +10,7 @@ import { LINK_EXTRACTION_CONFIG } from '@/services/smartTagging/config'
 
 export class ContentLinkExtractor {
   // Regex to match URLs in text (supports http/https)
-  private static readonly URL_PATTERN = /https?:\/\/[^\s<>"{}|\\^`\[\]]+/gi
+  private static readonly URL_PATTERN = /https?:\/\/[^\s<>"{}|\\^`[\]]+/gi
 
   // Twitter/X domains to skip
   private static readonly TWITTER_DOMAINS = new Set([

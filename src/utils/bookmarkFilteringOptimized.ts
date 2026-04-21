@@ -320,11 +320,12 @@ export const filterBookmarksOptimized = ({
       case 'domain':
         comparison = a.domain.localeCompare(b.domain)
         break
-      default:
+      default: {
         // Fallback to date
         const dateA = getBookmarkDate(a)
         const dateB = getBookmarkDate(b)
         comparison = dateB.getTime() - dateA.getTime()
+      }
     }
 
     // Apply sort order (reverse if ascending)

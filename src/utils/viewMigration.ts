@@ -337,6 +337,8 @@ function readViewsFromMigrationStorage(): View[] {
       const parsed = JSON.parse(raw)
       return Array.isArray(parsed) ? parsed : parsed.views || []
     }
-  } catch {}
+  } catch {
+    // Ignore parse errors for corrupted localStorage data
+  }
   return []
 }
